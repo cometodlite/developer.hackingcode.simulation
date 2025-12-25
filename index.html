@@ -942,66 +942,6 @@ button:hover {
 
 
 /* =========================
-   MOBILE UI MODE (Tabbed)
-   ========================= */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  #main, .main { position: relative; }
-  .mobile-tabs {
-    position: fixed;
-    left: 10px; right: 10px; bottom: 10px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding: 8px;
-    border-radius: 14px;
-    background: rgba(14,17,23,0.92);
-    border: 1px solid rgba(35,42,53,0.9);
-    backdrop-filter: blur(10px);
-    z-index: 9999;
-  }
-  .mobile-tabs button{
-    width: 100%;
-    min-height: 44px;
-    font-size: 13px;
-    font-weight: 700;
-    border-radius: 12px;
-  }
-  .mobile-tabs button.active{
-    outline: 2px solid rgba(148,163,184,0.7);
-  }
-
-  body.mobile-tab-left #leftPanel,
-  body.mobile-tab-center #centerPanel,
-  body.mobile-tab-right #rightPanel { display: block !important; }
-
-  body.mobile-tab-left #centerPanel,
-  body.mobile-tab-left #rightPanel,
-  body.mobile-tab-center #leftPanel,
-  body.mobile-tab-center #rightPanel,
-  body.mobile-tab-right #leftPanel,
-  body.mobile-tab-right #centerPanel { display: none !important; }
-
-  
-#leftPanel, #centerPanel, #rightPanel {
-  /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
-  position: fixed;
-  top: var(--headerH, 52px);
-  left: 0;
-  right: 0;
-  bottom: var(--tabsInset, calc(92px + 20px + env(safe-area-inset-bottom)));
-  height: auto !important;
-  max-height: none !important;
-  overflow: auto !important;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: var(--tabsPad, calc(92px + 28px + env(safe-area-inset-bottom))) !important;
-}
-
-  button { min-height: 44px !important; }
-  input, select, textarea { min-height: 44px !important; font-size: 16px !important; }
-}
-
-
-/* =========================
    MOBILE VIEWS (Status/Action/Codes/Shop/Log)
    ========================= */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
@@ -1269,7 +1209,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.7.4 (Web)</span>
+      <span class="header-version">v1.6.7.5 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1639,7 +1579,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.7.4';
+    const CURRENT_VERSION = 'v1.6.7.5';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1649,7 +1589,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     const updateLogs = [
       
       {
-        version: 'v1.6.7.4',
+        version: 'v1.6.7.5',
         lines: [
           'GENERAL 미션을 다수 추가했습니다.',
           '업적을 다수 추가했습니다.',
@@ -3466,7 +3406,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
     
-    // 안전 표시명 헬퍼 (v1.6.7.4)
+    // 안전 표시명 헬퍼 (v1.6.7.5)
     function safeDisplayName(def, completed){
       try{
         return (def && def.hidden && !completed) ? '???' : (def && def.name ? def.name : '');
@@ -4140,7 +4080,7 @@ const item = document.createElement('div');
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.7.4)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.7.5)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -4167,60 +4107,6 @@ const item = document.createElement('div');
       if(rp) rp.style.flex = 'none';
     });
   }
-})();
-</script>
-<script>
-// === MOBILE UI MODE: Tabbed panels ===
-(function(){
-  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-  if(!isMobile) return;
-
-  // NOTE: This build uses the newer 5-tab "MOBILE VIEWS" system (Status/Action/Codes/Shop/Log).
-  // If those view containers exist, do NOT mount the legacy 3-tab panel switcher.
-  if (document.getElementById('mobileViewStatus')) return;
-
-  if(!document.body.classList.contains('mobile-tab-left') &&
-     !document.body.classList.contains('mobile-tab-center') &&
-     !document.body.classList.contains('mobile-tab-right')){
-    document.body.classList.add('mobile-tab-center');
-  }
-
-  function setTab(tab){
-    document.body.classList.remove('mobile-tab-left','mobile-tab-center','mobile-tab-right');
-    document.body.classList.add('mobile-tab-'+tab);
-    document.querySelectorAll('.mobile-tabs button').forEach(b=>{
-      b.classList.toggle('active', b.dataset.tab === tab);
-    });
-    const panelId = tab==='left'?'leftPanel':tab==='center'?'centerPanel':'rightPanel';
-    const p = document.getElementById(panelId);
-    if(p) p.scrollTop = 0;
-  }
-
-  const wrap = document.createElement('div');
-  wrap.className = 'mobile-tabs';
-  wrap.innerHTML = `
-    <button type="button" data-tab="left" aria-label="Status">STATUS</button>
-    <button type="button" data-tab="center" aria-label="Action">ACTION</button>
-    <button type="button" data-tab="right" aria-label="Log">LOG</button>
-  `;
-  document.body.appendChild(wrap);
-
-  wrap.querySelectorAll('button').forEach(btn=>{
-    btn.addEventListener('click', ()=>setTab(btn.dataset.tab));
-  }); 
-
-  const initial = document.body.classList.contains('mobile-tab-left')?'left':
-                  document.body.classList.contains('mobile-tab-right')?'right':'center';
-  setTab(initial);
-
-  window.addEventListener('resize', ()=>{
-    const stillMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-    if(!stillMobile){
-      const mt = document.querySelector('.mobile-tabs');
-      if(mt) mt.remove();
-      document.body.classList.remove('mobile-tab-left','mobile-tab-center','mobile-tab-right');
-    }
-  });
 })();
 </script>
 <script>
