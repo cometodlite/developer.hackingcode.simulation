@@ -3668,6 +3668,19 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       moreTabButtons.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tabName);
       });
+
+      // 탭별 렌더링(내용이 비어 보이는 현상 방지)
+      try {
+        if (tabName === 'mission') {
+          renderMissions();
+        } else if (tabName === 'achievement') {
+          renderAchievements();
+        } else if (tabName === 'logs') {
+          renderLogList && renderLogList();
+        }
+      } catch (e) {
+        console.warn('[MoreModal] render on tab failed:', e);
+      }
     }
 
     moreTabButtons.forEach(btn => {
@@ -3703,7 +3716,11 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       try {
         moreModalBackdrop.classList.add('active');
         setActiveTab(defaultTab);
+        // update 탭은 항상 갱신
         renderUpdateLog();
+        // 미션/업적 탭은 열자마자 목록 생성
+        if (defaultTab === 'mission') { try { renderMissions(); } catch(e){} }
+        if (defaultTab === 'achievement') { try { renderAchievements(); } catch(e){} }
         btnUpdateDontShow.style.display = showDontShowButton ? 'inline-block' : 'none';
       } catch (err) {
         console.error('[MoreModal] open failed:', err);
@@ -4082,7 +4099,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.10 Mobile Fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.7.1)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -4149,12 +4166,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
   wrap.querySelectorAll('button').forEach(btn=>{
     btn.addEventListener('click', ()=>setTab(btn.dataset.tab));
-  });
-
-  const btnMore = document.getElementById('btnMore');
-  if(btnMore){
-    btnMore.addEventListener('click', ()=>setTab('right'));
-  }
+  }); 
 
   const initial = document.body.classList.contains('mobile-tab-left')?'left':
                   document.body.classList.contains('mobile-tab-right')?'right':'center';
