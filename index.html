@@ -987,6 +987,8 @@ button:hover {
   body { overflow:hidden; }
   .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
   .mobile-tabs button{ font-size: 12px !important; }
+  /* Hide PC panels on mobile to avoid fixed-position overlay capturing taps */
+  #leftPanel, #centerPanel, #rightPanel { display: none !important; }
   .mobile-view { display:none !important; }
   body.mobile-view-status #mobileViewStatus,
   body.mobile-view-action #mobileViewAction,
@@ -1248,7 +1250,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.10 (Web)</span>
+      <span class="header-version">v1.6.11 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -3980,7 +3982,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.10 Mobile Fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11 Mobile Fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -4015,9 +4017,12 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
-  // NOTE: This build uses the newer 5-tab "MOBILE VIEWS" system (Status/Action/Codes/Shop/Log).
-  // If those view containers exist, do NOT mount the legacy 3-tab panel switcher.
-  if (document.getElementById('mobileViewStatus')) return;
+  // IMPORTANT: This build uses the newer 5-tab "MOBILE VIEWS" system.
+  // The legacy 3-tab (left/center/right) switcher can create an invisible overlay that blocks taps on iOS
+  // until a relayout event (like opening "More") happens. Disable it entirely.
+  return;
+
+  // (legacy code below intentionally unreachable)
 
   if(!document.body.classList.contains('mobile-tab-left') &&
      !document.body.classList.contains('mobile-tab-center') &&
