@@ -532,7 +532,8 @@ button:hover {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.65);
-      z-index: 40;
+      /* Must be above mobile tabs/snow/toasts */
+      z-index: 20000;
       align-items: center;
       justify-content: center;
     }
@@ -1247,7 +1248,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.6 (Web)</span>
+      <span class="header-version">v1.6.10 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1617,7 +1618,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.6';
+    const CURRENT_VERSION = 'v1.6.10';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -3979,7 +3980,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.5 QoL)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.10 Mobile Fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -4013,6 +4014,10 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
+
+  // NOTE: This build uses the newer 5-tab "MOBILE VIEWS" system (Status/Action/Codes/Shop/Log).
+  // If those view containers exist, do NOT mount the legacy 3-tab panel switcher.
+  if (document.getElementById('mobileViewStatus')) return;
 
   if(!document.body.classList.contains('mobile-tab-left') &&
      !document.body.classList.contains('mobile-tab-center') &&
