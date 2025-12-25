@@ -1248,7 +1248,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.7.1 (Web)</span>
+      <span class="header-version">v1.6.7.2 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1618,7 +1618,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.7.1';
+    const CURRENT_VERSION = 'v1.6.7.2';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1628,7 +1628,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     const updateLogs = [
       
       {
-        version: 'v1.6.7.1',
+        version: 'v1.6.7.2',
         lines: [
           'GENERAL 미션을 다수 추가했습니다.',
           '업적을 다수 추가했습니다.',
@@ -2174,7 +2174,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       { id: 'risk_10_success',      name: '위험한 승부사',     desc: '위험 해킹 모드로 해킹 성공 10회를 달성했습니다.',difficulty: 'hard',  hidden: true  }
 
       ,
-      // v1.6.7.1 추가 업적
+      // v1.6.7.2 추가 업적
       { id: 'scan_100',             name: '스캐너 마스터',      desc: '코드 스캔을 100회 수행했습니다.',             difficulty: 'normal', hidden: false },
       { id: 'hack_100_success',     name: '침입 전문가',        desc: '서버 해킹에 100회 이상 성공했습니다.',        difficulty: 'normal', hidden: false },
       { id: 'cpu_tier_3',           name: '튜너 입문',          desc: 'CPU 티어를 3 이상으로 업그레이드했습니다.',   difficulty: 'easy',   hidden: false },
@@ -2436,7 +2436,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
     function requiredExp(level) {
-      // v1.6.7.1: 성장 완화 (필요 EXP 곡선 강화)
+      // v1.6.7.2: 성장 완화 (필요 EXP 곡선 강화)
       const lv = Math.max(1, Math.floor(level || 1));
       const linear = 30 + (lv - 1) * 15;
       const curve = Math.floor(((lv - 1) * (lv - 1)) * 0.5);
@@ -2777,7 +2777,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
 
-    // v1.6.7.1: 같은 아이템 일일 3회 이상 중복 구매 시 가격 x2
+    // v1.6.7.2: 같은 아이템 일일 3회 이상 중복 구매 시 가격 x2
     function getRepeatPurchaseCount(itemId) {
       const meta = ensureDailyShopReset();
       return meta.purchases[itemId] || 0;
@@ -2785,9 +2785,16 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
     function getEffectiveItemCost(item) {
       const base = Number(item.cost || 0);
+
+      // 오늘 동일 아이템을 몇 번 샀는지(이미 구매한 횟수)
       const used = getRepeatPurchaseCount(item.id);
-      const multiplier = used >= 2 ? 2 : 1; // 0~2번째 구매는 정가, 3번째부터 x2
-      return { cost: base * multiplier, multiplier, used };
+
+      // 구매 n회차 가격 배수 규칙:
+      // 1회차 x1, 2회차 x2, 3회차 x3, 4회차 x4 ... (계속 증가)
+      const nextCount = used + 1;
+      const multiplier = nextCount <= 1 ? 1 : nextCount;
+
+      return { cost: base * multiplier, multiplier, used, nextCount };
     }
 
     function markRepeatPurchase(itemId) {
@@ -4097,7 +4104,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.7.1)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.7.2)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
