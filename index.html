@@ -2,20 +2,91 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>HCSiG - Hacking Code Simulator Game</title>
-  <script>
-  // --- Early viewport fix (iOS Safari) ---
-  // On iOS, the first layout pass can use a wrong 100vh until a UI event happens.
-  // We set --appH immediately to window.innerHeight so the initial layout is closer.
-  (function(){
-    try {
-      document.documentElement.style.setProperty('--appH', Math.ceil(window.innerHeight) + 'px');
-      // Prevent scroll restoration "jump" that can look like an upward shift.
-      if('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    } catch(e) {}
-  })();
-  </script>
+<script>
+// --- Early viewport/layout fix (iOS Safari first-paint jump) ---
+(function(){
+  try{
+    if('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    document.documentElement.style.setProperty('--appH', Math.ceil(window.innerHeight) + 'px');
+  }catch(e){}
+})();
+</script>
+
+<script>
+// --- Layout vars sync (header/tabs/viewport). Fixes initial "pushed up" until a UI event happens. ---
+(function(){
+  const root = document.documentElement;
+  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+
+  function px(n){ return Math.max(0, Math.round(n)) + 'px'; }
+
+  function setAppH(){
+    const vv = window.visualViewport;
+    const h = vv ? vv.height : window.innerHeight;
+    root.style.setProperty('--appH', px(h));
+  }
+
+  function setHeaderTabs(){
+    const header = document.querySelector('header');
+    const tabs = document.querySelector('.mobile-tabs');
+
+    if(header){
+      root.style.setProperty('--headerH', px(header.getBoundingClientRect().height));
+    }
+    if(isMobile){
+      if(tabs){
+        const th = tabs.getBoundingClientRect().height;
+        root.style.setProperty('--tabsH', px(th));
+        // bottom space that content must avoid (tabs + gap + safe area)
+        root.style.setProperty('--tabsInset', `calc(${px(th)} + 20px + env(safe-area-inset-bottom))`);
+        root.style.setProperty('--tabsPad',   `calc(${px(th)} + 28px + env(safe-area-inset-bottom))`);
+      }else{
+        root.style.setProperty('--tabsH', '92px');
+        root.style.setProperty('--tabsInset', 'calc(92px + 20px + env(safe-area-inset-bottom))');
+        root.style.setProperty('--tabsPad',   'calc(92px + 28px + env(safe-area-inset-bottom))');
+      }
+    }
+  }
+
+  function kick(){
+    setAppH();
+    setHeaderTabs();
+    // remove tiny scroll offsets that look like the whole UI is shifted upward
+    try{ if(window.scrollY !== 0) window.scrollTo(0,0); }catch(e){}
+  }
+
+  // run ASAP
+  kick();
+  document.addEventListener('DOMContentLoaded', kick);
+  window.addEventListener('load', kick);
+
+  const vv = window.visualViewport;
+  if(vv){
+    vv.addEventListener('resize', kick);
+    vv.addEventListener('scroll', kick);
+  }
+  window.addEventListener('resize', kick);
+  window.addEventListener('orientationchange', ()=>setTimeout(kick, 250));
+  window.addEventListener('pageshow', ()=>setTimeout(kick, 60));
+
+  // ResizeObserver catches font-load/header wrap changes that happen AFTER first paint
+  try{
+    const ro = new ResizeObserver(()=>kick());
+    const header = document.querySelector('header');
+    if(header) ro.observe(header);
+    const tabs = document.querySelector('.mobile-tabs');
+    if(tabs) ro.observe(tabs);
+  }catch(e){}
+
+  // Last resort: re-kick a couple times shortly after first render
+  setTimeout(kick, 80);
+  setTimeout(kick, 220);
+  setTimeout(kick, 650);
+})();
+</script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -24,24 +95,13 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    :root{
-      --safeTop: env(safe-area-inset-top);
-      --safeBottom: env(safe-area-inset-bottom);
-    }
-
-    html, body { height: 100%; }
-
     body {
       background: #05070b;
       color: #e5e5e5;
-      /* prevent tiny accidental scroll offsets on iOS that create "pushed up" feeling */
-      overflow-x: hidden;
     }
 
     header {
       padding: 10px 16px;
-      /* iOS safe-area */
-      padding-top: calc(10px + env(safe-area-inset-top));
       background: #0e1117;
       border-bottom: 1px solid #222;
       display: flex;
@@ -81,7 +141,7 @@
 
     #main {
       display: flex;
-      height: calc(var(--appH, 100vh) - var(--headerH, 48px));
+      height: calc(100vh - 48px);
       width: 100vw;
       overflow: hidden;
     }
@@ -804,18 +864,20 @@ button:hover {
       zoom: var(--ui-zoom);
     }
 
-    /* Font scaling: multiply key UI font sizes by --font-scale */
-    body{ font-size: calc(14px * var(--font-scale)); }
+    /* v1.6.6: 폰트 스케일이 체감되지 않는 문제 보정
+       - 기존 CSS에 px 단위 font-size가 많아 --font-scale이 반영되지 않는 케이스가 있어,
+         핵심 UI 컴포넌트에 한해 스케일링 오버라이드 적용 */
+    body{ font-size: calc(13px * var(--font-scale)) !important; }
     header h1{ font-size: calc(18px * var(--font-scale)) !important; }
     .header-version{ font-size: calc(11px * var(--font-scale)) !important; }
     .header-right, header span.subtitle{ font-size: calc(13px * var(--font-scale)) !important; }
     .section-title{ font-size: calc(13px * var(--font-scale)) !important; }
     .stat-box{ font-size: calc(13px * var(--font-scale)) !important; }
-    #logList{ font-size: calc(12px * var(--font-scale)) !important; }
     button{ font-size: calc(12px * var(--font-scale)) !important; }
-    input, select, textarea{ font-size: calc(14px * var(--font-scale)) !important; }
+    #logList, #shopList, #codeList{ font-size: calc(12px * var(--font-scale)) !important; }
     .toast .tag{ font-size: calc(11px * var(--font-scale)) !important; }
     .toast .msg{ font-size: calc(13px * var(--font-scale)) !important; }
+    input, select, textarea{ font-size: calc(12px * var(--font-scale)) !important; }
     body.no-anim *{
       transition: none !important;
       animation: none !important;
@@ -897,13 +959,20 @@ button:hover {
   body.mobile-tab-right #leftPanel,
   body.mobile-tab-right #centerPanel { display: none !important; }
 
-  #leftPanel, #centerPanel, #rightPanel {
-    height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - 84px) !important;
-    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - 84px) !important;
-    overflow: auto !important;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 100px !important;
-  }
+  
+#leftPanel, #centerPanel, #rightPanel {
+  /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
+  position: fixed;
+  top: var(--headerH, 52px);
+  left: 0;
+  right: 0;
+  bottom: var(--tabsInset, calc(92px + 20px + env(safe-area-inset-bottom)));
+  height: auto !important;
+  max-height: none !important;
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--tabsPad, calc(92px + 28px + env(safe-area-inset-bottom))) !important;
+}
 
   button { min-height: 44px !important; }
   input, select, textarea { min-height: 44px !important; font-size: 16px !important; }
@@ -924,13 +993,20 @@ button:hover {
   body.mobile-view-shop   #mobileViewShop,
   body.mobile-view-log    #mobileViewLog { display:block !important; }
 
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
-    height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - 92px) !important;
-    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - 92px) !important;
-    overflow:auto !important;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 120px !important;
-  }
+  
+#mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
+  position: fixed;
+  top: var(--headerH, 52px);
+  left: 0;
+  right: 0;
+  bottom: var(--tabsInset, calc(92px + 20px + env(safe-area-inset-bottom)));
+  height: auto !important;
+  max-height: none !important;
+  overflow:auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--tabsPad, calc(92px + 28px + env(safe-area-inset-bottom))) !important;
+}
 
   /* Make code list touch-friendly */
   #codeList li{
@@ -980,8 +1056,8 @@ button:hover {
     max-height: none !important;
     min-height: 0 !important;
     /* Use dvh but subtract header + tabs (real measured via JS) */
-    height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - var(--mobileTabsH) - var(--mobileTabsPad) - var(--safeBottom, 0px)) !important;
-    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - var(--mobileTabsH) - var(--mobileTabsPad) - var(--safeBottom, 0px)) !important;
+    height: calc(100dvh - 52px - var(--mobileTabsH) - var(--mobileTabsPad) - var(--safeBottom, 0px)) !important;
+    max-height: calc(100dvh - 52px - var(--mobileTabsH) - var(--mobileTabsPad) - var(--safeBottom, 0px)) !important;
     padding-bottom: calc(var(--mobileTabsH) + 24px) !important;
   }
 }
@@ -1008,8 +1084,8 @@ button:hover {
   body.mobile-tabs-hidden #mobileViewCodes,
   body.mobile-tabs-hidden #mobileViewShop,
   body.mobile-tabs-hidden #mobileViewLog{
-    height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - var(--safeBottom, 0px) - 10px) !important;
-    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - var(--safeBottom, 0px) - 10px) !important;
+    height: calc(100dvh - 52px - var(--safeBottom, 0px) - 10px) !important;
+    max-height: calc(100dvh - 52px - var(--safeBottom, 0px) - 10px) !important;
     padding-bottom: calc(24px + var(--safeBottom, 0px)) !important;
   }
 }
@@ -1171,7 +1247,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.8 (Web)</span>
+      <span class="header-version">v1.6.6 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1447,6 +1523,15 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
             </div>
 
             <div class="stat-row" style="align-items:center;">
+              <span class="label">눈 이펙트</span>
+              <span class="value">
+                <label class="log-filter-label" style="display:inline-flex; align-items:center; gap:6px;">
+                  <input id="setSnow" type="checkbox"> 사용
+                </label>
+              </span>
+            </div>
+
+            <div class="stat-row" style="align-items:center;">
               <span class="label">UI 스케일</span>
               <span class="value">
                 <select id="setUiZoom" title="전체 UI 배율을 조정합니다.">
@@ -1490,16 +1575,6 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
               · 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.
             </div>
           </div>
-            <div class="stat-row" style="align-items:center;">
-              <span class="label">눈 이펙트</span>
-              <span class="value">
-                <label class="log-filter-label" style="display:inline-flex; align-items:center; gap:6px;">
-                  <input id="setSnow" type="checkbox"> 사용
-                </label>
-                <span class="small" style="margin-left:8px; opacity:0.75;">(크리스마스 시즌 자동/수동)</span>
-              </span>
-            </div>
-
         </div>
 
         <!-- 저장 탭 -->
@@ -1542,7 +1617,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.8';
+    const CURRENT_VERSION = 'v1.6.6';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1679,7 +1754,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         shop: true,
         level: true
       },
-      ui: { shopSortMode: 'update', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '' },
+      ui: { shopSortMode: 'update', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
       stats: {
         scanCount: 0,
         hackSuccessCount: 0,
@@ -2152,9 +2227,9 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
     const setFontScale = document.getElementById('setFontScale');
     const setFontScaleLabel = document.getElementById('setFontScaleLabel');
+    const setSnow = document.getElementById('setSnow');
     const setUiZoom = document.getElementById('setUiZoom');
     const setAnim = document.getElementById('setAnim');
-    const setSnow = document.getElementById('setSnow');
     const setToastMs = document.getElementById('setToastMs');
     const setAutoSaveToast = document.getElementById('setAutoSaveToast');
 
@@ -3633,6 +3708,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         state.ui.toastDurationMs = state.ui.toastDurationMs || 3000;
         state.ui.uiZoom = state.ui.uiZoom || 1;
         state.ui.fontScale = state.ui.fontScale || 100;
+        state.ui.snowEnabled = (typeof state.ui.snowEnabled === 'boolean') ? state.ui.snowEnabled : null;
         state.ui.anim = (typeof state.ui.anim === 'boolean') ? state.ui.anim : true;
         state.ui.autoSaveToast = !!state.ui.autoSaveToast;
         state.ui.logSearch = state.ui.logSearch || '';
@@ -3709,6 +3785,15 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
     // 설정 적용
+    function isChristmasSeason(d = new Date()) {
+      // 로컬 기준: 12/1 ~ 1/7 (대략적인 시즌)
+      const m = d.getMonth() + 1;
+      const day = d.getDate();
+      if (m === 12) return day >= 1;
+      if (m === 1) return day <= 7;
+      return false;
+    }
+
     function applySettings() {
       const ui = state.ui || {};
       const fontScale = Number(ui.fontScale || 100);
@@ -3717,10 +3802,12 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       document.documentElement.style.setProperty('--ui-zoom', String(zoom));
       document.body.classList.toggle('no-anim', ui.anim === false);
 
-      // Snow effect (auto by season if unset)
-      const snowPref = (typeof ui.snowEnabled === 'boolean') ? ui.snowEnabled : null;
-      if (window.__snow && typeof window.__snow.setEnabled === 'function') {
-        window.__snow.setEnabled(snowPref);
+      // v1.6.6: 크리스마스 눈 이펙트 on/off (시즌 자동 + 수동 오버라이드)
+      const snowOn = (typeof ui.snowEnabled === 'boolean') ? ui.snowEnabled : isChristmasSeason();
+      const snowCanvas = document.getElementById('snow-canvas');
+      if (snowCanvas) snowCanvas.style.display = snowOn ? '' : 'none';
+      if (window.__snowFX && window.__snowFX.setEnabled) {
+        window.__snowFX.setEnabled(!!snowOn);
       }
     }
 
@@ -3729,13 +3816,15 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       const ui = state.ui || {};
       setFontScale.value = ui.fontScale || 100;
       setFontScaleLabel.textContent = `${setFontScale.value}%`;
+      if (setSnow) {
+        const snowOn = (typeof ui.snowEnabled === 'boolean') ? ui.snowEnabled : isChristmasSeason();
+        setSnow.checked = !!snowOn;
+        // 자동 모드(null)일 땐 체크박스에 미세한 힌트(회색 표시)
+        setSnow.indeterminate = (typeof ui.snowEnabled !== 'boolean');
+      }
       setUiZoom.value = String(ui.uiZoom || 1);
       setAnim.checked = ui.anim !== false;
       setToastMs.value = String(ui.toastDurationMs || 3000);
-      if (setSnow) {
-        const eff = (typeof ui.snowEnabled === 'boolean') ? ui.snowEnabled : (window.__snow ? window.__snow.isSeasonNow() : false);
-        setSnow.checked = !!eff;
-      }
       setAutoSaveToast.checked = !!ui.autoSaveToast;
       if (logSearchInput) logSearchInput.value = ui.logSearch || '';
     }
@@ -3744,6 +3833,17 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       setFontScale.addEventListener('input', () => {
         state.ui.fontScale = Number(setFontScale.value);
         setFontScaleLabel.textContent = `${setFontScale.value}%`;
+        applySettings();
+        saveGame(true);
+      });
+    }
+
+    if (setSnow) {
+      setSnow.addEventListener('change', () => {
+        // 체크/해제 시 수동 모드로 고정
+        state.ui.snowEnabled = !!setSnow.checked;
+        // indeterminate(자동) 해제
+        setSnow.indeterminate = false;
         applySettings();
         saveGame(true);
       });
@@ -3762,14 +3862,6 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         saveGame(true);
       });
     }
-    if (setSnow) {
-      setSnow.addEventListener('change', () => {
-        state.ui.snowEnabled = !!setSnow.checked;
-        applySettings();
-        saveGame(true);
-      });
-    }
-
     if (setToastMs) {
       setToastMs.addEventListener('change', () => {
         state.ui.toastDurationMs = Number(setToastMs.value);
@@ -4137,71 +4229,29 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 })();
 </script>
 <script>
-// === SAFE-AREA / VIEWPORT / TABS HEIGHT CALIBRATION (iOS fix) ===
+// === SAFE-AREA / TABS HEIGHT CALIBRATION ===
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
-  const root = document.documentElement;
-
-  function setVars(){
+  function setTabsHeightVar(){
     const tabs = document.querySelector('.mobile-tabs');
-    const header = document.querySelector('header');
-
-    if(tabs){
-      const h = Math.ceil(tabs.getBoundingClientRect().height);
-      root.style.setProperty('--mobileTabsH', h + 'px');
-    }
-
-    if(header){
-      const hh = Math.ceil(header.getBoundingClientRect().height);
-      root.style.setProperty('--headerH', hh + 'px');
-    }
-
-    const vv = window.visualViewport;
-    const appH = Math.ceil(vv ? vv.height : window.innerHeight);
-    root.style.setProperty('--appH', appH + 'px');
-
-    // Sometimes Safari keeps a tiny scroll offset at first paint; reset it.
-    // (This is what looks like a "top pushed" UI until a modal/interaction triggers relayout.)
-    if(window.scrollY !== 0) window.scrollTo(0, 0);
+    if(!tabs) return;
+    const h = Math.ceil(tabs.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--mobileTabsH', h + 'px');
   }
 
-  const kick = ()=>{
-    setVars();
-    // multiple passes: fonts, safe-area, address-bar settle
-    requestAnimationFrame(()=>setVars());
-    requestAnimationFrame(()=>requestAnimationFrame(()=>setVars()));
-    setTimeout(setVars, 80);
-    setTimeout(setVars, 180);
-    setTimeout(setVars, 380);
-    setTimeout(setVars, 900);
-  };
+  // Run now and after layout settles
+  window.addEventListener('load', ()=>{ setTabsHeightVar(); setTimeout(setTabsHeightVar, 250); setTimeout(setTabsHeightVar, 800); });
+  window.addEventListener('resize', ()=>{ setTabsHeightVar(); });
+  window.addEventListener('orientationchange', ()=>{ setTimeout(setTabsHeightVar, 300); });
 
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', kick, {once:true});
-  } else {
-    kick();
-  }
-
-  window.addEventListener('load', kick, {once:true});
-  // When returning from bfcache, iOS can restore a stale viewport size until interaction.
-  window.addEventListener('pageshow', ()=>{
-    kick();
-    setTimeout(()=>{ if(window.scrollY) window.scrollTo(0,0); }, 0);
-    setTimeout(()=>{ if(window.scrollY) window.scrollTo(0,0); }, 200);
-  });
-  window.addEventListener('resize', ()=>{ setVars(); });
-  window.addEventListener('orientationchange', ()=>{ setTimeout(setVars, 250); });
-
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', ()=>{ setVars(); });
-    window.visualViewport.addEventListener('scroll', ()=>{ setVars(); });
-  }
-
-  ['touchstart','click'].forEach(evt=>{
-    window.addEventListener(evt, ()=>{ setVars(); }, {once:true, passive:true});
-  });
+  // iOS Safari sometimes changes viewport when address bar hides/shows while scrolling
+  document.addEventListener('scroll', ()=>{
+    // light throttle
+    if(window.__tabsH_to) return;
+    window.__tabsH_to = setTimeout(()=>{ window.__tabsH_to = null; setTabsHeightVar(); }, 250);
+  }, {passive:true});
 })();
 </script>
 <script>
@@ -4309,42 +4359,33 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 </script>
 
 <script>
-/* === CHRISTMAS SNOW EFFECT (toggleable) === */
+/* === CHRISTMAS SNOW EFFECT (v1.6.6: toggle + stop) === */
 (function(){
   const canvas = document.getElementById('snow-canvas');
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  let raf = 0;
-  let enabled = false;
-  let flakes = [];
   let w = 0, h = 0;
-
-  function isSeasonNow(){
-    const d = new Date();
-    const m = d.getMonth()+1;
-    const day = d.getDate();
-    if(m === 12) return day >= 1;
-    if(m === 1) return day <= 7;
-    return false;
-  }
+  let rafId = null;
+  let enabled = false;
 
   function resize(){
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
   }
+  resize();
+  window.addEventListener('resize', resize, {passive:true});
 
-  function initFlakes(){
-    flakes = Array.from({length: 90}, () => ({
-      x: Math.random()*w,
-      y: Math.random()*h,
-      r: Math.random()*2.2+0.8,
-      s: Math.random()*0.7+0.4,
-      o: Math.random()*0.55+0.25
-    }));
-  }
+  const flakes = Array.from({length: 80}, () => ({
+    x: Math.random()*w,
+    y: Math.random()*h,
+    r: Math.random()*2+1,
+    s: Math.random()*0.5+0.5,
+    o: Math.random()*0.5+0.3
+  }));
 
-  function loop(){
+  function tick(){
+    if(!enabled){ rafId = null; return; }
     ctx.clearRect(0,0,w,h);
     for(const f of flakes){
       ctx.beginPath();
@@ -4354,43 +4395,32 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       f.y += f.s;
       if(f.y > h){ f.y = -5; f.x = Math.random()*w; }
     }
-    raf = requestAnimationFrame(loop);
+    rafId = requestAnimationFrame(tick);
   }
 
   function start(){
-    if(enabled) return;
-    enabled = true;
-    canvas.style.display = 'block';
-    resize();
-    initFlakes();
-    cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(loop);
+    if(enabled && !rafId) rafId = requestAnimationFrame(tick);
   }
 
   function stop(){
     enabled = false;
-    cancelAnimationFrame(raf);
-    raf = 0;
-    ctx.clearRect(0,0,w,h);
-    canvas.style.display = 'none';
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+    try { ctx.clearRect(0,0,w,h); } catch(e) {}
   }
 
-  function setEnabled(pref){
-    const should = (typeof pref === 'boolean') ? pref : isSeasonNow();
-    if(should) start();
-    else stop();
-  }
+  window.__snowFX = {
+    setEnabled(on){
+      enabled = !!on;
+      if(enabled){
+        start();
+      } else {
+        stop();
+      }
+    }
+  };
 
-  window.__snow = { setEnabled, isSeasonNow };
-
-  // Default on load: auto by season (preference applied later by applySettings)
-  setEnabled(null);
-
-  window.addEventListener('resize', () => {
-    if(!enabled) return;
-    resize();
-    initFlakes();
-  }, {passive:true});
+  // 초기 상태는 applySettings()에서 결정
+  try { if (typeof applySettings === 'function') applySettings(); } catch(e) {}
 })();
 </script>
 
