@@ -4,6 +4,18 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>HCSiG - Hacking Code Simulator Game</title>
+  <script>
+  // --- Early viewport fix (iOS Safari) ---
+  // On iOS, the first layout pass can use a wrong 100vh until a UI event happens.
+  // We set --appH immediately to window.innerHeight so the initial layout is closer.
+  (function(){
+    try {
+      document.documentElement.style.setProperty('--appH', Math.ceil(window.innerHeight) + 'px');
+      // Prevent scroll restoration "jump" that can look like an upward shift.
+      if('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    } catch(e) {}
+  })();
+  </script>
   <style>
     * {
       box-sizing: border-box;
@@ -12,13 +24,24 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
+    :root{
+      --safeTop: env(safe-area-inset-top);
+      --safeBottom: env(safe-area-inset-bottom);
+    }
+
+    html, body { height: 100%; }
+
     body {
       background: #05070b;
       color: #e5e5e5;
+      /* prevent tiny accidental scroll offsets on iOS that create "pushed up" feeling */
+      overflow-x: hidden;
     }
 
     header {
       padding: 10px 16px;
+      /* iOS safe-area */
+      padding-top: calc(10px + env(safe-area-inset-top));
       background: #0e1117;
       border-bottom: 1px solid #222;
       display: flex;
@@ -4138,12 +4161,20 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     const vv = window.visualViewport;
     const appH = Math.ceil(vv ? vv.height : window.innerHeight);
     root.style.setProperty('--appH', appH + 'px');
+
+    // Sometimes Safari keeps a tiny scroll offset at first paint; reset it.
+    // (This is what looks like a "top pushed" UI until a modal/interaction triggers relayout.)
+    if(window.scrollY !== 0) window.scrollTo(0, 0);
   }
 
   const kick = ()=>{
     setVars();
-    setTimeout(setVars, 120);
-    setTimeout(setVars, 350);
+    // multiple passes: fonts, safe-area, address-bar settle
+    requestAnimationFrame(()=>setVars());
+    requestAnimationFrame(()=>requestAnimationFrame(()=>setVars()));
+    setTimeout(setVars, 80);
+    setTimeout(setVars, 180);
+    setTimeout(setVars, 380);
     setTimeout(setVars, 900);
   };
 
@@ -4154,6 +4185,12 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   }
 
   window.addEventListener('load', kick, {once:true});
+  // When returning from bfcache, iOS can restore a stale viewport size until interaction.
+  window.addEventListener('pageshow', ()=>{
+    kick();
+    setTimeout(()=>{ if(window.scrollY) window.scrollTo(0,0); }, 0);
+    setTimeout(()=>{ if(window.scrollY) window.scrollTo(0,0); }, 200);
+  });
   window.addEventListener('resize', ()=>{ setVars(); });
   window.addEventListener('orientationchange', ()=>{ setTimeout(setVars, 250); });
 
