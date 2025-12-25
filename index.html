@@ -987,8 +987,6 @@ button:hover {
   body { overflow:hidden; }
   .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
   .mobile-tabs button{ font-size: 12px !important; }
-  /* Hide PC panels on mobile to avoid fixed-position overlay capturing taps */
-  #leftPanel, #centerPanel, #rightPanel { display: none !important; }
   .mobile-view { display:none !important; }
   body.mobile-view-status #mobileViewStatus,
   body.mobile-view-action #mobileViewAction,
@@ -1250,7 +1248,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.11 (Web)</span>
+      <span class="header-version">v1.6.7.1 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1620,7 +1618,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.10';
+    const CURRENT_VERSION = 'v1.6.7.1';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1628,7 +1626,17 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
     // 업데이트 로그
     const updateLogs = [
+      
       {
+        version: 'v1.6.7.1',
+        lines: [
+          'GENERAL 미션을 다수 추가했습니다.',
+          '업적을 다수 추가했습니다.',
+          '레벨업 성장 속도를 더 완화했습니다. (필요 EXP 곡선/획득 EXP 조정)',
+          '같은 아이템을 하루 안에 3회 이상 중복 구매하면 해당 아이템 가격이 x2로 적용됩니다.'
+        ]
+      },
+{
         version: 'HackSim Java Edition → HCSiG Web',
         lines: [
           'Player, Code, TargetServer, CPU 티어, 성공 확률 공식을 구축했습니다.',
@@ -2110,7 +2118,29 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         { id: 'gen_mission_25',    name: '퀘스트 헌터',          type: 'missionsCompleted', target: 25,   rewardCredits: 500,  desc: '누적 퀘스트 25개 완료' },
         { id: 'gen_mission_40',    name: '퀘스트 매니악',        type: 'missionsCompleted', target: 40,   rewardCredits: 800,  desc: '누적 퀘스트 40개 완료' },
 
-        { id: 'gen_risk_10',       name: '위험 친화 I',          type: 'riskHackSuccess',   target: 10,   rewardCredits: 400,  desc: '위험 해킹 모드로 해킹 성공 10회' },
+        { id: 'gen_scan_500',       name: '초광역 분석',         type: 'scans',             target: 500,   rewardCredits: 900,  desc: '누적 코드 스캔 500회' },
+        { id: 'gen_hack_200',       name: '지속 침입자',         type: 'hackSuccess',       target: 200,   rewardCredits: 1200, desc: '누적 해킹 성공 200회' },
+
+        { id: 'gen_energy_spent_2500',name:'에너지 파쇄',        type: 'energySpentTotal',  target: 2500,  rewardCredits: 1000, desc: '누적 에너지 2500 소모' },
+
+        { id: 'gen_level_25',       name: '정예 운영자',         type: 'level',             target: 25,    rewardCredits: 900,  desc: '플레이어 레벨 25 달성' },
+        { id: 'gen_level_30',       name: '최상위 운영자',       type: 'level',             target: 30,    rewardCredits: 1500, desc: '플레이어 레벨 30 달성' },
+
+        { id: 'gen_cpu_7',          name: 'CPU 튜너 III',        type: 'cpuTier',           target: 7,     rewardCredits: 800,  desc: 'CPU 티어 7 달성' },
+
+        { id: 'gen_energymax_35',   name: '배터리 확장 I',       type: 'energyMax',         target: 35,    rewardCredits: 450,  desc: '최대 에너지 35 달성' },
+        { id: 'gen_energymax_45',   name: '배터리 확장 II',      type: 'energyMax',         target: 45,    rewardCredits: 900,  desc: '최대 에너지 45 달성' },
+
+        { id: 'gen_shop_50',        name: '거래 중독',           type: 'shopPurchases',     target: 50,    rewardCredits: 800,  desc: '상점에서 누적 50회 구매' },
+
+        { id: 'gen_credits_50000',  name: '데이터 자본가 III',    type: 'creditsEarnedTotal',target: 50000, rewardCredits: 1300, desc: '누적 획득 크레딧 50000 달성' },
+
+        { id: 'gen_achieve_20',     name: '기록 수집가 IV',      type: 'achievements',      target: 20,    rewardCredits: 800,  desc: '업적 20개 달성' },
+
+        { id: 'gen_mission_60',     name: '퀘스트 중독자',       type: 'missionsCompleted', target: 60,    rewardCredits: 1200, desc: '누적 퀘스트 60개 완료' },
+
+
+,       name: '위험 친화 I',          type: 'riskHackSuccess',   target: 10,   rewardCredits: 400,  desc: '위험 해킹 모드로 해킹 성공 10회' },
         { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' }
       ]
     };
@@ -2142,6 +2172,18 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       { id: 'month_mission_all',    name: '월간 마스터',       desc: '한 달 동안 모든 MONTH QUEST를 완료했습니다.', difficulty: 'hard',   hidden: true  },
       { id: 'credits_20000',        name: '데이터 자본가 II',  desc: '누적 획득 크레딧 20000을 달성했습니다.',       difficulty: 'hard',   hidden: true  },
       { id: 'risk_10_success',      name: '위험한 승부사',     desc: '위험 해킹 모드로 해킹 성공 10회를 달성했습니다.',difficulty: 'hard',  hidden: true  }
+
+      ,
+      // v1.6.7.1 추가 업적
+      { id: 'scan_100',             name: '스캐너 마스터',      desc: '코드 스캔을 100회 수행했습니다.',             difficulty: 'normal', hidden: false },
+      { id: 'hack_100_success',     name: '침입 전문가',        desc: '서버 해킹에 100회 이상 성공했습니다.',        difficulty: 'normal', hidden: false },
+      { id: 'cpu_tier_3',           name: '튜너 입문',          desc: 'CPU 티어를 3 이상으로 업그레이드했습니다.',   difficulty: 'easy',   hidden: false },
+      { id: 'cpu_tier_7',           name: '초과가속',           desc: 'CPU 티어를 7 이상으로 업그레이드했습니다.',   difficulty: 'hard',   hidden: true  },
+      { id: 'shop_10',              name: '단골 손님',          desc: '상점에서 누적 10회 구매했습니다.',            difficulty: 'easy',   hidden: false },
+      { id: 'shop_50',              name: '대형 구매자',        desc: '상점에서 누적 50회 구매했습니다.',            difficulty: 'hard',   hidden: true  },
+      { id: 'energy_pack_use_5',    name: '비상 보급 I',        desc: '에너지 팩을 5회 사용했습니다.',               difficulty: 'easy',   hidden: false },
+      { id: 'energy_pack_use_20',   name: '비상 보급 II',       desc: '에너지 팩을 20회 사용했습니다.',              difficulty: 'normal', hidden: true  }
+
     ];
 
     // DOM
@@ -2394,7 +2436,11 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
     function requiredExp(level) {
-      return 20 + (level - 1) * 10;
+      // v1.6.7.1: 성장 완화 (필요 EXP 곡선 강화)
+      const lv = Math.max(1, Math.floor(level || 1));
+      const linear = 30 + (lv - 1) * 15;
+      const curve = Math.floor(((lv - 1) * (lv - 1)) * 0.5);
+      return linear + curve;
     }
 
     function addExp(amount) {
@@ -2687,9 +2733,10 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         if (!meta || typeof meta !== 'object') throw new Error('bad');
         if (!meta.daily) meta.daily = {};
         if (!meta.once) meta.once = {};
+        if (!meta.purchases) meta.purchases = {};
         return meta;
       } catch (e) {
-        return { date: getLocalDateKey(), daily: {}, once: {} };
+        return { date: getLocalDateKey(), daily: {}, once: {}, purchases: {} };
       }
     }
 
@@ -2703,6 +2750,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       if (meta.date !== today) {
         meta.date = today;
         meta.daily = {}; // reset daily counts
+        meta.purchases = {}; // reset daily repeat-purchase counts
         saveShopMeta(meta);
         log('[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', 'system');
       }
@@ -2728,7 +2776,28 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       return null;
     }
 
-    function canBuyShopItem(itemId) {
+
+    // v1.6.7.1: 같은 아이템 일일 3회 이상 중복 구매 시 가격 x2
+    function getRepeatPurchaseCount(itemId) {
+      const meta = ensureDailyShopReset();
+      return meta.purchases[itemId] || 0;
+    }
+
+    function getEffectiveItemCost(item) {
+      const base = Number(item.cost || 0);
+      const used = getRepeatPurchaseCount(item.id);
+      const multiplier = used >= 2 ? 2 : 1; // 0~2번째 구매는 정가, 3번째부터 x2
+      return { cost: base * multiplier, multiplier, used };
+    }
+
+    function markRepeatPurchase(itemId) {
+      const meta = ensureDailyShopReset();
+      meta.purchases[itemId] = (meta.purchases[itemId] || 0) + 1;
+      saveShopMeta(meta);
+    }
+
+
+    (itemId) {
       const info = getShopRemaining(itemId);
       if (!info) return { ok: true };
       if (info.remaining <= 0) {
@@ -2832,7 +2901,18 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
         const costSpan = document.createElement('span');
         costSpan.className = 'shop-cost';
-        costSpan.textContent = `💰 ${item.cost}`;
+        const eff = getEffectiveItemCost(item);
+        costSpan.textContent = `💰 ${eff.cost}`;
+        if (eff.multiplier > 1) {
+          const mult = document.createElement('span');
+          mult.className = 'shop-limit-badge';
+          mult.textContent = `x${eff.multiplier}`;
+          mult.style.marginLeft = '6px';
+          mult.style.background = '#3b1d1d';
+          mult.style.border = '1px solid #5b2a2a';
+          mult.style.opacity = '0.95';
+          costSpan.appendChild(mult);
+        }
         // limit badge (daily/once)
         const lim = getShopRemaining(item.id);
         if (lim) {
@@ -2872,24 +2952,28 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
             return;
           }
 
-          if (state.credits < item.cost) {
-            log(`[상점] 크레딧이 부족합니다. (필요: ${item.cost})`, 'shop');
+          const effBuy = getEffectiveItemCost(item);
+
+          if (state.credits < effBuy.cost) {
+            log(`[상점] 크레딧이 부족합니다. (필요: ${effBuy.cost})`, 'shop');
             showToast('크레딧이 부족합니다.', 'shop');
             return;
           }
           // 고가/고희귀 구매 확인
           const rr = rarityRank[item.rarity] || 0;
           if (rr >= 4) {
-            const ok = window.confirm(`${item.name} (${item.rarity}) 을(를) 구매할까요?\n💰 ${item.cost} 크레딧이 소모됩니다.`);
+            const ok = window.confirm(`${item.name} (${item.rarity}) 을(를) 구매할까요?
+💰 ${effBuy.cost} 크레딧이 소모됩니다.`);
             if (!ok) return;
           }
-          state.credits -= item.cost;
+          state.credits -= effBuy.cost;
           item.buy?.();
           // mark cap usage
           markShopPurchase(item.id);
+          markRepeatPurchase(item.id);
 
           state.stats.shopPurchaseCount++;
-          log(`[상점] ${item.name} 구매 (💰 -${item.cost})`, 'shop');
+          log(`[상점] ${item.name} 구매 (💰 -${effBuy.cost})`, 'shop');
           if (item.id === 'energy_pack') {
             showToast(`에너지 팩 +1 (보유: ${state.items.energyPack})`, 'shop');
           } else {
@@ -3042,7 +3126,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
           }
         }
 
-        const expGain = 2 + modifiers.scanExtraExp;
+        const expGain = 1 + modifiers.scanExtraExp;
         addExp(expGain);
         log(`코드 스캔 완료: 경험치 +${expGain}.`, 'scan');
 
@@ -3119,7 +3203,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         const rawReward =
           server.minReward + Math.random() * (server.maxReward - server.minReward);
         const rewardCredits = Math.round(rawReward * creditMultiplier);
-        const gainedExp = 8;
+        const gainedExp = 5;
 
         state.credits += rewardCredits;
         state.stats.creditsEarnedTotal += rewardCredits;
@@ -3418,6 +3502,22 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       if (state.stats.scanCount >= 10) unlockAchievement('scan_10');
       if (state.stats.scanCount >= 30) unlockAchievement('scan_30');
       if (state.stats.scanCount >= 50) unlockAchievement('scan_50');
+
+      
+
+      if (state.stats.scanCount >= 100) unlockAchievement('scan_100');
+
+      if (state.stats.hackSuccessCount >= 100) unlockAchievement('hack_100_success');
+
+      if (state.cpuTier >= 3) unlockAchievement('cpu_tier_3');
+      if (state.cpuTier >= 7) unlockAchievement('cpu_tier_7');
+
+      if (state.stats.shopPurchaseCount >= 10) unlockAchievement('shop_10');
+      if (state.stats.shopPurchaseCount >= 50) unlockAchievement('shop_50');
+
+      const epUsed = state.stats.energyPacksUsed || 0;
+      if (epUsed >= 5) unlockAchievement('energy_pack_use_5');
+      if (epUsed >= 20) unlockAchievement('energy_pack_use_20');
 
       if (ownedCodes.length >= 3) unlockAchievement('collector_beginner');
 
@@ -3982,7 +4082,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11 Mobile Fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.10 Mobile Fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -4017,12 +4117,9 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
-  // IMPORTANT: This build uses the newer 5-tab "MOBILE VIEWS" system.
-  // The legacy 3-tab (left/center/right) switcher can create an invisible overlay that blocks taps on iOS
-  // until a relayout event (like opening "More") happens. Disable it entirely.
-  return;
-
-  // (legacy code below intentionally unreachable)
+  // NOTE: This build uses the newer 5-tab "MOBILE VIEWS" system (Status/Action/Codes/Shop/Log).
+  // If those view containers exist, do NOT mount the legacy 3-tab panel switcher.
+  if (document.getElementById('mobileViewStatus')) return;
 
   if(!document.body.classList.contains('mobile-tab-left') &&
      !document.body.classList.contains('mobile-tab-center') &&
