@@ -2787,19 +2787,24 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
     function ensureDailyShopReset() {
-      const meta = loadShopMeta();
-      const today = getLocalDateKey();
-      if (meta.date !== today) {
-        meta.date = today;
-        meta.daily = {}; // reset daily counts
-        meta.purchases = {}; // reset daily repeat-purchase counts
-        saveShopMeta(meta);
-        log('[시스템] 일일 상점 제한 및 가격 배수가 초기화되었습니다. (05:00 리셋)', 'system');
-        showToast('상점 가격 배수 리셋!', 'system');
-        try { window.dispatchEvent(new CustomEvent('shopReset')); } catch (e) {}
-      }
-      return meta;
-    }
+  const meta = loadShopMeta();
+  const today = getLocalDateKey();
+
+  if (meta.date !== today) {
+    meta.date = today;
+    meta.daily = {};      // 일일 구매 제한 리셋
+    meta.purchases = {};  // 오늘 아이템별 구매 횟수(가격 배수) 리셋
+    saveShopMeta(meta);
+
+    log('[시스템] 일일 상점 제한 및 가격 배수가 초기화되었습니다. (05:00 리셋)', 'system');
+    showToast('상점 가격 배수 리셋!', 'system');
+
+    try { window.dispatchEvent(new CustomEvent('shopReset')); } catch (e) {}
+  }
+
+  return meta;
+}
+
       return meta;
     }
 
