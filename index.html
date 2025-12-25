@@ -4221,7 +4221,52 @@ function renderAchievements() {
       maybeShowUpdateOnStart();
     }
 
-    init();
+    function safeInit(tag){
+      try{
+        if(window.__HCSIG_INITED) return;
+        init();
+        window.__HCSIG_INITED = true;
+      }catch(err){
+        console.error('[HCSIG] init failed', err);
+        try{
+          const msg = (err && (err.stack||err.message)) ? (err.stack||err.message) : String(err);
+          const el = document.createElement('div');
+          el.id = 'bootErrorOverlay';
+          el.style.cssText = 'position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.85);color:#e5e5e5;padding:16px;font-family:system-ui,-apple-system,Segoe UI,sans-serif;overflow:auto;';
+          el.innerHTML = `
+            <div style="max-width:900px;margin:0 auto;">
+              <h2 style="margin:0 0 8px 0;">HCSiG 초기화 오류</h2>
+              <div style="opacity:.85;margin-bottom:10px;">${tag ? '['+tag+'] ' : ''}초기화 중 오류가 발생해 UI가 비어 보일 수 있어요. 아래 오류를 복사해서 보내주면 바로 고칠게.</div>
+              <pre style="white-space:pre-wrap;background:#0e1117;border:1px solid #222;border-radius:12px;padding:12px;">${msg}</pre>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+                <button id="btnRetryInit" style="padding:10px 14px;border-radius:12px;border:1px solid #243145;background:#121a2a;color:#e5e5e5;cursor:pointer;">초기화 재시도</button>
+                <button id="btnResetSave" style="padding:10px 14px;border-radius:12px;border:1px solid #3a2a2a;background:#1b1212;color:#ffd9d9;cursor:pointer;">저장 데이터 초기화</button>
+              </div>
+            </div>`;
+          document.body.appendChild(el);
+          document.getElementById('btnRetryInit')?.addEventListener('click', ()=>{
+            window.__HCSIG_INITED = false;
+            el.remove();
+            setTimeout(()=>safeInit('retry'), 50);
+          });
+          document.getElementById('btnResetSave')?.addEventListener('click', ()=>{
+            try{
+              localStorage.removeItem(SAVE_KEY);
+              localStorage.removeItem(SHOP_META_KEY);
+            }catch(e){}
+            window.__HCSIG_INITED = false;
+            el.remove();
+            setTimeout(()=>safeInit('reset'), 50);
+          });
+        }catch(e){}
+      }
+    }
+
+    // iOS Safari에서 첫 로드/복귀(bfcache) 때 초기 렌더가 비는 케이스 방지
+    window.addEventListener('pageshow', () => setTimeout(()=>safeInit('pageshow'), 0));
+    window.addEventListener('load', () => setTimeout(()=>safeInit('load'), 0));
+
+    safeInit('boot');
   </script>
 <script>
 // === MOBILE PATCH: disable resizers on touch devices ===
