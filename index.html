@@ -629,49 +629,28 @@ button:hover {
       opacity: 0.8;
     }
 
-    .progress-track {
-      width: 100%;
+    
+
+    .mission-bar, .achievement-bar{
       height: 6px;
       border-radius: 999px;
-      background: #0b1220;
-      border: 1px solid #0f172a;
-      margin-top: 4px;
+      background: #111827;
       overflow: hidden;
+      margin-top: 4px;
     }
-    .progress-fill {
+    .mission-bar > div, .achievement-bar > div{
       height: 100%;
       width: 0%;
-      background: #1d4ed8;
-      border-radius: 999px;
+      background: #3b82f6;
+      transition: width 0.25s ease;
     }
-    .progress-note {
+    .mission-pct, .achievement-pct{
       font-size: 10px;
       opacity: 0.75;
       margin-top: 2px;
     }
-
-    @keyframes shopResetPulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.03); opacity: 0.95; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .shop-reset-pulse .shop-item {
-      animation: shopResetPulse 700ms ease-in-out 1;
-    }
-    .shop-purchase-badge {
-      display: inline-block;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      margin-left: 8px;
-      background: #0b3a2a;
-      border: 1px solid #14532d;
-      color: #bbf7d0;
-      opacity: 0.95;
-      white-space: nowrap;
-    }
-
-    .tag-complete {
+    
+.tag-complete {
       font-size: 10px;
       padding: 2px 6px;
       border-radius: 999px;
@@ -1290,7 +1269,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.7.3 (Web)</span>
+      <span class="header-version">v1.6.7.4 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1660,7 +1639,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.7.3';
+    const CURRENT_VERSION = 'v1.6.7.4';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1670,7 +1649,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     const updateLogs = [
       
       {
-        version: 'v1.6.7.3',
+        version: 'v1.6.7.4',
         lines: [
           'GENERAL 미션을 다수 추가했습니다.',
           '업적을 다수 추가했습니다.',
@@ -2216,7 +2195,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       { id: 'risk_10_success',      name: '위험한 승부사',     desc: '위험 해킹 모드로 해킹 성공 10회를 달성했습니다.',difficulty: 'hard',  hidden: true  }
 
       ,
-      // v1.6.7.3 추가 업적
+      // v1.6.7.2 추가 업적
       { id: 'scan_100',             name: '스캐너 마스터',      desc: '코드 스캔을 100회 수행했습니다.',             difficulty: 'normal', hidden: false },
       { id: 'hack_100_success',     name: '침입 전문가',        desc: '서버 해킹에 100회 이상 성공했습니다.',        difficulty: 'normal', hidden: false },
       { id: 'cpu_tier_3',           name: '튜너 입문',          desc: 'CPU 티어를 3 이상으로 업그레이드했습니다.',   difficulty: 'easy',   hidden: false },
@@ -2478,7 +2457,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
     function requiredExp(level) {
-      // v1.6.7.3: 성장 완화 (필요 EXP 곡선 강화)
+      // v1.6.7.2: 성장 완화 (필요 EXP 곡선 강화)
       const lv = Math.max(1, Math.floor(level || 1));
       const linear = 30 + (lv - 1) * 15;
       const curve = Math.floor(((lv - 1) * (lv - 1)) * 0.5);
@@ -2787,25 +2766,19 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
     function ensureDailyShopReset() {
-  const meta = loadShopMeta();
-  const today = getLocalDateKey();
+      const meta = loadShopMeta();
+      const today = getLocalDateKey();
+      if (meta.date !== today) {
+        meta.date = today;
+        meta.daily = {}; // reset daily counts
+        meta.purchases = {}; // reset daily repeat-purchase counts
+        saveShopMeta(meta);
+        log('[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', 'system');
+      }
+      return meta;
+    }
 
-  if (meta.date !== today) {
-    meta.date = today;
-    meta.daily = {};      // 일일 구매 제한 리셋
-    meta.purchases = {};  // 오늘 아이템별 구매 횟수(가격 배수) 리셋
-    saveShopMeta(meta);
-
-    log('[시스템] 일일 상점 제한 및 가격 배수가 초기화되었습니다. (05:00 리셋)', 'system');
-    showToast('상점 가격 배수 리셋!', 'system');
-
-    try { window.dispatchEvent(new CustomEvent('shopReset')); } catch (e) {}
-  }
-
-  return meta;
-}
-
-function getShopLimitInfo(itemId) {
+    function getShopLimitInfo(itemId) {
       return SHOP_LIMITS[itemId] || null;
     }
 
@@ -2825,7 +2798,7 @@ function getShopLimitInfo(itemId) {
     }
 
 
-    // v1.6.7.3: 같은 아이템 일일 3회 이상 중복 구매 시 가격 x2
+    // v1.6.7.2: 같은 아이템 일일 3회 이상 중복 구매 시 가격 x2
     function getRepeatPurchaseCount(itemId) {
       const meta = ensureDailyShopReset();
       return meta.purchases[itemId] || 0;
@@ -3492,7 +3465,17 @@ function getShopLimitInfo(itemId) {
       checkAchievements('missions');
     }
 
-    function renderMissions() {
+    
+    // 안전 표시명 헬퍼 (v1.6.7.4)
+    function safeDisplayName(def, completed){
+      try{
+        return (def && def.hidden && !completed) ? '???' : (def && def.name ? def.name : '');
+      }catch(e){
+        return (def && def.name) ? def.name : '';
+      }
+    }
+
+function renderMissions() {
       missionListEl.innerHTML = '';
       const scope = missionScopeActive;
       const titleMap = {
@@ -3516,21 +3499,20 @@ function getShopLimitInfo(itemId) {
         const progObj = state.missionProgress[scope];
         const completed = !!(progObj && progObj.completed && progObj.completed[def.id]);
 
-        const item = document.createElement('div');
+        
+        const displayName = safeDisplayName(def, completed);
+        const pct = def.target ? Math.max(0, Math.min(100, Math.floor((progVal / def.target) * 100))) : (completed ? 100 : 0);
+const item = document.createElement('div');
         item.className = 'mission-item';
 
         const main = document.createElement('div');
         main.className = 'mission-main';
-                const p = getAchievementProgress(def);
-        const pHtml = p ? `<div class="progress-track"><div class="progress-fill" style="width:${p.percent}%"></div></div><div class="progress-note">${p.text}</div>` : '';
         main.innerHTML = `
-          <div>
-            ${displayName}
-            <span class="diff-pill ${diffClass}">${diffLabel[def.difficulty] || ''}</span>
-            ${def.hidden ? '<span class="diff-pill" style="background:#4b5563;color:#e5e7eb;">HIDDEN</span>' : ''}
-          </div>
-          <div class="mission-progress">${displayDesc}</div>
-          ${completed ? '' : pHtml}
+          <div>${displayName}</div>
+          <div class="mission-progress">${def.desc} (${progVal} / ${def.target})</div>
+          <div class="mission-bar" aria-label="mission progress"><div style="width:${pct}%"></div></div>
+          <div class="mission-pct">${pct}%</div>
+          <div class="mission-reward">보상: ${def.rewardCredits ? ('크레딧 +' + def.rewardCredits) : ''}${def.rewardEnergyPack ? ((def.rewardCredits ? ' / ' : '') + ('에너지 팩 +' + def.rewardEnergyPack)) : ''}${(!def.rewardCredits && !def.rewardEnergyPack) ? '없음' : ''}</div>
         `;
 
         const tag = document.createElement('span');
@@ -3590,45 +3572,7 @@ function getShopLimitInfo(itemId) {
       if (state.stats.missionsCompletedTotal >= 10) unlockAchievement('mission_10');
     }
 
-    
-    function getAchievementProgress(def) {
-      // returns {current, target, percent, text} or null if not trackable
-      const id = def.id;
-      const stats = state.stats || {};
-      const map = [
-        ['reach_level3', () => [state.level, 3]],
-        ['reach_level10', () => [state.level, 10]],
-        ['scan_10', () => [stats.scanCount, 10]],
-        ['scan_30', () => [stats.scanCount, 30]],
-        ['scan_50', () => [stats.scanCount, 50]],
-        ['scan_100', () => [stats.scanCount, 100]],
-        ['first_hack_success', () => [stats.hackSuccessCount, 1]],
-        ['hack_30_success', () => [stats.hackSuccessCount, 30]],
-        ['hack_100_success', () => [stats.hackSuccessCount, 100]],
-        ['shop_first_buy', () => [stats.shopPurchaseCount, 1]],
-        ['shop_10', () => [stats.shopPurchaseCount, 10]],
-        ['shop_50', () => [stats.shopPurchaseCount, 50]],
-        ['energy_zero', () => [state.energy <= 0 ? 1 : 0, 1]],
-        ['energy_pack_use_5', () => [stats.energyPacksUsed || 0, 5]],
-        ['energy_pack_use_20', () => [stats.energyPacksUsed || 0, 20]],
-        ['collector_beginner', () => [ownedCodes.length, 3]],
-        ['cpu_tier_3', () => [state.cpuTier, 3]],
-        ['cpu_tier_7', () => [state.cpuTier, 7]],
-        ['energy_max_25', () => [state.energyMax, 25]],
-        ['credits_5000', () => [stats.creditsEarnedTotal || 0, 5000]],
-        ['credits_20000', () => [stats.creditsEarnedTotal || 0, 20000]],
-        ['mission_10', () => [stats.missionsCompletedTotal || 0, 10]],
-      ];
-      const found = map.find(([k]) => k === id);
-      if (!found) return null;
-      const [cur, tgt] = found[1]();
-      const current = Number(cur || 0);
-      const target = Number(tgt || 1);
-      const percent = Math.min(100, (current / target) * 100);
-      return { current, target, percent, text: `${current} / ${target}` };
-    }
-
-function renderAchievements() {
+    function renderAchievements() {
       achievementListEl.innerHTML = '';
 
       const diffLabel = {
@@ -4191,25 +4135,12 @@ function renderAchievements() {
       addCodeInstanceFromTemplate('basic');
       state.requiredExp = requiredExp(state.level);
       renderServers();
-      // shop reset animation/log hook
-      if (!window.__shopResetHooked) {
-        window.__shopResetHooked = true;
-        window.addEventListener('shopReset', () => {
-          try {
-            renderShop();
-            if (shopList) {
-              shopList.classList.add('shop-reset-pulse');
-              setTimeout(() => shopList.classList.remove('shop-reset-pulse'), 800);
-            }
-          } catch (e) {}
-        });
-      }
       renderShop();
       ensureMissionResets();
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.7.3)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.7.4)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -4221,52 +4152,7 @@ function renderAchievements() {
       maybeShowUpdateOnStart();
     }
 
-    function safeInit(tag){
-      try{
-        if(window.__HCSIG_INITED) return;
-        init();
-        window.__HCSIG_INITED = true;
-      }catch(err){
-        console.error('[HCSIG] init failed', err);
-        try{
-          const msg = (err && (err.stack||err.message)) ? (err.stack||err.message) : String(err);
-          const el = document.createElement('div');
-          el.id = 'bootErrorOverlay';
-          el.style.cssText = 'position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.85);color:#e5e5e5;padding:16px;font-family:system-ui,-apple-system,Segoe UI,sans-serif;overflow:auto;';
-          el.innerHTML = `
-            <div style="max-width:900px;margin:0 auto;">
-              <h2 style="margin:0 0 8px 0;">HCSiG 초기화 오류</h2>
-              <div style="opacity:.85;margin-bottom:10px;">${tag ? '['+tag+'] ' : ''}초기화 중 오류가 발생해 UI가 비어 보일 수 있어요. 아래 오류를 복사해서 보내주면 바로 고칠게.</div>
-              <pre style="white-space:pre-wrap;background:#0e1117;border:1px solid #222;border-radius:12px;padding:12px;">${msg}</pre>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-                <button id="btnRetryInit" style="padding:10px 14px;border-radius:12px;border:1px solid #243145;background:#121a2a;color:#e5e5e5;cursor:pointer;">초기화 재시도</button>
-                <button id="btnResetSave" style="padding:10px 14px;border-radius:12px;border:1px solid #3a2a2a;background:#1b1212;color:#ffd9d9;cursor:pointer;">저장 데이터 초기화</button>
-              </div>
-            </div>`;
-          document.body.appendChild(el);
-          document.getElementById('btnRetryInit')?.addEventListener('click', ()=>{
-            window.__HCSIG_INITED = false;
-            el.remove();
-            setTimeout(()=>safeInit('retry'), 50);
-          });
-          document.getElementById('btnResetSave')?.addEventListener('click', ()=>{
-            try{
-              localStorage.removeItem(SAVE_KEY);
-              localStorage.removeItem(SHOP_META_KEY);
-            }catch(e){}
-            window.__HCSIG_INITED = false;
-            el.remove();
-            setTimeout(()=>safeInit('reset'), 50);
-          });
-        }catch(e){}
-      }
-    }
-
-    // iOS Safari에서 첫 로드/복귀(bfcache) 때 초기 렌더가 비는 케이스 방지
-    window.addEventListener('pageshow', () => setTimeout(()=>safeInit('pageshow'), 0));
-    window.addEventListener('load', () => setTimeout(()=>safeInit('load'), 0));
-
-    safeInit('boot');
+    init();
   </script>
 <script>
 // === MOBILE PATCH: disable resizers on touch devices ===
