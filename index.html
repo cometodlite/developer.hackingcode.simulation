@@ -2140,7 +2140,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         { id: 'gen_mission_60',     name: '퀘스트 중독자',       type: 'missionsCompleted', target: 60,    rewardCredits: 1200, desc: '누적 퀘스트 60개 완료' },
 
 
-,       name: '위험 친화 I',          type: 'riskHackSuccess',   target: 10,   rewardCredits: 400,  desc: '위험 해킹 모드로 해킹 성공 10회' },
+        { id: 'gen_risk_10',       name: '위험 친화 I',          type: 'riskHackSuccess',   target: 10,   rewardCredits: 400,  desc: '위험 해킹 모드로 해킹 성공 10회' },
         { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' }
       ]
     };
@@ -2795,9 +2795,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       meta.purchases[itemId] = (meta.purchases[itemId] || 0) + 1;
       saveShopMeta(meta);
     }
-
-
-    (itemId) {
+    function canBuyShopItem(itemId) {
       const info = getShopRemaining(itemId);
       if (!info) return { ok: true };
       if (info.remaining <= 0) {
