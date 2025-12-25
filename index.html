@@ -449,7 +449,8 @@ button:hover {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.65);
-      z-index: 40;
+      /* Must sit ABOVE mobile bottom tabs (z-index: 9999) */
+      z-index: 20000;
       align-items: center;
       justify-content: center;
     }
@@ -924,6 +925,23 @@ button:hover {
   /* Bigger upgrade/evolve buttons area */
   #btnUpgradeCode, #btnEvolveCode{
     width: 100% !important;
+  }
+}
+
+/* =========================
+   MORE MODAL (Mobile safe area + bottom tabs)
+   - Prevents the modal from being visually "cut" by the fixed bottom tabs on iOS/Android.
+   ========================= */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  /* Give the backdrop padding so the centered modal doesn't sit under the fixed bottom tabs */
+  #moreModalBackdrop.active{
+    align-items: flex-start;
+    justify-content: center;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) 10px calc(110px + env(safe-area-inset-bottom, 0px));
+  }
+  #moreModal{
+    margin-top: 8px;
+    max-height: calc(100dvh - 52px - 110px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
   }
 }
 
