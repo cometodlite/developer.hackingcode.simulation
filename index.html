@@ -1002,10 +1002,14 @@ button:hover {
   header{ padding-top: calc(10px + var(--safeTop, 0px)) !important; }
 
   .mobile-tabs{
-    bottom: calc(var(--mobileTabsPad) + var(--safeBottom, 0px)) !important;
-    left: 10px !important;
-    right: 10px !important;
-    padding-bottom: calc(8px + var(--safeBottom, 0px)) !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    padding: 8px 10px calc(8px + var(--safeBottom, 0px)) !important;
+    border-radius: 0 !important;
+  }
+  .mobile-tabs button{
+    min-height: 44px !important;
   }
 
   /* Make room for the fixed tab bar so content never gets hidden */
@@ -1209,7 +1213,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.7.5 (Web)</span>
+      <span class="header-version">v1.6.7.6 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1579,7 +1583,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.7.5';
+    const CURRENT_VERSION = 'v1.6.7.6';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1589,7 +1593,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     const updateLogs = [
       
       {
-        version: 'v1.6.7.5',
+        version: 'v1.6.7.6',
         lines: [
           'GENERAL 미션을 다수 추가했습니다.',
           '업적을 다수 추가했습니다.',
@@ -3406,7 +3410,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
     
-    // 안전 표시명 헬퍼 (v1.6.7.5)
+    // 안전 표시명 헬퍼 (v1.6.7.6)
     function safeDisplayName(def, completed){
       try{
         return (def && def.hidden && !completed) ? '???' : (def && def.name ? def.name : '');
@@ -4080,7 +4084,7 @@ const item = document.createElement('div');
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.7.5)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.7.6)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
