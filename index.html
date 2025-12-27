@@ -1213,7 +1213,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.8.2 (Web)</span>
+      <span class="header-version">v1.6.8.3 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1583,7 +1583,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.8.2';
+    const CURRENT_VERSION = 'v1.6.8.3';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1663,7 +1663,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       }
       ,
       {
-        version: 'v1.6.8.2',
+        version: 'v1.6.8.3',
         lines: [
           '행동(스캔/해킹/업그레이드) 후 확률로 발생하는 랜덤 로그 이벤트를 추가했습니다.',
           '백도어 발견: 다음 해킹 성공률 +10% (1회), 보안 패치: 다음 스캔 시간 +2초 (1회) 등 일회성 버프/디버프가 적용됩니다.',
@@ -1675,7 +1675,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
           ,
       {
-        version: 'v1.6.8.2',
+        version: 'v1.6.8.3',
         date: '2025-12-26',
         changes: [
           '서버 등급/개성 시스템을 추가했습니다. (서버별 EXP/크레딧 보정 + 실패 페널티)',
@@ -1685,7 +1685,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       }
 ,
       {
-        version: 'v1.6.8.2',
+        version: 'v1.6.8.3',
         lines: [
           '성장 제약 업데이트: 레벨업 필요 EXP 곡선을 상향했습니다.',
           '일일 EXP 소프트 캡(05:00 리셋)을 추가했습니다. (0~59:100%, 60~179:50%, 180+:25%)'
@@ -2449,7 +2449,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
     function requiredExp(level) {
-      // v1.6.8.2: 성장 제약 강화 (필요 EXP 곡선 상향)
+      // v1.6.8.3: 성장 제약 강화 (필요 EXP 곡선 상향)
       const lv = Math.max(1, Math.floor(level || 1));
       const linear = 35 + (lv - 1) * 18;
       const curve = Math.floor(((lv - 1) * (lv - 1)) * 0.9);
@@ -2458,7 +2458,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
     function getDailyExpRateForNextGain(rawGain) {
-      // v1.6.8.2: 일일 EXP 소프트 캡 (05:00 리셋)
+      // v1.6.8.3: 일일 EXP 소프트 캡 (05:00 리셋)
       // 0~59: 100%, 60~179: 50%, 180+: 25%
       const soFar = Math.max(0, Number(state.dailyExpRaw || 0));
       const next = Math.max(0, Number(rawGain || 0));
@@ -2807,7 +2807,8 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
 
-    // v1.6.7.2: 같은 아이템 일일 3회 이상 중복 구매 시 가격 x2
+    // v1.6.8.3: 같은 아이템 "3회차 구매부터" 가격 배수 적용
+    // 규칙: 1회차 x1, 2회차 x1, 3회차 x2, 4회차 x3, 5회차 x4 ... (계속 증가)
     function getRepeatPurchaseCount(itemId) {
       const meta = ensureDailyShopReset();
       return meta.purchases[itemId] || 0;
@@ -2819,10 +2820,11 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       // 오늘 동일 아이템을 몇 번 샀는지(이미 구매한 횟수)
       const used = getRepeatPurchaseCount(item.id);
 
-      // 구매 n회차 가격 배수 규칙:
-      // 1회차 x1, 2회차 x2, 3회차 x3, 4회차 x4 ... (계속 증가)
+      // 이번 구매 회차(n)
       const nextCount = used + 1;
-      const multiplier = nextCount <= 1 ? 1 : nextCount;
+
+      // 배수(mult): 1~2회차는 x1, 3회차부터 x2, x3...
+      const multiplier = nextCount <= 2 ? 1 : (nextCount - 1);
 
       return { cost: base * multiplier, multiplier, used, nextCount };
     }
@@ -2934,20 +2936,20 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         leftWrap.appendChild(catSpan);
         leftWrap.appendChild(document.createTextNode(item.name));
 
-        const costSpan = document.createElement('span');
+                const costSpan = document.createElement('span');
         costSpan.className = 'shop-cost';
         const eff = getEffectiveItemCost(item);
         costSpan.textContent = `💰 ${eff.cost}`;
-        if (eff.multiplier > 1) {
-          const mult = document.createElement('span');
-          mult.className = 'shop-limit-badge';
-          mult.textContent = `x${eff.multiplier}`;
-          mult.style.marginLeft = '6px';
-          mult.style.background = '#3b1d1d';
-          mult.style.border = '1px solid #5b2a2a';
-          mult.style.opacity = '0.95';
-          costSpan.appendChild(mult);
-        }
+
+        // v1.6.8.3: 표시 - 오늘 구매 n회차 / 현재 배수 xN
+        const mult = document.createElement('span');
+        mult.className = 'shop-limit-badge';
+        mult.textContent = `오늘 ${eff.nextCount}회차 / x${eff.multiplier}`;
+        mult.style.marginLeft = '6px';
+        mult.style.background = (eff.multiplier > 1) ? '#3b1d1d' : '#151a23';
+        mult.style.border = (eff.multiplier > 1) ? '1px solid #5b2a2a' : '1px solid #2a3140';
+        mult.style.opacity = '0.95';
+        costSpan.appendChild(mult);
         // limit badge (daily/once)
         const lim = getShopRemaining(item.id);
         if (lim) {
@@ -3057,7 +3059,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       }
     }
 
-    // ===== Random Log Events (v1.6.8.2) =====
+    // ===== Random Log Events (v1.6.8.3) =====
     const randomEventDefs = [
       {
         id: 'backdoor_found',
@@ -3456,7 +3458,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         state.missionProgress.daily.energySpent = 0;
         state.missionProgress.daily.completed = {};
 
-        // v1.6.8.2: 일일 EXP 소프트 캡 리셋
+        // v1.6.8.3: 일일 EXP 소프트 캡 리셋
         state.dailyExpRaw = 0;
         state.dailyExpResetDay = dayKey;
         log('[시스템] 일일 경험치 보정(소프트 캡)이 초기화되었습니다. (05:00 리셋)', 'system');
@@ -3593,7 +3595,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
     
-    // 안전 표시명 헬퍼 (v1.6.8.2)
+    // 안전 표시명 헬퍼 (v1.6.8.3)
     function safeDisplayName(def, completed){
       try{
         return (def && def.hidden && !completed) ? '???' : (def && def.name ? def.name : '');
@@ -4267,7 +4269,7 @@ const item = document.createElement('div');
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.8.2)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.8.3)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
