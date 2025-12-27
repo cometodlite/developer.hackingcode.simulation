@@ -882,9 +882,8 @@ button:hover {
     html{
       font-size: calc(16px * var(--font-scale));
     }
-    #main, #moreModal{
-      zoom: var(--ui-zoom);
-    }
+    /* UI scaling: font-based (avoid CSS zoom which can break taps on mobile) */
+    body{ font-size: calc(14px * var(--ui-zoom)); }
 
     /* v1.6.6: 폰트 스케일이 체감되지 않는 문제 보정
        - 기존 CSS에 px 단위 font-size가 많아 --font-scale이 반영되지 않는 케이스가 있어,
@@ -1213,7 +1212,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.8.3 (Web)</span>
+      <span class="header-version">v1.6.8.4 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1368,8 +1367,6 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
           <div id="scanText"></div>
         </div>
       </div>
-    </div>
-  </div>
     </div>
   </div>
 
@@ -1583,7 +1580,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.8.3';
+    const CURRENT_VERSION = 'v1.6.8.4';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1674,6 +1671,16 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
           ,
+      {
+        version: 'v1.6.8.4',
+        date: '2025-12-27',
+        changes: [
+          '터치/클릭 입력 안정화: 코드 목록 선택이 모바일에서 누락되던 문제를 수정했습니다.',
+          '레이아웃 스케일링 방식을 개선했습니다. (CSS zoom 제거 → 폰트 기반 스케일)',
+          '잘못된 닫는 태그로 인해 초기 화면에서 입력이 막히는 케이스를 수정했습니다.'
+        ]
+      },
+
       {
         version: 'v1.6.8.3',
         date: '2025-12-26',
@@ -2626,13 +2633,23 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         li.appendChild(left);
         li.appendChild(right);
 
-        li.addEventListener('click', () => {
+        const activate = () => {
           state.activeCodeId = code.id;
           updateStatsUI();
           log(`활성 코드 변경: ${code.name}`, 'system');
+        };
+        // 모바일/터치 환경에서 click이 누락/지연되는 케이스 대응
+        let lastTouch = 0;
+        li.addEventListener('touchend', (e) => {
+          lastTouch = Date.now();
+          e.preventDefault();
+          activate();
+        }, { passive: false });
+        li.addEventListener('click', () => {
+          if (Date.now() - lastTouch < 500) return;
+          activate();
         });
-
-        codeListEl.appendChild(li);
+codeListEl.appendChild(li);
       });
     }
 
