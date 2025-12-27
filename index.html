@@ -1213,7 +1213,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <header>
     <div class="header-left">
       <h1>HCSiG</h1>
-      <span class="header-version">v1.6.7.6 (Web)</span>
+      <span class="header-version">v1.6.8.2 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
@@ -1583,7 +1583,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   <div id="toastContainer"></div>
 
   <script>
-    const CURRENT_VERSION = 'v1.6.7.6';
+    const CURRENT_VERSION = 'v1.6.8.2';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1593,15 +1593,6 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     const updateLogs = [
       
       {
-        version: 'v1.6.7.6',
-        lines: [
-          'GENERAL 미션을 다수 추가했습니다.',
-          '업적을 다수 추가했습니다.',
-          '레벨업 성장 속도를 더 완화했습니다. (필요 EXP 곡선/획득 EXP 조정)',
-          '같은 아이템을 하루 안에 3회 이상 중복 구매하면 해당 아이템 가격이 x2로 적용됩니다.'
-        ]
-      },
-{
         version: 'HackSim Java Edition → HCSiG Web',
         lines: [
           'Player, Code, TargetServer, CPU 티어, 성공 확률 공식을 구축했습니다.',
@@ -1670,15 +1661,44 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
           '마지막 저장 시각 표시 및 자동저장 UX를 개선했습니다.'
         ]
       }
+      ,
+      {
+        version: 'v1.6.8.2',
+        lines: [
+          '행동(스캔/해킹/업그레이드) 후 확률로 발생하는 랜덤 로그 이벤트를 추가했습니다.',
+          '백도어 발견: 다음 해킹 성공률 +10% (1회), 보안 패치: 다음 스캔 시간 +2초 (1회) 등 일회성 버프/디버프가 적용됩니다.',
+          '일부 이벤트는 즉시 보상(에너지 +1, 크레딧 +30~100)을 제공합니다.'
+        ]
+      }
 
-    ];
+
+
+          ,
+      {
+        version: 'v1.6.8.2',
+        date: '2025-12-26',
+        changes: [
+          '서버 등급/개성 시스템을 추가했습니다. (서버별 EXP/크레딧 보정 + 실패 페널티)',
+          '서버 선택 드롭다운에 서버 특성 라벨을 표시합니다.',
+          '서버 해킹 성공/실패 로그에 서버 특성/페널티 정보를 표시합니다.'
+        ]
+      }
+,
+      {
+        version: 'v1.6.8.2',
+        lines: [
+          '성장 제약 업데이트: 레벨업 필요 EXP 곡선을 상향했습니다.',
+          '일일 EXP 소프트 캡(05:00 리셋)을 추가했습니다. (0~59:100%, 60~179:50%, 180+:25%)'
+        ]
+      }
+];
 
     let activeUpdateIndex = updateLogs.length - 1;
 
     const state = {
       level: 1,
       exp: 0,
-      requiredExp: 20,
+      requiredExp: 30,
       credits: 0,
       cpuTier: 1,
       energy: 20,
@@ -1688,6 +1708,9 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       lastSavedAt: null,
       activeCodeId: null,
       riskMode: false,
+      tempEffects: { nextHackSuccessBonus: 0, nextScanExtraMs: 0 },
+      dailyExpRaw: 0,
+      dailyExpResetDay: null,
       missionProgress: {
         daily: {
           scans: 0,
@@ -1811,42 +1834,67 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       {
         id: 'school_lab',
         name: '학교 실습 서버',
+        tier: 'TRAINING',
         security: 20,
         minReward: 10,
         maxReward: 25,
-        minLevel: 1
+        minLevel: 1,
+        expMult: 1.25,
+        creditMult: 0.80,
+        failExtraEnergy: 0,
+        traitLabel: 'EXP↑ / 크레딧↓'
       },
       {
         id: 'bank_backup',
         name: '은행 백업 노드',
+        tier: 'CORP',
         security: 35,
         minReward: 25,
         maxReward: 50,
-        minLevel: 2
+        minLevel: 2,
+        expMult: 1.00,
+        creditMult: 1.20,
+        failExtraEnergy: 0,
+        traitLabel: '크레딧↑'
       },
       {
         id: 'gov_archive',
         name: '정부 기록 보관 노드',
+        tier: 'GOV',
         security: 50,
         minReward: 40,
         maxReward: 80,
-        minLevel: 3
+        minLevel: 3,
+        expMult: 1.05,
+        creditMult: 1.05,
+        failExtraEnergy: 0,
+        traitLabel: '밸런스'
       },
       {
         id: 'central_core',
         name: '중앙 코어 그리드',
+        tier: 'CORE',
         security: 70,
         minReward: 70,
         maxReward: 140,
-        minLevel: 4
+        minLevel: 4,
+        expMult: 1.10,
+        creditMult: 1.35,
+        failExtraEnergy: 1,
+        traitLabel: '고위험 / 크레딧↑↑'
       },
       {
         id: 'deep_space',
         name: '딥 스페이스 릴레이',
+        tier: 'DEEP',
         security: 90,
         minReward: 100,
         maxReward: 200,
-        minLevel: 5
+        minLevel: 5,
+        expMult: 1.20,
+        creditMult: 1.55,
+        failExtraEnergy: 2,
+        traitLabel: '극위험 / 보상↑↑'
       }
     ];
 
@@ -2401,15 +2449,32 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
     function requiredExp(level) {
-      // v1.6.7.2: 성장 완화 (필요 EXP 곡선 강화)
+      // v1.6.8.2: 성장 제약 강화 (필요 EXP 곡선 상향)
       const lv = Math.max(1, Math.floor(level || 1));
-      const linear = 30 + (lv - 1) * 15;
-      const curve = Math.floor(((lv - 1) * (lv - 1)) * 0.5);
-      return linear + curve;
+      const linear = 35 + (lv - 1) * 18;
+      const curve = Math.floor(((lv - 1) * (lv - 1)) * 0.9);
+      const cubic = Math.floor(((lv - 1) * (lv - 1) * (lv - 1)) * 0.03);
+      return linear + curve + cubic;
+    }
+
+    function getDailyExpRateForNextGain(rawGain) {
+      // v1.6.8.2: 일일 EXP 소프트 캡 (05:00 리셋)
+      // 0~59: 100%, 60~179: 50%, 180+: 25%
+      const soFar = Math.max(0, Number(state.dailyExpRaw || 0));
+      const next = Math.max(0, Number(rawGain || 0));
+      const projected = soFar + next;
+
+      if (projected <= 60) return 1.0;
+      if (projected <= 180) return 0.5;
+      return 0.25;
     }
 
     function addExp(amount) {
-      const finalAmount = Math.max(1, Math.round(amount * modifiers.expMultiplier));
+      const rawGain = Math.max(1, Math.round(amount * modifiers.expMultiplier));
+      const rate = getDailyExpRateForNextGain(rawGain);
+      state.dailyExpRaw = (Number(state.dailyExpRaw) || 0) + rawGain;
+
+      const finalAmount = Math.max(1, Math.round(rawGain * rate));
       state.exp += finalAmount;
       let leveledUp = false;
       while (state.exp >= state.requiredExp) {
@@ -2658,7 +2723,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       servers.forEach(s => {
         const option = document.createElement('option');
         option.value = s.id;
-        option.textContent = `${s.name} (보안 ${s.security}, Lv${s.minLevel}+ )`;
+        option.textContent = `${s.name} [${s.traitLabel || '특성 없음'}] (보안 ${s.security}, Lv${s.minLevel}+ )`;
         serverSelect.appendChild(option);
       });
     }
@@ -2992,6 +3057,87 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       }
     }
 
+    // ===== Random Log Events (v1.6.8.2) =====
+    const randomEventDefs = [
+      {
+        id: 'backdoor_found',
+        kind: 'event',
+        contexts: ['hack'],
+        weight: 5,
+        apply() {
+          state.tempEffects.nextHackSuccessBonus = (state.tempEffects.nextHackSuccessBonus || 0) + 0.10;
+          log('[이벤트] 백도어 발견! 다음 해킹 성공률 +10%', 'system');
+          showToast('백도어 발견! 다음 해킹 +10%', 'system');
+        }
+      },
+      {
+        id: 'security_patch',
+        kind: 'warn',
+        contexts: ['scan'],
+        weight: 5,
+        apply() {
+          state.tempEffects.nextScanExtraMs = (state.tempEffects.nextScanExtraMs || 0) + 2000;
+          log('[경고] 보안 패치 감지! 다음 스캔 시간 +2초', 'system');
+          showToast('보안 패치! 다음 스캔 +2초', 'system');
+        }
+      },
+      {
+        id: 'energy_surge',
+        kind: 'event',
+        contexts: ['scan','hack'],
+        weight: 3,
+        apply() {
+          const before = state.energy;
+          state.energy = Math.min(state.energyMax, state.energy + 1);
+          const gained = state.energy - before;
+          if (gained > 0) {
+            log('[이벤트] 에너지 서지! 에너지 +1', 'system');
+            showToast('에너지 +1', 'system');
+          } else {
+            log('[이벤트] 에너지 서지 감지(이미 최대치).', 'system');
+          }
+        }
+      },
+      {
+        id: 'data_leak',
+        kind: 'event',
+        contexts: ['hack'],
+        weight: 4,
+        apply() {
+          const bonus = 30 + Math.floor(Math.random() * 71); // 30~100
+          state.credits += bonus;
+          state.stats.creditsEarnedTotal += bonus;
+          log(`[이벤트] 데이터 유출 발견! 크레딧 +${bonus}`, 'system');
+          showToast(`크레딧 +${bonus}`, 'system');
+        }
+      }
+    ];
+
+    function maybeTriggerRandomEvent(context) {
+      // 기본 12% 확률. 위험 해킹 모드면 약간 증가.
+      let chance = 0.12 + (state.riskMode ? 0.04 : 0);
+      if (Math.random() >= chance) return;
+
+      const pool = randomEventDefs.filter(e => e.contexts.includes(context));
+      if (pool.length === 0) return;
+
+      const totalW = pool.reduce((a, e) => a + (e.weight || 1), 0);
+      let r = Math.random() * totalW;
+      let chosen = pool[0];
+      for (const e of pool) {
+        r -= (e.weight || 1);
+        if (r <= 0) { chosen = e; break; }
+      }
+      try {
+        chosen.apply && chosen.apply();
+        saveGame && saveGame();
+      } catch (err) {
+        // 이벤트 자체 에러는 게임 진행을 막지 않게
+        console.error('RandomEventError', err);
+      }
+    }
+
+
     function randomScanLine(length) {
       const chars = '01{}[]<>#/\\\\=+-_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let s = '';
@@ -3058,7 +3204,12 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       if (scanRunning) return;
 
       const rarity = rollRarity();
-      const duration = getScanDurationForRarity(rarity);
+      let duration = getScanDurationForRarity(rarity);
+      if (state.tempEffects && state.tempEffects.nextScanExtraMs) {
+        duration += state.tempEffects.nextScanExtraMs;
+        log(`[효과] 스캔 지연 +${Math.round(state.tempEffects.nextScanExtraMs/1000)}초 적용`, 'system');
+        state.tempEffects.nextScanExtraMs = 0;
+      }
 
       btnScan.disabled = true;
       btnHack.disabled = true;
@@ -3102,6 +3253,8 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
         checkAchievements('scan');
         checkMissions('general');
+
+        maybeTriggerRandomEvent('scan');
 
         btnScan.disabled = false;
         btnHack.disabled = false;
@@ -3161,6 +3314,13 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         creditMultiplier *= 2.0;
       }
 
+      // 일회성 이벤트 효과: 다음 해킹 성공률 보너스
+      if (state.tempEffects && state.tempEffects.nextHackSuccessBonus) {
+        successChanceBonus += state.tempEffects.nextHackSuccessBonus;
+        log(`[효과] 해킹 성공률 +${Math.round(state.tempEffects.nextHackSuccessBonus*100)}% 적용`, 'system');
+        state.tempEffects.nextHackSuccessBonus = 0;
+      }
+
       const effectivePower = code.power * (1 + 0.1 * (state.cpuTier - 1));
       let successChance = effectivePower / (effectivePower + serverSec);
       successChance += successChanceBonus;
@@ -3172,8 +3332,8 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
       if (success) {
         const rawReward =
           server.minReward + Math.random() * (server.maxReward - server.minReward);
-        const rewardCredits = Math.round(rawReward * creditMultiplier);
-        const gainedExp = 5;
+        const rewardCredits = Math.round(rawReward * creditMultiplier * (server.creditMult || 1));
+        const gainedExp = Math.max(1, Math.round(5 * (server.expMult || 1)));
 
         state.credits += rewardCredits;
         state.stats.creditsEarnedTotal += rewardCredits;
@@ -3181,7 +3341,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
         log(
           `서버 해킹 성공! [${server.name}] 성공 확률 ${Math.round(successChance * 100)}%. ` +
-          `크레딧 +${rewardCredits}, 경험치 +${gainedExp}.`,
+          `크레딧 +${rewardCredits}, 경험치 +${gainedExp}. (서버 특성: ${server.traitLabel || '없음'})`,
           'hack'
         );
 
@@ -3218,6 +3378,21 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
           'hack'
         );
 
+        // 서버 특성: 실패 추가 페널티(에너지)
+        if (server && server.failExtraEnergy && server.failExtraEnergy > 0) {
+          const before = state.energy;
+          state.energy = Math.max(0, state.energy - server.failExtraEnergy);
+          state.stats.energySpentTotal += server.failExtraEnergy;
+          if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
+            state.energyTimerMs = ENERGY_INTERVAL_MS;
+          }
+          const lost = before - state.energy;
+          if (lost > 0) {
+            log(`[서버 페널티] ${server.name}: 추적 강화로 에너지 -${lost}.`, 'hack');
+            if (state.energy === 0) unlockAchievement('energy_zero');
+          }
+        }
+
         if (def && def.id === 'overflow_inject') {
           state.energy = Math.max(0, state.energy - 1);
           state.stats.energySpentTotal += 1;
@@ -3244,6 +3419,8 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
         updateStatsUI();
       }
+
+      maybeTriggerRandomEvent('hack');
 
       checkAchievements('hack');
       checkMissions('general');
@@ -3278,6 +3455,12 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
         state.missionProgress.daily.hackSuccess = 0;
         state.missionProgress.daily.energySpent = 0;
         state.missionProgress.daily.completed = {};
+
+        // v1.6.8.2: 일일 EXP 소프트 캡 리셋
+        state.dailyExpRaw = 0;
+        state.dailyExpResetDay = dayKey;
+        log('[시스템] 일일 경험치 보정(소프트 캡)이 초기화되었습니다. (05:00 리셋)', 'system');
+        showToast('일일 EXP 보정 리셋!', 'system');
       }
 
       if (state.missionProgress.weekly.lastResetWeek !== weekKey) {
@@ -3410,7 +3593,7 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     }
 
     
-    // 안전 표시명 헬퍼 (v1.6.7.6)
+    // 안전 표시명 헬퍼 (v1.6.8.2)
     function safeDisplayName(def, completed){
       try{
         return (def && def.hidden && !completed) ? '???' : (def && def.name ? def.name : '');
@@ -4084,7 +4267,7 @@ const item = document.createElement('div');
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.7.6)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.8.2)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
