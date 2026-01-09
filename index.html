@@ -5,45 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HCSiG - Hacking Code Simulator Game</title>
 
-  <!-- ✅ 루트 파일 기준 -->
+  <!-- ✅ repo root 기준 -->
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <h1>HCSiG</h1>
-    <div>v1.6.9.0 (Web)</div>
-    <div>
-      Hacking Code Simulator Game
-      <button id="btnMore">더보기 ▾</button>
+  <!-- ✅ app.js가 기대하는 헤더/버튼 id 유지 -->
+  <header id="header">
+    <div class="header-left">
+      <h1>HCSiG</h1>
+      <span class="header-version">v1.6.9.0 (Web)</span>
+    </div>
+
+    <div class="header-right">
+      <span class="subtitle">Hacking Code Simulator Game</span>
+      <button id="btnMore" title="업데이트 로그, 미션, 업적, 저장/불러오기">더보기 ▾</button>
     </div>
   </header>
 
-  <!-- STATUS -->
-  <section>
-    <h2>Status</h2>
-    <div id="status"></div>
-  </section>
+  <!-- ✅ app.js가 패널/영역을 찾을 수 있도록 id를 '원래대로' 맞춤 -->
+  <div id="main">
+    <section id="leftPanel" class="panel">
+      <div class="section-title">Status</div>
+      <div id="statusArea"></div>
+    </section>
 
-  <!-- ACTIONS -->
-  <section>
-    <h2>Actions</h2>
-    <div id="actions"></div>
-  </section>
+    <section id="centerPanel" class="panel">
+      <div class="section-title">Actions</div>
+      <div id="actionArea"></div>
+    </section>
 
-  <!-- SHOP -->
-  <section>
-    <h2>Shop</h2>
-    <div id="shop"></div>
-  </section>
+    <section id="rightPanel" class="panel">
+      <div class="section-title">Shop</div>
+      <div id="shopArea"></div>
+    </section>
+  </div>
 
-  <!-- FOOTER -->
-  <footer>
-    © HCSiG
+  <footer id="footer">
+    <span>© HCSiG</span>
   </footer>
 
-  <!-- ✅ 루트 파일 기준 -->
+  <!-- ✅ repo root 기준 -->
   <script src="./app.js"></script>
 </body>
 </html>
