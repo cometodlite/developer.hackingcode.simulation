@@ -1,390 +1,45 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HCSiG - Hacking Code Simulator Game</title>
-
-
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-<canvas id="snow-canvas"></canvas>
-  <header>
+
+  <header id="header">
     <div class="header-left">
       <h1>HCSiG</h1>
       <span class="header-version">v1.6.7.2 (Web)</span>
     </div>
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
-      <button id="btnMore" title="업데이트 로그, 미션, 업적, 저장/불러오기">더보기 ▾</button>
+      <button id="btnMore">더보기 ▾</button>
     </div>
   </header>
 
-  <div id="main">
-    <!-- 왼쪽: 상태 / 상점 -->
-    <div id="leftPanel" class="panel">
-      <div class="section-title">Status</div>
-      <div class="stat-box">
-        <div class="stat-row">
-          <span class="label">레벨</span>
-          <span class="value" id="statLevel">1</span>
-        </div>
-        <div class="stat-row">
-          <span class="label">경험치</span>
-          <span class="value" id="statExp">0 / 20</span>
-        </div>
-        <div class="stat-row">
-          <span class="label">크레딧</span>
-          <span class="value" id="statCredits">0</span>
-        </div>
-        <div class="stat-row">
-          <span class="label">CPU 티어</span>
-          <span class="value" id="statCpuTier">1</span>
-        </div>
-        <div class="stat-row">
-          <span class="label">에너지</span>
-          <span class="value" id="statEnergyValue">20 / 20</span>
-        </div>
-        <div class="stat-row">
-          <span class="label">다음 회복까지</span>
-          <span class="value" id="statEnergyTimer">FULL</span>
-        </div>
-        <div id="energyBarWrapper">
-          <div id="energyBarInner"></div>
-        </div>
+  <main id="main">
+    <section id="leftPanel" class="panel">
+      <h2>Status</h2>
+      <div id="statusArea"></div>
+    </section>
 
-        <div class="stat-row" style="align-items:center;">
-          <span class="label">에너지 팩</span>
-          <span class="value" style="display:flex; align-items:center; gap:6px;">
-            <span id="statEnergyPack">0</span>
-            <button id="btnUseEnergyPack" title="에너지 팩 1개를 사용해 에너지를 최대치까지 회복합니다.">사용</button>
-          </span>
-        </div>
+    <section id="centerPanel" class="panel">
+      <h2>Actions</h2>
+      <div id="actionArea"></div>
+    </section>
 
-        <div class="stat-row">
-          <span class="label">마지막 저장</span>
-          <span class="value" id="statLastSave">-</span>
-        </div>
-      </div>
+    <section id="rightPanel" class="panel">
+      <h2>Shop</h2>
+      <div id="shopArea"></div>
+    </section>
+  </main>
 
-      <div class="section-title">Shop</div>
-      <div class="shop-sort-row">
-        <span class="shop-sort-label">정렬</span>
-        <select id="shopSortSelect" title="상점 아이템 정렬 기준을 선택합니다.">
-          <option value="update">업데이트순</option>
-          <option value="new">신규 우선</option>
-          <option value="rarity">희귀도순</option>
-          <option value="price">가격순</option>
-          <option value="name">이름순</option>
-        </select>
-      </div>
-      <div class="stat-box" id="shopList"></div>
-    </div>
+  <footer id="footer">
+    <span>© HCSiG</span>
+  </footer>
 
-    <div id="resizerLeft" class="resizer"></div>
-
-    <!-- 중앙: 행동 / 코드 인벤토리 / 상세 -->
-    <div id="centerPanel" class="panel">
-      <div class="center-inner">
-        <!-- Actions -->
-        <div class="stat-box">
-          <div class="section-title">Actions</div>
-          <div class="button-row">
-            <button id="btnScan"
-              title="에너지 1 소모. 코드 희귀도 가챠 + 경험치 획득.">코드 스캔</button>
-            <button id="btnHack"
-              title="에너지 2 소모. 선택한 코드와 서버 정보로 해킹을 시도.">서버 해킹</button>
-            <button id="btnUpgradeCpu"
-              title="CPU 티어 업그레이드. 티어 × 500 크레딧(할인 적용) 소모, 해킹 성공률 증가.">CPU 업그레이드</button>
-          </div>
-
-          <div class="flex-col">
-            <div class="flex-row">
-              <div style="flex:1;">
-                <span class="small">타겟 서버</span>
-                <select id="serverSelect"></select>
-              </div>
-              <div style="flex:1;">
-                <span class="small">로드아웃</span>
-                <div class="button-row" style="margin-top:2px; gap:4px;">
-                  <select id="loadoutSelect" style="max-width:90px; margin-bottom:0;">
-                    <option value="1">슬롯 1</option>
-                    <option value="2">슬롯 2</option>
-                    <option value="3">슬롯 3</option>
-                  </select>
-                  <button id="btnSaveLoadout" title="현재 코드 / 서버 / 위험 모드를 선택한 슬롯에 저장">슬롯 저장</button>
-                  <button id="btnLoadLoadout" title="선택한 슬롯의 설정을 불러오기">슬롯 불러오기</button>
-                </div>
-              </div>
-            </div>
-
-            <label class="small" style="margin-top:4px; display:flex; align-items:center; gap:4px;">
-              <input type="checkbox" id="chkRiskMode">
-              위험 해킹 모드 (성공 확률 -15%p + 보정, 보상 크레딧 ×2, 실패 시 에너지 추가 -1)
-            </label>
-
-            <div class="small" style="margin-top:4px;">
-              · 에너지 1칸 = 120초, 0.1초 단위로 카운트다운 표시<br>
-              · 코드 스캔: 에너지 1, 스캔 EXP 소량 (희귀도별 스캔 시간 차등)<br>
-              · 서버 해킹: 에너지 2, 성공 시 크레딧·EXP 획득<br>
-              · 레벨업 시 크레딧 +100, CPU 업그레이드 비용 = 500 × 티어 × 할인 계수
-            </div>
-          </div>
-        </div>
-
-        <!-- Code Inventory + Detail -->
-        <div class="flex-row flex-grow">
-          <!-- 코드 인벤토리 -->
-          <div class="stat-box" style="flex: 0 0 45%;">
-            <div class="section-title">코드 인벤토리</div>
-            <ul id="codeList"></ul>
-          </div>
-
-          <!-- 코드 상세 -->
-          <div class="stat-box resizable-box" style="flex: 1 1 auto;">
-            <div class="section-title">코드 상세</div>
-            <div id="codeDetail">
-              <div class="small">보유 중인 코드를 선택하면 상세 정보가 표시됩니다.</div>
-            </div>
-            <div class="button-row" style="margin-top:8px;">
-              <button id="btnUpgradeCode"
-                title="선택한 코드를 강화합니다. 크레딧 소모, 파워 증가.">코드 강화</button>
-              <button id="btnEvolveCode"
-                title="조건을 만족하면 선택한 코드를 상위 희귀도로 진화합니다.">코드 진화</button>
-            </div>
-            <div class="small">
-              · 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).<br>
-              · 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).
-            </div>
-          </div>
-        </div>
-
-        <!-- 스캔 연출 오버레이 -->
-        <div id="scanOverlay">
-          <div id="scanProgressWrapper">
-            <div id="scanProgressInner"></div>
-          </div>
-          <div id="scanText"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-    </div>
-  </div>
-
-  <!-- 더보기 모달 -->
-  <div id="moreModalBackdrop">
-    <div id="moreModal">
-      <div id="moreModalHeader">
-        <h2>더보기</h2>
-        <button id="btnMoreClose">✕</button>
-      </div>
-      <div id="moreModalBody">
-        <div class="more-tabs">
-          <button class="more-tab-button active" data-tab="update">업데이트 로그</button>
-          <button class="more-tab-button" data-tab="mission">미션</button>
-          <button class="more-tab-button" data-tab="achievement">업적</button>
-          <button class="more-tab-button" data-tab="logs">로그</button>
-          <button class="more-tab-button" data-tab="settings">설정</button>
-          <button class="more-tab-button" data-tab="save">데이터</button>
-        </div>
-
-        <!-- 업데이트 로그 탭 -->
-        <div id="tabUpdate" class="more-tab-panel active">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <div>
-              <span class="badge">UPDATE</span>
-              <span id="updateVersionTitle"></span>
-            </div>
-            <div style="display:flex; align-items:center; gap:4px;">
-              <button id="btnUpdatePrev" title="이전 업데이트">◀</button>
-              <span id="updateIndexLabel" class="small">1 / 1</span>
-              <button id="btnUpdateNext" title="다음 업데이트">▶</button>
-            </div>
-          </div>
-          <div class="update-log">
-            <ul id="updateLinesList"></ul>
-          </div>
-          <div style="margin-top:6px; display:flex; justify-content:flex-end;">
-            <button id="btnUpdateDontShow" class="small"
-              title="다음 업데이트가 나오기 전까지 시작 시 자동 팝업을 표시하지 않습니다.">
-              이후 더보기에서 확인
-            </button>
-          </div>
-        </div>
-
-        <!-- 미션 탭 -->
-        <div id="tabMission" class="more-tab-panel">
-          <div>
-            <span class="badge">MISSION</span>
-            <span>퀘스트</span>
-          </div>
-          <div class="mission-scope-tabs">
-            <button class="mission-scope-btn active" data-scope="daily">DAILY</button>
-            <button class="mission-scope-btn" data-scope="weekly">WEEKLY</button>
-            <button class="mission-scope-btn" data-scope="month">MONTH</button>
-            <button class="mission-scope-btn" data-scope="general">GENERAL</button>
-          </div>
-          <div class="stat-box" id="missionList"></div>
-        </div>
-
-        <!-- 업적 탭 -->
-        <div id="tabAchievement" class="more-tab-panel">
-          <div>
-            <span class="badge">ACHIEVEMENT</span>
-            <span>업적</span>
-          </div>
-          <div class="stat-box" id="achievementList"></div>
-        </div>
-
-
-        <!-- 로그 탭 -->
-        <div id="tabLogs" class="more-tab-panel">
-          <div>
-            <span class="badge">LOG</span>
-            <span>기록</span>
-          </div>
-          <div style="margin-top:8px;">
-<div class="stat-box" style="margin-bottom:6px;">
-  <div class="small" style="margin-bottom:4px; opacity:0.9;">로그 검색 (로그 항목 클릭 → 핀/해제)</div>
-  <input id="logSearchInput" placeholder="검색어 입력..." style="width:100%; padding:8px 10px; border-radius:10px; border:1px solid #243145; background:#0b1220; color:#e5e7eb;">
-</div>
-
-<div class="button-row" style="margin-bottom:4px;">
-        <button id="btnClearLogs" title="현재 로그를 모두 지웁니다.">로그 초기화</button>
-        <button id="btnToggleLogs" title="로그 영역을 숨기거나 다시 표시합니다.">로그 숨기기</button>
-      </div>
-      <div id="logPanelBody">
-        <div class="stat-box small" style="margin-bottom:6px;">
-          <div style="margin-bottom:2px; opacity:0.9;">로그 필터</div>
-          <label class="log-filter-label"><input type="checkbox" id="filterSystem" checked> SYSTEM</label>
-          <label class="log-filter-label"><input type="checkbox" id="filterScan" checked> SCAN</label>
-          <label class="log-filter-label"><input type="checkbox" id="filterHack" checked> HACK</label>
-          <label class="log-filter-label"><input type="checkbox" id="filterShop" checked> SHOP</label>
-          <label class="log-filter-label"><input type="checkbox" id="filterLevel" checked> LEVEL</label>
-        </div>
-        <div class="stat-box resizable-box" id="logBox">
-          <div id="logList"></div>
-        </div>
-      </div>
-    
-          </div>
-        </div>
-
-        <!-- 설정 탭 -->
-        <div id="tabSettings" class="more-tab-panel">
-          <div>
-            <span class="badge">SETTINGS</span>
-            <span>환경 설정</span>
-          </div>
-
-          <div class="stat-box" style="font-size:12px; margin-top:8px;">
-            <div class="stat-row" style="align-items:center;">
-              <span class="label">폰트 크기</span>
-              <span class="value" style="display:flex; align-items:center; gap:10px;">
-                <input id="setFontScale" type="range" min="90" max="120" step="5" style="width:180px;">
-                <span id="setFontScaleLabel">100%</span>
-              </span>
-            </div>
-
-            <div class="stat-row" style="align-items:center;">
-              <span class="label">눈 이펙트</span>
-              <span class="value">
-                <label class="log-filter-label" style="display:inline-flex; align-items:center; gap:6px;">
-                  <input id="setSnow" type="checkbox"> 사용
-                </label>
-              </span>
-            </div>
-
-            <div class="stat-row" style="align-items:center;">
-              <span class="label">UI 스케일</span>
-              <span class="value">
-                <select id="setUiZoom" title="전체 UI 배율을 조정합니다.">
-                  <option value="0.8">0.8x</option>
-                  <option value="1">1.0x</option>
-                  <option value="1.2">1.2x</option>
-                </select>
-              </span>
-            </div>
-
-            <div class="stat-row" style="align-items:center;">
-              <span class="label">애니메이션</span>
-              <span class="value">
-                <label class="log-filter-label" style="display:inline-flex; align-items:center; gap:6px;">
-                  <input id="setAnim" type="checkbox" checked> 사용
-                </label>
-              </span>
-            </div>
-
-            <div class="stat-row" style="align-items:center;">
-              <span class="label">토스트 시간</span>
-              <span class="value">
-                <select id="setToastMs" title="화면 알림(토스트) 표시 시간을 설정합니다.">
-                  <option value="3000">3초</option>
-                  <option value="5000">5초</option>
-                  <option value="7000">7초</option>
-                </select>
-              </span>
-            </div>
-
-            <div class="stat-row" style="align-items:center;">
-              <span class="label">자동저장 알림</span>
-              <span class="value">
-                <label class="log-filter-label" style="display:inline-flex; align-items:center; gap:6px;">
-                  <input id="setAutoSaveToast" type="checkbox"> 표시
-                </label>
-              </span>
-            </div>
-
-            <div class="small" style="margin-top:6px;">
-              · 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.
-            </div>
-          </div>
-        </div>
-
-        <!-- 저장 탭 -->
-        <div id="tabSave" class="more-tab-panel">
-          <div>
-            <span class="badge">SAVE</span>
-            <span>데이터 관리</span>
-          </div>
-          <div class="stat-box" style="font-size:12px;">
-            <div class="button-row">
-              <button id="btnSaveGame" title="현재 상태를 브라우저 LocalStorage에 저장합니다.">저장하기</button>
-              <button id="btnLoadGame" title="LocalStorage에서 저장된 데이터를 불러옵니다.">불러오기</button>
-              <button id="btnClearSave" title="저장 데이터를 삭제합니다.">저장 데이터 삭제</button>
-            </div>
-            <div class="button-row" style="margin-top:6px;">
-              <button id="btnExportSave" title="현재 저장 데이터를 JSON 파일로 내보냅니다.">내보내기</button>
-              <button id="btnImportSaveFile" title="JSON 저장 파일을 불러옵니다.">파일 불러오기</button>
-              <input id="fileImportSave" type="file" accept="application/json" style="display:none;">
-            </div>
-
-            <div class="small" style="margin-top:8px; opacity:0.95;">텍스트로 불러오기</div>
-            <textarea id="importSaveText" style="width:100%; height:90px; margin-top:6px; background:#0b1220; border:1px solid #243145; color:#e5e7eb; border-radius:10px; padding:10px; font-size:12px;" placeholder="여기에 JSON을 붙여넣고 불러오기를 누르세요."></textarea>
-            <div class="button-row" style="margin-top:6px;">
-              <button id="btnImportSaveText" title="텍스트(JSON)로 저장 데이터를 불러옵니다.">텍스트 불러오기</button>
-            </div>
-
-            <div class="small">
-              · 저장 위치: 브라우저 LocalStorage (이 브라우저, 이 기기 한정)<br>
-              · 자동 저장: 약 60초마다 한 번씩 백그라운드 저장
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="moreModalFooter">
-        <button id="btnMoreClose2">닫기</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toastContainer"></div>
-
-  
-
-
-  <script src="js/app.js"></script>
+  <script src="./js/app.js"></script>
 </body>
 </html>
