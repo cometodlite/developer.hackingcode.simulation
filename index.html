@@ -1,17 +1,85 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>HCSiG - Hacking Code Simulator Game</title>
 
-  <!-- ✅ repo root 기준 -->
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
+  <!-- 기존 스타일 유지 -->
+  <link rel="stylesheet" href="./style.css" />
 
-  <!-- ✅ app.js가 기대하는 헤더/버튼 id 유지 -->
-  <header id="header">
+  <!-- 복구용 보강 스타일(restore script에서 쓰는 클래스들) -->
+  <style>
+    /* 레이아웃 높이 계산 보강 (iOS/모바일) */
+    :root{
+      --appH: 100vh;
+      --headerH: 48px;
+    }
+    body { min-height: 100vh; }
+    #main{ height: calc(var(--appH) - var(--headerH)); }
+
+    /* restore app.js에서 쓰는 공용 버튼/블록 */
+    .btn{
+      background: #111827;
+      color: #e5e5e5;
+      border: 1px solid #20263b;
+      border-radius: 10px;
+      padding: 7px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, transform .05s;
+      white-space: nowrap;
+    }
+    .btn:hover{ background:#1b2238; border-color:#4b7fff; }
+    .btn:active{ transform: scale(.97); }
+    .btn:disabled{ opacity:.4; cursor: default; transform:none; }
+
+    .block{
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 12px;
+      padding: 10px;
+      background: rgba(255,255,255,.03);
+    }
+
+    /* 오른쪽 패널 스크롤: 인벤토리 리스트가 길어도 패널 안에서만 */
+    #rightPanel{ overflow: hidden; display:flex; flex-direction:column; gap:10px; }
+    #shopArea{ overflow:auto; flex:1 1 auto; min-height:160px; padding-right:2px; }
+
+    /* 중앙 패널도 내용 길면 내부 스크롤 */
+    #centerPanel{ overflow:auto; }
+
+    /* 작은 select 보강 */
+    select{
+      background:#0b1020;
+      border: 1px solid #20263b;
+      color: #e5e5e5;
+    }
+  </style>
+
+  <script>
+    // iOS/모바일에서 100vh 튐 방지용
+    (function(){
+      const root = document.documentElement;
+      const setVars = () => {
+        const h = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+        root.style.setProperty('--appH', Math.round(h) + 'px');
+        const header = document.querySelector('header');
+        if(header) root.style.setProperty('--headerH', Math.round(header.getBoundingClientRect().height) + 'px');
+      };
+      window.addEventListener('resize', setVars);
+      window.addEventListener('orientationchange', () => setTimeout(setVars, 150));
+      if(window.visualViewport){
+        window.visualViewport.addEventListener('resize', setVars);
+        window.visualViewport.addEventListener('scroll', setVars);
+      }
+      document.addEventListener('DOMContentLoaded', setVars);
+      window.addEventListener('load', setVars);
+    })();
+  </script>
+</head>
+
+<body>
+  <header>
     <div class="header-left">
       <h1>HCSiG</h1>
       <span class="header-version">v1.6.9.0 (Web)</span>
@@ -19,33 +87,33 @@
 
     <div class="header-right">
       <span class="subtitle">Hacking Code Simulator Game</span>
-      <button id="btnMore" title="업데이트 로그, 미션, 업적, 저장/불러오기">더보기 ▾</button>
+      <button id="btnMore" class="btn" title="더보기">더보기 ▾</button>
     </div>
   </header>
 
-  <!-- ✅ app.js가 패널/영역을 찾을 수 있도록 id를 '원래대로' 맞춤 -->
   <div id="main">
-    <section id="leftPanel" class="panel">
+    <div id="leftPanel" class="panel">
       <div class="section-title">Status</div>
       <div id="statusArea"></div>
-    </section>
+    </div>
 
-    <section id="centerPanel" class="panel">
+    <div class="resizer" aria-hidden="true"></div>
+
+    <div id="centerPanel" class="panel">
       <div class="section-title">Actions</div>
       <div id="actionArea"></div>
-    </section>
+    </div>
 
-    <section id="rightPanel" class="panel">
+    <div class="resizer" aria-hidden="true"></div>
+
+    <div id="rightPanel" class="panel">
       <div class="section-title">Shop</div>
       <div id="shopArea"></div>
-    </section>
+      <div style="opacity:.6; font-size:12px; margin-top:8px;">© HCSiG</div>
+    </div>
   </div>
 
-  <footer id="footer">
-    <span>© HCSiG</span>
-  </footer>
-
-  <!-- ✅ repo root 기준 -->
+  <!-- 복구된 스크립트 -->
   <script src="./app.js"></script>
 </body>
 </html>
