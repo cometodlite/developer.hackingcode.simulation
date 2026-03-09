@@ -799,354 +799,13 @@ button:hover {
       background: rgba(20,34,60,0.5);
     }
 
-  
-/* =========================
-   MOBILE COMPAT PATCH v1.6.5
-   ========================= */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  body {
-    overflow: hidden;
-  }
-  #main, .main {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100dvh !important;
-  }
-  .resizer, .resize-bar {
-    display: none !important;
-  }
-  #leftPanel, #centerPanel, #rightPanel {
-    width: 100% !important;
-    max-width: 100% !important;
-    border-right: none !important;
-    overflow: auto !important;
-  }
-  #leftPanel { max-height: 32dvh; }
-  #centerPanel { flex: 1 1 auto !important; }
-  #rightPanel { max-height: 28dvh; }
-  button, input, select {
-    min-height: 42px;
-    font-size: 14px;
-  }
-}
-
-
-/* =========================
-   MOBILE UI MODE (Tabbed)
-   ========================= */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  #main, .main { position: relative; }
-  .mobile-tabs {
-    position: fixed;
-    left: 10px; right: 10px; bottom: 10px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding: 8px;
-    border-radius: 14px;
-    background: rgba(14,17,23,0.92);
-    border: 1px solid rgba(35,42,53,0.9);
-    backdrop-filter: blur(10px);
-    z-index: 9999;
-  }
-  .mobile-tabs button{
-    width: 100%;
-    min-height: 44px;
-    font-size: 13px;
-    font-weight: 700;
-    border-radius: 12px;
-  }
-  .mobile-tabs button.active{
-    outline: 2px solid rgba(148,163,184,0.7);
-  }
-
-  body.mobile-tab-left #leftPanel,
-  body.mobile-tab-center #centerPanel,
-  body.mobile-tab-right #rightPanel { display: block !important; }
-
-  body.mobile-tab-left #centerPanel,
-  body.mobile-tab-left #rightPanel,
-  body.mobile-tab-center #leftPanel,
-  body.mobile-tab-center #rightPanel,
-  body.mobile-tab-right #leftPanel,
-  body.mobile-tab-right #centerPanel { display: none !important; }
-
-  
-#leftPanel, #centerPanel, #rightPanel {
-  /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
-  position: fixed;
-  top: var(--headerH, 52px);
-  left: 0;
-  right: 0;
-  bottom: var(--tabsInset, calc(92px + 20px + env(safe-area-inset-bottom)));
-  height: auto !important;
-  max-height: none !important;
-  overflow: auto !important;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: var(--tabsPad, calc(92px + 28px + env(safe-area-inset-bottom))) !important;
-}
-
-  button { min-height: 44px !important; }
-  input, select, textarea { min-height: 44px !important; font-size: 16px !important; }
-}
-
-
-/* =========================
-   MOBILE VIEWS (Status/Action/Codes/Shop/Log)
-   ========================= */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  body { overflow:hidden; }
-  .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
-  .mobile-tabs button{ font-size: 12px !important; }
-  /* Hide PC panels on mobile to avoid fixed-position overlay capturing taps */
-  #leftPanel, #centerPanel, #rightPanel { display: none !important; }
-  .mobile-view { display:none !important; }
-  body.mobile-view-status #mobileViewStatus,
-  body.mobile-view-action #mobileViewAction,
-  body.mobile-view-codes  #mobileViewCodes,
-  body.mobile-view-shop   #mobileViewShop,
-  body.mobile-view-log    #mobileViewLog { display:block !important; }
-
-  
-#mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
-  /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
-  position: fixed;
-  top: var(--headerH, 52px);
-  left: 0;
-  right: 0;
-  bottom: var(--tabsInset, calc(92px + 20px + env(safe-area-inset-bottom)));
-  height: auto !important;
-  max-height: none !important;
-  overflow:auto !important;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: var(--tabsPad, calc(92px + 28px + env(safe-area-inset-bottom))) !important;
-}
-
-  /* Make code list touch-friendly */
-  #codeList li{
-    padding: 12px 10px !important;
-    min-height: 44px !important;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-  }
-  #codeList li button{ min-height: 40px !important; }
-  /* Bigger upgrade/evolve buttons area */
-  #btnUpgradeCode, #btnEvolveCode{
-    width: 100% !important;
-  }
-}
-
-
-/* =========================
-   SAFE-AREA + DYNAMIC HEIGHT FIX (iOS/Android)
-   ========================= */
+/* === HCSIG v1.6.11(L) mobile cleanup === */
 :root{
-  --mobileTabsH: 86px; /* fallback */
-  --mobileTabsPad: 10px;
-}
-@supports (padding: env(safe-area-inset-bottom)) {
-  :root{ --safeBottom: env(safe-area-inset-bottom); --safeTop: env(safe-area-inset-top); }
-}
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  /* Use dynamic viewport and safe-area */
-  header{ padding-top: calc(10px + var(--safeTop, 0px)) !important; }
-
-  .mobile-tabs{
-    bottom: calc(var(--mobileTabsPad) + var(--safeBottom, 0px)) !important;
-    left: 10px !important;
-    right: 10px !important;
-    padding-bottom: calc(8px + var(--safeBottom, 0px)) !important;
-  }
-
-  /* Make room for the fixed tab bar so content never gets hidden */
-  body{
-    padding-bottom: calc(var(--mobileTabsH) + var(--mobileTabsPad) + var(--safeBottom, 0px)) !important;
-  }
-
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
-    height: auto !important;
-    max-height: none !important;
-    min-height: 0 !important;
-    /* Use dvh but subtract header + tabs (real measured via JS) */
-    height: calc(100dvh - 52px - var(--mobileTabsH) - var(--mobileTabsPad) - var(--safeBottom, 0px)) !important;
-    max-height: calc(100dvh - 52px - var(--mobileTabsH) - var(--mobileTabsPad) - var(--safeBottom, 0px)) !important;
-    padding-bottom: calc(var(--mobileTabsH) + 24px) !important;
-  }
+  --appH: 100dvh;
+  --headerH: 52px;
+  --mobileTabsH: 86px;
 }
 
-
-/* =========================
-   MOBILE TABS AUTO-HIDE (scroll down hide, scroll up show)
-   ========================= */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  .mobile-tabs{
-    transition: transform 180ms ease, opacity 180ms ease;
-    will-change: transform;
-  }
-  body.mobile-tabs-hidden .mobile-tabs{
-    transform: translateY(calc(100% + var(--safeBottom, 0px) + 20px));
-    opacity: 0.0;
-    pointer-events: none;
-  }
-  body.mobile-tabs-hidden{
-    padding-bottom: calc(var(--safeBottom, 0px) + 10px) !important;
-  }
-  body.mobile-tabs-hidden #mobileViewStatus,
-  body.mobile-tabs-hidden #mobileViewAction,
-  body.mobile-tabs-hidden #mobileViewCodes,
-  body.mobile-tabs-hidden #mobileViewShop,
-  body.mobile-tabs-hidden #mobileViewLog{
-    height: calc(100dvh - 52px - var(--safeBottom, 0px) - 10px) !important;
-    max-height: calc(100dvh - 52px - var(--safeBottom, 0px) - 10px) !important;
-    padding-bottom: calc(24px + var(--safeBottom, 0px)) !important;
-  }
-}
-
-
-/* =========================
-   ANDROID OPTIMIZATION
-   ========================= */
-:root{ --vvKeyboardOffset: 0px; }
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  /* smoother + prevent pull-to-refresh conflicts */
-  html, body { overscroll-behavior-y: none; }
-  body { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-
-  /* performance: blur can be heavy on some Android devices */
-  .mobile-tabs{ backdrop-filter: none; }
-  @supports (backdrop-filter: blur(10px)) {
-    /* keep subtle blur if supported well */
-    .mobile-tabs{ backdrop-filter: blur(8px); }
-  }
-
-  /* If keyboard is open (Android/Chrome), lift the tab bar */
-  body.keyboard-open .mobile-tabs{
-    transform: translateY(calc(-1 * var(--vvKeyboardOffset))) !important;
-  }
-
-  /* Reduce accidental horizontal scroll */
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
-    overflow-x: hidden !important;
-  }
-}
-
-
-/* shop limit badge + disabled */
-.shop-limit-badge{
-  font-size: 12px;
-}
-.shop-buy:disabled{
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-
-/* =========================
-   MOBILE: FILL VIEWPORT (no empty gap feel)
-   ========================= */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  html, body { height: 100%; }
-  body { min-height: 100dvh; display: flex; flex-direction: column; }
-  header { flex: 0 0 auto; }
-  #main { flex: 1 1 auto; min-height: 0; }
-
-  /* Each mobile view should be a full-height column */
-  .mobile-view { height: 100%; min-height: 0; display: flex; flex-direction: column; }
-
-  /* Make the primary content card grow to fill remaining space */
-  .mobile-view .stat-box,
-  .mobile-view .panel,
-  .mobile-view .log-list,
-  .mobile-view .shop-list,
-  .mobile-view .codes-wrap,
-  .mobile-view .actions-wrap {
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-
-  /* Keep lists scrollable inside full-height views */
-  .mobile-view .log-list,
-  .mobile-view .shop-list,
-  .mobile-view .code-list {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-
-/* =========================
-   MOBILE: STRETCH ACTIVE PANEL TO FILL (visual + layout)
-   ========================= */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  /* Main container already flexes; make visible panel/cards stretch */
-  #main { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
-  /* When panels are used as "screens" on mobile, make them fill */
-  #leftPanel.panel, #centerPanel.panel, #rightPanel.panel{
-    flex: 1 1 auto;
-    min-height: 0;
-    display:flex;
-    flex-direction:column;
-    /* give a subtle surface so empty space doesn't feel like "nothing" */
-    background: rgba(255,255,255,0.03);
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.06);
-    overflow: hidden;
-  }
-
-  /* The scrollable content areas inside panels */
-  #leftPanel .stat-box,
-  #leftPanel #shop,
-  #leftPanel #shopList,
-  #centerPanel .panel-body,
-  #centerPanel #codeList,
-  #rightPanel .log-box,
-  #rightPanel #logList {
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-
-  /* Ensure shop/log/code lists can scroll and occupy remaining height */
-  #shopList, #logList, #codeList{
-    overflow:auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Make the shop wrapper expand (if it exists) */
-  #shop{
-    display:flex;
-    flex-direction:column;
-    min-height:0;
-    flex:1 1 auto;
-  }
-}
-
-
-/* === MOBILE VIEWPORT HOTFIX (iOS/Android) - minimal patch === */
-:root{
-  --app-height: 100vh;           /* will be overwritten by JS */
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --header-h: 0px;               /* measured by JS */
-}
-html, body { height: 100%; }
-body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
-
-/* Main area should fill available viewport under header; do not break desktop */
-@media (max-width: 900px){
-  #main{
-    height: calc(var(--app-height) - var(--header-h) - var(--safe-top) - var(--safe-bottom));
-    max-height: calc(var(--app-height) - var(--header-h) - var(--safe-top) - var(--safe-bottom));
-    overflow: hidden;
-  }
-  /* If you have mobile bottom tabs, keep them above the home indicator */
-  .mobile-tabs{
-    padding-bottom: calc(10px + var(--safe-bottom));
-  }
-}
-
-/* === CHRISTMAS SNOW EFFECT (minimal) === */
 #snow-canvas{
   position: fixed;
   inset: 0;
@@ -1154,257 +813,50 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   z-index: 9999;
 }
 
-
-
-/* === TUTORIAL MODAL v1.6.11(j) === */
-#tutorialBackdrop{
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(3, 8, 18, 0.76);
-  backdrop-filter: blur(4px);
-  z-index: 20000;
-}
-#tutorialBackdrop.show{ display:flex; }
-#tutorialModal{
-  width: min(560px, calc(100vw - 24px));
-  background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(10,15,25,0.98));
-  border: 1px solid rgba(96,165,250,0.24);
-  border-radius: 18px;
-  box-shadow: 0 18px 48px rgba(0,0,0,0.45);
-  overflow: hidden;
-}
-#tutorialHeader, #tutorialFooter{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 10px;
-  padding: 14px 16px;
-  background: rgba(255,255,255,0.03);
-}
-#tutorialHeader h2{
-  margin: 6px 0 0;
-  font-size: 18px;
-}
-#tutorialBody{
-  padding: 18px 16px 16px;
-}
-#tutorialBody h3{
-  margin: 8px 0 10px;
-  font-size: 20px;
-}
-#tutorialStepText{
-  margin: 0;
-  line-height: 1.6;
-  color: #e5e7eb;
-}
-#tutorialStepHint{
-  margin-top: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(59,130,246,0.14);
-  border: 1px solid rgba(96,165,250,0.18);
-  color: #bfdbfe;
-}
-#tutorialFooter{
-  justify-content:flex-end;
-}
-#tutorialFooter button:disabled,
-#btnTutorialPrev:disabled{
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-body.tutorial-open{ overflow:hidden; }
-@media (max-width: 900px), (hover: none) and (pointer: coarse){
-  #tutorialBackdrop{ padding: 12px; align-items:flex-end; }
-  #tutorialModal{ width: calc(100vw - 12px); border-radius: 18px 18px 0 0; margin-bottom: calc(8px + var(--safe-bottom, 0px)); }
-  #tutorialHeader, #tutorialFooter{ padding: 12px 14px; }
-  #tutorialBody{ padding: 16px 14px 14px; }
-  #tutorialBody h3{ font-size: 18px; }
-}
-
-
-/* v1.6.11(k) tutorial interactive-step fix */
-#tutorialBackdrop.interactive{
-  background: transparent;
-  backdrop-filter: none;
-  pointer-events: none;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: calc(var(--headerH, 56px) + 12px);
-}
-#tutorialBackdrop.interactive #tutorialModal{
-  pointer-events: auto;
-  width: min(520px, calc(100vw - 20px));
-  box-shadow: 0 12px 28px rgba(0,0,0,0.38);
-}
-body.tutorial-open.tutorial-interactive{ overflow:auto; }
-@media (max-width: 900px), (hover: none) and (pointer: coarse){
-  #tutorialBackdrop.interactive{
-    padding: calc(var(--headerH, 52px) + 8px) 8px 8px;
-    align-items: flex-start;
-  }
-  #tutorialBackdrop.interactive #tutorialModal{
-    width: calc(100vw - 16px);
-    border-radius: 16px;
-    margin: 0;
-  }
-}
-
-
-/* === k1 hotfix: toast above mobile bottom bar === */
+/* mobile: single navigation system only (HOME / CODES / SHOP / COMING SOON) */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  #toastContainer{
-    bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom)) !important;
-    width: min(520px, calc(100vw - 24px)) !important;
-    z-index: 10001 !important;
-  }
-}
-
-/* === k1 hotfix: simple mobile nav (HOME / CODES / SHOP / COMING SOON) === */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  body.mobile-simple-ui {
-    overflow: hidden;
-    padding-bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom)) !important;
-  }
-
-  body.mobile-simple-ui #leftPanel,
-  body.mobile-simple-ui #centerPanel,
-  body.mobile-simple-ui .resizer {
-    display: none !important;
-  }
-
-  body.mobile-simple-ui #main {
-    position: relative;
-    display: block !important;
-    height: calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
-    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-  }
-
-  body.mobile-simple-ui .mobile-simple-tabs {
-    position: fixed;
-    left: 10px;
-    right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 20px;
-    background: rgba(8, 12, 24, 0.96);
-    border: 1px solid rgba(71, 85, 105, 0.5);
-    backdrop-filter: blur(8px);
-    z-index: 10000;
-  }
-
-  body.mobile-simple-ui .mobile-simple-tabs button {
-    min-height: 48px !important;
-    font-size: 12px !important;
-    font-weight: 800;
-    border-radius: 14px;
-  }
-
-  body.mobile-simple-ui .mobile-simple-tabs button.active {
-    outline: 2px solid rgba(96, 165, 250, 0.75);
-    background: #1b2540;
-    border-color: #5b87ff;
-  }
-
-  body.mobile-simple-ui .mobile-simple-view {
-    display: none !important;
-    position: absolute;
-    inset: 0;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 10px 10px calc(var(--mobileTabsH, 86px) + 26px + env(safe-area-inset-bottom)) 10px;
-    background: #060812;
-  }
-
-  body.mobile-simple-ui.mobile-simple-view-home #mobileSimpleHome,
-  body.mobile-simple-ui.mobile-simple-view-codes #mobileSimpleCodes,
-  body.mobile-simple-ui.mobile-simple-view-shop #mobileSimpleShop {
-    display: block !important;
-  }
-
-  body.mobile-simple-ui #mobileSimpleHome > .stat-box,
-  body.mobile-simple-ui #mobileSimpleCodes > .stat-box,
-  body.mobile-simple-ui #mobileSimpleShop > .stat-box,
-  body.mobile-simple-ui #mobileSimpleShop > .shop-sort-row,
-  body.mobile-simple-ui #mobileSimpleHome > .section-title,
-  body.mobile-simple-ui #mobileSimpleShop > .section-title {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes .codes-merged {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes .codes-merged > .stat-box {
-    width: 100% !important;
-    flex: none !important;
-    resize: none !important;
-    margin-bottom: 0;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes #codeList,
-  body.mobile-simple-ui #mobileSimpleShop #shopList {
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes .button-row {
-    flex-wrap: wrap;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes #btnUpgradeCode,
-  body.mobile-simple-ui #mobileSimpleCodes #btnEvolveCode {
-    width: 100% !important;
-  }
-}
-
-
-/* === SIMPLE MOBILE NAV HOTFIX (v1.6.11k) === */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  .mobile-tabs, .mobile-view,
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog {
-    display: none !important;
-  }
-
+  html, body { height: 100%; }
   body {
     overflow: hidden !important;
-    padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom, 0px)) !important;
   }
 
   #main {
     display: block !important;
-    height: calc(100dvh - var(--header-h, 56px) - env(safe-area-inset-bottom, 0px)) !important;
-    max-height: calc(100dvh - var(--header-h, 56px) - env(safe-area-inset-bottom, 0px)) !important;
+    width: 100% !important;
+    height: calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
+    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
     overflow: hidden !important;
   }
 
-  #leftPanel, #centerPanel {
+  .resizer,
+  #rightPanel,
+  .mobile-tabs,
+  .mobile-view,
+  #mobileViewStatus,
+  #mobileViewAction,
+  #mobileViewCodes,
+  #mobileViewShop,
+  #mobileViewLog {
+    display: none !important;
+  }
+
+  #leftPanel,
+  #centerPanel {
     position: fixed !important;
     left: 0;
     right: 0;
-    top: var(--header-h, 56px);
-    bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+    top: var(--headerH, 52px);
+    bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom, 0px));
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
     max-height: none !important;
     overflow: auto !important;
     border-right: none !important;
-    border-radius: 0 !important;
     background: #060812 !important;
-    padding-bottom: 18px !important;
+    padding: 10px 10px 18px !important;
+    -webkit-overflow-scrolling: touch;
   }
 
   #leftPanel { display: none !important; }
@@ -1423,44 +875,20 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
     display: block !important;
   }
 
-  body.simple-tab-home .mobile-shop-only,
-  body.simple-tab-codes .mobile-home-only,
-  body.simple-tab-codes .mobile-shop-only,
-  body.simple-tab-shop .mobile-home-only,
-  body.simple-tab-shop .mobile-codes-only {
+  .mobile-home-only,
+  .mobile-shop-only,
+  .mobile-codes-only {
     display: none !important;
   }
 
-  body.simple-tab-home .mobile-codes-only {
-    display: none !important;
-  }
-
-  body.simple-tab-codes .mobile-codes-only,
-  body.simple-tab-shop .mobile-shop-only,
-  body.simple-tab-home .mobile-home-only {
-    display: block !important;
-  }
-
-  body.simple-tab-home #shopList,
-  body.simple-tab-shop #shopList {
-    overflow: auto !important;
-    min-height: 240px !important;
-  }
-
-  body.simple-tab-home .center-inner,
-  body.simple-tab-codes .center-inner {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-  }
+  body.simple-tab-home .mobile-home-only { display: block !important; }
+  body.simple-tab-codes .mobile-codes-only { display: block !important; }
+  body.simple-tab-shop .mobile-shop-only { display: block !important; }
 
   body.simple-tab-codes .mobile-codes-only {
     display: flex !important;
     flex-direction: column !important;
-  }
-
-  body.simple-tab-codes .mobile-codes-only > .stat-box {
-    margin-bottom: 10px !important;
+    gap: 10px !important;
   }
 
   .mobile-simple-tabs {
@@ -1468,14 +896,14 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
     left: 10px;
     right: 10px;
     bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    display: grid;
+    display: grid !important;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
     padding: 8px;
     border-radius: 16px;
     background: rgba(14,17,23,0.96);
     border: 1px solid rgba(35,42,53,0.95);
-    z-index: 9998;
+    z-index: 10000;
   }
 
   .mobile-simple-tabs button {
@@ -1493,17 +921,29 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   }
 
   #toastContainer {
-    bottom: calc(118px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom, 0px)) !important;
     z-index: 10010 !important;
   }
 
-  .toast {
-    margin-bottom: 8px;
+  #shopList,
+  #codeList {
+    max-height: none !important;
+    overflow: auto !important;
   }
 
-  #scanOverlay.mobile-scan-overlay {
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 10020 !important;
+  #leftPanel .section-title,
+  #centerPanel .section-title,
+  #leftPanel .stat-box,
+  #centerPanel .stat-box,
+  #leftPanel .shop-sort-row {
+    width: 100%;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 42px;
+    font-size: 14px !important;
   }
 }

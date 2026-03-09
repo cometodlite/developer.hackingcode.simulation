@@ -1,3 +1,5 @@
+window.__HCSIG_SIMPLE_MOBILE__ = true;
+
 // Split from 배포용 index.html on 2026-03-09
 // Original inline scripts concatenated in source order.
 
@@ -3095,130 +3097,7 @@
 
 
 
-// === MOBILE SIMPLE NAV (k1 hotfix) ===
-(function(){
-  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-  if(!isMobile) return;
-
-  const main = document.getElementById('main');
-  const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  const toast = (msg, kind='info') => {
-    try { if (typeof showToast === 'function') showToast(msg, kind); } catch(e){}
-  };
-  if(!main || !left || !center) return;
-
-  document.body.classList.add('mobile-simple-ui');
-  document.body.classList.remove(
-    'mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log',
-    'mobile-tab-left','mobile-tab-center','mobile-tab-right'
-  );
-
-  const oldTabs = document.querySelector('.mobile-tabs');
-  if(oldTabs) oldTabs.remove();
-
-  function ensureView(id){
-    let el = document.getElementById(id);
-    if(!el){
-      el = document.createElement('section');
-      el.id = id;
-      el.className = 'mobile-simple-view';
-      main.insertBefore(el, main.firstChild);
-    }
-    return el;
-  }
-
-  const homeView = ensureView('mobileSimpleHome');
-  const codesView = ensureView('mobileSimpleCodes');
-  const shopView = ensureView('mobileSimpleShop');
-
-  const leftChildren = Array.from(left.children);
-  const centerInner = center.querySelector('.center-inner') || center;
-  const centerChildren = Array.from(centerInner.children);
-
-  const statusTitle = leftChildren[0] || null;
-  const statusBox = leftChildren[1] || null;
-  const shopTitle = left.querySelector('.section-title:nth-of-type(2)') || leftChildren.find(el => el.classList && el.classList.contains('section-title') && /shop/i.test(el.textContent||''));
-  const shopSortRow = left.querySelector('.shop-sort-row');
-  const shopList = document.getElementById('shopList');
-  const actionBox = centerChildren.find(el => el.classList && el.classList.contains('stat-box')) || null;
-  const codeRow = center.querySelector('.flex-row.flex-grow');
-
-  if(statusTitle && statusTitle.parentElement !== homeView) homeView.appendChild(statusTitle);
-  if(statusBox && statusBox.parentElement !== homeView) homeView.appendChild(statusBox);
-  if(actionBox && actionBox.parentElement !== homeView) homeView.appendChild(actionBox);
-
-  if(shopTitle && shopTitle.parentElement !== shopView) shopView.appendChild(shopTitle);
-  if(shopSortRow && shopSortRow.parentElement !== shopView) shopView.appendChild(shopSortRow);
-  if(shopList && shopList.parentElement !== shopView) shopView.appendChild(shopList);
-
-  if(codeRow){
-    let merged = document.getElementById('mobileCodesMerged');
-    if(!merged){
-      merged = document.createElement('div');
-      merged.id = 'mobileCodesMerged';
-      merged.className = 'stat-box codes-merged';
-      const title = document.createElement('div');
-      title.className = 'section-title';
-      title.textContent = 'Codes';
-      merged.appendChild(title);
-      codesView.appendChild(merged);
-    }
-    const codeBoxes = Array.from(codeRow.children).filter(el => el.classList && el.classList.contains('stat-box'));
-    codeBoxes.forEach(box => {
-      if(box.parentElement !== merged) merged.appendChild(box);
-    });
-    if(codeRow.parentElement) codeRow.parentElement.removeChild(codeRow);
-  }
-
-  const nav = document.createElement('nav');
-  nav.className = 'mobile-tabs mobile-simple-tabs';
-  nav.innerHTML = `
-    <button type="button" data-view="home">HOME</button>
-    <button type="button" data-view="codes">CODES</button>
-    <button type="button" data-view="shop">SHOP</button>
-    <button type="button" data-view="soon">COMING SOON</button>
-  `;
-  document.body.appendChild(nav);
-
-  let currentView = 'home';
-  function setView(view){
-    if(view === 'soon'){
-      toast('Coming Soon - 준비 중인 기능입니다.', 'system');
-      nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === currentView));
-      return;
-    }
-    currentView = view;
-    document.body.classList.remove('mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
-    document.body.classList.add('mobile-simple-view-' + view);
-    nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
-    const target = view === 'home' ? homeView : view === 'codes' ? codesView : shopView;
-    if(target) target.scrollTop = 0;
-    try {
-      const tabsH = Math.ceil(nav.getBoundingClientRect().height);
-      document.documentElement.style.setProperty('--mobileTabsH', tabsH + 'px');
-    } catch(e) {}
-  }
-
-  nav.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => setView(btn.dataset.view));
-  });
-
-  const codeList = document.getElementById('codeList');
-  const codeDetail = document.getElementById('codeDetail');
-  if(codeList && codeDetail){
-    codeList.addEventListener('click', (e) => {
-      const li = e.target.closest('li');
-      if(!li) return;
-      setView('codes');
-      setTimeout(() => {
-        try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
-      }, 40);
-    });
-  }
-
-  setView('home');
-})();
+;
 
 
 /* === CHRISTMAS SNOW EFFECT (v1.6.6: toggle + stop) === */
