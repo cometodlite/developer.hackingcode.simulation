@@ -2951,3 +2951,24 @@
   // 초기 상태는 applySettings()에서 결정
   try { if (typeof applySettings === 'function') applySettings(); } catch(e) {}
 })();
+
+
+// === MOBILE SCAN OVERLAY GLOBAL FIX v1.6.11-scanoverlay1 ===
+(function(){
+  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+  if(!isMobile) return;
+
+  function mountScanOverlayGlobal(){
+    const overlay = document.getElementById('scanOverlay');
+    if(!overlay || overlay.dataset.globalMobileOverlay === '1') return;
+    document.body.appendChild(overlay);
+    overlay.dataset.globalMobileOverlay = '1';
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', mountScanOverlayGlobal, { once:true });
+  }else{
+    mountScanOverlayGlobal();
+  }
+  window.addEventListener('load', mountScanOverlayGlobal, { once:true });
+})();

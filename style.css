@@ -1156,17 +1156,28 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
 
-/* === MOBILE TOAST ABOVE BOTTOM TAB BAR (v1.6.11-toastfix1) === */
+/* === MOBILE SCAN OVERLAY GLOBAL FIX v1.6.11-scanoverlay1 === */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  #toastContainer{
-    left: 12px;
-    right: 12px;
-    width: auto;
-    transform: none;
-    bottom: calc(72px + 12px + var(--safe-bottom));
-    z-index: 12000;
+  #scanOverlay {
+    position: fixed !important;
+    top: calc(var(--headerH, 52px) + 8px) !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(var(--tabsInset, calc(92px + 20px + env(safe-area-inset-bottom))) + 10px) !important;
+    inset: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-height: 180px;
+    z-index: 16000 !important;
+    border-radius: 14px;
+    overflow: hidden;
   }
-  .toast{
-    margin-bottom: 0;
+
+  #scanText {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
