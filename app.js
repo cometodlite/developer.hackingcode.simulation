@@ -792,15 +792,15 @@
         waitAction: false
       },
       {
-        title: 'HOME 확인',
-        text: '여기서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
+        title: 'STATUS / ACTION 확인',
+        text: 'STATUS에서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고, ACTION에서는 주요 행동을 실행할 수 있습니다.',
         hint: '상태를 확인했다면 다음 단계로 이동하세요.',
         waitAction: false
       },
       {
         title: '코드 스캔 실행',
         text: '먼저 코드 스캔을 1회 실행해 보세요. 스캔은 새로운 코드를 찾거나 기존 코드를 강화하는 출발점입니다.',
-        hint: 'HOME의 [코드 스캔] 버튼을 눌러 주세요. 완료되면 자동으로 다음 단계로 넘어갑니다.',
+        hint: 'ACTION의 [코드 스캔] 버튼을 눌러 주세요. 완료되면 자동으로 다음 단계로 넘어갑니다.',
         waitAction: true
       },
       {
@@ -812,7 +812,7 @@
       {
         title: '서버 해킹',
         text: '선택한 코드와 CPU 성능을 바탕으로 서버 해킹을 시도할 수 있습니다. 해킹은 크레딧과 성장의 핵심 루프입니다.',
-        hint: 'HOME의 [서버 해킹] 버튼을 눌러 1회 시도해 보세요. 성공 여부와 관계없이 다음 단계로 진행됩니다.',
+        hint: 'ACTION의 [서버 해킹] 버튼을 눌러 1회 시도해 보세요. 성공 여부와 관계없이 다음 단계로 진행됩니다.',
         waitAction: true
       },
       {
@@ -901,12 +901,13 @@
       tutorialBackdrop.classList.toggle('interactive', interactive);
       tutorialBackdrop.dataset.tutorialStep = String(idx + 1);
       document.body.dataset.tutorialStep = String(idx + 1);
-      document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
+      document.body.classList.toggle('tutorial-interactive', false);
       btnTutorialPrev.disabled = idx <= 0;
       const waiting = interactive;
       btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
       btnTutorialNext.disabled = waiting;
       btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
+      tutorialBackdrop.classList.toggle('guide-mode', true);
       syncTutorialStepView();
     }
 
@@ -921,8 +922,7 @@
       tutorialBackdrop.classList.add('show');
       tutorialBackdrop.setAttribute('aria-hidden', 'false');
       document.body.classList.add('tutorial-open');
-      const step = tutorialSteps[Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1)];
-      document.body.classList.toggle('tutorial-interactive', !!step.waitAction);
+      document.body.classList.add('tutorial-guide-open');
       tutorialOpenedOnce = true;
     }
 
@@ -934,11 +934,13 @@
       }
       tutorialBackdrop.classList.remove('show');
       tutorialBackdrop.classList.remove('interactive');
+      tutorialBackdrop.classList.remove('guide-mode');
       tutorialBackdrop.setAttribute('aria-hidden', 'true');
       delete tutorialBackdrop.dataset.tutorialStep;
       delete document.body.dataset.tutorialStep;
       document.body.classList.remove('tutorial-open');
       document.body.classList.remove('tutorial-interactive');
+      document.body.classList.remove('tutorial-guide-open');
       saveGame(true);
     }
 
