@@ -1,5 +1,3 @@
-window.__HCSIG_SIMPLE_MOBILE__ = true;
-
 // Split from 배포용 index.html on 2026-03-09
 // Original inline scripts concatenated in source order.
 
@@ -87,7 +85,7 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(L)';
+    const CURRENT_VERSION = 'v1.6.11(i)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -95,14 +93,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
     // 업데이트 로그
     const updateLogs = [
-      {
-        version: 'v1.6.11(L)',
-        lines: [
-          '튜토리얼 시스템과 관련 UI를 완전히 제거했습니다.',
-          '퀘스트를 확장했습니다. (DAILY +2 / WEEKLY +5 / MONTH +8 / GENERAL +30)',
-          '상점 일일 구매 제한과 성장 밸런스 조정을 유지했습니다.'
-        ]
-      },
       {
         version: 'HackSim Java Edition → HCSiG Web',
         lines: [
@@ -220,15 +210,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
           'visibilitychange/pagehide 뿐 아니라 새로 열기·새로고침 상황에서도 복귀 보정이 동작합니다.',
           '오프라인 에너지 회복 상한은 최대 60분으로 유지됩니다.'
         ]
-      },
-      {
-        version: 'v1.6.11(j)',
-        lines: [
-          '신규 유저용 튜토리얼 시스템 1차를 추가했습니다.',
-          'HOME/코드 스캔/CODES/해킹/성장 흐름을 단계별로 안내합니다.',
-          '특정 행동을 수행하면 다음 단계로 자동 진행되며, 건너뛰기 및 다시 보기를 지원합니다.',
-          '튜토리얼 완료 여부와 진행 단계는 저장 데이터에 함께 보관됩니다.'
-        ]
       }
 
     ];
@@ -247,7 +228,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
       items: { energyPack: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
-      tutorial: { completed: true, step: 0, seen: true },
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -374,40 +354,40 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
         id: 'school_lab',
         name: '학교 실습 서버',
         security: 20,
-        minReward: 8,
-        maxReward: 18,
+        minReward: 10,
+        maxReward: 25,
         minLevel: 1
       },
       {
         id: 'bank_backup',
         name: '은행 백업 노드',
         security: 35,
-        minReward: 18,
-        maxReward: 35,
+        minReward: 25,
+        maxReward: 50,
         minLevel: 2
       },
       {
         id: 'gov_archive',
         name: '정부 기록 보관 노드',
         security: 50,
-        minReward: 28,
-        maxReward: 55,
+        minReward: 40,
+        maxReward: 80,
         minLevel: 3
       },
       {
         id: 'central_core',
         name: '중앙 코어 그리드',
         security: 70,
-        minReward: 45,
-        maxReward: 95,
+        minReward: 70,
+        maxReward: 140,
         minLevel: 4
       },
       {
         id: 'deep_space',
         name: '딥 스페이스 릴레이',
         security: 90,
-        minReward: 65,
-        maxReward: 130,
+        minReward: 100,
+        maxReward: 200,
         minLevel: 5
       }
     ];
@@ -463,12 +443,12 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
       {
         id: 'scanner_module',
         name: '고급 스캐너 모듈',
-        desc: '코드 스캔 시 경험치 +1 추가.',
+        desc: '코드 스캔 시 경험치 +2 추가.',
         cost: 350,
         rarity: 'UNCOMMON',
         category: 'SYSTEM',
         buy: () => {
-          modifiers.scanExtraExp += 1;
+          modifiers.scanExtraExp += 2;
         }
       },
       {
@@ -533,13 +513,13 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
       {
         id: 'big_credit_pack',
         name: '데이터 크레딧 팩',
-        desc: '즉시 크레딧 +300. (일일 구매 제한: 1회)',
+        desc: '즉시 크레딧 +500. (일일 구매 제한: 2회)',
         cost: 400,
         rarity: 'COMMON',
         category: 'ECONOMY',
         buy: () => {
-          state.credits += 300;
-          state.stats.creditsEarnedTotal += 300;
+          state.credits += 500;
+          state.stats.creditsEarnedTotal += 500;
         }
       },
       {
@@ -584,21 +564,14 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
         { id: 'daily_hack3',   name: '일일 침입자 I',     type: 'hackSuccess',   target: 3,   rewardCredits: 80,  desc: '서버 해킹 성공 3회' },
         { id: 'daily_hack5',   name: '일일 침입자 II',    type: 'hackSuccess',   target: 5,   rewardCredits: 100, desc: '서버 해킹 성공 5회' },
         { id: 'daily_energy30',name: '에너지 소비자',      type: 'energySpent',   target: 30,  rewardCredits: 70,  desc: '에너지 30 소모하기' },
-        { id: 'daily_action10_pack', name: '보급 루틴',    type: 'actions',       target: 10,  rewardCredits: 60,  rewardEnergyPack: 1, desc: '코드 스캔/서버 해킹 총 10회 수행' },
-        { id: 'daily_risk1',     name: '일일 리스크',      type: 'riskHackSuccess', target: 1,   rewardCredits: 90,  desc: '위험 해킹 모드로 서버 해킹 성공 1회' },
-        { id: 'daily_buy1',      name: '일일 조달',        type: 'shopPurchases',   target: 1,   rewardCredits: 50,  desc: '상점에서 1회 구매하기' }
+        { id: 'daily_action10_pack', name: '보급 루틴',    type: 'actions',       target: 10,  rewardCredits: 60,  rewardEnergyPack: 1, desc: '코드 스캔/서버 해킹 총 10회 수행' }
       ],
       weekly: [
         { id: 'weekly_scan30',   name: '주간 스캐너',        type: 'scans',       target: 30,  rewardCredits: 120, desc: '코드 스캔 30회 수행' },
         { id: 'weekly_scan50',   name: '집요한 스캐너',      type: 'scans',       target: 50,  rewardCredits: 180, desc: '코드 스캔 50회 수행' },
         { id: 'weekly_hack20',   name: '주간 침입자',        type: 'hackSuccess', target: 20,  rewardCredits: 200, desc: '서버 해킹 성공 20회' },
         { id: 'weekly_energy100',name: '에너지 소모왕',       type: 'energySpent', target: 100, rewardCredits: 200, desc: '에너지 100 소모하기' },
-        { id: 'weekly_level10',  name: '주간 성장',          type: 'level',       target: 10,  rewardCredits: 250, desc: '플레이어 레벨 10 달성' },
-        { id: 'weekly_actions40',  name: '주간 루프',          type: 'actions',       target: 40,  rewardCredits: 180, desc: '코드 스캔/서버 해킹 총 40회 수행' },
-        { id: 'weekly_hack_risk5', name: '위험한 한 주',        type: 'riskHackSuccess', target: 5, rewardCredits: 240, desc: '위험 해킹 모드로 서버 해킹 성공 5회' },
-        { id: 'weekly_buy5',       name: '주간 소비',          type: 'shopPurchases', target: 5,   rewardCredits: 160, desc: '상점에서 5회 구매하기' },
-        { id: 'weekly_credit800',  name: '주간 수익',          type: 'creditsEarnedTotal', target: 800, rewardCredits: 180, desc: '누적 획득 크레딧 800 달성' },
-        { id: 'weekly_energy0',    name: '방전 습관',          type: 'energy0Flag', target: 1,   rewardCredits: 150, desc: '이번 주 최소 1회 에너지를 0까지 소모' }
+        { id: 'weekly_level10',  name: '주간 성장',          type: 'level',       target: 10,  rewardCredits: 250, desc: '플레이어 레벨 10 달성' }
       ],
       month: [
         { id: 'month_scan100',     name: '월간 스캐너',        type: 'scans',           target: 100, rewardCredits: 300, desc: '코드 스캔 100회 수행' },
@@ -607,15 +580,7 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
         { id: 'month_energy300',   name: '에너지 브레이커',     type: 'energySpent',     target: 300, rewardCredits: 450, desc: '에너지 300 소모하기' },
         { id: 'month_level15',     name: '월간 성장',          type: 'level',           target: 15,  rewardCredits: 500, desc: '플레이어 레벨 15 달성' },
         { id: 'month_scan_risk',   name: '위험한 분석',        type: 'riskHackSuccess', target: 30,  rewardCredits: 500, desc: '위험 해킹 모드로 서버 해킹 성공 30회' },
-        { id: 'month_energy0',     name: '한계 돌파',          type: 'energy0Flag',     target: 1,   rewardCredits: 350, desc: '한 달 동안 최소 1회 에너지를 0까지 소모' },
-        { id: 'month_scan350',      name: '월간 스캐너 II',     type: 'scans',           target: 350, rewardCredits: 650, desc: '코드 스캔 350회 수행' },
-        { id: 'month_hack100',      name: '월간 침입자 II',     type: 'hackSuccess',     target: 100, rewardCredits: 700, desc: '서버 해킹 성공 100회' },
-        { id: 'month_actions200',   name: '장기 루틴',          type: 'actions',         target: 200, rewardCredits: 600, desc: '코드 스캔/서버 해킹 총 200회 수행' },
-        { id: 'month_energy500',    name: '에너지 파쇄기',      type: 'energySpent',     target: 500, rewardCredits: 650, desc: '에너지 500 소모하기' },
-        { id: 'month_level20',      name: '월간 도약',          type: 'level',           target: 20,  rewardCredits: 700, desc: '플레이어 레벨 20 달성' },
-        { id: 'month_buy20',        name: '월간 소비자',        type: 'shopPurchases',   target: 20,  rewardCredits: 500, desc: '상점에서 20회 구매하기' },
-        { id: 'month_credits5000',  name: '월간 수익 관리자',    type: 'creditsEarnedTotal', target: 5000, rewardCredits: 650, desc: '누적 획득 크레딧 5000 달성' },
-        { id: 'month_risk60',       name: '위험 중독',          type: 'riskHackSuccess', target: 60,  rewardCredits: 800, desc: '위험 해킹 모드로 서버 해킹 성공 60회' }
+        { id: 'month_energy0',     name: '한계 돌파',          type: 'energy0Flag',     target: 1,   rewardCredits: 350, desc: '한 달 동안 최소 1회 에너지를 0까지 소모' }
       ],
       // GENERAL: 장기 과제 ~30개
       general: [
@@ -661,51 +626,7 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
         { id: 'gen_mission_40',    name: '퀘스트 매니악',        type: 'missionsCompleted', target: 40,   rewardCredits: 800,  desc: '누적 퀘스트 40개 완료' },
 
         { id: 'gen_risk_10',       name: '위험 친화 I',          type: 'riskHackSuccess',   target: 10,   rewardCredits: 400,  desc: '위험 해킹 모드로 해킹 성공 10회' },
-        { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' },
-
-        { id: 'gen_scan_500',       name: '분석가 III',          type: 'scans',             target: 500,  rewardCredits: 700,  desc: '누적 코드 스캔 500회' },
-        { id: 'gen_scan_800',       name: '분석가 IV',           type: 'scans',             target: 800,  rewardCredits: 1000, desc: '누적 코드 스캔 800회' },
-        { id: 'gen_scan_1200',      name: '분석가 V',            type: 'scans',             target: 1200, rewardCredits: 1400, desc: '누적 코드 스캔 1200회' },
-
-        { id: 'gen_hack_200',       name: '침입 마스터 II',      type: 'hackSuccess',       target: 200,  rewardCredits: 850,  desc: '누적 해킹 성공 200회' },
-        { id: 'gen_hack_400',       name: '침입 마스터 III',     type: 'hackSuccess',       target: 400,  rewardCredits: 1300, desc: '누적 해킹 성공 400회' },
-        { id: 'gen_hack_700',       name: '침입 마스터 IV',      type: 'hackSuccess',       target: 700,  rewardCredits: 1800, desc: '누적 해킹 성공 700회' },
-
-        { id: 'gen_energy_spent_1500', name: '에너지 브루탈 II', type: 'energySpentTotal',  target: 1500, rewardCredits: 900,  desc: '누적 에너지 1500 소모' },
-        { id: 'gen_energy_spent_2500', name: '에너지 브루탈 III',type: 'energySpentTotal',  target: 2500, rewardCredits: 1300, desc: '누적 에너지 2500 소모' },
-        { id: 'gen_energy_spent_4000', name: '에너지 브루탈 IV', type: 'energySpentTotal',  target: 4000, rewardCredits: 1800, desc: '누적 에너지 4000 소모' },
-
-        { id: 'gen_level_25',       name: '고급 운영자 II',      type: 'level',             target: 25,   rewardCredits: 800,  desc: '플레이어 레벨 25 달성' },
-        { id: 'gen_level_30',       name: '코어 관리자',         type: 'level',             target: 30,   rewardCredits: 1100, desc: '플레이어 레벨 30 달성' },
-        { id: 'gen_level_40',       name: '시스템 지배자',       type: 'level',             target: 40,   rewardCredits: 1800, desc: '플레이어 레벨 40 달성' },
-
-        { id: 'gen_cpu_7',          name: 'CPU 튜너 III',        type: 'cpuTier',           target: 7,    rewardCredits: 650,  desc: 'CPU 티어 7 달성' },
-        { id: 'gen_cpu_10',         name: 'CPU 튜너 IV',         type: 'cpuTier',           target: 10,   rewardCredits: 1000, desc: 'CPU 티어 10 달성' },
-        { id: 'gen_cpu_15',         name: 'CPU 초월자',          type: 'cpuTier',           target: 15,   rewardCredits: 1600, desc: 'CPU 티어 15 달성' },
-
-        { id: 'gen_energyMax_35',   name: '에너지 저장고 II',    type: 'energyMax',         target: 35,   rewardCredits: 800,  desc: '에너지 최대치 35 달성' },
-        { id: 'gen_energyMax_40',   name: '에너지 저장고 III',   type: 'energyMax',         target: 40,   rewardCredits: 1200, desc: '에너지 최대치 40 달성' },
-        { id: 'gen_energyMax_50',   name: '에너지 아카이브',     type: 'energyMax',         target: 50,   rewardCredits: 1800, desc: '에너지 최대치 50 달성' },
-
-        { id: 'gen_shop_50',        name: '쇼핑 매니아 II',      type: 'shopPurchases',     target: 50,   rewardCredits: 700,  desc: '상점에서 누적 50회 구매' },
-        { id: 'gen_shop_80',        name: '쇼핑 매니아 III',     type: 'shopPurchases',     target: 80,   rewardCredits: 1100, desc: '상점에서 누적 80회 구매' },
-        { id: 'gen_shop_120',       name: '쇼핑 제왕',           type: 'shopPurchases',     target: 120,  rewardCredits: 1700, desc: '상점에서 누적 120회 구매' },
-
-        { id: 'gen_credits_50000',  name: '데이터 자본가 III',   type: 'creditsEarnedTotal',target: 50000,rewardCredits: 1000, desc: '누적 획득 크레딧 50000 달성' },
-        { id: 'gen_credits_100000', name: '데이터 자본가 IV',    type: 'creditsEarnedTotal',target: 100000,rewardCredits: 1700, desc: '누적 획득 크레딧 100000 달성' },
-        { id: 'gen_credits_250000', name: '데이터 제국',         type: 'creditsEarnedTotal',target: 250000,rewardCredits: 2600, desc: '누적 획득 크레딧 250000 달성' },
-
-        { id: 'gen_achieve_20',     name: '기록 수집가 IV',      type: 'achievements',      target: 20,   rewardCredits: 700,  desc: '업적 20개 달성' },
-        { id: 'gen_achieve_30',     name: '기록 수집가 V',       type: 'achievements',      target: 30,   rewardCredits: 1100, desc: '업적 30개 달성' },
-        { id: 'gen_achieve_45',     name: '기록 박물관',         type: 'achievements',      target: 45,   rewardCredits: 1700, desc: '업적 45개 달성' },
-
-        { id: 'gen_mission_60',     name: '퀘스트 매니악 II',    type: 'missionsCompleted', target: 60,   rewardCredits: 1000, desc: '누적 퀘스트 60개 완료' },
-        { id: 'gen_mission_100',    name: '퀘스트 매니악 III',   type: 'missionsCompleted', target: 100,  rewardCredits: 1600, desc: '누적 퀘스트 100개 완료' },
-        { id: 'gen_mission_160',    name: '퀘스트 아카이브',     type: 'missionsCompleted', target: 160,  rewardCredits: 2400, desc: '누적 퀘스트 160개 완료' },
-
-        { id: 'gen_risk_50',        name: '위험 친화 III',       type: 'riskHackSuccess',   target: 50,   rewardCredits: 1000, desc: '위험 해킹 모드로 해킹 성공 50회' },
-        { id: 'gen_risk_100',       name: '위험 친화 IV',        type: 'riskHackSuccess',   target: 100,  rewardCredits: 1600, desc: '위험 해킹 모드로 해킹 성공 100회' },
-        { id: 'gen_risk_180',       name: '위험 그 자체',        type: 'riskHackSuccess',   target: 180,  rewardCredits: 2400, desc: '위험 해킹 모드로 해킹 성공 180회' }
+        { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' }
       ]
     };
 
@@ -830,35 +751,26 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
     const setToastMs = document.getElementById('setToastMs');
     const setAutoSaveToast = document.getElementById('setAutoSaveToast');
 
-    const tutorialBackdrop = null;
-    const tutorialStepLabel = null;
-    const tutorialStepTitle = null;
-    const tutorialStepText = null;
-    const tutorialStepHint = null;
-    const btnTutorialPrev = null;
-    const btnTutorialNext = null;
-    const btnTutorialFinish = null;
-    const btnTutorialSkip = null;
-    const btnOpenTutorial = null;
+    const btnExportSave = document.getElementById('btnExportSave');
+    const btnImportSaveFile = document.getElementById('btnImportSaveFile');
+    const fileImportSave = document.getElementById('fileImportSave');
+    const importSaveText = document.getElementById('importSaveText');
+    const btnImportSaveText = document.getElementById('btnImportSaveText');
 
-    function ensureTutorialDefaults() {
-      state.tutorial = { completed: true, step: 0, seen: true };
-    }
+    // 상태
+    let missionScopeActive = 'daily';
+    let logsHidden = false;
+    let scanRunning = false;
 
-    function isTutorialOpen() {
-      return false;
+    function getDayKey() {
+      return new Date().toISOString().slice(0, 10);
     }
-
-    function renderTutorial() {}
-    function openTutorial() {}
-    function closeTutorial() {
-      ensureTutorialDefaults();
+    function getWeekKey() {
+      return Math.floor(Date.now() / (7 * 24 * 3600 * 1000));
     }
-    function nextTutorialStep() {}
-    function prevTutorialStep() {}
-    function onTutorialAction() {}
-    function maybeStartTutorial() {
-      ensureTutorialDefaults();
+    function getMonthKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     }
 
     function updateStatsUI() {
@@ -1016,9 +928,9 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
       ensureMissionResets();
       state.level++;
       state.requiredExp = requiredExp(state.level);
-      state.credits += 50;
-      state.stats.creditsEarnedTotal += 50;
-      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +50 지급.`, 'level');
+      state.credits += 100;
+      state.stats.creditsEarnedTotal += 100;
+      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +100 지급.`, 'level');
 
       state.missionProgress.weekly.levelReached = Math.max(
         state.missionProgress.weekly.levelReached,
@@ -1157,7 +1069,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
           state.activeCodeId = code.id;
           updateStatsUI();
           log(`활성 코드 변경: ${code.name}`, 'system');
-          onTutorialAction('selectCode');
         });
 
         codeListEl.appendChild(li);
@@ -1262,11 +1173,7 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
     // =========================
     const SHOP_LIMITS = {
       // Daily cap
-      big_credit_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
-      energy_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
-      energy_boost_1: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
-      energy_boost_2: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
-      level_ticket: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      big_credit_pack: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
       // One-time (no stacking)
       perm_credit_boost: { type: 'once', limit: 1, label: '1회' },
       risk_support: { type: 'once', limit: 1, label: '1회' },
@@ -1650,10 +1557,9 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
           }
         }
 
-        const expGain = 1 + modifiers.scanExtraExp;
+        const expGain = 2 + modifiers.scanExtraExp;
         addExp(expGain);
         log(`코드 스캔 완료: 경험치 +${expGain}.`, 'scan');
-        onTutorialAction('scan');
 
         checkAchievements('scan');
         checkMissions('general');
@@ -1672,6 +1578,14 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
     function doHack() {
       ensureMissionResets();
 
+      const energyCost = 2;
+      if (!consumeEnergy(energyCost)) {
+        log('에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', 'hack');
+        return;
+      }
+
+      state.missionProgress.daily.actions++;
+
       const code = getActiveCodeInstance();
       if (!code) {
         log('보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', 'hack');
@@ -1687,15 +1601,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
         log(`해당 서버를 해킹하려면 최소 Lv.${server.minLevel} 이상이어야 합니다.`, 'hack');
         return;
       }
-
-      const energyCost = 2;
-      if (!consumeEnergy(energyCost)) {
-        log('에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', 'hack');
-        return;
-      }
-
-      state.missionProgress.daily.actions++;
-      onTutorialAction('hack');
 
       let serverSec = server.security;
       let creditMultiplier = modifiers.creditMultiplierSession * modifiers.creditMultiplierPermanent;
@@ -1729,7 +1634,7 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
         const rawReward =
           server.minReward + Math.random() * (server.maxReward - server.minReward);
         const rewardCredits = Math.round(rawReward * creditMultiplier);
-        const gainedExp = 5;
+        const gainedExp = 8;
 
         state.credits += rewardCredits;
         state.stats.creditsEarnedTotal += rewardCredits;
@@ -2399,7 +2304,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
         state.ui.autoSaveToast = !!state.ui.autoSaveToast;
         state.ui.logSearch = state.ui.logSearch || '';
 
-        ensureTutorialDefaults();
         state.lastSeenAt = Number(state.lastSeenAt || data.savedAt || 0) || null;
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
@@ -2422,12 +2326,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
     btnSaveGame.addEventListener('click', saveGame);
     btnLoadGame.addEventListener('click', loadGame);
     btnClearSave.addEventListener('click', clearSave);
-
-    if (btnTutorialPrev) btnTutorialPrev.addEventListener('click', prevTutorialStep);
-    if (btnTutorialNext) btnTutorialNext.addEventListener('click', nextTutorialStep);
-    if (btnTutorialFinish) btnTutorialFinish.addEventListener('click', () => closeTutorial(true));
-    if (btnTutorialSkip) btnTutorialSkip.addEventListener('click', () => closeTutorial(true));
-    if (btnOpenTutorial) btnOpenTutorial.addEventListener('click', () => openTutorial(true));
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') persistLastSeenAt(Date.now());
@@ -2684,7 +2582,7 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(L))', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(i) Offline Energy Fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2695,9 +2593,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
       renderUpdateLog();
       maybeShowUpdateOnStart();
-      setTimeout(() => {
-        maybeStartTutorial();
-      }, 180);
     }
 
     init();
@@ -2706,13 +2601,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
 // === MOBILE PATCH: disable resizers on touch devices ===
 (function(){
-  if(window.__HCSIG_SIMPLE_MOBILE__){
-    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-    if(isTouch){
-      document.querySelectorAll('.resizer,.resize-bar').forEach(el=>el.remove());
-    }
-    return;
-  }
   const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   if(isTouch){
     document.querySelectorAll('.resizer,.resize-bar').forEach(el=>el.remove());
@@ -2729,7 +2617,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
 // === MOBILE UI MODE: Tabbed panels ===
 (function(){
-  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -2793,11 +2680,8 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
 // === MOBILE VIEWS: split PC layout into mobile tabs ===
 (function(){
-  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
-  // legacy split-view disabled by k1 hotfix
-  return;
 
   // helper
   const byText = (root, sel, txt) => {
@@ -2962,7 +2846,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
 // === SAFE-AREA / TABS HEIGHT CALIBRATION ===
 (function(){
-  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -2990,11 +2873,8 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
 // === MOBILE TABS AUTO-HIDE on scroll ===
 (function(){
-  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
-  // disabled by k1 hotfix; old view IDs are no longer used
-  return;
 
   function activeViewEl(){
     const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
@@ -3068,7 +2948,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
 // === ANDROID: VisualViewport keyboard handling + UA class ===
 (function(){
-  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -3095,9 +2974,6 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
   setTimeout(update, 900);
 })();
 
-
-
-;
 
 
 /* === CHRISTMAS SNOW EFFECT (v1.6.6: toggle + stop) === */
@@ -3162,86 +3038,4 @@ window.__HCSIG_SIMPLE_MOBILE__ = true;
 
   // 초기 상태는 applySettings()에서 결정
   try { if (typeof applySettings === 'function') applySettings(); } catch(e) {}
-})();
-
-
-// === SIMPLE MOBILE NAV (HOME / CODES / SHOP / COMING SOON) ===
-(function(){
-  if(!window.__HCSIG_SIMPLE_MOBILE__) return;
-  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-  if(!isMobile) return;
-
-  const body = document.body;
-  const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  const header = document.querySelector('header');
-  if(!left || !center) return;
-
-  const sectionTitles = Array.from(left.querySelectorAll('.section-title'));
-  const statusTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'status');
-  const shopTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'shop');
-  const statusBox = left.querySelector('.stat-box');
-  const shopSortRow = left.querySelector('.shop-sort-row');
-  const shopListEl = document.getElementById('shopList');
-  const centerInner = center.querySelector('.center-inner') || center;
-  const actionsBox = centerInner.querySelector('.stat-box');
-  const codesWrap = centerInner.querySelector('.flex-row.flex-grow');
-  const scanOverlay = document.getElementById('scanOverlay');
-
-  if(statusTitle) statusTitle.classList.add('mobile-home-only');
-  if(statusBox) statusBox.classList.add('mobile-home-only');
-  if(actionsBox) actionsBox.classList.add('mobile-home-only');
-  if(shopTitle) shopTitle.classList.add('mobile-shop-only');
-  if(shopSortRow) shopSortRow.classList.add('mobile-shop-only');
-  if(shopListEl) shopListEl.classList.add('mobile-shop-only');
-  if(codesWrap) codesWrap.classList.add('mobile-codes-only');
-
-  const existing = document.querySelector('.mobile-simple-tabs');
-  if(existing) existing.remove();
-
-  const wrap = document.createElement('div');
-  wrap.className = 'mobile-simple-tabs';
-  wrap.innerHTML = `
-    <button type="button" data-mobile-tab="home">HOME</button>
-    <button type="button" data-mobile-tab="codes">CODES</button>
-    <button type="button" data-mobile-tab="shop">SHOP</button>
-    <button type="button" data-mobile-tab="coming">COMING SOON</button>
-  `;
-  body.appendChild(wrap);
-
-  function updateHeaderVar(){
-    const h = header ? Math.ceil(header.getBoundingClientRect().height) : 52;
-    document.documentElement.style.setProperty('--header-h', h + 'px');
-  }
-
-  function setSimpleTab(tab){
-    body.classList.remove('simple-tab-home','simple-tab-codes','simple-tab-shop');
-    body.classList.add('simple-tab-' + tab);
-    wrap.querySelectorAll('button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mobileTab === tab);
-    });
-    if(tab === 'codes' && center) center.scrollTop = 0;
-    if(tab === 'shop' && left) left.scrollTop = 0;
-    if(tab === 'home') {
-      if(left) left.scrollTop = 0;
-      if(center) center.scrollTop = 0;
-    }
-  }
-
-  wrap.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-mobile-tab]');
-    if(!btn) return;
-    const tab = btn.dataset.mobileTab;
-    if(tab === 'coming') {
-      showToast('Coming Soon - 준비 중인 기능입니다.', 'system');
-      return;
-    }
-    setSimpleTab(tab);
-  });
-
-  updateHeaderVar();
-  window.addEventListener('resize', updateHeaderVar);
-  window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
-  if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
-  setSimpleTab('home');
 })();
