@@ -3,13 +3,24 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="width=device-width, initial-scale=1, height=device-height, viewport-fit=cover" name="viewport"/>
 <title>HCSiG - Hacking Code Simulator Game</title>
 
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
 <link href="style.css?v=1.6.11k21" rel="stylesheet"/>
+
+<style>
+/* Mobile rendering fix for iOS Safari flex/100vh bug */
+#main{
+  display:flex !important;
+  min-height:calc(100vh - 48px) !important;
+  width:100% !important;
+  overflow:auto !important;
+}
+</style>
+
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
