@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(k1)';
+    const CURRENT_VERSION = 'v1.6.11(k2)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -218,6 +218,15 @@
           'HOME/코드 스캔/CODES/해킹/성장 흐름을 단계별로 안내합니다.',
           '특정 행동을 수행하면 다음 단계로 자동 진행되며, 건너뛰기 및 다시 보기를 지원합니다.',
           '튜토리얼 완료 여부와 진행 단계는 저장 데이터에 함께 보관됩니다.'
+        ]
+      },
+      {
+        version: 'v1.6.11(k)',
+        lines: [
+          '일일 상점 구매 제한을 강화해 에너지/크레딧 급가속을 억제했습니다.',
+          '코드 스캔 및 서버 해킹 경험치 획득량을 하향 조정했습니다.',
+          '레벨업 보너스와 데이터 크레딧 팩, 서버 해킹 크레딧 보상을 전반적으로 낮췄습니다.',
+          '하루 만에 과도하게 성장하는 흐름을 완화하도록 밸런스를 재조정했습니다.'
         ]
       }
 
@@ -364,40 +373,40 @@
         id: 'school_lab',
         name: '학교 실습 서버',
         security: 20,
-        minReward: 10,
-        maxReward: 25,
+        minReward: 8,
+        maxReward: 18,
         minLevel: 1
       },
       {
         id: 'bank_backup',
         name: '은행 백업 노드',
         security: 35,
-        minReward: 25,
-        maxReward: 50,
+        minReward: 18,
+        maxReward: 35,
         minLevel: 2
       },
       {
         id: 'gov_archive',
         name: '정부 기록 보관 노드',
         security: 50,
-        minReward: 40,
-        maxReward: 80,
+        minReward: 28,
+        maxReward: 55,
         minLevel: 3
       },
       {
         id: 'central_core',
         name: '중앙 코어 그리드',
         security: 70,
-        minReward: 70,
-        maxReward: 140,
+        minReward: 45,
+        maxReward: 95,
         minLevel: 4
       },
       {
         id: 'deep_space',
         name: '딥 스페이스 릴레이',
         security: 90,
-        minReward: 100,
-        maxReward: 200,
+        minReward: 65,
+        maxReward: 130,
         minLevel: 5
       }
     ];
@@ -453,12 +462,12 @@
       {
         id: 'scanner_module',
         name: '고급 스캐너 모듈',
-        desc: '코드 스캔 시 경험치 +2 추가.',
+        desc: '코드 스캔 시 경험치 +1 추가.',
         cost: 350,
         rarity: 'UNCOMMON',
         category: 'SYSTEM',
         buy: () => {
-          modifiers.scanExtraExp += 2;
+          modifiers.scanExtraExp += 1;
         }
       },
       {
@@ -523,13 +532,13 @@
       {
         id: 'big_credit_pack',
         name: '데이터 크레딧 팩',
-        desc: '즉시 크레딧 +500. (일일 구매 제한: 2회)',
+        desc: '즉시 크레딧 +300. (일일 구매 제한: 1회)',
         cost: 400,
         rarity: 'COMMON',
         category: 'ECONOMY',
         buy: () => {
-          state.credits += 500;
-          state.stats.creditsEarnedTotal += 500;
+          state.credits += 300;
+          state.stats.creditsEarnedTotal += 300;
         }
       },
       {
@@ -546,7 +555,7 @@
       {
         id: 'level_ticket',
         name: '시뮬레이션 레벨 티켓',
-        desc: '즉시 레벨 1회 상승.',
+        desc: '즉시 레벨 1회 상승. (일일 구매 제한: 1회)',
         cost: 1000,
         rarity: 'EPIC',
         category: 'UTILITY',
@@ -1080,7 +1089,7 @@
     }
 
     function addExp(amount) {
-      const finalAmount = Math.max(1, Math.round(amount * modifiers.expMultiplier));
+      const finalAmount = Math.max(0, Math.round(amount * modifiers.expMultiplier));
       state.exp += finalAmount;
       let leveledUp = false;
       while (state.exp >= state.requiredExp) {
@@ -1095,9 +1104,9 @@
       ensureMissionResets();
       state.level++;
       state.requiredExp = requiredExp(state.level);
-      state.credits += 100;
-      state.stats.creditsEarnedTotal += 100;
-      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +100 지급.`, 'level');
+      state.credits += 50;
+      state.stats.creditsEarnedTotal += 50;
+      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +50 지급.`, 'level');
 
       state.missionProgress.weekly.levelReached = Math.max(
         state.missionProgress.weekly.levelReached,
@@ -1341,7 +1350,11 @@
     // =========================
     const SHOP_LIMITS = {
       // Daily cap
-      big_credit_pack: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
+      big_credit_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      energy_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      energy_boost_1: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
+      energy_boost_2: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      level_ticket: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
       // One-time (no stacking)
       perm_credit_boost: { type: 'once', limit: 1, label: '1회' },
       risk_support: { type: 'once', limit: 1, label: '1회' },
@@ -1725,7 +1738,7 @@
           }
         }
 
-        const expGain = 2 + modifiers.scanExtraExp;
+        const expGain = 1 + modifiers.scanExtraExp;
         addExp(expGain);
         log(`코드 스캔 완료: 경험치 +${expGain}.`, 'scan');
         onTutorialAction('scan');
@@ -1804,7 +1817,7 @@
         const rawReward =
           server.minReward + Math.random() * (server.maxReward - server.minReward);
         const rewardCredits = Math.round(rawReward * creditMultiplier);
-        const gainedExp = 8;
+        const gainedExp = 5;
 
         state.credits += rewardCredits;
         state.stats.creditsEarnedTotal += rewardCredits;
