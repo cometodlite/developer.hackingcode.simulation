@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(k)';
+    const CURRENT_VERSION = 'v1.6.11(l)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -203,21 +203,51 @@
         ]
       },
       {
+        version: 'v1.6.11(g)',
+        lines: [
+          'STATUS와 ACTION을 하나의 HOME 창으로 통합했습니다.',
+          '모바일 하단 탭 구성을 HOME / CODES / SHOP / LOG 4개 구조로 정리했습니다.',
+          'HOME과 SHOP 영역을 다시 분리하고, PC 3패널 레이아웃을 재정리했습니다.'
+        ]
+      },
+      {
+        version: 'v1.6.11(h)',
+        lines: [
+          '백그라운드/복귀 시 경과 시간을 계산해 에너지 회복이 자연스럽게 이어지도록 보정했습니다.',
+          '페이지를 닫거나 탭을 벗어날 때 마지막 활동 시각을 기록해 복귀 시 진행이 덜 끊기게 만들었습니다.',
+          '마지막 저장/활동 시각 기반의 시간 보정 토대를 추가했습니다.'
+        ]
+      },
+      {
         version: 'v1.6.11(i)',
         lines: [
-          '탭 종료 후 재접속 시에도 오프라인 에너지 회복이 적용되도록 수정했습니다.',
-          '게임 시작 직후 마지막 접속 시각을 기준으로 경과 시간을 계산해 에너지를 보정합니다.',
-          'visibilitychange/pagehide 뿐 아니라 새로 열기·새로고침 상황에서도 복귀 보정이 동작합니다.',
-          '오프라인 에너지 회복 상한은 최대 60분으로 유지됩니다.'
+          '탭을 완전히 닫았다가 다시 열어도 마지막 활동 시각을 기준으로 오프라인 에너지 복구가 적용되도록 보정했습니다.',
+          '새로고침/재접속 직후에도 lastSeenAt 기반 시간을 먼저 계산한 뒤 UI를 갱신하도록 순서를 정리했습니다.',
+          '오프라인 보정 상한은 기존처럼 유지하면서 재실행 대응 안정성을 높였습니다.'
         ]
       },
       {
         version: 'v1.6.11(j)',
         lines: [
-          '신규 유저용 튜토리얼 시스템 1차를 추가했습니다.',
-          'HOME/코드 스캔/CODES/해킹/성장 흐름을 단계별로 안내합니다.',
-          '특정 행동을 수행하면 다음 단계로 자동 진행되며, 건너뛰기 및 다시 보기를 지원합니다.',
-          '튜토리얼 완료 여부와 진행 단계는 저장 데이터에 함께 보관됩니다.'
+          '신규 유저용 튜토리얼 1차를 추가해 HOME, 코드 스캔, 코드 선택, 서버 해킹 흐름을 순서대로 안내합니다.',
+          '튜토리얼 진행 단계와 완료 여부를 저장해 새로고침 후에도 상태가 유지되도록 했습니다.',
+          '설정 탭에서 튜토리얼 다시 보기를 실행할 수 있도록 준비했습니다.'
+        ]
+      },
+      {
+        version: 'v1.6.11(k)',
+        lines: [
+          '튜토리얼의 행동 연동 단계에서는 배경 입력을 막지 않도록 조정해 실제 코드 스캔/해킹을 진행할 수 있게 수정했습니다.',
+          '상호작용 단계에서 안내창이 상단 가이드형처럼 동작하도록 보정했습니다.',
+          '튜토리얼이 플레이를 차단하는 모달처럼 느껴지지 않도록 동작 방식을 정리했습니다.'
+        ]
+      },
+      {
+        version: 'v1.6.11(l)',
+        lines: [
+          '최신 HOME / CODES / SHOP / LOG 구조 위에 튜토리얼을 다시 병합해 예전 STATUS/ACTION 5탭 구조로 되돌아가던 문제를 수정했습니다.',
+          '모바일 4탭, HOME 통합, 최신 레이아웃을 유지한 채 튜토리얼 안내 문구와 실제 UI 흐름을 일치시켰습니다.',
+          '설정 탭의 튜토리얼 다시 보기와 초기 자동 시작 동작을 최신 구조 기준으로 재정리했습니다.'
         ]
       }
 
@@ -793,7 +823,7 @@
       },
       {
         title: 'HOME 확인',
-        text: '여기서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
+        text: '여기는 HOME입니다. 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
         hint: '상태를 확인했다면 다음 단계로 이동하세요.',
         waitAction: false
       },
@@ -805,7 +835,7 @@
       },
       {
         title: '코드 선택',
-        text: '획득한 코드는 코드 인벤토리에서 확인할 수 있습니다. 코드를 눌러 활성 코드로 바꾸고 상세 정보를 확인해 보세요.',
+        text: '획득한 코드는 CODES에서 확인할 수 있습니다. 코드를 눌러 활성 코드로 바꾸고 상세 정보를 확인해 보세요.',
         hint: '코드 인벤토리의 항목을 한 번 클릭하면 자동으로 다음 단계로 넘어갑니다.',
         waitAction: true
       },
@@ -847,46 +877,6 @@
       return !!(tutorialBackdrop && tutorialBackdrop.classList.contains('show'));
     }
 
-    function syncTutorialStepView() {
-      const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
-      const mobileViewMap = {
-        2: 'action',
-        3: 'codes',
-        4: 'action'
-      };
-      const targetView = mobileViewMap[idx];
-      if (targetView) {
-        window.__hcsigPendingTutorialMobileView = targetView;
-        const applyTargetView = () => {
-          if (typeof window.setHcsigMobileView === 'function') {
-            window.setHcsigMobileView(targetView, { tutorialForce: true });
-            return true;
-          }
-          const mobileBtn = document.querySelector(`.mobile-tabs [data-view="${targetView}"]`);
-          if (mobileBtn) {
-            mobileBtn.click();
-            return true;
-          }
-          return false;
-        };
-
-        applyTargetView();
-        requestAnimationFrame(() => applyTargetView());
-        setTimeout(() => applyTargetView(), 0);
-        setTimeout(() => applyTargetView(), 80);
-        setTimeout(() => applyTargetView(), 220);
-      }
-
-      if (idx === 3) {
-        const codeListEl = document.getElementById('codeList');
-        if (codeListEl) {
-          setTimeout(() => {
-            codeListEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 80);
-        }
-      }
-    }
-
     function renderTutorial() {
       if (!tutorialBackdrop) return;
       ensureTutorialDefaults();
@@ -899,15 +889,12 @@
       tutorialStepHint.style.display = step.hint ? '' : 'none';
       const interactive = !!step.waitAction;
       tutorialBackdrop.classList.toggle('interactive', interactive);
-      tutorialBackdrop.dataset.tutorialStep = String(idx + 1);
-      document.body.dataset.tutorialStep = String(idx + 1);
       document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
       btnTutorialPrev.disabled = idx <= 0;
       const waiting = interactive;
       btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
       btnTutorialNext.disabled = waiting;
       btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
-      syncTutorialStepView();
     }
 
     function openTutorial(forceRestart = false) {
@@ -935,8 +922,6 @@
       tutorialBackdrop.classList.remove('show');
       tutorialBackdrop.classList.remove('interactive');
       tutorialBackdrop.setAttribute('aria-hidden', 'true');
-      delete tutorialBackdrop.dataset.tutorialStep;
-      delete document.body.dataset.tutorialStep;
       document.body.classList.remove('tutorial-open');
       document.body.classList.remove('tutorial-interactive');
       saveGame(true);
@@ -1792,14 +1777,6 @@
     function doHack() {
       ensureMissionResets();
 
-      const energyCost = 2;
-      if (!consumeEnergy(energyCost)) {
-        log('에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', 'hack');
-        return;
-      }
-
-      state.missionProgress.daily.actions++;
-
       const code = getActiveCodeInstance();
       if (!code) {
         log('보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', 'hack');
@@ -1811,11 +1788,19 @@
         log('타겟 서버 선택에 실패했습니다.', 'hack');
         return;
       }
-      onTutorialAction('hack');
       if (state.level < server.minLevel) {
         log(`해당 서버를 해킹하려면 최소 Lv.${server.minLevel} 이상이어야 합니다.`, 'hack');
         return;
       }
+
+      const energyCost = 2;
+      if (!consumeEnergy(energyCost)) {
+        log('에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', 'hack');
+        return;
+      }
+
+      state.missionProgress.daily.actions++;
+      onTutorialAction('hack');
 
       let serverSec = server.security;
       let creditMultiplier = modifiers.creditMultiplierSession * modifiers.creditMultiplierPermanent;
@@ -2347,10 +2332,10 @@
     }
 
         // v1.6.2: 더보기 버튼 클릭 이슈 방지 (가드 + 이벤트 위임)
-    if (btnMore) btnMore.addEventListener('click', () => { try { showToast('Coming Soon - 준비 중인 기능입니다.', 'warn'); } catch(e) {} });
+    if (btnMore) btnMore.addEventListener('click', () => openMoreModal('update', false));
     document.addEventListener('click', (e) => {
       const t = e.target.closest && e.target.closest('#btnMore');
-      if (t) { try { showToast('Coming Soon - 준비 중인 기능입니다.', 'warn'); } catch(e) {} }
+      if (t) openMoreModal('update', false);
     });
     if (btnMoreClose) btnMoreClose.addEventListener('click', closeMoreModal);
         if (btnMoreClose2) btnMoreClose2.addEventListener('click', closeMoreModal);
@@ -2804,7 +2789,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(j) Tutorial Update)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(l) Tutorial merge fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2903,28 +2888,40 @@
 
 
 
+// === HOME PANEL MERGE: STATUS + ACTION ===
+(function(){
+  const left = document.getElementById('leftPanel');
+  const center = document.getElementById('centerPanel');
+  if(!left || !center) return;
+
+  const leftTitles = Array.from(left.querySelectorAll('.section-title'));
+  const homeTitle = leftTitles.find(t => (t.textContent||'').trim().toLowerCase()==='status' || (t.textContent||'').trim().toLowerCase()==='home');
+  if(homeTitle) homeTitle.textContent = 'HOME';
+
+  const shopTitle = leftTitles.find(t => (t.textContent||'').trim().toLowerCase()==='shop');
+  const actionTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim().toLowerCase()==='actions');
+  const actionBox = actionTitle ? (actionTitle.closest('.stat-box') || actionTitle.parentElement) : null;
+
+  if(actionBox && shopTitle && actionBox.parentElement !== left){
+    left.insertBefore(actionBox, shopTitle);
+  }
+})();
+
+
+
 // === MOBILE VIEWS: split PC layout into mobile tabs ===
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
-  // helper
-  const byText = (root, sel, txt) => {
-    const els = Array.from(root.querySelectorAll(sel));
-    return els.find(e => (e.textContent||'').trim().toLowerCase() === txt.toLowerCase());
-  };
-
-  // Create mobile view containers
   const views = [
-    ['Status','mobileViewStatus'],
-    ['Action','mobileViewAction'],
+    ['Home','mobileViewHome'],
     ['Codes','mobileViewCodes'],
     ['Shop','mobileViewShop'],
     ['Log','mobileViewLog'],
   ];
-  const main = document.getElementById('main') || document.querySelector('#main') || document.body;
-
-  views.forEach(([_,id])=>{
+  const main = document.getElementById('main') || document.body;
+  views.forEach(([_, id]) => {
     if(document.getElementById(id)) return;
     const v = document.createElement('div');
     v.id = id;
@@ -2932,68 +2929,34 @@
     main.insertBefore(v, main.firstChild);
   });
 
-  // Move leftPanel -> Status + Shop (robustly pick direct sections)
-  const left = document.getElementById('leftPanel');
-  if(left){
-    const statusView = document.getElementById('mobileViewStatus');
-    const shopView = document.getElementById('mobileViewShop');
-    const leftChildren = Array.from(left.children);
-
-    const statusTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='status');
-    const shopTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='shop');
-    const statusBox = statusTitle ? statusTitle.nextElementSibling : null;
-    const shopSortRow = document.getElementById('shopSortSelect')?.closest('.shop-sort-row') || null;
-    const shopListBox = document.getElementById('shopList')?.closest('.stat-box') || null;
-
-    const moveIfPresent = (parent, nodes) => {
-      nodes.filter(Boolean).forEach(node => {
-        if(node && node.parentNode) parent.appendChild(node);
-      });
-    };
-
-    if(statusView && shopView && (statusTitle || shopTitle)){
-      moveIfPresent(statusView, [statusTitle, statusBox]);
-      moveIfPresent(shopView, [shopTitle, shopSortRow, shopListBox]);
-    }else if(statusView){
-      statusView.appendChild(left);
-    }
-  }
-
-  // Move centerPanel -> Action + Codes (use exact containers instead of nested-child comparison)
-  const center = document.getElementById('centerPanel');
-  if(center){
-    const actionView = document.getElementById('mobileViewAction');
-    const codesView  = document.getElementById('mobileViewCodes');
-    const centerInner = center.querySelector('.center-inner') || center;
-    const centerChildren = Array.from(centerInner.children);
-
-    const actionBox = centerChildren.find(el => {
-      const title = el.querySelector && el.querySelector('.section-title');
-      return title && (title.textContent||'').trim().toLowerCase()==='actions';
-    }) || center.querySelector('#btnScan')?.closest('.stat-box') || null;
-
-    const codesBlock = center.querySelector('#codeList')?.closest('.flex-row') ||
-                       center.querySelector('#codeDetail')?.closest('.flex-row') ||
-                       centerInner.querySelector('.flex-row.flex-grow') || null;
-
-    const scanOverlay = document.getElementById('scanOverlay');
-
-    const moveIfPresent = (parent, nodes) => {
-      nodes.filter(Boolean).forEach(node => {
-        if(node && node.parentNode) parent.appendChild(node);
-      });
-    };
-
-    if(actionView && codesView && (actionBox || codesBlock)){
-      moveIfPresent(actionView, [actionBox, scanOverlay]);
-      moveIfPresent(codesView, [codesBlock]);
-    }else if(actionView){
-      actionView.appendChild(center);
-    }
-  }
-
-  // LOG view: try to use existing logBox if present, else open "더보기" logs
+  const homeView = document.getElementById('mobileViewHome');
+  const codesView = document.getElementById('mobileViewCodes');
+  const shopView = document.getElementById('mobileViewShop');
   const logView = document.getElementById('mobileViewLog');
+
+  const left = document.getElementById('leftPanel');
+  const center = document.getElementById('centerPanel');
+  const right = document.getElementById('rightPanel');
+
+  if(left){
+    while(left.firstChild) homeView.appendChild(left.firstChild);
+  }
+
+  const codeBox = document.getElementById('codeList')?.closest('.stat-box');
+  const detailBox = document.getElementById('codeDetail')?.closest('.stat-box');
+  if(codeBox) codesView.appendChild(codeBox);
+  if(detailBox) codesView.appendChild(detailBox);
+
+  const scanOverlay = document.getElementById('scanOverlay');
+  if(scanOverlay) document.body.appendChild(scanOverlay);
+
+  const shopTitle = Array.from((right || document).querySelectorAll('.section-title')).find(t => (t.textContent||'').trim().toLowerCase() === 'shop');
+  const shopSortRow = document.getElementById('shopSortSelect')?.closest('.shop-sort-row');
+  const shopList = document.getElementById('shopList');
+  if(shopTitle) shopView.appendChild(shopTitle);
+  if(shopSortRow) shopView.appendChild(shopSortRow);
+  if(shopList) shopView.appendChild(shopList);
+
   const logBox = document.getElementById('logBox');
   if(logBox){
     logView.appendChild(logBox.closest('.stat-box') ? logBox.closest('.stat-box') : logBox);
@@ -3004,70 +2967,53 @@
     logView.appendChild(tip);
   }
 
-  // Replace tab bar with 5 tabs
   const oldTabs = document.querySelector('.mobile-tabs');
   if(oldTabs) oldTabs.remove();
 
   const wrap = document.createElement('div');
   wrap.className = 'mobile-tabs';
   wrap.innerHTML = `
-    <button type="button" data-view="status">STATUS</button>
-    <button type="button" data-view="action">ACTION</button>
+    <button type="button" data-view="home">HOME</button>
     <button type="button" data-view="codes">CODES</button>
     <button type="button" data-view="shop">SHOP</button>
-    <button type="button" data-view="log">LOG</button>
+    <button type="button" data-view="coming">COMING SOON</button>
   `;
   document.body.appendChild(wrap);
 
-  function setView(v, options = {}){
-    const tutorialStep = Number((document.body && document.body.dataset && document.body.dataset.tutorialStep) || 0);
-    if(!options.tutorialForce && tutorialStep === 4 && v !== 'codes'){
-      v = 'codes';
+  function setView(v){
+    if(v==='coming'){
+      wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view===v));
+      try { showToast('Coming Soon - 준비 중인 기능입니다.', 'warn'); } catch(e) {}
+      return;
     }
-
-    document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
+    document.body.classList.remove('mobile-view-home','mobile-view-codes','mobile-view-shop','mobile-view-log');
     document.body.classList.add('mobile-view-'+v);
-    document.body.dataset.mobileView = v;
-    window.__hcsigCurrentMobileView = v;
-    wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+    wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view===v));
     const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
     const panel = document.getElementById(id);
     if(panel) panel.scrollTop = 0;
-
-    // If LOG chosen and logs are in more modal, try open it
     if(v==='log'){
       const btnMore = document.getElementById('btnMore');
       if(btnMore && !document.getElementById('logBox')) btnMore.click();
     }
   }
-  window.setHcsigMobileView = setView;
 
-  wrap.querySelectorAll('button').forEach(btn=>{
-    btn.addEventListener('click', ()=>setView(btn.dataset.view));
-  });
+  wrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
 
-  // When a code is tapped, auto-scroll to detail inside codes view
   const codeList = document.getElementById('codeList');
   const codeDetail = document.getElementById('codeDetail');
   if(codeList && codeDetail){
-    codeList.addEventListener('click', (e)=>{
+    codeList.addEventListener('click', (e) => {
       const li = e.target.closest('li');
       if(!li) return;
-      // ensure we're on Codes view
       setView('codes');
-      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      setTimeout(() => codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
     });
   }
 
-  // default view
-  const initialTutorialView = window.__hcsigPendingTutorialMobileView;
-  setView(initialTutorialView || 'status', initialTutorialView ? { tutorialForce: true } : undefined);
-
-  if(initialTutorialView){
-    requestAnimationFrame(()=>setView(window.__hcsigPendingTutorialMobileView || 'status', { tutorialForce: true }));
-    setTimeout(()=>setView(window.__hcsigPendingTutorialMobileView || 'status', { tutorialForce: true }), 120);
-  }
+  setView('home');
 })();
+
 
 
 
@@ -3104,7 +3050,7 @@
   if(!isMobile) return;
 
   function activeViewEl(){
-    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop','mobileViewLog'];
     for(const id of ids){
       const el = document.getElementById(id);
       if(!el) continue;
@@ -3150,7 +3096,7 @@
   }
 
   function attach(){
-    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop','mobileViewLog'];
     ids.forEach(id=>{
       const el = document.getElementById(id);
       if(!el) return;
