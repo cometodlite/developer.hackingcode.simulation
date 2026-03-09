@@ -1183,11 +1183,23 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 }
 
 
-/* === CLICK FIX: scanOverlay should not block code inventory clicks when inactive (v1.6.11(b)) === */
-#scanOverlay {
-  pointer-events: none;
+/* v1.6.11(c) - code inventory tap/select fix */
+#codeList,
+#codeList li,
+#codeList li *,
+#codeDetail,
+#codeDetail * {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-#scanOverlay.active {
-  pointer-events: auto;
+#codeList li,
+#codeList li span,
+#codeList li strong {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#codeList li {
+  touch-action: manipulation;
 }
