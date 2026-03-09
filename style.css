@@ -65,7 +65,7 @@
     }
 
     #leftPanel {
-      flex: 0 0 32%;
+      flex: 0 0 24%;
       overflow: hidden; /* STATUS 고정 + SHOP만 내부 스크롤 */
       display: flex;
       flex-direction: column;
@@ -84,7 +84,7 @@
     }
 
     #rightPanel {
-      flex: 0 0 22%;
+      flex: 0 0 26%;
       border-right: none;
       background: #04050a;
     }
@@ -896,18 +896,19 @@ button:hover {
    ========================= */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
   body { overflow:hidden; }
-  .mobile-tabs { grid-template-columns: repeat(4, 1fr) !important; }
+  .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
   .mobile-tabs button{ font-size: 12px !important; }
   /* Hide PC panels on mobile to avoid fixed-position overlay capturing taps */
   #leftPanel, #centerPanel, #rightPanel { display: none !important; }
   .mobile-view { display:none !important; }
-  body.mobile-view-home  #mobileViewHome,
-  body.mobile-view-codes #mobileViewCodes,
-  body.mobile-view-shop  #mobileViewShop,
-  body.mobile-view-log   #mobileViewLog { display:block !important; }
+  body.mobile-view-status #mobileViewStatus,
+  body.mobile-view-action #mobileViewAction,
+  body.mobile-view-codes  #mobileViewCodes,
+  body.mobile-view-shop   #mobileViewShop,
+  body.mobile-view-log    #mobileViewLog { display:block !important; }
 
   
-#mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+#mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
   /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
   position: fixed;
   top: var(--headerH, 52px);
@@ -964,7 +965,7 @@ button:hover {
     padding-bottom: calc(var(--mobileTabsH) + var(--mobileTabsPad) + var(--safeBottom, 0px)) !important;
   }
 
-  #mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
     height: auto !important;
     max-height: none !important;
     min-height: 0 !important;
@@ -1026,7 +1027,7 @@ button:hover {
   }
 
   /* Reduce accidental horizontal scroll */
-  #mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
     overflow-x: hidden !important;
   }
 }
@@ -1153,54 +1154,3 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   z-index: 9999;
 }
 
-
-
-/* === v1.6.11(f) PC HOME / SHOP LAYOUT FIX === */
-#main{ width:100% !important; max-width:100%; overflow-x:hidden !important; }
-#leftPanel, #centerPanel, #rightPanel, .panel, .center-inner, .code-inventory-box, .code-detail-box { min-width:0; }
-#scanOverlay{ pointer-events:none; }
-#scanOverlay.active{ pointer-events:auto; }
-#codeList, #codeList li, #codeList li *{
-  user-select:none;
-  -webkit-user-select:none;
-  -webkit-touch-callout:none;
-  -webkit-tap-highlight-color:transparent;
-}
-#codeList li{ touch-action:manipulation; }
-@media (min-width: 901px){
-  #leftPanel{ flex:0 0 34% !important; display:flex; flex-direction:column; gap:10px; overflow:auto; }
-  #centerPanel{ flex:1 1 auto !important; overflow:auto; }
-  #rightPanel{ flex:0 0 30% !important; display:flex; flex-direction:column; gap:10px; overflow:auto; }
-  #leftPanel > .stat-box:last-child{ margin-bottom:0; }
-  #centerPanel .center-inner{ min-width:0; }
-  #centerPanel .code-inventory-box{ flex:1 1 auto; min-height:220px; }
-  #rightPanel .code-detail-box{ flex:1 1 auto; }
-  #rightPanel .shop-list-panel{ flex:1 1 auto; min-height:220px; overflow:auto; }
-}
-@media (max-width: 900px), (hover: none) and (pointer: coarse){
-  #scanOverlay{
-    position:fixed;
-    top:calc(var(--header-h, 52px) + var(--safe-top, 0px) + 10px);
-    left:10px;
-    right:10px;
-    bottom:calc(var(--mobileTabsH, 72px) + 14px + var(--safe-bottom, 0px));
-    inset:auto;
-    z-index:16000;
-  }
-  #scanText{ overflow:auto; }
-}
-
-
-/* v1.6.11(g) codes + detail merge */
-@media (min-width: 901px){
-  #leftPanel{ flex:0 0 32% !important; }
-  #centerPanel{ flex:1 1 auto !important; display:flex; flex-direction:column; overflow:auto; }
-  #centerPanel .center-inner{ display:flex; flex-direction:column; gap:10px; min-height:100%; }
-  #centerPanel .code-inventory-box{ flex:1 1 0; min-height:260px; }
-  #centerPanel .code-detail-box{ flex:0 0 auto; min-height:240px; }
-  #rightPanel{ flex:0 0 26% !important; display:flex; flex-direction:column; gap:10px; overflow:auto; }
-  #rightPanel .shop-list-panel{ flex:1 1 auto; min-height:320px; overflow:auto; }
-}
-@media (max-width: 900px), (hover: none) and (pointer: coarse){
-  #mobileViewCodes .code-detail-box{ margin-top:10px; }
-}

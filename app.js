@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(h)';
+    const CURRENT_VERSION = 'v1.6.11(i)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -203,19 +203,12 @@
         ]
       },
       {
-        version: 'v1.6.11(g)',
+        version: 'v1.6.11(i)',
         lines: [
-          'STATUS와 ACTION을 하나의 HOME 창으로 통합했습니다.',
-          '모바일 하단 탭 구성을 HOME / CODES / SHOP / LOG 4개 구조로 정리했습니다.',
-          'HOME과 SHOP 영역을 다시 분리하고, PC 3패널 레이아웃을 재정리했습니다.'
-        ]
-      },
-      {
-        version: 'v1.6.11(h)',
-        lines: [
-          '백그라운드/복귀 시 경과 시간을 계산해 에너지 회복이 자연스럽게 이어지도록 보정했습니다.',
-          '페이지를 닫거나 탭을 벗어날 때 마지막 활동 시각을 기록해 복귀 시 진행이 덜 끊기게 만들었습니다.',
-          '마지막 저장/활동 시각 기반의 시간 보정 토대를 추가했습니다.'
+          '탭 종료 후 재접속 시에도 오프라인 에너지 회복이 적용되도록 수정했습니다.',
+          '게임 시작 직후 마지막 접속 시각을 기준으로 경과 시간을 계산해 에너지를 보정합니다.',
+          'visibilitychange/pagehide 뿐 아니라 새로 열기·새로고침 상황에서도 복귀 보정이 동작합니다.',
+          '오프라인 에너지 회복 상한은 최대 60분으로 유지됩니다.'
         ]
       }
 
@@ -234,8 +227,7 @@
       energyTimerMs: 0,
       items: { energyPack: 0 },
       lastSavedAt: null,
-      lastActiveAt: null,
-      lastOfflineSummaryAt: null,
+      lastSeenAt: null,
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -781,55 +773,6 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     }
 
-
-    function touchActivity(ts = Date.now()) {
-      state.lastActiveAt = ts;
-    }
-
-    function advanceEnergyByMs(deltaMs) {
-      if (!Number.isFinite(deltaMs) || deltaMs <= 0) return 0;
-      let remaining = Math.floor(deltaMs);
-      let gained = 0;
-      if (state.energy >= state.energyMax) {
-        state.energy = state.energyMax;
-        state.energyTimerMs = 0;
-        return 0;
-      }
-      if (state.energyTimerMs <= 0) state.energyTimerMs = ENERGY_INTERVAL_MS;
-      while (remaining > 0 && state.energy < state.energyMax) {
-        const need = state.energyTimerMs > 0 ? state.energyTimerMs : ENERGY_INTERVAL_MS;
-        if (remaining >= need) {
-          remaining -= need;
-          state.energy += 1;
-          gained += 1;
-          if (state.energy < state.energyMax) {
-            state.energyTimerMs = ENERGY_INTERVAL_MS;
-          } else {
-            state.energyTimerMs = 0;
-          }
-        } else {
-          state.energyTimerMs = Math.max(1, need - remaining);
-          remaining = 0;
-        }
-      }
-      if (state.energy >= state.energyMax) {
-        state.energy = state.energyMax;
-        state.energyTimerMs = 0;
-      }
-      return gained;
-    }
-
-    function applyOfflineProgress(nowTs = Date.now()) {
-      const baseTs = Number(state.lastActiveAt || state.lastSavedAt || 0);
-      state.lastActiveAt = nowTs;
-      if (!baseTs) return { elapsedMs: 0, energyGained: 0, capped: false };
-      const rawElapsed = Math.max(0, nowTs - baseTs);
-      if (rawElapsed < 1000) return { elapsedMs: rawElapsed, energyGained: 0, capped: false };
-      const effectiveElapsed = Math.min(rawElapsed, MAX_OFFLINE_ENERGY_MS);
-      const energyGained = advanceEnergyByMs(effectiveElapsed);
-      return { elapsedMs: effectiveElapsed, energyGained, capped: rawElapsed > effectiveElapsed };
-    }
-
     function updateStatsUI() {
       statLevel.textContent = state.level;
       statExp.textContent = state.exp + ' / ' + state.requiredExp;
@@ -1056,20 +999,23 @@
       saveGame();
     }
 
-    let lastRealtimeTickAt = Date.now();
     setInterval(() => {
-      const now = Date.now();
-      const delta = Math.max(0, now - lastRealtimeTickAt);
-      lastRealtimeTickAt = now;
-      touchActivity(now);
       if (state.energy >= state.energyMax) {
         state.energy = state.energyMax;
         state.energyTimerMs = 0;
         updateStatsUI();
         return;
       }
-      if (state.energyTimerMs > 0 || state.energy < state.energyMax) {
-        advanceEnergyByMs(delta);
+      if (state.energyTimerMs > 0) {
+        state.energyTimerMs = Math.max(0, state.energyTimerMs - 100);
+        if (state.energyTimerMs <= 0) {
+          state.energy++;
+          if (state.energy < state.energyMax) {
+            state.energyTimerMs = ENERGY_INTERVAL_MS;
+          } else {
+            state.energyTimerMs = 0;
+          }
+        }
         updateStatsUI();
       }
     }, 100);
@@ -2212,9 +2158,81 @@
     });
 
     // 저장/불러오기
+    const OFFLINE_ENERGY_MAX_MS = 60 * 60 * 1000;
+
+    function persistLastSeenAt(ts = Date.now(), silent = true) {
+      state.lastSeenAt = ts;
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (raw) {
+          const data = JSON.parse(raw);
+          data.state = data.state || {};
+          data.state.lastSeenAt = ts;
+          if (!data.savedAt) data.savedAt = state.lastSavedAt || ts;
+          localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+        }
+      } catch (e) {
+        console.warn('[OfflineEnergy] persistLastSeenAt failed:', e);
+      }
+      if (!silent) saveGame(true);
+    }
+
+    function applyOfflineEnergyRecovery() {
+      const now = Date.now();
+      const lastSeen = Number(state.lastSeenAt || state.lastSavedAt || 0);
+      state.lastSeenAt = now;
+      if (!lastSeen || !Number.isFinite(lastSeen) || now <= lastSeen) return;
+
+      const elapsedMs = Math.min(now - lastSeen, OFFLINE_ENERGY_MAX_MS);
+      if (elapsedMs <= 0) return;
+
+      let recovered = 0;
+
+      if (state.energy >= state.energyMax) {
+        state.energy = state.energyMax;
+        state.energyTimerMs = 0;
+      } else {
+        let remaining = elapsedMs;
+        let timer = Number(state.energyTimerMs || 0);
+        if (timer <= 0) timer = ENERGY_INTERVAL_MS;
+
+        if (remaining >= timer) {
+          remaining -= timer;
+          state.energy = Math.min(state.energyMax, state.energy + 1);
+          recovered += 1;
+          while (state.energy < state.energyMax && remaining >= ENERGY_INTERVAL_MS) {
+            remaining -= ENERGY_INTERVAL_MS;
+            state.energy += 1;
+            recovered += 1;
+          }
+        } else {
+          timer -= remaining;
+          remaining = 0;
+        }
+
+        if (state.energy >= state.energyMax) {
+          state.energy = state.energyMax;
+          state.energyTimerMs = 0;
+        } else {
+          state.energyTimerMs = (remaining > 0 ? remaining : timer);
+          if (state.energyTimerMs <= 0 || !Number.isFinite(state.energyTimerMs)) {
+            state.energyTimerMs = ENERGY_INTERVAL_MS;
+          }
+        }
+      }
+
+      if (recovered > 0) {
+        const mins = Math.floor(elapsedMs / 60000);
+        const secs = Math.floor((elapsedMs % 60000) / 1000);
+        const label = mins > 0 ? `${mins}분 ${secs}초` : `${secs}초`;
+        log(`오프라인 동안 에너지 ${recovered} 회복 (${label} 경과)`, 'system');
+        showToast(`오프라인 회복: 에너지 +${recovered}`, 'save');
+      }
+    }
+
     function saveGame(silent = false) {
       state.lastSavedAt = Date.now();
-      touchActivity(state.lastSavedAt);
+      state.lastSeenAt = state.lastSavedAt;
       const saveData = {
         version: CURRENT_VERSION,
         savedAt: state.lastSavedAt,
@@ -2285,23 +2303,14 @@
         state.ui.anim = (typeof state.ui.anim === 'boolean') ? state.ui.anim : true;
         state.ui.autoSaveToast = !!state.ui.autoSaveToast;
         state.ui.logSearch = state.ui.logSearch || '';
-        state.lastActiveAt = Number(state.lastActiveAt || state.lastSavedAt || 0) || null;
-        state.lastOfflineSummaryAt = Number(state.lastOfflineSummaryAt || 0) || null;
 
+        state.lastSeenAt = Number(state.lastSeenAt || data.savedAt || 0) || null;
         state.energy = Math.min(state.energy, state.energyMax);
-        const offline = applyOfflineProgress(Date.now());
+        applyOfflineEnergyRecovery();
         ensureMissionResets();
         applySettings();
         syncSettingsUI();
         updateStatsUI();
-        if (offline.energyGained > 0) {
-          const mins = Math.floor(offline.elapsedMs / 60000);
-          const secs = Math.floor((offline.elapsedMs % 60000) / 1000);
-          const timeText = mins > 0 ? `${mins}분 ${secs}초` : `${secs}초`;
-          const capText = offline.capped ? ' (상한 적용)' : '';
-          log(`복귀 보정: 비활성 시간 ${timeText} 동안 에너지 +${offline.energyGained}${capText}`, 'system');
-          showToast(`오프라인 보정: 에너지 +${offline.energyGained}`, 'save');
-        }
         log('저장된 데이터를 불러왔습니다.', 'system');
       } catch (e) {
         console.error(e);
@@ -2318,26 +2327,19 @@
     btnLoadGame.addEventListener('click', loadGame);
     btnClearSave.addEventListener('click', clearSave);
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') persistLastSeenAt(Date.now());
+    });
+    window.addEventListener('pagehide', () => {
+      persistLastSeenAt(Date.now());
+    });
+    window.addEventListener('beforeunload', () => {
+      persistLastSeenAt(Date.now());
+    });
+
     setInterval(() => {
       saveGame(true);
     }, 60000);
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        touchActivity(Date.now());
-        saveGame(true);
-      } else {
-        const offline = applyOfflineProgress(Date.now());
-        if (offline.energyGained > 0) {
-          updateStatsUI();
-          showToast(`오프라인 보정: 에너지 +${offline.energyGained}`, 'save');
-        }
-      }
-    });
-    window.addEventListener('pagehide', () => {
-      touchActivity(Date.now());
-      saveGame(true);
-    });
 
     // 로그 필터
     function bindLogFilterCheckbox(checkbox, key) {
@@ -2580,11 +2582,12 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(g) CODES panel merge)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(i) Offline Energy Fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
       } else {
+        state.lastSeenAt = Date.now();
         updateStatsUI();
       }
 
@@ -2675,41 +2678,28 @@
 
 
 
-
-// === HOME PANEL MERGE: STATUS + ACTION ===
-(function(){
-  const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  if(!left || !center) return;
-
-  const leftTitles = Array.from(left.querySelectorAll('.section-title'));
-  const homeTitle = leftTitles.find(t => (t.textContent||'').trim().toLowerCase()==='status' || (t.textContent||'').trim().toLowerCase()==='home');
-  if(homeTitle) homeTitle.textContent = 'HOME';
-
-  const shopTitle = leftTitles.find(t => (t.textContent||'').trim().toLowerCase()==='shop');
-  const actionTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim().toLowerCase()==='actions');
-  const actionBox = actionTitle ? (actionTitle.closest('.stat-box') || actionTitle.parentElement) : null;
-
-  if(actionBox && shopTitle && actionBox.parentElement !== left){
-    left.insertBefore(actionBox, shopTitle);
-  }
-})();
-
-
-
 // === MOBILE VIEWS: split PC layout into mobile tabs ===
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
+  // helper
+  const byText = (root, sel, txt) => {
+    const els = Array.from(root.querySelectorAll(sel));
+    return els.find(e => (e.textContent||'').trim().toLowerCase() === txt.toLowerCase());
+  };
+
+  // Create mobile view containers
   const views = [
-    ['Home','mobileViewHome'],
+    ['Status','mobileViewStatus'],
+    ['Action','mobileViewAction'],
     ['Codes','mobileViewCodes'],
     ['Shop','mobileViewShop'],
     ['Log','mobileViewLog'],
   ];
-  const main = document.getElementById('main') || document.body;
-  views.forEach(([_, id]) => {
+  const main = document.getElementById('main') || document.querySelector('#main') || document.body;
+
+  views.forEach(([_,id])=>{
     if(document.getElementById(id)) return;
     const v = document.createElement('div');
     v.id = id;
@@ -2717,34 +2707,80 @@
     main.insertBefore(v, main.firstChild);
   });
 
-  const homeView = document.getElementById('mobileViewHome');
-  const codesView = document.getElementById('mobileViewCodes');
-  const shopView = document.getElementById('mobileViewShop');
-  const logView = document.getElementById('mobileViewLog');
-
+  // Move leftPanel -> Status + Shop
   const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  const right = document.getElementById('rightPanel');
-
   if(left){
-    while(left.firstChild) homeView.appendChild(left.firstChild);
+    const shopTitle = Array.from(left.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='Shop');
+    const statusView = document.getElementById('mobileViewStatus');
+    const shopView = document.getElementById('mobileViewShop');
+
+    if(shopTitle){
+      // nodes before Shop go to Status
+      let node = left.firstChild;
+      const toMoveStatus = [];
+      while(node && node !== shopTitle){
+        const next = node.nextSibling;
+        toMoveStatus.push(node);
+        node = next;
+      }
+      toMoveStatus.forEach(n=>statusView.appendChild(n));
+
+      // Shop title and everything after -> Shop
+      let node2 = shopTitle;
+      const toMoveShop = [];
+      while(node2){
+        const next = node2.nextSibling;
+        toMoveShop.push(node2);
+        node2 = next;
+      }
+      toMoveShop.forEach(n=>shopView.appendChild(n));
+    }else{
+      // fallback: whole left panel in Status
+      statusView.appendChild(left);
+    }
   }
 
-  const codeBox = document.getElementById('codeList')?.closest('.stat-box');
-  const detailBox = document.getElementById('codeDetail')?.closest('.stat-box');
-  if(codeBox) codesView.appendChild(codeBox);
-  if(detailBox) codesView.appendChild(detailBox);
+  // Move centerPanel -> Action + Codes
+  const center = document.getElementById('centerPanel');
+  if(center){
+    const actionView = document.getElementById('mobileViewAction');
+    const codesView  = document.getElementById('mobileViewCodes');
 
-  const scanOverlay = document.getElementById('scanOverlay');
-  if(scanOverlay) document.body.appendChild(scanOverlay);
+    const codeInvTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='코드 인벤토리');
+    let codeBlock = null;
+    if(codeInvTitle){
+      // typically inside a flex-row container
+      codeBlock = codeInvTitle.closest('.flex-row') || codeInvTitle.closest('.stat-box') || codeInvTitle.parentElement;
+    }
 
-  const shopTitle = Array.from((right || document).querySelectorAll('.section-title')).find(t => (t.textContent||'').trim().toLowerCase() === 'shop');
-  const shopSortRow = document.getElementById('shopSortSelect')?.closest('.shop-sort-row');
-  const shopList = document.getElementById('shopList');
-  if(shopTitle) shopView.appendChild(shopTitle);
-  if(shopSortRow) shopView.appendChild(shopSortRow);
-  if(shopList) shopView.appendChild(shopList);
+    if(codeBlock){
+      // move nodes before codeBlock into Action
+      let node = center.firstChild;
+      const toMoveAction = [];
+      while(node && node !== codeBlock){
+        const next = node.nextSibling;
+        toMoveAction.push(node);
+        node = next;
+      }
+      toMoveAction.forEach(n=>actionView.appendChild(n));
 
+      // move codeBlock and after into Codes
+      let node2 = codeBlock;
+      const toMoveCodes = [];
+      while(node2){
+        const next = node2.nextSibling;
+        toMoveCodes.push(node2);
+        node2 = next;
+      }
+      toMoveCodes.forEach(n=>codesView.appendChild(n));
+    }else{
+      // fallback: whole center in Action
+      actionView.appendChild(center);
+    }
+  }
+
+  // LOG view: try to use existing logBox if present, else open "더보기" logs
+  const logView = document.getElementById('mobileViewLog');
   const logBox = document.getElementById('logBox');
   if(logBox){
     logView.appendChild(logBox.closest('.stat-box') ? logBox.closest('.stat-box') : logBox);
@@ -2755,13 +2791,15 @@
     logView.appendChild(tip);
   }
 
+  // Replace tab bar with 5 tabs
   const oldTabs = document.querySelector('.mobile-tabs');
   if(oldTabs) oldTabs.remove();
 
   const wrap = document.createElement('div');
   wrap.className = 'mobile-tabs';
   wrap.innerHTML = `
-    <button type="button" data-view="home">HOME</button>
+    <button type="button" data-view="status">STATUS</button>
+    <button type="button" data-view="action">ACTION</button>
     <button type="button" data-view="codes">CODES</button>
     <button type="button" data-view="shop">SHOP</button>
     <button type="button" data-view="log">LOG</button>
@@ -2769,34 +2807,40 @@
   document.body.appendChild(wrap);
 
   function setView(v){
-    document.body.classList.remove('mobile-view-home','mobile-view-codes','mobile-view-shop','mobile-view-log');
+    document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
     document.body.classList.add('mobile-view-'+v);
-    wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view===v));
+    wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
     const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
     const panel = document.getElementById(id);
     if(panel) panel.scrollTop = 0;
+
+    // If LOG chosen and logs are in more modal, try open it
     if(v==='log'){
       const btnMore = document.getElementById('btnMore');
       if(btnMore && !document.getElementById('logBox')) btnMore.click();
     }
   }
 
-  wrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>setView(btn.dataset.view));
+  });
 
+  // When a code is tapped, auto-scroll to detail inside codes view
   const codeList = document.getElementById('codeList');
   const codeDetail = document.getElementById('codeDetail');
   if(codeList && codeDetail){
-    codeList.addEventListener('click', (e) => {
+    codeList.addEventListener('click', (e)=>{
       const li = e.target.closest('li');
       if(!li) return;
+      // ensure we're on Codes view
       setView('codes');
-      setTimeout(() => codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
     });
   }
 
-  setView('home');
+  // default view
+  setView('status');
 })();
-
 
 
 
@@ -2833,7 +2877,7 @@
   if(!isMobile) return;
 
   function activeViewEl(){
-    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
     for(const id of ids){
       const el = document.getElementById(id);
       if(!el) continue;
@@ -2879,7 +2923,7 @@
   }
 
   function attach(){
-    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
     ids.forEach(id=>{
       const el = document.getElementById(id);
       if(!el) return;
@@ -2994,15 +3038,4 @@
 
   // 초기 상태는 applySettings()에서 결정
   try { if (typeof applySettings === 'function') applySettings(); } catch(e) {}
-})();
-
-
-// === ZOOM PREVENTION (mobile pinch / ctrl+wheel) ===
-(function(){
-  ['gesturestart','gesturechange','gestureend'].forEach(evt => {
-    document.addEventListener(evt, (e)=>{ e.preventDefault(); }, {passive:false});
-  });
-  window.addEventListener('wheel', (e)=>{
-    if(e.ctrlKey) e.preventDefault();
-  }, {passive:false});
 })();
