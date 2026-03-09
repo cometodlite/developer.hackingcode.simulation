@@ -2543,9 +2543,21 @@
     if (shopSortSelect) {
       shopSortSelect.value = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       shopSortSelect.addEventListener('change', () => {
-        state.ui = state.ui || { shopSortMode: 'update' };
+        state.ui = state.ui || { shopSortMode: 'update', shopTab: 'basic' };
         state.ui.shopSortMode = shopSortSelect.value;
         renderShop();
+      });
+    }
+
+    // 상점 카테고리 탭
+    if (shopCategoryRow) {
+      shopCategoryRow.querySelectorAll('.shop-category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const nextTab = btn.dataset.shopTab || 'basic';
+          state.ui = state.ui || { shopSortMode: 'update', shopTab: 'basic' };
+          state.ui.shopTab = nextTab;
+          renderShop();
+        });
       });
     }
 
