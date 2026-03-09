@@ -237,7 +237,7 @@
       items: { energyPack: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
-      tutorial: { completed: true, step: 0, seen: true },
+      tutorial: { completed: false, step: 0, seen: false },
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -282,7 +282,7 @@
         shop: true,
         level: true
       },
-      ui: { shopSortMode: 'update', shopTab: 'basic', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
+      ui: { shopSortMode: 'update', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
       stats: {
         scanCount: 0,
         hackSuccessCount: 0,
@@ -691,7 +691,6 @@
 
     const shopList = document.getElementById('shopList');
     const shopSortSelect = document.getElementById('shopSortSelect');
-    const shopCategoryRow = document.getElementById('shopCategoryRow');
     const serverSelect = document.getElementById('serverSelect');
 
     const codeListEl = document.getElementById('codeList');
@@ -738,7 +737,6 @@
     const tabMission = document.getElementById('tabMission');
     const tabAchievement = document.getElementById('tabAchievement');
     const tabLogs = document.getElementById('tabLogs');
-    const tabGuide = document.getElementById('tabGuide');
     const tabSettings = document.getElementById('tabSettings');
     const tabSave = document.getElementById('tabSave');
 
@@ -794,15 +792,15 @@
         waitAction: false
       },
       {
-        title: 'STATUS / ACTION 확인',
-        text: 'STATUS에서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고, ACTION에서는 주요 행동을 실행할 수 있습니다.',
+        title: 'HOME 확인',
+        text: '여기서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
         hint: '상태를 확인했다면 다음 단계로 이동하세요.',
         waitAction: false
       },
       {
         title: '코드 스캔 실행',
         text: '먼저 코드 스캔을 1회 실행해 보세요. 스캔은 새로운 코드를 찾거나 기존 코드를 강화하는 출발점입니다.',
-        hint: 'ACTION의 [코드 스캔] 버튼을 눌러 주세요. 완료되면 자동으로 다음 단계로 넘어갑니다.',
+        hint: 'HOME의 [코드 스캔] 버튼을 눌러 주세요. 완료되면 자동으로 다음 단계로 넘어갑니다.',
         waitAction: true
       },
       {
@@ -814,7 +812,7 @@
       {
         title: '서버 해킹',
         text: '선택한 코드와 CPU 성능을 바탕으로 서버 해킹을 시도할 수 있습니다. 해킹은 크레딧과 성장의 핵심 루프입니다.',
-        hint: 'ACTION의 [서버 해킹] 버튼을 눌러 1회 시도해 보세요. 성공 여부와 관계없이 다음 단계로 진행됩니다.',
+        hint: 'HOME의 [서버 해킹] 버튼을 눌러 1회 시도해 보세요. 성공 여부와 관계없이 다음 단계로 진행됩니다.',
         waitAction: true
       },
       {
@@ -835,51 +833,156 @@
       const d = new Date();
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     }
+
     function ensureTutorialDefaults() {
-      state.tutorial = { completed: true, step: 0, seen: true };
+      state.tutorial = state.tutorial || {};
+      if (typeof state.tutorial.completed !== 'boolean') state.tutorial.completed = false;
+      if (!Number.isInteger(state.tutorial.step)) state.tutorial.step = 0;
+      if (state.tutorial.step < 0) state.tutorial.step = 0;
+      if (state.tutorial.step >= tutorialSteps.length) state.tutorial.step = tutorialSteps.length - 1;
+      if (typeof state.tutorial.seen !== 'boolean') state.tutorial.seen = false;
     }
 
     function isTutorialOpen() {
-      return false;
+      return !!(tutorialBackdrop && tutorialBackdrop.classList.contains('show'));
     }
 
-    function syncTutorialStepView() {}
+    function syncTutorialStepView() {
+      const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
+      const mobileViewMap = {
+        2: 'action',
+        3: 'codes',
+        4: 'action'
+      };
+      const targetView = mobileViewMap[idx];
+      if (targetView) {
+        window.__hcsigPendingTutorialMobileView = targetView;
+        const applyTargetView = () => {
+          if (typeof window.setHcsigMobileView === 'function') {
+            window.setHcsigMobileView(targetView, { tutorialForce: true });
+            return true;
+          }
+          const mobileBtn = document.querySelector(`.mobile-tabs [data-view="${targetView}"]`);
+          if (mobileBtn) {
+            mobileBtn.click();
+            return true;
+          }
+          return false;
+        };
 
-    function renderTutorial() {}
+        applyTargetView();
+        requestAnimationFrame(() => applyTargetView());
+        setTimeout(() => applyTargetView(), 0);
+        setTimeout(() => applyTargetView(), 80);
+        setTimeout(() => applyTargetView(), 220);
+      }
+
+      if (idx === 3) {
+        const codeListEl = document.getElementById('codeList');
+        if (codeListEl) {
+          setTimeout(() => {
+            codeListEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 80);
+        }
+      }
+    }
+
+    function renderTutorial() {
+      if (!tutorialBackdrop) return;
+      ensureTutorialDefaults();
+      const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
+      const step = tutorialSteps[idx];
+      tutorialStepLabel.textContent = `STEP ${idx + 1} / ${tutorialSteps.length}`;
+      tutorialStepTitle.textContent = step.title;
+      tutorialStepText.textContent = step.text;
+      tutorialStepHint.textContent = step.hint || '';
+      tutorialStepHint.style.display = step.hint ? '' : 'none';
+      const interactive = !!step.waitAction;
+      tutorialBackdrop.classList.toggle('interactive', interactive);
+      tutorialBackdrop.dataset.tutorialStep = String(idx + 1);
+      document.body.dataset.tutorialStep = String(idx + 1);
+      document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
+      btnTutorialPrev.disabled = idx <= 0;
+      const waiting = interactive;
+      btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
+      btnTutorialNext.disabled = waiting;
+      btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
+      syncTutorialStepView();
+    }
 
     function openTutorial(forceRestart = false) {
+      if (!tutorialBackdrop) return;
       ensureTutorialDefaults();
-      if (tutorialBackdrop) {
-        tutorialBackdrop.classList.remove('show', 'interactive', 'guide-mode');
-        tutorialBackdrop.setAttribute('aria-hidden', 'true');
+      if (forceRestart) {
+        state.tutorial.completed = false;
+        state.tutorial.step = 0;
       }
-      if (document.body) {
-        delete document.body.dataset.tutorialStep;
-        document.body.classList.remove('tutorial-open', 'tutorial-interactive', 'tutorial-guide-open');
-      }
+      renderTutorial();
+      tutorialBackdrop.classList.add('show');
+      tutorialBackdrop.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('tutorial-open');
+      const step = tutorialSteps[Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1)];
+      document.body.classList.toggle('tutorial-interactive', !!step.waitAction);
+      tutorialOpenedOnce = true;
     }
 
     function closeTutorial(markCompleted = false) {
-      ensureTutorialDefaults();
-      if (tutorialBackdrop) {
-        tutorialBackdrop.classList.remove('show', 'interactive', 'guide-mode');
-        tutorialBackdrop.setAttribute('aria-hidden', 'true');
+      if (!tutorialBackdrop) return;
+      if (markCompleted) {
+        state.tutorial.completed = true;
+        state.tutorial.step = tutorialSteps.length - 1;
       }
-      if (document.body) {
-        delete document.body.dataset.tutorialStep;
-        document.body.classList.remove('tutorial-open', 'tutorial-interactive', 'tutorial-guide-open');
+      tutorialBackdrop.classList.remove('show');
+      tutorialBackdrop.classList.remove('interactive');
+      tutorialBackdrop.setAttribute('aria-hidden', 'true');
+      delete tutorialBackdrop.dataset.tutorialStep;
+      delete document.body.dataset.tutorialStep;
+      document.body.classList.remove('tutorial-open');
+      document.body.classList.remove('tutorial-interactive');
+      saveGame(true);
+    }
+
+    function nextTutorialStep() {
+      ensureTutorialDefaults();
+      if (state.tutorial.step < tutorialSteps.length - 1) {
+        state.tutorial.step += 1;
+        renderTutorial();
+        saveGame(true);
       }
     }
 
-    function nextTutorialStep() {}
+    function prevTutorialStep() {
+      ensureTutorialDefaults();
+      if (state.tutorial.step > 0) {
+        state.tutorial.step -= 1;
+        renderTutorial();
+      }
+    }
 
-    function prevTutorialStep() {}
-
-    function onTutorialAction(action) {}
+    function onTutorialAction(action) {
+      ensureTutorialDefaults();
+      if (state.tutorial.completed) return;
+      const mapping = { scan: 2, selectCode: 3, hack: 4 };
+      const expected = mapping[action];
+      if (expected === undefined) return;
+      if (state.tutorial.step !== expected) return;
+      const followUp = () => {
+        nextTutorialStep();
+        if (!isTutorialOpen()) openTutorial(false);
+      };
+      if (isTutorialOpen()) {
+        followUp();
+      } else {
+        openTutorial(false);
+        setTimeout(followUp, 0);
+      }
+    }
 
     function maybeStartTutorial() {
       ensureTutorialDefaults();
-      closeTutorial(true);
+      if (state.tutorial.completed || tutorialOpenedOnce) return;
+      state.tutorial.seen = true;
+      openTutorial(false);
     }
 
     function updateStatsUI() {
@@ -1378,25 +1481,6 @@
     setInterval(() => { try { ensureDailyShopReset(); } catch(e){} }, 60 * 1000);
 
 
-    function getShopSection(item) {
-      const directMap = {
-        energy_pack: 'basic',
-        energy_boost_1: 'basic',
-        energy_boost_2: 'basic',
-        big_credit_pack: 'basic',
-        scanner_module: 'code',
-        scanner_plus: 'code',
-        max_energy_up: 'upgrade',
-        exp_boost: 'upgrade',
-        cpu_discount: 'upgrade',
-        perm_credit_boost: 'upgrade',
-        credit_boost_run: 'special',
-        risk_support: 'special',
-        level_ticket: 'special'
-      };
-      return directMap[item.id] || 'basic';
-    }
-
     function renderShop() {
       shopList.innerHTML = '';
 
@@ -1405,13 +1489,6 @@
         UTILITY: '유틸',
         ECONOMY: '경제',
         SYSTEM: '시스템'
-      };
-
-      const sectionLabel = {
-        basic: '기본',
-        code: '코드',
-        upgrade: '업그레이드',
-        special: '특수'
       };
 
       const rarityRank = {
@@ -1426,14 +1503,7 @@
       shopItems.forEach((it, idx) => baseOrder.set(it.id, idx));
 
       const mode = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
-      const activeShopTab = (state.ui && state.ui.shopTab) ? state.ui.shopTab : 'basic';
-      const items = shopItems.filter(item => getShopSection(item) === activeShopTab);
-
-      if (shopCategoryRow) {
-        shopCategoryRow.querySelectorAll('.shop-category-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.shopTab === activeShopTab);
-        });
-      }
+      const items = shopItems.slice();
 
       if (mode === 'rarity') {
         items.sort((a, b) => {
@@ -1464,14 +1534,6 @@
         });
       }
 
-      if (!items.length) {
-        const empty = document.createElement('div');
-        empty.className = 'small';
-        empty.textContent = `${sectionLabel[activeShopTab] || '현재'} 카테고리에 표시할 상품이 없습니다.`;
-        shopList.appendChild(empty);
-        return;
-      }
-
       items.forEach(item => {
         const wrapper = document.createElement('div');
         wrapper.className = 'shop-item';
@@ -1491,19 +1553,15 @@
         catSpan.className = 'shop-cat-pill';
         catSpan.textContent = categoryLabel[item.category] || item.category || '';
 
-        const sectionSpan = document.createElement('span');
-        sectionSpan.className = 'shop-section-pill';
-        sectionSpan.textContent = sectionLabel[getShopSection(item)] || '기타';
-
         const leftWrap = document.createElement('span');
         leftWrap.appendChild(raritySpan);
         leftWrap.appendChild(catSpan);
-        leftWrap.appendChild(sectionSpan);
         leftWrap.appendChild(document.createTextNode(item.name));
 
         const costSpan = document.createElement('span');
         costSpan.className = 'shop-cost';
         costSpan.textContent = `💰 ${item.cost}`;
+        // limit badge (daily/once)
         const lim = getShopRemaining(item.id);
         if (lim) {
           const badge = document.createElement('span');
@@ -1515,6 +1573,7 @@
         }
 
         nameSpan.appendChild(leftWrap);
+
         head.appendChild(nameSpan);
         head.appendChild(costSpan);
 
@@ -1533,6 +1592,7 @@
           btn.title = lim2.type === 'daily' ? '오늘 구매 제한에 도달했습니다.' : '이미 구매한 영구 아이템입니다.';
         }
         btn.addEventListener('click', () => {
+          // purchase cap check (daily/once)
           const cap = canBuyShopItem(item.id);
           if (!cap.ok) {
             log(`[상점] ${cap.reason}`, 'shop');
@@ -1545,14 +1605,15 @@
             showToast('크레딧이 부족합니다.', 'shop');
             return;
           }
+          // 고가/고희귀 구매 확인
           const rr = rarityRank[item.rarity] || 0;
           if (rr >= 4) {
-            const ok = window.confirm(`${item.name} (${item.rarity}) 을(를) 구매할까요?
-💰 ${item.cost} 크레딧이 소모됩니다.`);
+            const ok = window.confirm(`${item.name} (${item.rarity}) 을(를) 구매할까요?\n💰 ${item.cost} 크레딧이 소모됩니다.`);
             if (!ok) return;
           }
           state.credits -= item.cost;
           item.buy?.();
+          // mark cap usage
           markShopPurchase(item.id);
 
           state.stats.shopPurchaseCount++;
@@ -2228,7 +2289,6 @@
         mission: tabMission,
         achievement: tabAchievement,
         logs: tabLogs,
-        guide: tabGuide,
         settings: tabSettings,
         save: tabSave
       };
@@ -2287,10 +2347,10 @@
     }
 
         // v1.6.2: 더보기 버튼 클릭 이슈 방지 (가드 + 이벤트 위임)
-    if (btnMore) btnMore.addEventListener('click', () => openMoreModal('update', false));
+    if (btnMore) btnMore.addEventListener('click', () => { try { showToast('Coming Soon - 준비 중인 기능입니다.', 'warn'); } catch(e) {} });
     document.addEventListener('click', (e) => {
       const t = e.target.closest && e.target.closest('#btnMore');
-      if (t) openMoreModal('update', false);
+      if (t) { try { showToast('Coming Soon - 준비 중인 기능입니다.', 'warn'); } catch(e) {} }
     });
     if (btnMoreClose) btnMoreClose.addEventListener('click', closeMoreModal);
         if (btnMoreClose2) btnMoreClose2.addEventListener('click', closeMoreModal);
@@ -2487,7 +2547,7 @@
     if (btnTutorialNext) btnTutorialNext.addEventListener('click', nextTutorialStep);
     if (btnTutorialFinish) btnTutorialFinish.addEventListener('click', () => closeTutorial(true));
     if (btnTutorialSkip) btnTutorialSkip.addEventListener('click', () => closeTutorial(true));
-    if (btnOpenTutorial) btnOpenTutorial.style.display = 'none';
+    if (btnOpenTutorial) btnOpenTutorial.addEventListener('click', () => openTutorial(true));
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') persistLastSeenAt(Date.now());
@@ -2543,21 +2603,9 @@
     if (shopSortSelect) {
       shopSortSelect.value = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       shopSortSelect.addEventListener('change', () => {
-        state.ui = state.ui || { shopSortMode: 'update', shopTab: 'basic' };
+        state.ui = state.ui || { shopSortMode: 'update' };
         state.ui.shopSortMode = shopSortSelect.value;
         renderShop();
-      });
-    }
-
-    // 상점 카테고리 탭
-    if (shopCategoryRow) {
-      shopCategoryRow.querySelectorAll('.shop-category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const nextTab = btn.dataset.shopTab || 'basic';
-          state.ui = state.ui || { shopSortMode: 'update', shopTab: 'basic' };
-          state.ui.shopTab = nextTab;
-          renderShop();
-        });
       });
     }
 
@@ -2756,7 +2804,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(j) Tutorial Update)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2855,19 +2903,28 @@
 
 
 
-// === MOBILE VIEWS: HOME / CODES / SHOP / MORE ===
+// === MOBILE VIEWS: split PC layout into mobile tabs ===
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
-  const views = [
-    ['Home','mobileViewHome'],
-    ['Codes','mobileViewCodes'],
-    ['Shop','mobileViewShop']
-  ];
-  const main = document.getElementById('main') || document.body;
+  // helper
+  const byText = (root, sel, txt) => {
+    const els = Array.from(root.querySelectorAll(sel));
+    return els.find(e => (e.textContent||'').trim().toLowerCase() === txt.toLowerCase());
+  };
 
-  views.forEach(([_, id]) => {
+  // Create mobile view containers
+  const views = [
+    ['Status','mobileViewStatus'],
+    ['Action','mobileViewAction'],
+    ['Codes','mobileViewCodes'],
+    ['Shop','mobileViewShop'],
+    ['Log','mobileViewLog'],
+  ];
+  const main = document.getElementById('main') || document.querySelector('#main') || document.body;
+
+  views.forEach(([_,id])=>{
     if(document.getElementById(id)) return;
     const v = document.createElement('div');
     v.id = id;
@@ -2875,94 +2932,143 @@
     main.insertBefore(v, main.firstChild);
   });
 
-  const moveIfPresent = (parent, nodes) => {
-    nodes.filter(Boolean).forEach(node => {
-      if(node && node.parentNode) parent.appendChild(node);
-    });
-  };
-
+  // Move leftPanel -> Status + Shop (robustly pick direct sections)
   const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  const homeView = document.getElementById('mobileViewHome');
-  const codesView = document.getElementById('mobileViewCodes');
-  const shopView = document.getElementById('mobileViewShop');
-
-  if(left && homeView && shopView){
+  if(left){
+    const statusView = document.getElementById('mobileViewStatus');
+    const shopView = document.getElementById('mobileViewShop');
     const leftChildren = Array.from(left.children);
-    const homeTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='home');
-    const homeBox = homeTitle ? homeTitle.nextElementSibling : null;
+
+    const statusTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='status');
     const shopTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='shop');
+    const statusBox = statusTitle ? statusTitle.nextElementSibling : null;
     const shopSortRow = document.getElementById('shopSortSelect')?.closest('.shop-sort-row') || null;
-    const shopCategoryRow = document.getElementById('shopCategoryRow') || null;
     const shopListBox = document.getElementById('shopList')?.closest('.stat-box') || null;
-    moveIfPresent(homeView, [homeTitle, homeBox]);
-    moveIfPresent(shopView, [shopTitle, shopCategoryRow, shopSortRow, shopListBox]);
+
+    const moveIfPresent = (parent, nodes) => {
+      nodes.filter(Boolean).forEach(node => {
+        if(node && node.parentNode) parent.appendChild(node);
+      });
+    };
+
+    if(statusView && shopView && (statusTitle || shopTitle)){
+      moveIfPresent(statusView, [statusTitle, statusBox]);
+      moveIfPresent(shopView, [shopTitle, shopSortRow, shopListBox]);
+    }else if(statusView){
+      statusView.appendChild(left);
+    }
   }
 
-  if(center && homeView && codesView){
+  // Move centerPanel -> Action + Codes (use exact containers instead of nested-child comparison)
+  const center = document.getElementById('centerPanel');
+  if(center){
+    const actionView = document.getElementById('mobileViewAction');
+    const codesView  = document.getElementById('mobileViewCodes');
     const centerInner = center.querySelector('.center-inner') || center;
     const centerChildren = Array.from(centerInner.children);
+
     const actionBox = centerChildren.find(el => {
       const title = el.querySelector && el.querySelector('.section-title');
-      return title && (title.textContent||'').trim().toLowerCase()==='home actions';
+      return title && (title.textContent||'').trim().toLowerCase()==='actions';
     }) || center.querySelector('#btnScan')?.closest('.stat-box') || null;
-    const codesBlock = center.querySelector('#codeList')?.closest('.flex-row') || centerInner.querySelector('.flex-row.flex-grow') || null;
+
+    const codesBlock = center.querySelector('#codeList')?.closest('.flex-row') ||
+                       center.querySelector('#codeDetail')?.closest('.flex-row') ||
+                       centerInner.querySelector('.flex-row.flex-grow') || null;
+
     const scanOverlay = document.getElementById('scanOverlay');
-    moveIfPresent(homeView, [actionBox, scanOverlay]);
-    moveIfPresent(codesView, [codesBlock]);
+
+    const moveIfPresent = (parent, nodes) => {
+      nodes.filter(Boolean).forEach(node => {
+        if(node && node.parentNode) parent.appendChild(node);
+      });
+    };
+
+    if(actionView && codesView && (actionBox || codesBlock)){
+      moveIfPresent(actionView, [actionBox, scanOverlay]);
+      moveIfPresent(codesView, [codesBlock]);
+    }else if(actionView){
+      actionView.appendChild(center);
+    }
   }
 
+  // LOG view: try to use existing logBox if present, else open "더보기" logs
+  const logView = document.getElementById('mobileViewLog');
+  const logBox = document.getElementById('logBox');
+  if(logBox){
+    logView.appendChild(logBox.closest('.stat-box') ? logBox.closest('.stat-box') : logBox);
+  } else {
+    const tip = document.createElement('div');
+    tip.className = 'stat-box';
+    tip.innerHTML = '<div class="section-title">Log</div><div class="small">LOG는 상단의 “더보기”에서 확인할 수 있습니다.</div>';
+    logView.appendChild(tip);
+  }
+
+  // Replace tab bar with 5 tabs
   const oldTabs = document.querySelector('.mobile-tabs');
   if(oldTabs) oldTabs.remove();
 
   const wrap = document.createElement('div');
   wrap.className = 'mobile-tabs';
   wrap.innerHTML = `
-    <button type="button" data-view="home">HOME</button>
+    <button type="button" data-view="status">STATUS</button>
+    <button type="button" data-view="action">ACTION</button>
     <button type="button" data-view="codes">CODES</button>
     <button type="button" data-view="shop">SHOP</button>
-    <button type="button" data-view="more">더보기</button>
+    <button type="button" data-view="log">LOG</button>
   `;
   document.body.appendChild(wrap);
 
-  function setView(v){
-    document.body.classList.remove('mobile-view-home','mobile-view-codes','mobile-view-shop');
-    if(v !== 'more') {
-      document.body.classList.add('mobile-view-'+v);
-      document.body.dataset.mobileView = v;
-      window.__hcsigCurrentMobileView = v;
+  function setView(v, options = {}){
+    const tutorialStep = Number((document.body && document.body.dataset && document.body.dataset.tutorialStep) || 0);
+    if(!options.tutorialForce && tutorialStep === 4 && v !== 'codes'){
+      v = 'codes';
     }
-    wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
-    if(v === 'more') {
-      const btnMore = document.getElementById('btnMore');
-      if(btnMore) btnMore.click();
-      const fallback = window.__hcsigCurrentMobileView || 'home';
-      wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view === fallback));
-      return;
-    }
+
+    document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
+    document.body.classList.add('mobile-view-'+v);
+    document.body.dataset.mobileView = v;
+    window.__hcsigCurrentMobileView = v;
+    wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
     const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
     const panel = document.getElementById(id);
     if(panel) panel.scrollTop = 0;
+
+    // If LOG chosen and logs are in more modal, try open it
+    if(v==='log'){
+      const btnMore = document.getElementById('btnMore');
+      if(btnMore && !document.getElementById('logBox')) btnMore.click();
+    }
   }
   window.setHcsigMobileView = setView;
 
-  wrap.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => setView(btn.dataset.view));
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>setView(btn.dataset.view));
   });
 
+  // When a code is tapped, auto-scroll to detail inside codes view
   const codeList = document.getElementById('codeList');
   const codeDetail = document.getElementById('codeDetail');
   if(codeList && codeDetail){
-    codeList.addEventListener('click', (e) => {
+    codeList.addEventListener('click', (e)=>{
       const li = e.target.closest('li');
       if(!li) return;
+      // ensure we're on Codes view
       setView('codes');
-      setTimeout(() => codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
     });
   }
 
-  setView('home');
+  // default view
+  const initialTutorialView = window.__hcsigPendingTutorialMobileView;
+  setView(initialTutorialView || 'status', initialTutorialView ? { tutorialForce: true } : undefined);
+
+  if(initialTutorialView){
+    requestAnimationFrame(()=>setView(window.__hcsigPendingTutorialMobileView || 'status', { tutorialForce: true }));
+    setTimeout(()=>setView(window.__hcsigPendingTutorialMobileView || 'status', { tutorialForce: true }), 120);
+  }
 })();
+
 
 
 // === SAFE-AREA / TABS HEIGHT CALIBRATION ===
@@ -2998,7 +3104,7 @@
   if(!isMobile) return;
 
   function activeViewEl(){
-    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop'];
+    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
     for(const id of ids){
       const el = document.getElementById(id);
       if(!el) continue;
@@ -3044,7 +3150,7 @@
   }
 
   function attach(){
-    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop'];
+    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
     ids.forEach(id=>{
       const el = document.getElementById(id);
       if(!el) return;
