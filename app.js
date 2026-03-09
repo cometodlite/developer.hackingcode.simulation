@@ -2932,74 +2932,62 @@
     main.insertBefore(v, main.firstChild);
   });
 
-  // Move leftPanel -> Status + Shop
+  // Move leftPanel -> Status + Shop (robustly pick direct sections)
   const left = document.getElementById('leftPanel');
   if(left){
-    const shopTitle = Array.from(left.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='Shop');
     const statusView = document.getElementById('mobileViewStatus');
     const shopView = document.getElementById('mobileViewShop');
+    const leftChildren = Array.from(left.children);
 
-    if(shopTitle){
-      // nodes before Shop go to Status
-      let node = left.firstChild;
-      const toMoveStatus = [];
-      while(node && node !== shopTitle){
-        const next = node.nextSibling;
-        toMoveStatus.push(node);
-        node = next;
-      }
-      toMoveStatus.forEach(n=>statusView.appendChild(n));
+    const statusTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='status');
+    const shopTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='shop');
+    const statusBox = statusTitle ? statusTitle.nextElementSibling : null;
+    const shopSortRow = document.getElementById('shopSortSelect')?.closest('.shop-sort-row') || null;
+    const shopListBox = document.getElementById('shopList')?.closest('.stat-box') || null;
 
-      // Shop title and everything after -> Shop
-      let node2 = shopTitle;
-      const toMoveShop = [];
-      while(node2){
-        const next = node2.nextSibling;
-        toMoveShop.push(node2);
-        node2 = next;
-      }
-      toMoveShop.forEach(n=>shopView.appendChild(n));
-    }else{
-      // fallback: whole left panel in Status
+    const moveIfPresent = (parent, nodes) => {
+      nodes.filter(Boolean).forEach(node => {
+        if(node && node.parentNode) parent.appendChild(node);
+      });
+    };
+
+    if(statusView && shopView && (statusTitle || shopTitle)){
+      moveIfPresent(statusView, [statusTitle, statusBox]);
+      moveIfPresent(shopView, [shopTitle, shopSortRow, shopListBox]);
+    }else if(statusView){
       statusView.appendChild(left);
     }
   }
 
-  // Move centerPanel -> Action + Codes
+  // Move centerPanel -> Action + Codes (use exact containers instead of nested-child comparison)
   const center = document.getElementById('centerPanel');
   if(center){
     const actionView = document.getElementById('mobileViewAction');
     const codesView  = document.getElementById('mobileViewCodes');
+    const centerInner = center.querySelector('.center-inner') || center;
+    const centerChildren = Array.from(centerInner.children);
 
-    const codeInvTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='코드 인벤토리');
-    let codeBlock = null;
-    if(codeInvTitle){
-      // typically inside a flex-row container
-      codeBlock = codeInvTitle.closest('.flex-row') || codeInvTitle.closest('.stat-box') || codeInvTitle.parentElement;
-    }
+    const actionBox = centerChildren.find(el => {
+      const title = el.querySelector && el.querySelector('.section-title');
+      return title && (title.textContent||'').trim().toLowerCase()==='actions';
+    }) || center.querySelector('#btnScan')?.closest('.stat-box') || null;
 
-    if(codeBlock){
-      // move nodes before codeBlock into Action
-      let node = center.firstChild;
-      const toMoveAction = [];
-      while(node && node !== codeBlock){
-        const next = node.nextSibling;
-        toMoveAction.push(node);
-        node = next;
-      }
-      toMoveAction.forEach(n=>actionView.appendChild(n));
+    const codesBlock = center.querySelector('#codeList')?.closest('.flex-row') ||
+                       center.querySelector('#codeDetail')?.closest('.flex-row') ||
+                       centerInner.querySelector('.flex-row.flex-grow') || null;
 
-      // move codeBlock and after into Codes
-      let node2 = codeBlock;
-      const toMoveCodes = [];
-      while(node2){
-        const next = node2.nextSibling;
-        toMoveCodes.push(node2);
-        node2 = next;
-      }
-      toMoveCodes.forEach(n=>codesView.appendChild(n));
-    }else{
-      // fallback: whole center in Action
+    const scanOverlay = document.getElementById('scanOverlay');
+
+    const moveIfPresent = (parent, nodes) => {
+      nodes.filter(Boolean).forEach(node => {
+        if(node && node.parentNode) parent.appendChild(node);
+      });
+    };
+
+    if(actionView && codesView && (actionBox || codesBlock)){
+      moveIfPresent(actionView, [actionBox, scanOverlay]);
+      moveIfPresent(codesView, [codesBlock]);
+    }else if(actionView){
       actionView.appendChild(center);
     }
   }
