@@ -1,3 +1,4 @@
+window.__HCSIG_SIMPLE_MOBILE__ = true;
 // Split from 배포용 index.html on 2026-03-09
 // Original inline scripts concatenated in source order.
 
