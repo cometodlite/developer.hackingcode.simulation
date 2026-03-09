@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(l)';
+    const CURRENT_VERSION = 'v1.6.11(k1)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -203,51 +203,21 @@
         ]
       },
       {
-        version: 'v1.6.11(g)',
-        lines: [
-          'STATUS와 ACTION을 하나의 HOME 창으로 통합했습니다.',
-          '모바일 하단 탭 구성을 HOME / CODES / SHOP / LOG 4개 구조로 정리했습니다.',
-          'HOME과 SHOP 영역을 다시 분리하고, PC 3패널 레이아웃을 재정리했습니다.'
-        ]
-      },
-      {
-        version: 'v1.6.11(h)',
-        lines: [
-          '백그라운드/복귀 시 경과 시간을 계산해 에너지 회복이 자연스럽게 이어지도록 보정했습니다.',
-          '페이지를 닫거나 탭을 벗어날 때 마지막 활동 시각을 기록해 복귀 시 진행이 덜 끊기게 만들었습니다.',
-          '마지막 저장/활동 시각 기반의 시간 보정 토대를 추가했습니다.'
-        ]
-      },
-      {
         version: 'v1.6.11(i)',
         lines: [
-          '탭을 완전히 닫았다가 다시 열어도 마지막 활동 시각을 기준으로 오프라인 에너지 복구가 적용되도록 보정했습니다.',
-          '새로고침/재접속 직후에도 lastSeenAt 기반 시간을 먼저 계산한 뒤 UI를 갱신하도록 순서를 정리했습니다.',
-          '오프라인 보정 상한은 기존처럼 유지하면서 재실행 대응 안정성을 높였습니다.'
+          '탭 종료 후 재접속 시에도 오프라인 에너지 회복이 적용되도록 수정했습니다.',
+          '게임 시작 직후 마지막 접속 시각을 기준으로 경과 시간을 계산해 에너지를 보정합니다.',
+          'visibilitychange/pagehide 뿐 아니라 새로 열기·새로고침 상황에서도 복귀 보정이 동작합니다.',
+          '오프라인 에너지 회복 상한은 최대 60분으로 유지됩니다.'
         ]
       },
       {
         version: 'v1.6.11(j)',
         lines: [
-          '신규 유저용 튜토리얼 1차를 추가해 HOME, 코드 스캔, 코드 선택, 서버 해킹 흐름을 순서대로 안내합니다.',
-          '튜토리얼 진행 단계와 완료 여부를 저장해 새로고침 후에도 상태가 유지되도록 했습니다.',
-          '설정 탭에서 튜토리얼 다시 보기를 실행할 수 있도록 준비했습니다.'
-        ]
-      },
-      {
-        version: 'v1.6.11(k)',
-        lines: [
-          '튜토리얼의 행동 연동 단계에서는 배경 입력을 막지 않도록 조정해 실제 코드 스캔/해킹을 진행할 수 있게 수정했습니다.',
-          '상호작용 단계에서 안내창이 상단 가이드형처럼 동작하도록 보정했습니다.',
-          '튜토리얼이 플레이를 차단하는 모달처럼 느껴지지 않도록 동작 방식을 정리했습니다.'
-        ]
-      },
-      {
-        version: 'v1.6.11(l)',
-        lines: [
-          '최신 HOME / CODES / SHOP / LOG 구조 위에 튜토리얼을 다시 병합해 예전 STATUS/ACTION 5탭 구조로 되돌아가던 문제를 수정했습니다.',
-          '모바일 4탭, HOME 통합, 최신 레이아웃을 유지한 채 튜토리얼 안내 문구와 실제 UI 흐름을 일치시켰습니다.',
-          '설정 탭의 튜토리얼 다시 보기와 초기 자동 시작 동작을 최신 구조 기준으로 재정리했습니다.'
+          '신규 유저용 튜토리얼 시스템 1차를 추가했습니다.',
+          'HOME/코드 스캔/CODES/해킹/성장 흐름을 단계별로 안내합니다.',
+          '특정 행동을 수행하면 다음 단계로 자동 진행되며, 건너뛰기 및 다시 보기를 지원합니다.',
+          '튜토리얼 완료 여부와 진행 단계는 저장 데이터에 함께 보관됩니다.'
         ]
       }
 
@@ -823,7 +793,7 @@
       },
       {
         title: 'HOME 확인',
-        text: '여기는 HOME입니다. 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
+        text: '여기서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
         hint: '상태를 확인했다면 다음 단계로 이동하세요.',
         waitAction: false
       },
@@ -835,7 +805,7 @@
       },
       {
         title: '코드 선택',
-        text: '획득한 코드는 CODES에서 확인할 수 있습니다. 코드를 눌러 활성 코드로 바꾸고 상세 정보를 확인해 보세요.',
+        text: '획득한 코드는 코드 인벤토리에서 확인할 수 있습니다. 코드를 눌러 활성 코드로 바꾸고 상세 정보를 확인해 보세요.',
         hint: '코드 인벤토리의 항목을 한 번 클릭하면 자동으로 다음 단계로 넘어갑니다.',
         waitAction: true
       },
@@ -2789,7 +2759,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(l) Tutorial merge fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(j) Tutorial Update)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2811,6 +2781,13 @@
 
 // === MOBILE PATCH: disable resizers on touch devices ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__){
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    if(isTouch){
+      document.querySelectorAll('.resizer,.resize-bar').forEach(el=>el.remove());
+    }
+    return;
+  }
   const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
   if(isTouch){
     document.querySelectorAll('.resizer,.resize-bar').forEach(el=>el.remove());
@@ -2827,6 +2804,7 @@
 
 // === MOBILE UI MODE: Tabbed panels ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -2888,40 +2866,31 @@
 
 
 
-// === HOME PANEL MERGE: STATUS + ACTION ===
-(function(){
-  const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  if(!left || !center) return;
-
-  const leftTitles = Array.from(left.querySelectorAll('.section-title'));
-  const homeTitle = leftTitles.find(t => (t.textContent||'').trim().toLowerCase()==='status' || (t.textContent||'').trim().toLowerCase()==='home');
-  if(homeTitle) homeTitle.textContent = 'HOME';
-
-  const shopTitle = leftTitles.find(t => (t.textContent||'').trim().toLowerCase()==='shop');
-  const actionTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim().toLowerCase()==='actions');
-  const actionBox = actionTitle ? (actionTitle.closest('.stat-box') || actionTitle.parentElement) : null;
-
-  if(actionBox && shopTitle && actionBox.parentElement !== left){
-    left.insertBefore(actionBox, shopTitle);
-  }
-})();
-
-
-
 // === MOBILE VIEWS: split PC layout into mobile tabs ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
+  // legacy split-view disabled by k1 hotfix
+  return;
 
+  // helper
+  const byText = (root, sel, txt) => {
+    const els = Array.from(root.querySelectorAll(sel));
+    return els.find(e => (e.textContent||'').trim().toLowerCase() === txt.toLowerCase());
+  };
+
+  // Create mobile view containers
   const views = [
-    ['Home','mobileViewHome'],
+    ['Status','mobileViewStatus'],
+    ['Action','mobileViewAction'],
     ['Codes','mobileViewCodes'],
     ['Shop','mobileViewShop'],
     ['Log','mobileViewLog'],
   ];
-  const main = document.getElementById('main') || document.body;
-  views.forEach(([_, id]) => {
+  const main = document.getElementById('main') || document.querySelector('#main') || document.body;
+
+  views.forEach(([_,id])=>{
     if(document.getElementById(id)) return;
     const v = document.createElement('div');
     v.id = id;
@@ -2929,34 +2898,80 @@
     main.insertBefore(v, main.firstChild);
   });
 
-  const homeView = document.getElementById('mobileViewHome');
-  const codesView = document.getElementById('mobileViewCodes');
-  const shopView = document.getElementById('mobileViewShop');
-  const logView = document.getElementById('mobileViewLog');
-
+  // Move leftPanel -> Status + Shop
   const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  const right = document.getElementById('rightPanel');
-
   if(left){
-    while(left.firstChild) homeView.appendChild(left.firstChild);
+    const shopTitle = Array.from(left.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='Shop');
+    const statusView = document.getElementById('mobileViewStatus');
+    const shopView = document.getElementById('mobileViewShop');
+
+    if(shopTitle){
+      // nodes before Shop go to Status
+      let node = left.firstChild;
+      const toMoveStatus = [];
+      while(node && node !== shopTitle){
+        const next = node.nextSibling;
+        toMoveStatus.push(node);
+        node = next;
+      }
+      toMoveStatus.forEach(n=>statusView.appendChild(n));
+
+      // Shop title and everything after -> Shop
+      let node2 = shopTitle;
+      const toMoveShop = [];
+      while(node2){
+        const next = node2.nextSibling;
+        toMoveShop.push(node2);
+        node2 = next;
+      }
+      toMoveShop.forEach(n=>shopView.appendChild(n));
+    }else{
+      // fallback: whole left panel in Status
+      statusView.appendChild(left);
+    }
   }
 
-  const codeBox = document.getElementById('codeList')?.closest('.stat-box');
-  const detailBox = document.getElementById('codeDetail')?.closest('.stat-box');
-  if(codeBox) codesView.appendChild(codeBox);
-  if(detailBox) codesView.appendChild(detailBox);
+  // Move centerPanel -> Action + Codes
+  const center = document.getElementById('centerPanel');
+  if(center){
+    const actionView = document.getElementById('mobileViewAction');
+    const codesView  = document.getElementById('mobileViewCodes');
 
-  const scanOverlay = document.getElementById('scanOverlay');
-  if(scanOverlay) document.body.appendChild(scanOverlay);
+    const codeInvTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='코드 인벤토리');
+    let codeBlock = null;
+    if(codeInvTitle){
+      // typically inside a flex-row container
+      codeBlock = codeInvTitle.closest('.flex-row') || codeInvTitle.closest('.stat-box') || codeInvTitle.parentElement;
+    }
 
-  const shopTitle = Array.from((right || document).querySelectorAll('.section-title')).find(t => (t.textContent||'').trim().toLowerCase() === 'shop');
-  const shopSortRow = document.getElementById('shopSortSelect')?.closest('.shop-sort-row');
-  const shopList = document.getElementById('shopList');
-  if(shopTitle) shopView.appendChild(shopTitle);
-  if(shopSortRow) shopView.appendChild(shopSortRow);
-  if(shopList) shopView.appendChild(shopList);
+    if(codeBlock){
+      // move nodes before codeBlock into Action
+      let node = center.firstChild;
+      const toMoveAction = [];
+      while(node && node !== codeBlock){
+        const next = node.nextSibling;
+        toMoveAction.push(node);
+        node = next;
+      }
+      toMoveAction.forEach(n=>actionView.appendChild(n));
 
+      // move codeBlock and after into Codes
+      let node2 = codeBlock;
+      const toMoveCodes = [];
+      while(node2){
+        const next = node2.nextSibling;
+        toMoveCodes.push(node2);
+        node2 = next;
+      }
+      toMoveCodes.forEach(n=>codesView.appendChild(n));
+    }else{
+      // fallback: whole center in Action
+      actionView.appendChild(center);
+    }
+  }
+
+  // LOG view: try to use existing logBox if present, else open "더보기" logs
+  const logView = document.getElementById('mobileViewLog');
   const logBox = document.getElementById('logBox');
   if(logBox){
     logView.appendChild(logBox.closest('.stat-box') ? logBox.closest('.stat-box') : logBox);
@@ -2967,58 +2982,62 @@
     logView.appendChild(tip);
   }
 
+  // Replace tab bar with 5 tabs
   const oldTabs = document.querySelector('.mobile-tabs');
   if(oldTabs) oldTabs.remove();
 
   const wrap = document.createElement('div');
   wrap.className = 'mobile-tabs';
   wrap.innerHTML = `
-    <button type="button" data-view="home">HOME</button>
+    <button type="button" data-view="status">STATUS</button>
+    <button type="button" data-view="action">ACTION</button>
     <button type="button" data-view="codes">CODES</button>
     <button type="button" data-view="shop">SHOP</button>
-    <button type="button" data-view="coming">COMING SOON</button>
+    <button type="button" data-view="log">LOG</button>
   `;
   document.body.appendChild(wrap);
 
   function setView(v){
-    if(v==='coming'){
-      wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view===v));
-      try { showToast('Coming Soon - 준비 중인 기능입니다.', 'warn'); } catch(e) {}
-      return;
-    }
-    document.body.classList.remove('mobile-view-home','mobile-view-codes','mobile-view-shop','mobile-view-log');
+    document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
     document.body.classList.add('mobile-view-'+v);
-    wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view===v));
+    wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
     const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
     const panel = document.getElementById(id);
     if(panel) panel.scrollTop = 0;
+
+    // If LOG chosen and logs are in more modal, try open it
     if(v==='log'){
       const btnMore = document.getElementById('btnMore');
       if(btnMore && !document.getElementById('logBox')) btnMore.click();
     }
   }
 
-  wrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>setView(btn.dataset.view));
+  });
 
+  // When a code is tapped, auto-scroll to detail inside codes view
   const codeList = document.getElementById('codeList');
   const codeDetail = document.getElementById('codeDetail');
   if(codeList && codeDetail){
-    codeList.addEventListener('click', (e) => {
+    codeList.addEventListener('click', (e)=>{
       const li = e.target.closest('li');
       if(!li) return;
+      // ensure we're on Codes view
       setView('codes');
-      setTimeout(() => codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
     });
   }
 
-  setView('home');
+  // default view
+  setView('status');
 })();
-
 
 
 
 // === SAFE-AREA / TABS HEIGHT CALIBRATION ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -3046,11 +3065,14 @@
 
 // === MOBILE TABS AUTO-HIDE on scroll ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
+  // disabled by k1 hotfix; old view IDs are no longer used
+  return;
 
   function activeViewEl(){
-    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
     for(const id of ids){
       const el = document.getElementById(id);
       if(!el) continue;
@@ -3096,7 +3118,7 @@
   }
 
   function attach(){
-    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
     ids.forEach(id=>{
       const el = document.getElementById(id);
       if(!el) return;
@@ -3121,6 +3143,7 @@
 
 // === ANDROID: VisualViewport keyboard handling + UA class ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -3147,6 +3170,132 @@
   setTimeout(update, 900);
 })();
 
+
+
+// === MOBILE SIMPLE NAV (k1 hotfix) ===
+(function(){
+  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+  if(!isMobile) return;
+
+  const main = document.getElementById('main');
+  const left = document.getElementById('leftPanel');
+  const center = document.getElementById('centerPanel');
+  const toast = (msg, kind='info') => {
+    try { if (typeof showToast === 'function') showToast(msg, kind); } catch(e){}
+  };
+  if(!main || !left || !center) return;
+
+  document.body.classList.add('mobile-simple-ui');
+  document.body.classList.remove(
+    'mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log',
+    'mobile-tab-left','mobile-tab-center','mobile-tab-right'
+  );
+
+  const oldTabs = document.querySelector('.mobile-tabs');
+  if(oldTabs) oldTabs.remove();
+
+  function ensureView(id){
+    let el = document.getElementById(id);
+    if(!el){
+      el = document.createElement('section');
+      el.id = id;
+      el.className = 'mobile-simple-view';
+      main.insertBefore(el, main.firstChild);
+    }
+    return el;
+  }
+
+  const homeView = ensureView('mobileSimpleHome');
+  const codesView = ensureView('mobileSimpleCodes');
+  const shopView = ensureView('mobileSimpleShop');
+
+  const leftChildren = Array.from(left.children);
+  const centerInner = center.querySelector('.center-inner') || center;
+  const centerChildren = Array.from(centerInner.children);
+
+  const statusTitle = leftChildren[0] || null;
+  const statusBox = leftChildren[1] || null;
+  const shopTitle = left.querySelector('.section-title:nth-of-type(2)') || leftChildren.find(el => el.classList && el.classList.contains('section-title') && /shop/i.test(el.textContent||''));
+  const shopSortRow = left.querySelector('.shop-sort-row');
+  const shopList = document.getElementById('shopList');
+  const actionBox = centerChildren.find(el => el.classList && el.classList.contains('stat-box')) || null;
+  const codeRow = center.querySelector('.flex-row.flex-grow');
+
+  if(statusTitle && statusTitle.parentElement !== homeView) homeView.appendChild(statusTitle);
+  if(statusBox && statusBox.parentElement !== homeView) homeView.appendChild(statusBox);
+  if(actionBox && actionBox.parentElement !== homeView) homeView.appendChild(actionBox);
+
+  if(shopTitle && shopTitle.parentElement !== shopView) shopView.appendChild(shopTitle);
+  if(shopSortRow && shopSortRow.parentElement !== shopView) shopView.appendChild(shopSortRow);
+  if(shopList && shopList.parentElement !== shopView) shopView.appendChild(shopList);
+
+  if(codeRow){
+    let merged = document.getElementById('mobileCodesMerged');
+    if(!merged){
+      merged = document.createElement('div');
+      merged.id = 'mobileCodesMerged';
+      merged.className = 'stat-box codes-merged';
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = 'Codes';
+      merged.appendChild(title);
+      codesView.appendChild(merged);
+    }
+    const codeBoxes = Array.from(codeRow.children).filter(el => el.classList && el.classList.contains('stat-box'));
+    codeBoxes.forEach(box => {
+      if(box.parentElement !== merged) merged.appendChild(box);
+    });
+    if(codeRow.parentElement) codeRow.parentElement.removeChild(codeRow);
+  }
+
+  const nav = document.createElement('nav');
+  nav.className = 'mobile-tabs mobile-simple-tabs';
+  nav.innerHTML = `
+    <button type="button" data-view="home">HOME</button>
+    <button type="button" data-view="codes">CODES</button>
+    <button type="button" data-view="shop">SHOP</button>
+    <button type="button" data-view="soon">COMING SOON</button>
+  `;
+  document.body.appendChild(nav);
+
+  let currentView = 'home';
+  function setView(view){
+    if(view === 'soon'){
+      toast('Coming Soon - 준비 중인 기능입니다.', 'system');
+      nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === currentView));
+      return;
+    }
+    currentView = view;
+    document.body.classList.remove('mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
+    document.body.classList.add('mobile-simple-view-' + view);
+    nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+    const target = view === 'home' ? homeView : view === 'codes' ? codesView : shopView;
+    if(target) target.scrollTop = 0;
+    try {
+      const tabsH = Math.ceil(nav.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--mobileTabsH', tabsH + 'px');
+    } catch(e) {}
+  }
+
+  nav.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => setView(btn.dataset.view));
+  });
+
+  const codeList = document.getElementById('codeList');
+  const codeDetail = document.getElementById('codeDetail');
+  if(codeList && codeDetail){
+    codeList.addEventListener('click', (e) => {
+      const li = e.target.closest('li');
+      if(!li) return;
+      setView('codes');
+      setTimeout(() => {
+        try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
+      }, 40);
+    });
+  }
+
+  setView('home');
+})();
 
 
 /* === CHRISTMAS SNOW EFFECT (v1.6.6: toggle + stop) === */
@@ -3211,4 +3360,86 @@
 
   // 초기 상태는 applySettings()에서 결정
   try { if (typeof applySettings === 'function') applySettings(); } catch(e) {}
+})();
+
+
+// === SIMPLE MOBILE NAV (HOME / CODES / SHOP / COMING SOON) ===
+(function(){
+  if(!window.__HCSIG_SIMPLE_MOBILE__) return;
+  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+  if(!isMobile) return;
+
+  const body = document.body;
+  const left = document.getElementById('leftPanel');
+  const center = document.getElementById('centerPanel');
+  const header = document.querySelector('header');
+  if(!left || !center) return;
+
+  const sectionTitles = Array.from(left.querySelectorAll('.section-title'));
+  const statusTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'status');
+  const shopTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'shop');
+  const statusBox = left.querySelector('.stat-box');
+  const shopSortRow = left.querySelector('.shop-sort-row');
+  const shopListEl = document.getElementById('shopList');
+  const centerInner = center.querySelector('.center-inner') || center;
+  const actionsBox = centerInner.querySelector('.stat-box');
+  const codesWrap = centerInner.querySelector('.flex-row.flex-grow');
+  const scanOverlay = document.getElementById('scanOverlay');
+
+  if(statusTitle) statusTitle.classList.add('mobile-home-only');
+  if(statusBox) statusBox.classList.add('mobile-home-only');
+  if(actionsBox) actionsBox.classList.add('mobile-home-only');
+  if(shopTitle) shopTitle.classList.add('mobile-shop-only');
+  if(shopSortRow) shopSortRow.classList.add('mobile-shop-only');
+  if(shopListEl) shopListEl.classList.add('mobile-shop-only');
+  if(codesWrap) codesWrap.classList.add('mobile-codes-only');
+
+  const existing = document.querySelector('.mobile-simple-tabs');
+  if(existing) existing.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'mobile-simple-tabs';
+  wrap.innerHTML = `
+    <button type="button" data-mobile-tab="home">HOME</button>
+    <button type="button" data-mobile-tab="codes">CODES</button>
+    <button type="button" data-mobile-tab="shop">SHOP</button>
+    <button type="button" data-mobile-tab="coming">COMING SOON</button>
+  `;
+  body.appendChild(wrap);
+
+  function updateHeaderVar(){
+    const h = header ? Math.ceil(header.getBoundingClientRect().height) : 52;
+    document.documentElement.style.setProperty('--header-h', h + 'px');
+  }
+
+  function setSimpleTab(tab){
+    body.classList.remove('simple-tab-home','simple-tab-codes','simple-tab-shop');
+    body.classList.add('simple-tab-' + tab);
+    wrap.querySelectorAll('button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mobileTab === tab);
+    });
+    if(tab === 'codes' && center) center.scrollTop = 0;
+    if(tab === 'shop' && left) left.scrollTop = 0;
+    if(tab === 'home') {
+      if(left) left.scrollTop = 0;
+      if(center) center.scrollTop = 0;
+    }
+  }
+
+  wrap.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-mobile-tab]');
+    if(!btn) return;
+    const tab = btn.dataset.mobileTab;
+    if(tab === 'coming') {
+      showToast('Coming Soon - 준비 중인 기능입니다.', 'system');
+      return;
+    }
+    setSimpleTab(tab);
+  });
+
+  updateHeaderVar();
+  window.addEventListener('resize', updateHeaderVar);
+  window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
+  if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
+  setSimpleTab('home');
 })();
