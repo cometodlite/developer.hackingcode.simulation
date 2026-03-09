@@ -237,7 +237,7 @@
       items: { energyPack: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
-      tutorial: { completed: false, step: 0, seen: false },
+      tutorial: { completed: true, step: 0, seen: true },
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -833,158 +833,51 @@
       const d = new Date();
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     }
-
     function ensureTutorialDefaults() {
-      state.tutorial = state.tutorial || {};
-      if (typeof state.tutorial.completed !== 'boolean') state.tutorial.completed = false;
-      if (!Number.isInteger(state.tutorial.step)) state.tutorial.step = 0;
-      if (state.tutorial.step < 0) state.tutorial.step = 0;
-      if (state.tutorial.step >= tutorialSteps.length) state.tutorial.step = tutorialSteps.length - 1;
-      if (typeof state.tutorial.seen !== 'boolean') state.tutorial.seen = false;
+      state.tutorial = { completed: true, step: 0, seen: true };
     }
 
     function isTutorialOpen() {
-      return !!(tutorialBackdrop && tutorialBackdrop.classList.contains('show'));
+      return false;
     }
 
-    function syncTutorialStepView() {
-      const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
-      const mobileViewMap = {
-        2: 'action',
-        3: 'codes',
-        4: 'action'
-      };
-      const targetView = mobileViewMap[idx];
-      if (targetView) {
-        window.__hcsigPendingTutorialMobileView = targetView;
-        const applyTargetView = () => {
-          if (typeof window.setHcsigMobileView === 'function') {
-            window.setHcsigMobileView(targetView, { tutorialForce: true });
-            return true;
-          }
-          const mobileBtn = document.querySelector(`.mobile-tabs [data-view="${targetView}"]`);
-          if (mobileBtn) {
-            mobileBtn.click();
-            return true;
-          }
-          return false;
-        };
+    function syncTutorialStepView() {}
 
-        applyTargetView();
-        requestAnimationFrame(() => applyTargetView());
-        setTimeout(() => applyTargetView(), 0);
-        setTimeout(() => applyTargetView(), 80);
-        setTimeout(() => applyTargetView(), 220);
-      }
-
-      if (idx === 3) {
-        const codeListEl = document.getElementById('codeList');
-        if (codeListEl) {
-          setTimeout(() => {
-            codeListEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 80);
-        }
-      }
-    }
-
-    function renderTutorial() {
-      if (!tutorialBackdrop) return;
-      ensureTutorialDefaults();
-      const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
-      const step = tutorialSteps[idx];
-      tutorialStepLabel.textContent = `STEP ${idx + 1} / ${tutorialSteps.length}`;
-      tutorialStepTitle.textContent = step.title;
-      tutorialStepText.textContent = step.text;
-      tutorialStepHint.textContent = step.hint || '';
-      tutorialStepHint.style.display = step.hint ? '' : 'none';
-      const interactive = !!step.waitAction;
-      tutorialBackdrop.classList.toggle('interactive', interactive);
-      tutorialBackdrop.dataset.tutorialStep = String(idx + 1);
-      document.body.dataset.tutorialStep = String(idx + 1);
-      document.body.classList.toggle('tutorial-interactive', false);
-      btnTutorialPrev.disabled = idx <= 0;
-      const waiting = interactive;
-      btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
-      btnTutorialNext.disabled = waiting;
-      btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
-      tutorialBackdrop.classList.toggle('guide-mode', true);
-      syncTutorialStepView();
-    }
+    function renderTutorial() {}
 
     function openTutorial(forceRestart = false) {
-      if (!tutorialBackdrop) return;
       ensureTutorialDefaults();
-      if (forceRestart) {
-        state.tutorial.completed = false;
-        state.tutorial.step = 0;
+      if (tutorialBackdrop) {
+        tutorialBackdrop.classList.remove('show', 'interactive', 'guide-mode');
+        tutorialBackdrop.setAttribute('aria-hidden', 'true');
       }
-      renderTutorial();
-      tutorialBackdrop.classList.add('show');
-      tutorialBackdrop.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('tutorial-open');
-      document.body.classList.add('tutorial-guide-open');
-      tutorialOpenedOnce = true;
+      if (document.body) {
+        delete document.body.dataset.tutorialStep;
+        document.body.classList.remove('tutorial-open', 'tutorial-interactive', 'tutorial-guide-open');
+      }
     }
 
     function closeTutorial(markCompleted = false) {
-      if (!tutorialBackdrop) return;
-      if (markCompleted) {
-        state.tutorial.completed = true;
-        state.tutorial.step = tutorialSteps.length - 1;
-      }
-      tutorialBackdrop.classList.remove('show');
-      tutorialBackdrop.classList.remove('interactive');
-      tutorialBackdrop.classList.remove('guide-mode');
-      tutorialBackdrop.setAttribute('aria-hidden', 'true');
-      delete tutorialBackdrop.dataset.tutorialStep;
-      delete document.body.dataset.tutorialStep;
-      document.body.classList.remove('tutorial-open');
-      document.body.classList.remove('tutorial-interactive');
-      document.body.classList.remove('tutorial-guide-open');
-      saveGame(true);
-    }
-
-    function nextTutorialStep() {
       ensureTutorialDefaults();
-      if (state.tutorial.step < tutorialSteps.length - 1) {
-        state.tutorial.step += 1;
-        renderTutorial();
-        saveGame(true);
+      if (tutorialBackdrop) {
+        tutorialBackdrop.classList.remove('show', 'interactive', 'guide-mode');
+        tutorialBackdrop.setAttribute('aria-hidden', 'true');
+      }
+      if (document.body) {
+        delete document.body.dataset.tutorialStep;
+        document.body.classList.remove('tutorial-open', 'tutorial-interactive', 'tutorial-guide-open');
       }
     }
 
-    function prevTutorialStep() {
-      ensureTutorialDefaults();
-      if (state.tutorial.step > 0) {
-        state.tutorial.step -= 1;
-        renderTutorial();
-      }
-    }
+    function nextTutorialStep() {}
 
-    function onTutorialAction(action) {
-      ensureTutorialDefaults();
-      if (state.tutorial.completed) return;
-      const mapping = { scan: 2, selectCode: 3, hack: 4 };
-      const expected = mapping[action];
-      if (expected === undefined) return;
-      if (state.tutorial.step !== expected) return;
-      const followUp = () => {
-        nextTutorialStep();
-        if (!isTutorialOpen()) openTutorial(false);
-      };
-      if (isTutorialOpen()) {
-        followUp();
-      } else {
-        openTutorial(false);
-        setTimeout(followUp, 0);
-      }
-    }
+    function prevTutorialStep() {}
+
+    function onTutorialAction(action) {}
 
     function maybeStartTutorial() {
       ensureTutorialDefaults();
-      if (state.tutorial.completed || tutorialOpenedOnce) return;
-      state.tutorial.seen = true;
-      openTutorial(false);
+      closeTutorial(true);
     }
 
     function updateStatsUI() {
@@ -2549,7 +2442,7 @@
     if (btnTutorialNext) btnTutorialNext.addEventListener('click', nextTutorialStep);
     if (btnTutorialFinish) btnTutorialFinish.addEventListener('click', () => closeTutorial(true));
     if (btnTutorialSkip) btnTutorialSkip.addEventListener('click', () => closeTutorial(true));
-    if (btnOpenTutorial) btnOpenTutorial.addEventListener('click', () => openTutorial(true));
+    if (btnOpenTutorial) btnOpenTutorial.style.display = 'none';
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') persistLastSeenAt(Date.now());
@@ -2806,7 +2699,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(j) Tutorial Update)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -3022,10 +2915,6 @@
   document.body.appendChild(wrap);
 
   function setView(v, options = {}){
-    const tutorialStep = Number((document.body && document.body.dataset && document.body.dataset.tutorialStep) || 0);
-    if(!options.tutorialForce && tutorialStep === 4 && v !== 'codes'){
-      v = 'codes';
-    }
 
     document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
     document.body.classList.add('mobile-view-'+v);
@@ -3062,13 +2951,7 @@
   }
 
   // default view
-  const initialTutorialView = window.__hcsigPendingTutorialMobileView;
-  setView(initialTutorialView || 'status', initialTutorialView ? { tutorialForce: true } : undefined);
-
-  if(initialTutorialView){
-    requestAnimationFrame(()=>setView(window.__hcsigPendingTutorialMobileView || 'status', { tutorialForce: true }));
-    setTimeout(()=>setView(window.__hcsigPendingTutorialMobileView || 'status', { tutorialForce: true }), 120);
-  }
+  setView('status');
 })();
 
 

@@ -1238,3 +1238,9 @@ body.tutorial-guide-open{
   #tutorialStepHint{ font-size: 13px; line-height: 1.45; }
   body.tutorial-guide-open{ --tutorialGuideGap: 150px; }
 }
+
+
+/* Tutorial removed */
+#btnOpenTutorial,
+#tutorialBackdrop { display: none !important; }
+body.tutorial-open, body.tutorial-guide-open { overflow: auto !important; }
