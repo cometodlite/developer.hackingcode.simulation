@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(e)';
+    const CURRENT_VERSION = 'v1.6.11(f)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -203,11 +203,11 @@
         ]
       },
       {
-        version: 'v1.6.11(e)',
+        version: 'v1.6.11(f)',
         lines: [
           'STATUS와 ACTION을 하나의 HOME 창으로 통합했습니다.',
           '모바일 하단 탭 구성을 HOME / CODES / SHOP / LOG 4개 구조로 정리했습니다.',
-          '전반적인 Mobile Fix 마무리와 함께 현재 웹 배포 기준 버전을 v1.6.11(e)로 정리했습니다.'
+          'HOME과 SHOP 영역을 다시 분리하고, PC 3패널 레이아웃을 재정리했습니다.'
         ]
       }
 
@@ -2495,7 +2495,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11 Mobile Fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(f) HOME/SHOP layout fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2611,27 +2611,20 @@
 })();
 
 
+
 // === MOBILE VIEWS: split PC layout into mobile tabs ===
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
-  // helper
-  const byText = (root, sel, txt) => {
-    const els = Array.from(root.querySelectorAll(sel));
-    return els.find(e => (e.textContent||'').trim().toLowerCase() === txt.toLowerCase());
-  };
-
-  // Create mobile view containers
   const views = [
     ['Home','mobileViewHome'],
     ['Codes','mobileViewCodes'],
     ['Shop','mobileViewShop'],
     ['Log','mobileViewLog'],
   ];
-  const main = document.getElementById('main') || document.querySelector('#main') || document.body;
-
-  views.forEach(([_,id])=>{
+  const main = document.getElementById('main') || document.body;
+  views.forEach(([_, id]) => {
     if(document.getElementById(id)) return;
     const v = document.createElement('div');
     v.id = id;
@@ -2639,69 +2632,34 @@
     main.insertBefore(v, main.firstChild);
   });
 
-  // Move leftPanel -> Home + Shop
-  const left = document.getElementById('leftPanel');
-  if(left){
-    const shopTitle = Array.from(left.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='Shop');
-    const homeView = document.getElementById('mobileViewHome');
-    const shopView = document.getElementById('mobileViewShop');
-
-    if(shopTitle){
-      // nodes before Shop go to Home
-      let node = left.firstChild;
-      const toMoveHome = [];
-      while(node && node !== shopTitle){
-        const next = node.nextSibling;
-        toMoveHome.push(node);
-        node = next;
-      }
-      toMoveHome.forEach(n=>homeView.appendChild(n));
-
-      // Shop title and everything after -> Shop
-      let node2 = shopTitle;
-      const toMoveShop = [];
-      while(node2){
-        const next = node2.nextSibling;
-        toMoveShop.push(node2);
-        node2 = next;
-      }
-      toMoveShop.forEach(n=>shopView.appendChild(n));
-    }else{
-      // fallback: whole left panel in Home
-      homeView.appendChild(left);
-    }
-  }
-
-  // Move centerPanel -> Codes only (Actions are merged into HOME)
-  const center = document.getElementById('centerPanel');
-  if(center){
-    const codesView  = document.getElementById('mobileViewCodes');
-
-    const codeInvTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='코드 인벤토리');
-    let codeBlock = null;
-    if(codeInvTitle){
-      // typically inside a flex-row container
-      codeBlock = codeInvTitle.closest('.flex-row') || codeInvTitle.closest('.stat-box') || codeInvTitle.parentElement;
-    }
-
-    if(codeBlock){
-      // actions are already moved into HOME; move code block and after into Codes
-      let node2 = codeBlock;
-      const toMoveCodes = [];
-      while(node2){
-        const next = node2.nextSibling;
-        toMoveCodes.push(node2);
-        node2 = next;
-      }
-      toMoveCodes.forEach(n=>codesView.appendChild(n));
-    }else{
-      // fallback: whole center in Codes
-      codesView.appendChild(center);
-    }
-  }
-
-  // LOG view: try to use existing logBox if present, else open "더보기" logs
+  const homeView = document.getElementById('mobileViewHome');
+  const codesView = document.getElementById('mobileViewCodes');
+  const shopView = document.getElementById('mobileViewShop');
   const logView = document.getElementById('mobileViewLog');
+
+  const left = document.getElementById('leftPanel');
+  const center = document.getElementById('centerPanel');
+  const right = document.getElementById('rightPanel');
+
+  if(left){
+    while(left.firstChild) homeView.appendChild(left.firstChild);
+  }
+
+  const codeBox = document.getElementById('codeList')?.closest('.stat-box');
+  const detailBox = document.getElementById('codeDetail')?.closest('.stat-box');
+  if(codeBox) codesView.appendChild(codeBox);
+  if(detailBox) codesView.appendChild(detailBox);
+
+  const scanOverlay = document.getElementById('scanOverlay');
+  if(scanOverlay) document.body.appendChild(scanOverlay);
+
+  const shopTitle = Array.from((right || document).querySelectorAll('.section-title')).find(t => (t.textContent||'').trim().toLowerCase() === 'shop');
+  const shopSortRow = document.getElementById('shopSortSelect')?.closest('.shop-sort-row');
+  const shopList = document.getElementById('shopList');
+  if(shopTitle) shopView.appendChild(shopTitle);
+  if(shopSortRow) shopView.appendChild(shopSortRow);
+  if(shopList) shopView.appendChild(shopList);
+
   const logBox = document.getElementById('logBox');
   if(logBox){
     logView.appendChild(logBox.closest('.stat-box') ? logBox.closest('.stat-box') : logBox);
@@ -2712,7 +2670,6 @@
     logView.appendChild(tip);
   }
 
-  // Replace tab bar with 4 tabs
   const oldTabs = document.querySelector('.mobile-tabs');
   if(oldTabs) oldTabs.remove();
 
@@ -2729,38 +2686,32 @@
   function setView(v){
     document.body.classList.remove('mobile-view-home','mobile-view-codes','mobile-view-shop','mobile-view-log');
     document.body.classList.add('mobile-view-'+v);
-    wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+    wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view===v));
     const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
     const panel = document.getElementById(id);
     if(panel) panel.scrollTop = 0;
-
-    // If LOG chosen and logs are in more modal, try open it
     if(v==='log'){
       const btnMore = document.getElementById('btnMore');
       if(btnMore && !document.getElementById('logBox')) btnMore.click();
     }
   }
 
-  wrap.querySelectorAll('button').forEach(btn=>{
-    btn.addEventListener('click', ()=>setView(btn.dataset.view));
-  });
+  wrap.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => setView(btn.dataset.view)));
 
-  // When a code is tapped, auto-scroll to detail inside codes view
   const codeList = document.getElementById('codeList');
   const codeDetail = document.getElementById('codeDetail');
   if(codeList && codeDetail){
-    codeList.addEventListener('click', (e)=>{
+    codeList.addEventListener('click', (e) => {
       const li = e.target.closest('li');
       if(!li) return;
-      // ensure we're on Codes view
       setView('codes');
-      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      setTimeout(() => codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
     });
   }
 
-  // default view
   setView('home');
 })();
+
 
 
 
@@ -2958,4 +2909,15 @@
 
   // 초기 상태는 applySettings()에서 결정
   try { if (typeof applySettings === 'function') applySettings(); } catch(e) {}
+})();
+
+
+// === ZOOM PREVENTION (mobile pinch / ctrl+wheel) ===
+(function(){
+  ['gesturestart','gesturechange','gestureend'].forEach(evt => {
+    document.addEventListener(evt, (e)=>{ e.preventDefault(); }, {passive:false});
+  });
+  window.addEventListener('wheel', (e)=>{
+    if(e.ctrlKey) e.preventDefault();
+  }, {passive:false});
 })();

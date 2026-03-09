@@ -3,31 +3,24 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>HCSiG - Hacking Code Simulator Game</title>
-
-
-
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=1.6.11" rel="stylesheet"/>
+<link href="style.css?v=1.6.11f" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.11(e) (Web)</span>
+<span class="header-version">v1.6.11(f) (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle">Hacking Code Simulator Game</span>
 <button id="btnMore" title="업데이트 로그, 미션, 업적, 저장/불러오기">더보기 ▾</button>
 </div>
 </header>
-<div id="main">
-<!-- 왼쪽: HOME(상태+행동) / 상점 -->
-<div class="panel" id="leftPanel">
-<div class="section-title">HOME</div>
-<div class="stat-box">
+<div id="main"><div class="panel" id="leftPanel"><div class="section-title">HOME</div><div class="stat-box">
 <div class="stat-row">
 <span class="label">레벨</span>
 <span class="value" id="statLevel">1</span>
@@ -66,26 +59,7 @@
 <span class="label">마지막 저장</span>
 <span class="value" id="statLastSave">-</span>
 </div>
-</div>
-<div class="section-title">Shop</div>
-<div class="shop-sort-row">
-<span class="shop-sort-label">정렬</span>
-<select id="shopSortSelect" title="상점 아이템 정렬 기준을 선택합니다.">
-<option value="update">업데이트순</option>
-<option value="new">신규 우선</option>
-<option value="rarity">희귀도순</option>
-<option value="price">가격순</option>
-<option value="name">이름순</option>
-</select>
-</div>
-<div class="stat-box" id="shopList"></div>
-</div>
-<div class="resizer" id="resizerLeft"></div>
-<!-- 중앙: 행동 / 코드 인벤토리 / 상세 -->
-<div class="panel" id="centerPanel">
-<div class="center-inner">
-<!-- Actions -->
-<div class="stat-box">
+</div><div class="stat-box">
 <div class="section-title">Actions</div>
 <div class="button-row">
 <button id="btnScan" title="에너지 1 소모. 코드 희귀도 가챠 + 경험치 획득.">코드 스캔</button>
@@ -122,16 +96,15 @@
               · 레벨업 시 크레딧 +100, CPU 업그레이드 비용 = 500 × 티어 × 할인 계수
             </div>
 </div>
-</div>
-<!-- Code Inventory + Detail -->
-<div class="flex-row flex-grow">
-<!-- 코드 인벤토리 -->
-<div class="stat-box" style="flex: 0 0 45%;">
+</div></div><div class="resizer" id="resizerLeft"></div><div class="panel" id="centerPanel"><div class="center-inner"><div class="stat-box code-inventory-box">
 <div class="section-title">코드 인벤토리</div>
 <ul id="codeList"></ul>
+</div><div id="scanOverlay">
+<div id="scanProgressWrapper">
+<div id="scanProgressInner"></div>
 </div>
-<!-- 코드 상세 -->
-<div class="stat-box resizable-box" style="flex: 1 1 auto;">
+<div id="scanText"></div>
+</div></div></div><div class="resizer" id="resizerRight"></div><div class="panel" id="rightPanel"><div class="stat-box resizable-box code-detail-box">
 <div class="section-title">코드 상세</div>
 <div id="codeDetail">
 <div class="small">보유 중인 코드를 선택하면 상세 정보가 표시됩니다.</div>
@@ -144,20 +117,16 @@
               · 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).<br/>
               · 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).
             </div>
-</div>
-</div>
-<!-- 스캔 연출 오버레이 -->
-<div id="scanOverlay">
-<div id="scanProgressWrapper">
-<div id="scanProgressInner"></div>
-</div>
-<div id="scanText"></div>
-</div>
-</div>
-</div>
-</div>
-
-
+</div><div class="section-title">Shop</div><div class="shop-sort-row">
+<span class="shop-sort-label">정렬</span>
+<select id="shopSortSelect" title="상점 아이템 정렬 기준을 선택합니다.">
+<option value="update">업데이트순</option>
+<option value="new">신규 우선</option>
+<option value="rarity">희귀도순</option>
+<option value="price">가격순</option>
+<option value="name">이름순</option>
+</select>
+</div><div class="stat-box shop-list-panel" id="shopList"></div></div></div>
 <!-- 더보기 모달 -->
 <div id="moreModalBackdrop">
 <div id="moreModal">
@@ -346,13 +315,5 @@
 </div>
 </div>
 <div id="toastContainer"></div>
-
-
-
-
-
-
-
-
-<script src="app.js?v=1.6.11"></script></body>
+<script src="app.js?v=1.6.11f"></script></body>
 </html>
