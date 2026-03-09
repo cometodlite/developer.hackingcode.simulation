@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(k3)';
+    const CURRENT_VERSION = 'v1.6.11(k1)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -219,24 +219,6 @@
           '특정 행동을 수행하면 다음 단계로 자동 진행되며, 건너뛰기 및 다시 보기를 지원합니다.',
           '튜토리얼 완료 여부와 진행 단계는 저장 데이터에 함께 보관됩니다.'
         ]
-      },
-      {
-        version: 'v1.6.11(k)',
-        lines: [
-          '일일 상점 구매 제한을 강화해 에너지/크레딧 급가속을 억제했습니다.',
-          '코드 스캔 및 서버 해킹 경험치 획득량을 하향 조정했습니다.',
-          '레벨업 보너스와 데이터 크레딧 팩, 서버 해킹 크레딧 보상을 전반적으로 낮췄습니다.',
-          '하루 만에 과도하게 성장하는 흐름을 완화하도록 밸런스를 재조정했습니다.'
-        ]
-      },
-      {
-        version: 'v1.6.11(k3)',
-        lines: [
-          '데일리 퀘스트 2개, 위클리 퀘스트 5개, 먼스 퀘스트 8개를 추가했습니다.',
-          'GENERAL QUEST를 대폭 확장해 장기 플레이 목표를 30개 더 늘렸습니다.',
-          '기존 진행 구조를 유지하면서 스캔/해킹/에너지/성장/업적 축의 목표 단계를 세분화했습니다.',
-          '장기 플레이어를 위한 누적형 과제를 강화해 하루 성장보다 지속 플레이 보상을 높였습니다.'
-        ]
       }
 
     ];
@@ -255,7 +237,7 @@
       items: { energyPack: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
-      tutorial: { completed: false, step: 0, seen: false },
+      tutorial: { completed: true, step: 0, seen: false },
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -382,40 +364,40 @@
         id: 'school_lab',
         name: '학교 실습 서버',
         security: 20,
-        minReward: 8,
-        maxReward: 18,
+        minReward: 10,
+        maxReward: 25,
         minLevel: 1
       },
       {
         id: 'bank_backup',
         name: '은행 백업 노드',
         security: 35,
-        minReward: 18,
-        maxReward: 35,
+        minReward: 25,
+        maxReward: 50,
         minLevel: 2
       },
       {
         id: 'gov_archive',
         name: '정부 기록 보관 노드',
         security: 50,
-        minReward: 28,
-        maxReward: 55,
+        minReward: 40,
+        maxReward: 80,
         minLevel: 3
       },
       {
         id: 'central_core',
         name: '중앙 코어 그리드',
         security: 70,
-        minReward: 45,
-        maxReward: 95,
+        minReward: 70,
+        maxReward: 140,
         minLevel: 4
       },
       {
         id: 'deep_space',
         name: '딥 스페이스 릴레이',
         security: 90,
-        minReward: 65,
-        maxReward: 130,
+        minReward: 100,
+        maxReward: 200,
         minLevel: 5
       }
     ];
@@ -471,12 +453,12 @@
       {
         id: 'scanner_module',
         name: '고급 스캐너 모듈',
-        desc: '코드 스캔 시 경험치 +1 추가.',
+        desc: '코드 스캔 시 경험치 +2 추가.',
         cost: 350,
         rarity: 'UNCOMMON',
         category: 'SYSTEM',
         buy: () => {
-          modifiers.scanExtraExp += 1;
+          modifiers.scanExtraExp += 2;
         }
       },
       {
@@ -541,13 +523,13 @@
       {
         id: 'big_credit_pack',
         name: '데이터 크레딧 팩',
-        desc: '즉시 크레딧 +300. (일일 구매 제한: 1회)',
+        desc: '즉시 크레딧 +300. (일일 구매 제한: 2회)',
         cost: 400,
         rarity: 'COMMON',
         category: 'ECONOMY',
         buy: () => {
-          state.credits += 300;
-          state.stats.creditsEarnedTotal += 300;
+          state.credits += 500;
+          state.stats.creditsEarnedTotal += 500;
         }
       },
       {
@@ -564,7 +546,7 @@
       {
         id: 'level_ticket',
         name: '시뮬레이션 레벨 티켓',
-        desc: '즉시 레벨 1회 상승. (일일 구매 제한: 1회)',
+        desc: '즉시 레벨 1회 상승.',
         cost: 1000,
         rarity: 'EPIC',
         category: 'UTILITY',
@@ -592,21 +574,14 @@
         { id: 'daily_hack3',   name: '일일 침입자 I',     type: 'hackSuccess',   target: 3,   rewardCredits: 80,  desc: '서버 해킹 성공 3회' },
         { id: 'daily_hack5',   name: '일일 침입자 II',    type: 'hackSuccess',   target: 5,   rewardCredits: 100, desc: '서버 해킹 성공 5회' },
         { id: 'daily_energy30',name: '에너지 소비자',      type: 'energySpent',   target: 30,  rewardCredits: 70,  desc: '에너지 30 소모하기' },
-        { id: 'daily_action10_pack', name: '보급 루틴',    type: 'actions',       target: 10,  rewardCredits: 60,  rewardEnergyPack: 1, desc: '코드 스캔/서버 해킹 총 10회 수행' },
-        { id: 'daily_scan15',  name: '일일 스캐너 III',   type: 'scans',         target: 15,  rewardCredits: 110, desc: '코드 스캔 15회 수행' },
-        { id: 'daily_action20',name: '과열 루틴',         type: 'actions',       target: 20,  rewardCredits: 120, rewardEnergyPack: 1, desc: '코드 스캔/서버 해킹 총 20회 수행' }
+        { id: 'daily_action10_pack', name: '보급 루틴',    type: 'actions',       target: 10,  rewardCredits: 60,  rewardEnergyPack: 1, desc: '코드 스캔/서버 해킹 총 10회 수행' }
       ],
       weekly: [
         { id: 'weekly_scan30',   name: '주간 스캐너',        type: 'scans',       target: 30,  rewardCredits: 120, desc: '코드 스캔 30회 수행' },
         { id: 'weekly_scan50',   name: '집요한 스캐너',      type: 'scans',       target: 50,  rewardCredits: 180, desc: '코드 스캔 50회 수행' },
         { id: 'weekly_hack20',   name: '주간 침입자',        type: 'hackSuccess', target: 20,  rewardCredits: 200, desc: '서버 해킹 성공 20회' },
         { id: 'weekly_energy100',name: '에너지 소모왕',       type: 'energySpent', target: 100, rewardCredits: 200, desc: '에너지 100 소모하기' },
-        { id: 'weekly_level10',  name: '주간 성장',          type: 'level',       target: 10,  rewardCredits: 250, desc: '플레이어 레벨 10 달성' },
-        { id: 'weekly_scan80',   name: '초집중 분석',        type: 'scans',       target: 80,  rewardCredits: 240, desc: '코드 스캔 80회 수행' },
-        { id: 'weekly_hack35',   name: '주간 침입자 II',     type: 'hackSuccess', target: 35,  rewardCredits: 280, desc: '서버 해킹 성공 35회' },
-        { id: 'weekly_energy180',name: '과열 엔진',          type: 'energySpent', target: 180, rewardCredits: 260, desc: '에너지 180 소모하기' },
-        { id: 'weekly_level15',  name: '주간 성장 II',       type: 'level',       target: 15,  rewardCredits: 320, desc: '플레이어 레벨 15 달성' },
-        { id: 'weekly_risk10',   name: '위험한 습관',        type: 'riskHackSuccess', target: 10, rewardCredits: 300, desc: '위험 해킹 모드로 서버 해킹 성공 10회' }
+        { id: 'weekly_level10',  name: '주간 성장',          type: 'level',       target: 10,  rewardCredits: 250, desc: '플레이어 레벨 10 달성' }
       ],
       month: [
         { id: 'month_scan100',     name: '월간 스캐너',        type: 'scans',           target: 100, rewardCredits: 300, desc: '코드 스캔 100회 수행' },
@@ -615,18 +590,9 @@
         { id: 'month_energy300',   name: '에너지 브레이커',     type: 'energySpent',     target: 300, rewardCredits: 450, desc: '에너지 300 소모하기' },
         { id: 'month_level15',     name: '월간 성장',          type: 'level',           target: 15,  rewardCredits: 500, desc: '플레이어 레벨 15 달성' },
         { id: 'month_scan_risk',   name: '위험한 분석',        type: 'riskHackSuccess', target: 30,  rewardCredits: 500, desc: '위험 해킹 모드로 서버 해킹 성공 30회' },
-        { id: 'month_energy0',     name: '한계 돌파',          type: 'energy0Flag',     target: 1,   rewardCredits: 350, desc: '한 달 동안 최소 1회 에너지를 0까지 소모' },
-        { id: 'month_scan300',     name: '월간 스캐너 II',     type: 'scans',           target: 300, rewardCredits: 650, desc: '코드 스캔 300회 수행' },
-        { id: 'month_hack80',      name: '월간 침입자 II',     type: 'hackSuccess',     target: 80,  rewardCredits: 700, desc: '서버 해킹 성공 80회' },
-        { id: 'month_energy500',   name: '에너지 파열',        type: 'energySpent',     target: 500, rewardCredits: 700, desc: '에너지 500 소모하기' },
-        { id: 'month_level20',     name: '월간 성장 II',       type: 'level',           target: 20,  rewardCredits: 800, desc: '플레이어 레벨 20 달성' },
-        { id: 'month_risk50',      name: '무모한 침입자',      type: 'riskHackSuccess', target: 50,  rewardCredits: 850, desc: '위험 해킹 모드로 서버 해킹 성공 50회' },
-        { id: 'month_energy0_twice', name: '무중력 방전',     type: 'energy0Flag',     target: 1,   rewardCredits: 450, rewardEnergyPack: 1, desc: '한 달 동안 에너지를 0까지 소모한 뒤 다시 복귀하기' },
-        { id: 'month_scan450',     name: '월간 스캐너 III',    type: 'scans',           target: 450, rewardCredits: 900, desc: '코드 스캔 450회 수행' },
-        { id: 'month_hack120',     name: '월간 침입자 III',    type: 'hackSuccess',     target: 120, rewardCredits: 950, desc: '서버 해킹 성공 120회' },
-        { id: 'month_energy700',   name: '소모의 끝',          type: 'energySpent',     target: 700, rewardCredits: 1000, desc: '에너지 700 소모하기' }
+        { id: 'month_energy0',     name: '한계 돌파',          type: 'energy0Flag',     target: 1,   rewardCredits: 350, desc: '한 달 동안 최소 1회 에너지를 0까지 소모' }
       ],
-      // GENERAL: 장기 과제 확장
+      // GENERAL: 장기 과제 ~30개
       general: [
         { id: 'gen_scan_20',       name: '분석 입문',           type: 'scans',             target: 20,   rewardCredits: 60,   desc: '누적 코드 스캔 20회' },
         { id: 'gen_scan_50',       name: '분석가 I',           type: 'scans',             target: 50,   rewardCredits: 120,  desc: '누적 코드 스캔 50회' },
@@ -670,51 +636,7 @@
         { id: 'gen_mission_40',    name: '퀘스트 매니악',        type: 'missionsCompleted', target: 40,   rewardCredits: 800,  desc: '누적 퀘스트 40개 완료' },
 
         { id: 'gen_risk_10',       name: '위험 친화 I',          type: 'riskHackSuccess',   target: 10,   rewardCredits: 400,  desc: '위험 해킹 모드로 해킹 성공 10회' },
-        { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' },
-
-        { id: 'gen_scan_500',      name: '분석가 III',          type: 'scans',             target: 500,  rewardCredits: 700,  desc: '누적 코드 스캔 500회' },
-        { id: 'gen_scan_750',      name: '분석가 IV',           type: 'scans',             target: 750,  rewardCredits: 1000, desc: '누적 코드 스캔 750회' },
-        { id: 'gen_scan_1000',     name: '데이터 교단장',        type: 'scans',             target: 1000, rewardCredits: 1400, desc: '누적 코드 스캔 1000회' },
-
-        { id: 'gen_hack_150',      name: '침입 마스터 II',      type: 'hackSuccess',       target: 150,  rewardCredits: 700,  desc: '누적 해킹 성공 150회' },
-        { id: 'gen_hack_250',      name: '침입 마스터 III',     type: 'hackSuccess',       target: 250,  rewardCredits: 1000, desc: '누적 해킹 성공 250회' },
-        { id: 'gen_hack_400',      name: '침입 초월체',         type: 'hackSuccess',       target: 400,  rewardCredits: 1500, desc: '누적 해킹 성공 400회' },
-
-        { id: 'gen_energy_spent_1500', name: '에너지 브루탈 II', type: 'energySpentTotal', target: 1500, rewardCredits: 900,  desc: '누적 에너지 1500 소모' },
-        { id: 'gen_energy_spent_2500', name: '에너지 브루탈 III',type: 'energySpentTotal', target: 2500, rewardCredits: 1300, desc: '누적 에너지 2500 소모' },
-        { id: 'gen_energy_spent_4000', name: '에너지 소각장',    type: 'energySpentTotal', target: 4000, rewardCredits: 1800, desc: '누적 에너지 4000 소모' },
-
-        { id: 'gen_level_25',      name: '고급 운영자 II',      type: 'level',             target: 25,   rewardCredits: 800,  desc: '플레이어 레벨 25 달성' },
-        { id: 'gen_level_30',      name: '최상위 운영자',        type: 'level',             target: 30,   rewardCredits: 1100, desc: '플레이어 레벨 30 달성' },
-        { id: 'gen_level_40',      name: '시뮬레이션 지배자',     type: 'level',             target: 40,   rewardCredits: 1700, desc: '플레이어 레벨 40 달성' },
-
-        { id: 'gen_cpu_7',         name: 'CPU 튜너 III',        type: 'cpuTier',           target: 7,    rewardCredits: 700,  desc: 'CPU 티어 7 달성' },
-        { id: 'gen_cpu_10',        name: 'CPU 튜너 IV',         type: 'cpuTier',           target: 10,   rewardCredits: 1200, desc: 'CPU 티어 10 달성' },
-        { id: 'gen_cpu_15',        name: '양자 연산 개막',       type: 'cpuTier',           target: 15,   rewardCredits: 1800, desc: 'CPU 티어 15 달성' },
-
-        { id: 'gen_energyMax_35',  name: '에너지 저장고 II',     type: 'energyMax',         target: 35,   rewardCredits: 800,  desc: '에너지 최대치 35 달성' },
-        { id: 'gen_energyMax_40',  name: '에너지 저장고 III',    type: 'energyMax',         target: 40,   rewardCredits: 1200, desc: '에너지 최대치 40 달성' },
-        { id: 'gen_energyMax_50',  name: '무한 배터리',         type: 'energyMax',         target: 50,   rewardCredits: 1800, desc: '에너지 최대치 50 달성' },
-
-        { id: 'gen_shop_50',       name: '쇼핑 매니아 II',      type: 'shopPurchases',     target: 50,   rewardCredits: 700,  desc: '상점에서 누적 50회 구매' },
-        { id: 'gen_shop_80',       name: '쇼핑 폐인',           type: 'shopPurchases',     target: 80,   rewardCredits: 1100, desc: '상점에서 누적 80회 구매' },
-        { id: 'gen_shop_120',      name: '상점 지배자',         type: 'shopPurchases',     target: 120,  rewardCredits: 1700, desc: '상점에서 누적 120회 구매' },
-
-        { id: 'gen_credits_50000', name: '데이터 자본가 III',   type: 'creditsEarnedTotal',target: 50000,rewardCredits: 900,  desc: '누적 획득 크레딧 50000 달성' },
-        { id: 'gen_credits_100000',name: '데이터 자본가 IV',    type: 'creditsEarnedTotal',target: 100000,rewardCredits: 1400, desc: '누적 획득 크레딧 100000 달성' },
-        { id: 'gen_credits_250000',name: '데이터 재벌',         type: 'creditsEarnedTotal',target: 250000,rewardCredits: 2200, desc: '누적 획득 크레딧 250000 달성' },
-
-        { id: 'gen_achieve_20',    name: '기록 수집가 IV',      type: 'achievements',      target: 20,   rewardCredits: 700,  desc: '업적 20개 달성' },
-        { id: 'gen_achieve_25',    name: '기록 수집가 V',       type: 'achievements',      target: 25,   rewardCredits: 1100, desc: '업적 25개 달성' },
-        { id: 'gen_achieve_30',    name: '기록 박물관',         type: 'achievements',      target: 30,   rewardCredits: 1700, desc: '업적 30개 달성' },
-
-        { id: 'gen_mission_60',    name: '퀘스트 매니악 II',    type: 'missionsCompleted', target: 60,   rewardCredits: 900,  desc: '누적 퀘스트 60개 완료' },
-        { id: 'gen_mission_100',   name: '퀘스트 파괴자',       type: 'missionsCompleted', target: 100,  rewardCredits: 1400, desc: '누적 퀘스트 100개 완료' },
-        { id: 'gen_mission_180',   name: '퀘스트 연대기',       type: 'missionsCompleted', target: 180,  rewardCredits: 2100, desc: '누적 퀘스트 180개 완료' },
-
-        { id: 'gen_risk_50',       name: '위험 친화 III',       type: 'riskHackSuccess',   target: 50,   rewardCredits: 1000, desc: '위험 해킹 모드로 해킹 성공 50회' },
-        { id: 'gen_risk_100',      name: '위험 친화 IV',        type: 'riskHackSuccess',   target: 100,  rewardCredits: 1500, desc: '위험 해킹 모드로 해킹 성공 100회' },
-        { id: 'gen_risk_200',      name: '위험의 화신',         type: 'riskHackSuccess',   target: 200,  rewardCredits: 2300, desc: '위험 해킹 모드로 해킹 성공 200회' }
+        { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' }
       ]
     };
 
@@ -1011,12 +933,7 @@
       }
     }
 
-    function maybeStartTutorial() {
-      ensureTutorialDefaults();
-      if (state.tutorial.completed || tutorialOpenedOnce) return;
-      state.tutorial.seen = true;
-      openTutorial(false);
-    }
+    function maybeStartTutorial(){ return; }
 
     function updateStatsUI() {
       statLevel.textContent = state.level;
@@ -1158,7 +1075,7 @@
     }
 
     function addExp(amount) {
-      const finalAmount = Math.max(0, Math.round(amount * modifiers.expMultiplier));
+      const finalAmount = Math.max(1, Math.round(amount * modifiers.expMultiplier));
       state.exp += finalAmount;
       let leveledUp = false;
       while (state.exp >= state.requiredExp) {
@@ -1173,9 +1090,9 @@
       ensureMissionResets();
       state.level++;
       state.requiredExp = requiredExp(state.level);
-      state.credits += 50;
-      state.stats.creditsEarnedTotal += 50;
-      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +50 지급.`, 'level');
+      state.credits += 100;
+      state.stats.creditsEarnedTotal += 100;
+      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +100 지급.`, 'level');
 
       state.missionProgress.weekly.levelReached = Math.max(
         state.missionProgress.weekly.levelReached,
@@ -1419,11 +1336,7 @@
     // =========================
     const SHOP_LIMITS = {
       // Daily cap
-      big_credit_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
-      energy_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
-      energy_boost_1: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
-      energy_boost_2: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
-      level_ticket: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      big_credit_pack: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
       // One-time (no stacking)
       perm_credit_boost: { type: 'once', limit: 1, label: '1회' },
       risk_support: { type: 'once', limit: 1, label: '1회' },
@@ -1886,7 +1799,7 @@
         const rawReward =
           server.minReward + Math.random() * (server.maxReward - server.minReward);
         const rewardCredits = Math.round(rawReward * creditMultiplier);
-        const gainedExp = 5;
+        const gainedExp = 8;
 
         state.credits += rewardCredits;
         state.stats.creditsEarnedTotal += rewardCredits;
