@@ -856,12 +856,25 @@
       };
       const targetView = mobileViewMap[idx];
       if (targetView) {
-        if (typeof window.setHcsigMobileView === 'function') {
-          window.setHcsigMobileView(targetView);
-        } else {
+        window.__hcsigPendingTutorialMobileView = targetView;
+        const applyTargetView = () => {
+          if (typeof window.setHcsigMobileView === 'function') {
+            window.setHcsigMobileView(targetView, { tutorialForce: true });
+            return true;
+          }
           const mobileBtn = document.querySelector(`.mobile-tabs [data-view="${targetView}"]`);
-          if (mobileBtn) mobileBtn.click();
-        }
+          if (mobileBtn) {
+            mobileBtn.click();
+            return true;
+          }
+          return false;
+        };
+
+        applyTargetView();
+        requestAnimationFrame(() => applyTargetView());
+        setTimeout(() => applyTargetView(), 0);
+        setTimeout(() => applyTargetView(), 80);
+        setTimeout(() => applyTargetView(), 220);
       }
 
       if (idx === 3) {
@@ -3018,9 +3031,16 @@
   `;
   document.body.appendChild(wrap);
 
-  function setView(v){
+  function setView(v, options = {}){
+    const tutorialStep = Number((document.body && document.body.dataset && document.body.dataset.tutorialStep) || 0);
+    if(!options.tutorialForce && tutorialStep === 4 && v !== 'codes'){
+      v = 'codes';
+    }
+
     document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
     document.body.classList.add('mobile-view-'+v);
+    document.body.dataset.mobileView = v;
+    window.__hcsigCurrentMobileView = v;
     wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
     const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
     const panel = document.getElementById(id);
@@ -3052,7 +3072,13 @@
   }
 
   // default view
-  setView('status');
+  const initialTutorialView = window.__hcsigPendingTutorialMobileView;
+  setView(initialTutorialView || 'status', initialTutorialView ? { tutorialForce: true } : undefined);
+
+  if(initialTutorialView){
+    requestAnimationFrame(()=>setView(window.__hcsigPendingTutorialMobileView || 'status', { tutorialForce: true }));
+    setTimeout(()=>setView(window.__hcsigPendingTutorialMobileView || 'status', { tutorialForce: true }), 120);
+  }
 })();
 
 
