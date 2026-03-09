@@ -282,7 +282,7 @@
         shop: true,
         level: true
       },
-      ui: { shopSortMode: 'update', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
+      ui: { shopSortMode: 'update', shopTab: 'basic', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
       stats: {
         scanCount: 0,
         hackSuccessCount: 0,
@@ -691,6 +691,7 @@
 
     const shopList = document.getElementById('shopList');
     const shopSortSelect = document.getElementById('shopSortSelect');
+    const shopCategoryRow = document.getElementById('shopCategoryRow');
     const serverSelect = document.getElementById('serverSelect');
 
     const codeListEl = document.getElementById('codeList');
@@ -737,6 +738,7 @@
     const tabMission = document.getElementById('tabMission');
     const tabAchievement = document.getElementById('tabAchievement');
     const tabLogs = document.getElementById('tabLogs');
+    const tabGuide = document.getElementById('tabGuide');
     const tabSettings = document.getElementById('tabSettings');
     const tabSave = document.getElementById('tabSave');
 
@@ -1376,6 +1378,25 @@
     setInterval(() => { try { ensureDailyShopReset(); } catch(e){} }, 60 * 1000);
 
 
+    function getShopSection(item) {
+      const directMap = {
+        energy_pack: 'basic',
+        energy_boost_1: 'basic',
+        energy_boost_2: 'basic',
+        big_credit_pack: 'basic',
+        scanner_module: 'code',
+        scanner_plus: 'code',
+        max_energy_up: 'upgrade',
+        exp_boost: 'upgrade',
+        cpu_discount: 'upgrade',
+        perm_credit_boost: 'upgrade',
+        credit_boost_run: 'special',
+        risk_support: 'special',
+        level_ticket: 'special'
+      };
+      return directMap[item.id] || 'basic';
+    }
+
     function renderShop() {
       shopList.innerHTML = '';
 
@@ -1384,6 +1405,13 @@
         UTILITY: '유틸',
         ECONOMY: '경제',
         SYSTEM: '시스템'
+      };
+
+      const sectionLabel = {
+        basic: '기본',
+        code: '코드',
+        upgrade: '업그레이드',
+        special: '특수'
       };
 
       const rarityRank = {
@@ -1398,7 +1426,14 @@
       shopItems.forEach((it, idx) => baseOrder.set(it.id, idx));
 
       const mode = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
-      const items = shopItems.slice();
+      const activeShopTab = (state.ui && state.ui.shopTab) ? state.ui.shopTab : 'basic';
+      const items = shopItems.filter(item => getShopSection(item) === activeShopTab);
+
+      if (shopCategoryRow) {
+        shopCategoryRow.querySelectorAll('.shop-category-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.shopTab === activeShopTab);
+        });
+      }
 
       if (mode === 'rarity') {
         items.sort((a, b) => {
@@ -1429,6 +1464,14 @@
         });
       }
 
+      if (!items.length) {
+        const empty = document.createElement('div');
+        empty.className = 'small';
+        empty.textContent = `${sectionLabel[activeShopTab] || '현재'} 카테고리에 표시할 상품이 없습니다.`;
+        shopList.appendChild(empty);
+        return;
+      }
+
       items.forEach(item => {
         const wrapper = document.createElement('div');
         wrapper.className = 'shop-item';
@@ -1448,15 +1491,19 @@
         catSpan.className = 'shop-cat-pill';
         catSpan.textContent = categoryLabel[item.category] || item.category || '';
 
+        const sectionSpan = document.createElement('span');
+        sectionSpan.className = 'shop-section-pill';
+        sectionSpan.textContent = sectionLabel[getShopSection(item)] || '기타';
+
         const leftWrap = document.createElement('span');
         leftWrap.appendChild(raritySpan);
         leftWrap.appendChild(catSpan);
+        leftWrap.appendChild(sectionSpan);
         leftWrap.appendChild(document.createTextNode(item.name));
 
         const costSpan = document.createElement('span');
         costSpan.className = 'shop-cost';
         costSpan.textContent = `💰 ${item.cost}`;
-        // limit badge (daily/once)
         const lim = getShopRemaining(item.id);
         if (lim) {
           const badge = document.createElement('span');
@@ -1468,7 +1515,6 @@
         }
 
         nameSpan.appendChild(leftWrap);
-
         head.appendChild(nameSpan);
         head.appendChild(costSpan);
 
@@ -1487,7 +1533,6 @@
           btn.title = lim2.type === 'daily' ? '오늘 구매 제한에 도달했습니다.' : '이미 구매한 영구 아이템입니다.';
         }
         btn.addEventListener('click', () => {
-          // purchase cap check (daily/once)
           const cap = canBuyShopItem(item.id);
           if (!cap.ok) {
             log(`[상점] ${cap.reason}`, 'shop');
@@ -1500,15 +1545,14 @@
             showToast('크레딧이 부족합니다.', 'shop');
             return;
           }
-          // 고가/고희귀 구매 확인
           const rr = rarityRank[item.rarity] || 0;
           if (rr >= 4) {
-            const ok = window.confirm(`${item.name} (${item.rarity}) 을(를) 구매할까요?\n💰 ${item.cost} 크레딧이 소모됩니다.`);
+            const ok = window.confirm(`${item.name} (${item.rarity}) 을(를) 구매할까요?
+💰 ${item.cost} 크레딧이 소모됩니다.`);
             if (!ok) return;
           }
           state.credits -= item.cost;
           item.buy?.();
-          // mark cap usage
           markShopPurchase(item.id);
 
           state.stats.shopPurchaseCount++;
@@ -2184,6 +2228,7 @@
         mission: tabMission,
         achievement: tabAchievement,
         logs: tabLogs,
+        guide: tabGuide,
         settings: tabSettings,
         save: tabSave
       };
@@ -2798,28 +2843,19 @@
 
 
 
-// === MOBILE VIEWS: split PC layout into mobile tabs ===
+// === MOBILE VIEWS: HOME / CODES / SHOP / MORE ===
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
-  // helper
-  const byText = (root, sel, txt) => {
-    const els = Array.from(root.querySelectorAll(sel));
-    return els.find(e => (e.textContent||'').trim().toLowerCase() === txt.toLowerCase());
-  };
-
-  // Create mobile view containers
   const views = [
-    ['Status','mobileViewStatus'],
-    ['Action','mobileViewAction'],
+    ['Home','mobileViewHome'],
     ['Codes','mobileViewCodes'],
-    ['Shop','mobileViewShop'],
-    ['Log','mobileViewLog'],
+    ['Shop','mobileViewShop']
   ];
-  const main = document.getElementById('main') || document.querySelector('#main') || document.body;
+  const main = document.getElementById('main') || document.body;
 
-  views.forEach(([_,id])=>{
+  views.forEach(([_, id]) => {
     if(document.getElementById(id)) return;
     const v = document.createElement('div');
     v.id = id;
@@ -2827,133 +2863,94 @@
     main.insertBefore(v, main.firstChild);
   });
 
-  // Move leftPanel -> Status + Shop (robustly pick direct sections)
+  const moveIfPresent = (parent, nodes) => {
+    nodes.filter(Boolean).forEach(node => {
+      if(node && node.parentNode) parent.appendChild(node);
+    });
+  };
+
   const left = document.getElementById('leftPanel');
-  if(left){
-    const statusView = document.getElementById('mobileViewStatus');
-    const shopView = document.getElementById('mobileViewShop');
+  const center = document.getElementById('centerPanel');
+  const homeView = document.getElementById('mobileViewHome');
+  const codesView = document.getElementById('mobileViewCodes');
+  const shopView = document.getElementById('mobileViewShop');
+
+  if(left && homeView && shopView){
     const leftChildren = Array.from(left.children);
-
-    const statusTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='status');
+    const homeTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='home');
+    const homeBox = homeTitle ? homeTitle.nextElementSibling : null;
     const shopTitle = leftChildren.find(el => el.classList && el.classList.contains('section-title') && (el.textContent||'').trim().toLowerCase()==='shop');
-    const statusBox = statusTitle ? statusTitle.nextElementSibling : null;
     const shopSortRow = document.getElementById('shopSortSelect')?.closest('.shop-sort-row') || null;
+    const shopCategoryRow = document.getElementById('shopCategoryRow') || null;
     const shopListBox = document.getElementById('shopList')?.closest('.stat-box') || null;
-
-    const moveIfPresent = (parent, nodes) => {
-      nodes.filter(Boolean).forEach(node => {
-        if(node && node.parentNode) parent.appendChild(node);
-      });
-    };
-
-    if(statusView && shopView && (statusTitle || shopTitle)){
-      moveIfPresent(statusView, [statusTitle, statusBox]);
-      moveIfPresent(shopView, [shopTitle, shopSortRow, shopListBox]);
-    }else if(statusView){
-      statusView.appendChild(left);
-    }
+    moveIfPresent(homeView, [homeTitle, homeBox]);
+    moveIfPresent(shopView, [shopTitle, shopCategoryRow, shopSortRow, shopListBox]);
   }
 
-  // Move centerPanel -> Action + Codes (use exact containers instead of nested-child comparison)
-  const center = document.getElementById('centerPanel');
-  if(center){
-    const actionView = document.getElementById('mobileViewAction');
-    const codesView  = document.getElementById('mobileViewCodes');
+  if(center && homeView && codesView){
     const centerInner = center.querySelector('.center-inner') || center;
     const centerChildren = Array.from(centerInner.children);
-
     const actionBox = centerChildren.find(el => {
       const title = el.querySelector && el.querySelector('.section-title');
-      return title && (title.textContent||'').trim().toLowerCase()==='actions';
+      return title && (title.textContent||'').trim().toLowerCase()==='home actions';
     }) || center.querySelector('#btnScan')?.closest('.stat-box') || null;
-
-    const codesBlock = center.querySelector('#codeList')?.closest('.flex-row') ||
-                       center.querySelector('#codeDetail')?.closest('.flex-row') ||
-                       centerInner.querySelector('.flex-row.flex-grow') || null;
-
+    const codesBlock = center.querySelector('#codeList')?.closest('.flex-row') || centerInner.querySelector('.flex-row.flex-grow') || null;
     const scanOverlay = document.getElementById('scanOverlay');
-
-    const moveIfPresent = (parent, nodes) => {
-      nodes.filter(Boolean).forEach(node => {
-        if(node && node.parentNode) parent.appendChild(node);
-      });
-    };
-
-    if(actionView && codesView && (actionBox || codesBlock)){
-      moveIfPresent(actionView, [actionBox, scanOverlay]);
-      moveIfPresent(codesView, [codesBlock]);
-    }else if(actionView){
-      actionView.appendChild(center);
-    }
+    moveIfPresent(homeView, [actionBox, scanOverlay]);
+    moveIfPresent(codesView, [codesBlock]);
   }
 
-  // LOG view: try to use existing logBox if present, else open "더보기" logs
-  const logView = document.getElementById('mobileViewLog');
-  const logBox = document.getElementById('logBox');
-  if(logBox){
-    logView.appendChild(logBox.closest('.stat-box') ? logBox.closest('.stat-box') : logBox);
-  } else {
-    const tip = document.createElement('div');
-    tip.className = 'stat-box';
-    tip.innerHTML = '<div class="section-title">Log</div><div class="small">LOG는 상단의 “더보기”에서 확인할 수 있습니다.</div>';
-    logView.appendChild(tip);
-  }
-
-  // Replace tab bar with 5 tabs
   const oldTabs = document.querySelector('.mobile-tabs');
   if(oldTabs) oldTabs.remove();
 
   const wrap = document.createElement('div');
   wrap.className = 'mobile-tabs';
   wrap.innerHTML = `
-    <button type="button" data-view="status">STATUS</button>
-    <button type="button" data-view="action">ACTION</button>
+    <button type="button" data-view="home">HOME</button>
     <button type="button" data-view="codes">CODES</button>
     <button type="button" data-view="shop">SHOP</button>
-    <button type="button" data-view="log">LOG</button>
+    <button type="button" data-view="more">더보기</button>
   `;
   document.body.appendChild(wrap);
 
-  function setView(v, options = {}){
-
-    document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
-    document.body.classList.add('mobile-view-'+v);
-    document.body.dataset.mobileView = v;
-    window.__hcsigCurrentMobileView = v;
-    wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  function setView(v){
+    document.body.classList.remove('mobile-view-home','mobile-view-codes','mobile-view-shop');
+    if(v !== 'more') {
+      document.body.classList.add('mobile-view-'+v);
+      document.body.dataset.mobileView = v;
+      window.__hcsigCurrentMobileView = v;
+    }
+    wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+    if(v === 'more') {
+      const btnMore = document.getElementById('btnMore');
+      if(btnMore) btnMore.click();
+      const fallback = window.__hcsigCurrentMobileView || 'home';
+      wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.view === fallback));
+      return;
+    }
     const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
     const panel = document.getElementById(id);
     if(panel) panel.scrollTop = 0;
-
-    // If LOG chosen and logs are in more modal, try open it
-    if(v==='log'){
-      const btnMore = document.getElementById('btnMore');
-      if(btnMore && !document.getElementById('logBox')) btnMore.click();
-    }
   }
   window.setHcsigMobileView = setView;
 
-  wrap.querySelectorAll('button').forEach(btn=>{
-    btn.addEventListener('click', ()=>setView(btn.dataset.view));
+  wrap.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => setView(btn.dataset.view));
   });
 
-  // When a code is tapped, auto-scroll to detail inside codes view
   const codeList = document.getElementById('codeList');
   const codeDetail = document.getElementById('codeDetail');
   if(codeList && codeDetail){
-    codeList.addEventListener('click', (e)=>{
+    codeList.addEventListener('click', (e) => {
       const li = e.target.closest('li');
       if(!li) return;
-      // ensure we're on Codes view
       setView('codes');
-      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      setTimeout(() => codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
     });
   }
 
-  // default view
-  setView('status');
+  setView('home');
 })();
-
 
 
 // === SAFE-AREA / TABS HEIGHT CALIBRATION ===
@@ -2989,7 +2986,7 @@
   if(!isMobile) return;
 
   function activeViewEl(){
-    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop'];
     for(const id of ids){
       const el = document.getElementById(id);
       if(!el) continue;
@@ -3035,7 +3032,7 @@
   }
 
   function attach(){
-    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop'];
     ids.forEach(id=>{
       const el = document.getElementById(id);
       if(!el) return;

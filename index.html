@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=1.6.11k" rel="stylesheet"/>
+<link href="style.css?v=1.6.12" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.11(k) (Web)</span>
+<span class="header-version">v1.6.12 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle">Hacking Code Simulator Game</span>
@@ -26,7 +26,7 @@
 <div id="main">
 <!-- 왼쪽: 상태 / 상점 -->
 <div class="panel" id="leftPanel">
-<div class="section-title">Status</div>
+<div class="section-title">Home</div>
 <div class="stat-box">
 <div class="stat-row">
 <span class="label">레벨</span>
@@ -68,6 +68,12 @@
 </div>
 </div>
 <div class="section-title">Shop</div>
+<div class="shop-category-row" id="shopCategoryRow">
+<button class="shop-category-btn active" data-shop-tab="basic" type="button">기본</button>
+<button class="shop-category-btn" data-shop-tab="code" type="button">코드</button>
+<button class="shop-category-btn" data-shop-tab="upgrade" type="button">업그레이드</button>
+<button class="shop-category-btn" data-shop-tab="special" type="button">특수</button>
+</div>
 <div class="shop-sort-row">
 <span class="shop-sort-label">정렬</span>
 <select id="shopSortSelect" title="상점 아이템 정렬 기준을 선택합니다.">
@@ -86,7 +92,7 @@
 <div class="center-inner">
 <!-- Actions -->
 <div class="stat-box">
-<div class="section-title">Actions</div>
+<div class="section-title">Home Actions</div>
 <div class="button-row">
 <button id="btnScan" title="에너지 1 소모. 코드 희귀도 가챠 + 경험치 획득.">코드 스캔</button>
 <button id="btnHack" title="에너지 2 소모. 선택한 코드와 서버 정보로 해킹을 시도.">서버 해킹</button>
@@ -171,6 +177,7 @@
 <button class="more-tab-button" data-tab="mission">미션</button>
 <button class="more-tab-button" data-tab="achievement">업적</button>
 <button class="more-tab-button" data-tab="logs">로그</button>
+<button class="more-tab-button" data-tab="guide">게임 방법</button>
 <button class="more-tab-button" data-tab="settings">설정</button>
 <button class="more-tab-button" data-tab="save">데이터</button>
 </div>
@@ -246,6 +253,20 @@
 <div id="logList"></div>
 </div>
 </div>
+</div>
+</div>
+<!-- 게임 방법 탭 -->
+<div class="more-tab-panel" id="tabGuide">
+<div>
+<span class="badge">GUIDE</span>
+<span>게임 방법</span>
+</div>
+<div class="stat-box" style="margin-top:8px; line-height:1.7;">
+<div><strong>1.</strong> HOME에서 <strong>코드 스캔</strong>으로 코드를 확보합니다.</div>
+<div><strong>2.</strong> CODES에서 사용할 코드를 선택하고 강화합니다.</div>
+<div><strong>3.</strong> HOME에서 <strong>서버 해킹</strong>으로 크레딧과 EXP를 획득합니다.</div>
+<div><strong>4.</strong> SHOP에서 에너지·스캐너·영구 업그레이드를 구매합니다.</div>
+<div style="margin-top:8px;" class="small">로그, 미션, 업적, 설정, 저장/불러오기는 모두 더보기에서 확인할 수 있습니다.</div>
 </div>
 </div>
 <!-- 설정 탭 -->

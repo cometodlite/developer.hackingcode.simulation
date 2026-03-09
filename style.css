@@ -269,6 +269,39 @@ button:hover {
       margin-top: 2px;
     }
 
+
+
+    .shop-category-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .shop-category-btn {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #26324a;
+      background: #0b1220;
+      font-size: 11px;
+    }
+
+    .shop-category-btn.active {
+      background: #18233a;
+      border-color: #4b7fff;
+      color: #dbe8ff;
+    }
+
+    .shop-section-pill {
+      display: inline-block;
+      margin-right: 4px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+      background: #1a2030;
+      color: #bcd0ff;
+    }
+
     .center-inner {
       position: relative;
       height: 100%;
@@ -896,19 +929,17 @@ button:hover {
    ========================= */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
   body { overflow:hidden; }
-  .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
+  .mobile-tabs { grid-template-columns: repeat(4, 1fr) !important; }
   .mobile-tabs button{ font-size: 12px !important; }
   /* Hide PC panels on mobile to avoid fixed-position overlay capturing taps */
   #leftPanel, #centerPanel, #rightPanel { display: none !important; }
   .mobile-view { display:none !important; }
-  body.mobile-view-status #mobileViewStatus,
-  body.mobile-view-action #mobileViewAction,
-  body.mobile-view-codes  #mobileViewCodes,
-  body.mobile-view-shop   #mobileViewShop,
-  body.mobile-view-log    #mobileViewLog { display:block !important; }
+  body.mobile-view-home #mobileViewHome,
+  body.mobile-view-codes #mobileViewCodes,
+  body.mobile-view-shop  #mobileViewShop { display:block !important; }
 
   
-#mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+#mobileViewHome, #mobileViewCodes, #mobileViewShop{
   /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
   position: fixed;
   top: var(--headerH, 52px);
@@ -965,7 +996,7 @@ button:hover {
     padding-bottom: calc(var(--mobileTabsH) + var(--mobileTabsPad) + var(--safeBottom, 0px)) !important;
   }
 
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  #mobileViewHome, #mobileViewCodes, #mobileViewShop{
     height: auto !important;
     max-height: none !important;
     min-height: 0 !important;
@@ -993,11 +1024,9 @@ button:hover {
   body.mobile-tabs-hidden{
     padding-bottom: calc(var(--safeBottom, 0px) + 10px) !important;
   }
-  body.mobile-tabs-hidden #mobileViewStatus,
-  body.mobile-tabs-hidden #mobileViewAction,
+  body.mobile-tabs-hidden #mobileViewHome,
   body.mobile-tabs-hidden #mobileViewCodes,
-  body.mobile-tabs-hidden #mobileViewShop,
-  body.mobile-tabs-hidden #mobileViewLog{
+  body.mobile-tabs-hidden #mobileViewShop{
     height: calc(100dvh - 52px - var(--safeBottom, 0px) - 10px) !important;
     max-height: calc(100dvh - 52px - var(--safeBottom, 0px) - 10px) !important;
     padding-bottom: calc(24px + var(--safeBottom, 0px)) !important;
@@ -1027,7 +1056,7 @@ button:hover {
   }
 
   /* Reduce accidental horizontal scroll */
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  #mobileViewHome, #mobileViewCodes, #mobileViewShop{
     overflow-x: hidden !important;
   }
 }
@@ -1058,7 +1087,6 @@ button:hover {
   /* Make the primary content card grow to fill remaining space */
   .mobile-view .stat-box,
   .mobile-view .panel,
-  .mobile-view .log-list,
   .mobile-view .shop-list,
   .mobile-view .codes-wrap,
   .mobile-view .actions-wrap {
