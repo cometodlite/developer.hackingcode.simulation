@@ -1,8 +1,5 @@
 
-
-/* ===== extracted from index.html <style> ===== */
-
-* {
+    * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -901,6 +898,8 @@ button:hover {
   body { overflow:hidden; }
   .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
   .mobile-tabs button{ font-size: 12px !important; }
+  /* Hide PC panels on mobile to avoid fixed-position overlay capturing taps */
+  #leftPanel, #centerPanel, #rightPanel { display: none !important; }
   .mobile-view { display:none !important; }
   body.mobile-view-status #mobileViewStatus,
   body.mobile-view-action #mobileViewAction,
@@ -1154,3 +1153,4 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   pointer-events: none;
   z-index: 9999;
 }
+
