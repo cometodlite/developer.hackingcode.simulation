@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(g)';
+    const CURRENT_VERSION = 'v1.6.11(h)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -209,6 +209,14 @@
           '모바일 하단 탭 구성을 HOME / CODES / SHOP / LOG 4개 구조로 정리했습니다.',
           'HOME과 SHOP 영역을 다시 분리하고, PC 3패널 레이아웃을 재정리했습니다.'
         ]
+      },
+      {
+        version: 'v1.6.11(h)',
+        lines: [
+          '백그라운드/복귀 시 경과 시간을 계산해 에너지 회복이 자연스럽게 이어지도록 보정했습니다.',
+          '페이지를 닫거나 탭을 벗어날 때 마지막 활동 시각을 기록해 복귀 시 진행이 덜 끊기게 만들었습니다.',
+          '마지막 저장/활동 시각 기반의 시간 보정 토대를 추가했습니다.'
+        ]
       }
 
     ];
@@ -226,6 +234,8 @@
       energyTimerMs: 0,
       items: { energyPack: 0 },
       lastSavedAt: null,
+      lastActiveAt: null,
+      lastOfflineSummaryAt: null,
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -771,6 +781,55 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     }
 
+
+    function touchActivity(ts = Date.now()) {
+      state.lastActiveAt = ts;
+    }
+
+    function advanceEnergyByMs(deltaMs) {
+      if (!Number.isFinite(deltaMs) || deltaMs <= 0) return 0;
+      let remaining = Math.floor(deltaMs);
+      let gained = 0;
+      if (state.energy >= state.energyMax) {
+        state.energy = state.energyMax;
+        state.energyTimerMs = 0;
+        return 0;
+      }
+      if (state.energyTimerMs <= 0) state.energyTimerMs = ENERGY_INTERVAL_MS;
+      while (remaining > 0 && state.energy < state.energyMax) {
+        const need = state.energyTimerMs > 0 ? state.energyTimerMs : ENERGY_INTERVAL_MS;
+        if (remaining >= need) {
+          remaining -= need;
+          state.energy += 1;
+          gained += 1;
+          if (state.energy < state.energyMax) {
+            state.energyTimerMs = ENERGY_INTERVAL_MS;
+          } else {
+            state.energyTimerMs = 0;
+          }
+        } else {
+          state.energyTimerMs = Math.max(1, need - remaining);
+          remaining = 0;
+        }
+      }
+      if (state.energy >= state.energyMax) {
+        state.energy = state.energyMax;
+        state.energyTimerMs = 0;
+      }
+      return gained;
+    }
+
+    function applyOfflineProgress(nowTs = Date.now()) {
+      const baseTs = Number(state.lastActiveAt || state.lastSavedAt || 0);
+      state.lastActiveAt = nowTs;
+      if (!baseTs) return { elapsedMs: 0, energyGained: 0, capped: false };
+      const rawElapsed = Math.max(0, nowTs - baseTs);
+      if (rawElapsed < 1000) return { elapsedMs: rawElapsed, energyGained: 0, capped: false };
+      const effectiveElapsed = Math.min(rawElapsed, MAX_OFFLINE_ENERGY_MS);
+      const energyGained = advanceEnergyByMs(effectiveElapsed);
+      return { elapsedMs: effectiveElapsed, energyGained, capped: rawElapsed > effectiveElapsed };
+    }
+
     function updateStatsUI() {
       statLevel.textContent = state.level;
       statExp.textContent = state.exp + ' / ' + state.requiredExp;
@@ -997,23 +1056,20 @@
       saveGame();
     }
 
+    let lastRealtimeTickAt = Date.now();
     setInterval(() => {
+      const now = Date.now();
+      const delta = Math.max(0, now - lastRealtimeTickAt);
+      lastRealtimeTickAt = now;
+      touchActivity(now);
       if (state.energy >= state.energyMax) {
         state.energy = state.energyMax;
         state.energyTimerMs = 0;
         updateStatsUI();
         return;
       }
-      if (state.energyTimerMs > 0) {
-        state.energyTimerMs = Math.max(0, state.energyTimerMs - 100);
-        if (state.energyTimerMs <= 0) {
-          state.energy++;
-          if (state.energy < state.energyMax) {
-            state.energyTimerMs = ENERGY_INTERVAL_MS;
-          } else {
-            state.energyTimerMs = 0;
-          }
-        }
+      if (state.energyTimerMs > 0 || state.energy < state.energyMax) {
+        advanceEnergyByMs(delta);
         updateStatsUI();
       }
     }, 100);
@@ -2158,6 +2214,7 @@
     // 저장/불러오기
     function saveGame(silent = false) {
       state.lastSavedAt = Date.now();
+      touchActivity(state.lastSavedAt);
       const saveData = {
         version: CURRENT_VERSION,
         savedAt: state.lastSavedAt,
@@ -2228,12 +2285,23 @@
         state.ui.anim = (typeof state.ui.anim === 'boolean') ? state.ui.anim : true;
         state.ui.autoSaveToast = !!state.ui.autoSaveToast;
         state.ui.logSearch = state.ui.logSearch || '';
+        state.lastActiveAt = Number(state.lastActiveAt || state.lastSavedAt || 0) || null;
+        state.lastOfflineSummaryAt = Number(state.lastOfflineSummaryAt || 0) || null;
 
         state.energy = Math.min(state.energy, state.energyMax);
+        const offline = applyOfflineProgress(Date.now());
         ensureMissionResets();
         applySettings();
         syncSettingsUI();
         updateStatsUI();
+        if (offline.energyGained > 0) {
+          const mins = Math.floor(offline.elapsedMs / 60000);
+          const secs = Math.floor((offline.elapsedMs % 60000) / 1000);
+          const timeText = mins > 0 ? `${mins}분 ${secs}초` : `${secs}초`;
+          const capText = offline.capped ? ' (상한 적용)' : '';
+          log(`복귀 보정: 비활성 시간 ${timeText} 동안 에너지 +${offline.energyGained}${capText}`, 'system');
+          showToast(`오프라인 보정: 에너지 +${offline.energyGained}`, 'save');
+        }
         log('저장된 데이터를 불러왔습니다.', 'system');
       } catch (e) {
         console.error(e);
@@ -2253,6 +2321,23 @@
     setInterval(() => {
       saveGame(true);
     }, 60000);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        touchActivity(Date.now());
+        saveGame(true);
+      } else {
+        const offline = applyOfflineProgress(Date.now());
+        if (offline.energyGained > 0) {
+          updateStatsUI();
+          showToast(`오프라인 보정: 에너지 +${offline.energyGained}`, 'save');
+        }
+      }
+    });
+    window.addEventListener('pagehide', () => {
+      touchActivity(Date.now());
+      saveGame(true);
+    });
 
     // 로그 필터
     function bindLogFilterCheckbox(checkbox, key) {
