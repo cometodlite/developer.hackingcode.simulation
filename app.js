@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11';
+    const CURRENT_VERSION = 'v1.6.11(d)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -203,11 +203,11 @@
         ]
       },
       {
-        version: 'v1.6.11',
+        version: 'v1.6.11(d)',
         lines: [
           '모바일 환경 전반의 탭 입력 안정성을 다시 점검하고, 첫 진입 시 버튼이 늦게 반응하던 현상을 완화했습니다.',
           'load / resize / orientationchange 이후 높이 보정 타이밍을 추가해 모바일 화면 계산을 더 안정화했습니다.',
-          '전반적인 Mobile Fix 마무리와 함께 현재 웹 배포 기준 버전을 v1.6.11로 정리했습니다.'
+          '모바일/PC에서 발생하던 손가락 핀치 줌과 트랙패드/브라우저 확대 제스처를 최대한 막아 게임 플레이 중 화면 배율이 흔들리지 않도록 조정했습니다.'
         ]
       }
 
@@ -2495,7 +2495,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11 Mobile Fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(d) Zoom Lock Fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2971,4 +2971,23 @@
     mountScanOverlayGlobal();
   }
   window.addEventListener('load', mountScanOverlayGlobal, { once:true });
+})();
+
+
+// === ZOOM LOCK FIX v1.6.11(d) ===
+(function(){
+  function preventPinch(e){
+    if (e.touches && e.touches.length > 1) e.preventDefault();
+  }
+
+  document.addEventListener('touchstart', preventPinch, { passive:false });
+  document.addEventListener('touchmove', preventPinch, { passive:false });
+
+  ['gesturestart','gesturechange','gestureend'].forEach(type=>{
+    document.addEventListener(type, e=>e.preventDefault(), { passive:false });
+  });
+
+  document.addEventListener('wheel', (e)=>{
+    if (e.ctrlKey) e.preventDefault();
+  }, { passive:false });
 })();

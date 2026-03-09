@@ -1203,3 +1203,15 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 #codeList li {
   touch-action: manipulation;
 }
+
+
+/* === ZOOM LOCK FIX v1.6.11(d) === */
+html, body {
+  touch-action: manipulation;
+}
+
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  html, body, #main, .mobile-view, .panel {
+    touch-action: pan-y pan-x;
+  }
+}
