@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(f)';
+    const CURRENT_VERSION = 'v1.6.11(g)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -203,7 +203,7 @@
         ]
       },
       {
-        version: 'v1.6.11(f)',
+        version: 'v1.6.11(g)',
         lines: [
           'STATUS와 ACTION을 하나의 HOME 창으로 통합했습니다.',
           '모바일 하단 탭 구성을 HOME / CODES / SHOP / LOG 4개 구조로 정리했습니다.',
@@ -2495,7 +2495,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(f) HOME/SHOP layout fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(g) CODES panel merge)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();

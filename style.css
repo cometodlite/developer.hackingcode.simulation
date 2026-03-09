@@ -1189,3 +1189,18 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   }
   #scanText{ overflow:auto; }
 }
+
+
+/* v1.6.11(g) codes + detail merge */
+@media (min-width: 901px){
+  #leftPanel{ flex:0 0 32% !important; }
+  #centerPanel{ flex:1 1 auto !important; display:flex; flex-direction:column; overflow:auto; }
+  #centerPanel .center-inner{ display:flex; flex-direction:column; gap:10px; min-height:100%; }
+  #centerPanel .code-inventory-box{ flex:1 1 0; min-height:260px; }
+  #centerPanel .code-detail-box{ flex:0 0 auto; min-height:240px; }
+  #rightPanel{ flex:0 0 26% !important; display:flex; flex-direction:column; gap:10px; overflow:auto; }
+  #rightPanel .shop-list-panel{ flex:1 1 auto; min-height:320px; overflow:auto; }
+}
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+  #mobileViewCodes .code-detail-box{ margin-top:10px; }
+}

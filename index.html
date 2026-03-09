@@ -6,14 +6,14 @@
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>HCSiG - Hacking Code Simulator Game</title>
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=1.6.11f" rel="stylesheet"/>
+<link href="style.css?v=1.6.11g" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.11(f) (Web)</span>
+<span class="header-version">v1.6.11(g) (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle">Hacking Code Simulator Game</span>
@@ -99,12 +99,7 @@
 </div></div><div class="resizer" id="resizerLeft"></div><div class="panel" id="centerPanel"><div class="center-inner"><div class="stat-box code-inventory-box">
 <div class="section-title">코드 인벤토리</div>
 <ul id="codeList"></ul>
-</div><div id="scanOverlay">
-<div id="scanProgressWrapper">
-<div id="scanProgressInner"></div>
-</div>
-<div id="scanText"></div>
-</div></div></div><div class="resizer" id="resizerRight"></div><div class="panel" id="rightPanel"><div class="stat-box resizable-box code-detail-box">
+</div><div class="stat-box resizable-box code-detail-box">
 <div class="section-title">코드 상세</div>
 <div id="codeDetail">
 <div class="small">보유 중인 코드를 선택하면 상세 정보가 표시됩니다.</div>
@@ -117,7 +112,12 @@
               · 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).<br/>
               · 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).
             </div>
-</div><div class="section-title">Shop</div><div class="shop-sort-row">
+</div><div id="scanOverlay">
+<div id="scanProgressWrapper">
+<div id="scanProgressInner"></div>
+</div>
+<div id="scanText"></div>
+</div></div></div><div class="resizer" id="resizerRight"></div><div class="panel" id="rightPanel"><div class="section-title">Shop</div><div class="shop-sort-row">
 <span class="shop-sort-label">정렬</span>
 <select id="shopSortSelect" title="상점 아이템 정렬 기준을 선택합니다.">
 <option value="update">업데이트순</option>
@@ -315,5 +315,5 @@
 </div>
 </div>
 <div id="toastContainer"></div>
-<script src="app.js?v=1.6.11f"></script></body>
+<script src="app.js?v=1.6.11g"></script></body>
 </html>
