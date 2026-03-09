@@ -65,7 +65,7 @@
     }
 
     #leftPanel {
-      flex: 0 0 24%;
+      flex: 0 0 32%;
       overflow: hidden; /* STATUS 고정 + SHOP만 내부 스크롤 */
       display: flex;
       flex-direction: column;
@@ -84,7 +84,7 @@
     }
 
     #rightPanel {
-      flex: 0 0 26%;
+      flex: 0 0 22%;
       border-right: none;
       background: #04050a;
     }
@@ -896,19 +896,18 @@ button:hover {
    ========================= */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
   body { overflow:hidden; }
-  .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
+  .mobile-tabs { grid-template-columns: repeat(4, 1fr) !important; }
   .mobile-tabs button{ font-size: 12px !important; }
   /* Hide PC panels on mobile to avoid fixed-position overlay capturing taps */
   #leftPanel, #centerPanel, #rightPanel { display: none !important; }
   .mobile-view { display:none !important; }
-  body.mobile-view-status #mobileViewStatus,
-  body.mobile-view-action #mobileViewAction,
-  body.mobile-view-codes  #mobileViewCodes,
-  body.mobile-view-shop   #mobileViewShop,
-  body.mobile-view-log    #mobileViewLog { display:block !important; }
+  body.mobile-view-home  #mobileViewHome,
+  body.mobile-view-codes #mobileViewCodes,
+  body.mobile-view-shop  #mobileViewShop,
+  body.mobile-view-log   #mobileViewLog { display:block !important; }
 
   
-#mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+#mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
   /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
   position: fixed;
   top: var(--headerH, 52px);
@@ -965,7 +964,7 @@ button:hover {
     padding-bottom: calc(var(--mobileTabsH) + var(--mobileTabsPad) + var(--safeBottom, 0px)) !important;
   }
 
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  #mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
     height: auto !important;
     max-height: none !important;
     min-height: 0 !important;
@@ -1027,7 +1026,7 @@ button:hover {
   }
 
   /* Reduce accidental horizontal scroll */
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  #mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
     overflow-x: hidden !important;
   }
 }
@@ -1154,64 +1153,3 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   z-index: 9999;
 }
 
-
-
-/* === MOBILE SCAN OVERLAY GLOBAL FIX v1.6.11-scanoverlay1 === */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  #scanOverlay {
-    position: fixed !important;
-    top: calc(var(--headerH, 52px) + 8px) !important;
-    left: 10px !important;
-    right: 10px !important;
-    bottom: calc(var(--tabsInset, calc(92px + 20px + env(safe-area-inset-bottom))) + 10px) !important;
-    inset: auto !important;
-    width: auto !important;
-    max-width: none !important;
-    max-height: none !important;
-    min-height: 180px;
-    z-index: 16000 !important;
-    border-radius: 14px;
-    overflow: hidden;
-  }
-
-  #scanText {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-
-/* v1.6.11(c) - code inventory tap/select fix */
-#codeList,
-#codeList li,
-#codeList li *,
-#codeDetail,
-#codeDetail * {
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-#codeList li,
-#codeList li span,
-#codeList li strong {
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-#codeList li {
-  touch-action: manipulation;
-}
-
-
-/* === ZOOM LOCK FIX v1.6.11(d) === */
-html, body {
-  touch-action: manipulation;
-}
-
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  html, body, #main, .mobile-view, .panel {
-    touch-action: pan-y pan-x;
-  }
-}

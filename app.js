@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(d)';
+    const CURRENT_VERSION = 'v1.6.11(e)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -203,11 +203,11 @@
         ]
       },
       {
-        version: 'v1.6.11(d)',
+        version: 'v1.6.11(e)',
         lines: [
-          '모바일 환경 전반의 탭 입력 안정성을 다시 점검하고, 첫 진입 시 버튼이 늦게 반응하던 현상을 완화했습니다.',
-          'load / resize / orientationchange 이후 높이 보정 타이밍을 추가해 모바일 화면 계산을 더 안정화했습니다.',
-          '모바일/PC에서 발생하던 손가락 핀치 줌과 트랙패드/브라우저 확대 제스처를 최대한 막아 게임 플레이 중 화면 배율이 흔들리지 않도록 조정했습니다.'
+          'STATUS와 ACTION을 하나의 HOME 창으로 통합했습니다.',
+          '모바일 하단 탭 구성을 HOME / CODES / SHOP / LOG 4개 구조로 정리했습니다.',
+          '전반적인 Mobile Fix 마무리와 함께 현재 웹 배포 기준 버전을 v1.6.11(e)로 정리했습니다.'
         ]
       }
 
@@ -2495,7 +2495,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(d) Zoom Lock Fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11 Mobile Fix)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2590,6 +2590,27 @@
 
 
 
+
+// === HOME PANEL MERGE: STATUS + ACTION ===
+(function(){
+  const left = document.getElementById('leftPanel');
+  const center = document.getElementById('centerPanel');
+  if(!left || !center) return;
+
+  const leftTitles = Array.from(left.querySelectorAll('.section-title'));
+  const homeTitle = leftTitles.find(t => (t.textContent||'').trim().toLowerCase()==='status' || (t.textContent||'').trim().toLowerCase()==='home');
+  if(homeTitle) homeTitle.textContent = 'HOME';
+
+  const shopTitle = leftTitles.find(t => (t.textContent||'').trim().toLowerCase()==='shop');
+  const actionTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim().toLowerCase()==='actions');
+  const actionBox = actionTitle ? (actionTitle.closest('.stat-box') || actionTitle.parentElement) : null;
+
+  if(actionBox && shopTitle && actionBox.parentElement !== left){
+    left.insertBefore(actionBox, shopTitle);
+  }
+})();
+
+
 // === MOBILE VIEWS: split PC layout into mobile tabs ===
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
@@ -2603,8 +2624,7 @@
 
   // Create mobile view containers
   const views = [
-    ['Status','mobileViewStatus'],
-    ['Action','mobileViewAction'],
+    ['Home','mobileViewHome'],
     ['Codes','mobileViewCodes'],
     ['Shop','mobileViewShop'],
     ['Log','mobileViewLog'],
@@ -2619,23 +2639,23 @@
     main.insertBefore(v, main.firstChild);
   });
 
-  // Move leftPanel -> Status + Shop
+  // Move leftPanel -> Home + Shop
   const left = document.getElementById('leftPanel');
   if(left){
     const shopTitle = Array.from(left.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='Shop');
-    const statusView = document.getElementById('mobileViewStatus');
+    const homeView = document.getElementById('mobileViewHome');
     const shopView = document.getElementById('mobileViewShop');
 
     if(shopTitle){
-      // nodes before Shop go to Status
+      // nodes before Shop go to Home
       let node = left.firstChild;
-      const toMoveStatus = [];
+      const toMoveHome = [];
       while(node && node !== shopTitle){
         const next = node.nextSibling;
-        toMoveStatus.push(node);
+        toMoveHome.push(node);
         node = next;
       }
-      toMoveStatus.forEach(n=>statusView.appendChild(n));
+      toMoveHome.forEach(n=>homeView.appendChild(n));
 
       // Shop title and everything after -> Shop
       let node2 = shopTitle;
@@ -2647,15 +2667,14 @@
       }
       toMoveShop.forEach(n=>shopView.appendChild(n));
     }else{
-      // fallback: whole left panel in Status
-      statusView.appendChild(left);
+      // fallback: whole left panel in Home
+      homeView.appendChild(left);
     }
   }
 
-  // Move centerPanel -> Action + Codes
+  // Move centerPanel -> Codes only (Actions are merged into HOME)
   const center = document.getElementById('centerPanel');
   if(center){
-    const actionView = document.getElementById('mobileViewAction');
     const codesView  = document.getElementById('mobileViewCodes');
 
     const codeInvTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='코드 인벤토리');
@@ -2666,17 +2685,7 @@
     }
 
     if(codeBlock){
-      // move nodes before codeBlock into Action
-      let node = center.firstChild;
-      const toMoveAction = [];
-      while(node && node !== codeBlock){
-        const next = node.nextSibling;
-        toMoveAction.push(node);
-        node = next;
-      }
-      toMoveAction.forEach(n=>actionView.appendChild(n));
-
-      // move codeBlock and after into Codes
+      // actions are already moved into HOME; move code block and after into Codes
       let node2 = codeBlock;
       const toMoveCodes = [];
       while(node2){
@@ -2686,8 +2695,8 @@
       }
       toMoveCodes.forEach(n=>codesView.appendChild(n));
     }else{
-      // fallback: whole center in Action
-      actionView.appendChild(center);
+      // fallback: whole center in Codes
+      codesView.appendChild(center);
     }
   }
 
@@ -2703,15 +2712,14 @@
     logView.appendChild(tip);
   }
 
-  // Replace tab bar with 5 tabs
+  // Replace tab bar with 4 tabs
   const oldTabs = document.querySelector('.mobile-tabs');
   if(oldTabs) oldTabs.remove();
 
   const wrap = document.createElement('div');
   wrap.className = 'mobile-tabs';
   wrap.innerHTML = `
-    <button type="button" data-view="status">STATUS</button>
-    <button type="button" data-view="action">ACTION</button>
+    <button type="button" data-view="home">HOME</button>
     <button type="button" data-view="codes">CODES</button>
     <button type="button" data-view="shop">SHOP</button>
     <button type="button" data-view="log">LOG</button>
@@ -2719,7 +2727,7 @@
   document.body.appendChild(wrap);
 
   function setView(v){
-    document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
+    document.body.classList.remove('mobile-view-home','mobile-view-codes','mobile-view-shop','mobile-view-log');
     document.body.classList.add('mobile-view-'+v);
     wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
     const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
@@ -2751,7 +2759,7 @@
   }
 
   // default view
-  setView('status');
+  setView('home');
 })();
 
 
@@ -2789,7 +2797,7 @@
   if(!isMobile) return;
 
   function activeViewEl(){
-    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop','mobileViewLog'];
     for(const id of ids){
       const el = document.getElementById(id);
       if(!el) continue;
@@ -2835,7 +2843,7 @@
   }
 
   function attach(){
-    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    const ids = ['mobileViewHome','mobileViewCodes','mobileViewShop','mobileViewLog'];
     ids.forEach(id=>{
       const el = document.getElementById(id);
       if(!el) return;
@@ -2950,44 +2958,4 @@
 
   // 초기 상태는 applySettings()에서 결정
   try { if (typeof applySettings === 'function') applySettings(); } catch(e) {}
-})();
-
-
-// === MOBILE SCAN OVERLAY GLOBAL FIX v1.6.11-scanoverlay1 ===
-(function(){
-  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-  if(!isMobile) return;
-
-  function mountScanOverlayGlobal(){
-    const overlay = document.getElementById('scanOverlay');
-    if(!overlay || overlay.dataset.globalMobileOverlay === '1') return;
-    document.body.appendChild(overlay);
-    overlay.dataset.globalMobileOverlay = '1';
-  }
-
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', mountScanOverlayGlobal, { once:true });
-  }else{
-    mountScanOverlayGlobal();
-  }
-  window.addEventListener('load', mountScanOverlayGlobal, { once:true });
-})();
-
-
-// === ZOOM LOCK FIX v1.6.11(d) ===
-(function(){
-  function preventPinch(e){
-    if (e.touches && e.touches.length > 1) e.preventDefault();
-  }
-
-  document.addEventListener('touchstart', preventPinch, { passive:false });
-  document.addEventListener('touchmove', preventPinch, { passive:false });
-
-  ['gesturestart','gesturechange','gestureend'].forEach(type=>{
-    document.addEventListener(type, e=>e.preventDefault(), { passive:false });
-  });
-
-  document.addEventListener('wheel', (e)=>{
-    if (e.ctrlKey) e.preventDefault();
-  }, { passive:false });
 })();
