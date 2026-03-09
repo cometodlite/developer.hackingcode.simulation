@@ -1181,3 +1181,13 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     -webkit-overflow-scrolling: touch;
   }
 }
+
+
+/* === CLICK FIX: scanOverlay should not block code inventory clicks when inactive (v1.6.11(b)) === */
+#scanOverlay {
+  pointer-events: none;
+}
+
+#scanOverlay.active {
+  pointer-events: auto;
+}
