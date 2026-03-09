@@ -1747,14 +1747,6 @@
     function doHack() {
       ensureMissionResets();
 
-      const energyCost = 2;
-      if (!consumeEnergy(energyCost)) {
-        log('에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', 'hack');
-        return;
-      }
-
-      state.missionProgress.daily.actions++;
-
       const code = getActiveCodeInstance();
       if (!code) {
         log('보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', 'hack');
@@ -1766,11 +1758,19 @@
         log('타겟 서버 선택에 실패했습니다.', 'hack');
         return;
       }
-      onTutorialAction('hack');
       if (state.level < server.minLevel) {
         log(`해당 서버를 해킹하려면 최소 Lv.${server.minLevel} 이상이어야 합니다.`, 'hack');
         return;
       }
+
+      const energyCost = 2;
+      if (!consumeEnergy(energyCost)) {
+        log('에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', 'hack');
+        return;
+      }
+
+      state.missionProgress.daily.actions++;
+      onTutorialAction('hack');
 
       let serverSec = server.security;
       let creditMultiplier = modifiers.creditMultiplierSession * modifiers.creditMultiplierPermanent;
