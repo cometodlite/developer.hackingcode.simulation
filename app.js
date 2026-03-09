@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(i)';
+    const CURRENT_VERSION = 'v1.6.11(j)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -210,6 +210,15 @@
           'visibilitychange/pagehide 뿐 아니라 새로 열기·새로고침 상황에서도 복귀 보정이 동작합니다.',
           '오프라인 에너지 회복 상한은 최대 60분으로 유지됩니다.'
         ]
+      },
+      {
+        version: 'v1.6.11(j)',
+        lines: [
+          '신규 유저용 튜토리얼 시스템 1차를 추가했습니다.',
+          'HOME/코드 스캔/CODES/해킹/성장 흐름을 단계별로 안내합니다.',
+          '특정 행동을 수행하면 다음 단계로 자동 진행되며, 건너뛰기 및 다시 보기를 지원합니다.',
+          '튜토리얼 완료 여부와 진행 단계는 저장 데이터에 함께 보관됩니다.'
+        ]
       }
 
     ];
@@ -228,6 +237,7 @@
       items: { energyPack: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
+      tutorial: { completed: false, step: 0, seen: false },
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -751,6 +761,17 @@
     const setToastMs = document.getElementById('setToastMs');
     const setAutoSaveToast = document.getElementById('setAutoSaveToast');
 
+    const tutorialBackdrop = document.getElementById('tutorialBackdrop');
+    const tutorialStepLabel = document.getElementById('tutorialStepLabel');
+    const tutorialStepTitle = document.getElementById('tutorialStepTitle');
+    const tutorialStepText = document.getElementById('tutorialStepText');
+    const tutorialStepHint = document.getElementById('tutorialStepHint');
+    const btnTutorialPrev = document.getElementById('btnTutorialPrev');
+    const btnTutorialNext = document.getElementById('btnTutorialNext');
+    const btnTutorialFinish = document.getElementById('btnTutorialFinish');
+    const btnTutorialSkip = document.getElementById('btnTutorialSkip');
+    const btnOpenTutorial = document.getElementById('btnOpenTutorial');
+
     const btnExportSave = document.getElementById('btnExportSave');
     const btnImportSaveFile = document.getElementById('btnImportSaveFile');
     const fileImportSave = document.getElementById('fileImportSave');
@@ -761,6 +782,46 @@
     let missionScopeActive = 'daily';
     let logsHidden = false;
     let scanRunning = false;
+    let tutorialOpenedOnce = false;
+
+    const tutorialSteps = [
+      {
+        title: '환영합니다',
+        text: 'HCSiG에 오신 것을 환영합니다. 이 튜토리얼은 첫 플레이에서 필요한 핵심 루프만 짧게 안내합니다.',
+        hint: '다음 버튼을 눌러 진행하세요.',
+        waitAction: false
+      },
+      {
+        title: 'HOME 확인',
+        text: '여기서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
+        hint: '상태를 확인했다면 다음 단계로 이동하세요.',
+        waitAction: false
+      },
+      {
+        title: '코드 스캔 실행',
+        text: '먼저 코드 스캔을 1회 실행해 보세요. 스캔은 새로운 코드를 찾거나 기존 코드를 강화하는 출발점입니다.',
+        hint: 'HOME의 [코드 스캔] 버튼을 눌러 주세요. 완료되면 자동으로 다음 단계로 넘어갑니다.',
+        waitAction: true
+      },
+      {
+        title: '코드 선택',
+        text: '획득한 코드는 코드 인벤토리에서 확인할 수 있습니다. 코드를 눌러 활성 코드로 바꾸고 상세 정보를 확인해 보세요.',
+        hint: '코드 인벤토리의 항목을 한 번 클릭하면 자동으로 다음 단계로 넘어갑니다.',
+        waitAction: true
+      },
+      {
+        title: '서버 해킹',
+        text: '선택한 코드와 CPU 성능을 바탕으로 서버 해킹을 시도할 수 있습니다. 해킹은 크레딧과 성장의 핵심 루프입니다.',
+        hint: 'HOME의 [서버 해킹] 버튼을 눌러 1회 시도해 보세요. 성공 여부와 관계없이 다음 단계로 진행됩니다.',
+        waitAction: true
+      },
+      {
+        title: '성장과 상점',
+        text: '크레딧을 모아 CPU를 업그레이드하고, 상점을 활용해 성장 속도를 조절할 수 있습니다. 이제 기본 흐름을 모두 익혔습니다.',
+        hint: '시작하기를 누르면 튜토리얼이 종료되고 자유 플레이로 전환됩니다.',
+        waitAction: false
+      }
+    ];
 
     function getDayKey() {
       return new Date().toISOString().slice(0, 10);
@@ -771,6 +832,105 @@
     function getMonthKey() {
       const d = new Date();
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    function ensureTutorialDefaults() {
+      state.tutorial = state.tutorial || {};
+      if (typeof state.tutorial.completed !== 'boolean') state.tutorial.completed = false;
+      if (!Number.isInteger(state.tutorial.step)) state.tutorial.step = 0;
+      if (state.tutorial.step < 0) state.tutorial.step = 0;
+      if (state.tutorial.step >= tutorialSteps.length) state.tutorial.step = tutorialSteps.length - 1;
+      if (typeof state.tutorial.seen !== 'boolean') state.tutorial.seen = false;
+    }
+
+    function isTutorialOpen() {
+      return !!(tutorialBackdrop && tutorialBackdrop.classList.contains('show'));
+    }
+
+    function renderTutorial() {
+      if (!tutorialBackdrop) return;
+      ensureTutorialDefaults();
+      const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
+      const step = tutorialSteps[idx];
+      tutorialStepLabel.textContent = `STEP ${idx + 1} / ${tutorialSteps.length}`;
+      tutorialStepTitle.textContent = step.title;
+      tutorialStepText.textContent = step.text;
+      tutorialStepHint.textContent = step.hint || '';
+      tutorialStepHint.style.display = step.hint ? '' : 'none';
+      btnTutorialPrev.disabled = idx <= 0;
+      const waiting = !!step.waitAction;
+      btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
+      btnTutorialNext.disabled = waiting;
+      btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
+    }
+
+    function openTutorial(forceRestart = false) {
+      if (!tutorialBackdrop) return;
+      ensureTutorialDefaults();
+      if (forceRestart) {
+        state.tutorial.completed = false;
+        state.tutorial.step = 0;
+      }
+      renderTutorial();
+      tutorialBackdrop.classList.add('show');
+      tutorialBackdrop.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('tutorial-open');
+      tutorialOpenedOnce = true;
+    }
+
+    function closeTutorial(markCompleted = false) {
+      if (!tutorialBackdrop) return;
+      if (markCompleted) {
+        state.tutorial.completed = true;
+        state.tutorial.step = tutorialSteps.length - 1;
+      }
+      tutorialBackdrop.classList.remove('show');
+      tutorialBackdrop.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('tutorial-open');
+      saveGame(true);
+    }
+
+    function nextTutorialStep() {
+      ensureTutorialDefaults();
+      if (state.tutorial.step < tutorialSteps.length - 1) {
+        state.tutorial.step += 1;
+        renderTutorial();
+        saveGame(true);
+      }
+    }
+
+    function prevTutorialStep() {
+      ensureTutorialDefaults();
+      if (state.tutorial.step > 0) {
+        state.tutorial.step -= 1;
+        renderTutorial();
+      }
+    }
+
+    function onTutorialAction(action) {
+      ensureTutorialDefaults();
+      if (state.tutorial.completed) return;
+      const mapping = { scan: 2, selectCode: 3, hack: 4 };
+      const expected = mapping[action];
+      if (expected === undefined) return;
+      if (state.tutorial.step !== expected) return;
+      const followUp = () => {
+        nextTutorialStep();
+        if (!isTutorialOpen()) openTutorial(false);
+      };
+      if (isTutorialOpen()) {
+        followUp();
+      } else {
+        openTutorial(false);
+        setTimeout(followUp, 0);
+      }
+    }
+
+    function maybeStartTutorial() {
+      ensureTutorialDefaults();
+      if (state.tutorial.completed || tutorialOpenedOnce) return;
+      state.tutorial.seen = true;
+      openTutorial(false);
     }
 
     function updateStatsUI() {
@@ -1069,6 +1229,7 @@
           state.activeCodeId = code.id;
           updateStatsUI();
           log(`활성 코드 변경: ${code.name}`, 'system');
+          onTutorialAction('selectCode');
         });
 
         codeListEl.appendChild(li);
@@ -1560,6 +1721,7 @@
         const expGain = 2 + modifiers.scanExtraExp;
         addExp(expGain);
         log(`코드 스캔 완료: 경험치 +${expGain}.`, 'scan');
+        onTutorialAction('scan');
 
         checkAchievements('scan');
         checkMissions('general');
@@ -1597,6 +1759,7 @@
         log('타겟 서버 선택에 실패했습니다.', 'hack');
         return;
       }
+      onTutorialAction('hack');
       if (state.level < server.minLevel) {
         log(`해당 서버를 해킹하려면 최소 Lv.${server.minLevel} 이상이어야 합니다.`, 'hack');
         return;
@@ -2304,6 +2467,7 @@
         state.ui.autoSaveToast = !!state.ui.autoSaveToast;
         state.ui.logSearch = state.ui.logSearch || '';
 
+        ensureTutorialDefaults();
         state.lastSeenAt = Number(state.lastSeenAt || data.savedAt || 0) || null;
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
@@ -2326,6 +2490,12 @@
     btnSaveGame.addEventListener('click', saveGame);
     btnLoadGame.addEventListener('click', loadGame);
     btnClearSave.addEventListener('click', clearSave);
+
+    if (btnTutorialPrev) btnTutorialPrev.addEventListener('click', prevTutorialStep);
+    if (btnTutorialNext) btnTutorialNext.addEventListener('click', nextTutorialStep);
+    if (btnTutorialFinish) btnTutorialFinish.addEventListener('click', () => closeTutorial(true));
+    if (btnTutorialSkip) btnTutorialSkip.addEventListener('click', () => closeTutorial(true));
+    if (btnOpenTutorial) btnOpenTutorial.addEventListener('click', () => openTutorial(true));
 
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') persistLastSeenAt(Date.now());
@@ -2582,7 +2752,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(i) Offline Energy Fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(j) Tutorial Update)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2593,6 +2763,9 @@
 
       renderUpdateLog();
       maybeShowUpdateOnStart();
+      setTimeout(() => {
+        maybeStartTutorial();
+      }, 180);
     }
 
     init();

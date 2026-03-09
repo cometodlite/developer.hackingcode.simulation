@@ -1154,3 +1154,74 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   z-index: 9999;
 }
 
+
+
+/* === TUTORIAL MODAL v1.6.11(j) === */
+#tutorialBackdrop{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(3, 8, 18, 0.76);
+  backdrop-filter: blur(4px);
+  z-index: 20000;
+}
+#tutorialBackdrop.show{ display:flex; }
+#tutorialModal{
+  width: min(560px, calc(100vw - 24px));
+  background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(10,15,25,0.98));
+  border: 1px solid rgba(96,165,250,0.24);
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+#tutorialHeader, #tutorialFooter{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.03);
+}
+#tutorialHeader h2{
+  margin: 6px 0 0;
+  font-size: 18px;
+}
+#tutorialBody{
+  padding: 18px 16px 16px;
+}
+#tutorialBody h3{
+  margin: 8px 0 10px;
+  font-size: 20px;
+}
+#tutorialStepText{
+  margin: 0;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+#tutorialStepHint{
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(59,130,246,0.14);
+  border: 1px solid rgba(96,165,250,0.18);
+  color: #bfdbfe;
+}
+#tutorialFooter{
+  justify-content:flex-end;
+}
+#tutorialFooter button:disabled,
+#btnTutorialPrev:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+body.tutorial-open{ overflow:hidden; }
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+  #tutorialBackdrop{ padding: 12px; align-items:flex-end; }
+  #tutorialModal{ width: calc(100vw - 12px); border-radius: 18px 18px 0 0; margin-bottom: calc(8px + var(--safe-bottom, 0px)); }
+  #tutorialHeader, #tutorialFooter{ padding: 12px 14px; }
+  #tutorialBody{ padding: 16px 14px 14px; }
+  #tutorialBody h3{ font-size: 18px; }
+}
