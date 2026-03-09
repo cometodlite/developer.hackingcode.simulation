@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11';
+    const CURRENT_VERSION = 'v1.6.11(a)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -203,11 +203,11 @@
         ]
       },
       {
-        version: 'v1.6.11',
+        version: 'v1.6.11(a)',
         lines: [
           '모바일 환경 전반의 탭 입력 안정성을 다시 점검하고, 첫 진입 시 버튼이 늦게 반응하던 현상을 완화했습니다.',
           'load / resize / orientationchange 이후 높이 보정 타이밍을 추가해 모바일 화면 계산을 더 안정화했습니다.',
-          '전반적인 Mobile Fix 마무리와 함께 현재 웹 배포 기준 버전을 v1.6.11로 정리했습니다.'
+          '전반적인 Mobile Fix 마무리와 함께 현재 웹 배포 기준 버전을 v1.6.11(a)로 정리했습니다.'
         ]
       }
 
@@ -2495,7 +2495,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11 Mobile Fix)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(a) 기준 적용)', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
@@ -2953,7 +2953,7 @@
 })();
 
 
-// === MOBILE SCAN OVERLAY GLOBAL FIX v1.6.11-scanoverlay1 ===
+// === MOBILE SCAN OVERLAY GLOBAL FIX v1.6.11(a) ===
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
