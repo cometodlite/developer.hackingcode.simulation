@@ -1154,3 +1154,12 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   z-index: 9999;
 }
 
+
+
+/* === i-p1 patch: toast above mobile bottom bar === */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  #toastContainer{
+    bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom)) !important;
+    z-index: 10001 !important;
+  }
+}
