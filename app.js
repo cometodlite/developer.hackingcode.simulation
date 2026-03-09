@@ -877,6 +877,39 @@
       return !!(tutorialBackdrop && tutorialBackdrop.classList.contains('show'));
     }
 
+    function setMobileTutorialView(view) {
+      const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+      if (!isMobile) return;
+      const views = ['home', 'codes', 'shop', 'log'];
+      const target = views.includes(view) ? view : 'home';
+      document.body.classList.remove('mobile-view-home', 'mobile-view-codes', 'mobile-view-shop', 'mobile-view-log');
+      document.body.classList.add('mobile-view-' + target);
+      document.querySelectorAll('.mobile-tabs button[data-view]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === target);
+      });
+      const panel = document.getElementById('mobileView' + target.charAt(0).toUpperCase() + target.slice(1));
+      if (panel) panel.scrollTop = 0;
+    }
+
+    function syncTutorialFocusForStep(idx) {
+      if (idx === 2) {
+        setMobileTutorialView('home');
+      } else if (idx === 3) {
+        setMobileTutorialView('codes');
+        setTimeout(() => {
+          const list = document.getElementById('codeList');
+          const firstItem = list ? list.querySelector('li') : null;
+          if (firstItem) {
+            firstItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else if (list) {
+            list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 60);
+      } else if (idx === 4) {
+        setMobileTutorialView('home');
+      }
+    }
+
     function renderTutorial() {
       if (!tutorialBackdrop) return;
       ensureTutorialDefaults();
@@ -889,12 +922,16 @@
       tutorialStepHint.style.display = step.hint ? '' : 'none';
       const interactive = !!step.waitAction;
       tutorialBackdrop.classList.toggle('interactive', interactive);
+      tutorialBackdrop.dataset.tutorialStep = String(idx + 1);
+      tutorialBackdrop.dataset.tutorialInteractive = interactive ? '1' : '0';
       document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
+      document.body.dataset.tutorialStep = String(idx + 1);
       btnTutorialPrev.disabled = idx <= 0;
       const waiting = interactive;
       btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
       btnTutorialNext.disabled = waiting;
       btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
+      syncTutorialFocusForStep(idx);
     }
 
     function openTutorial(forceRestart = false) {
@@ -922,8 +959,11 @@
       tutorialBackdrop.classList.remove('show');
       tutorialBackdrop.classList.remove('interactive');
       tutorialBackdrop.setAttribute('aria-hidden', 'true');
+      delete tutorialBackdrop.dataset.tutorialStep;
+      delete tutorialBackdrop.dataset.tutorialInteractive;
       document.body.classList.remove('tutorial-open');
       document.body.classList.remove('tutorial-interactive');
+      delete document.body.dataset.tutorialStep;
       saveGame(true);
     }
 
