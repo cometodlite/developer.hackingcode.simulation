@@ -1154,3 +1154,170 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   z-index: 9999;
 }
 
+
+
+/* =========================
+   MOBILE CLEANUP OVERRIDE (2026-03-09)
+   Final authority for mobile layout: 5-tab mobile-view system only.
+   This block intentionally overrides older 3-tab / mixed vh patches.
+   ========================= */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  html, body {
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+    overscroll-behavior-y: none;
+  }
+
+  body {
+    min-height: var(--appH, 100dvh) !important;
+    padding-top: var(--safeTop, env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 0 !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  #main {
+    position: relative !important;
+    display: block !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - var(--safeTop, env(safe-area-inset-top, 0px))) !important;
+    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px) - var(--safeTop, env(safe-area-inset-top, 0px))) !important;
+    overflow: hidden !important;
+  }
+
+  /* Legacy desktop panels must not remain as fixed invisible overlays on mobile. */
+  #leftPanel,
+  #centerPanel,
+  #rightPanel,
+  body.mobile-tab-left #leftPanel,
+  body.mobile-tab-center #centerPanel,
+  body.mobile-tab-right #rightPanel {
+    display: none !important;
+    position: static !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-bottom: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .resizer,
+  .resize-bar {
+    display: none !important;
+  }
+
+  .mobile-tabs {
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(10px + var(--safeBottom, env(safe-area-inset-bottom, 0px))) !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    padding: 8px 8px calc(8px + var(--safeBottom, env(safe-area-inset-bottom, 0px))) !important;
+    border-radius: 14px !important;
+    z-index: 9998 !important;
+    transform: none;
+    opacity: 1;
+  }
+
+  .mobile-tabs button {
+    min-height: 44px !important;
+    font-size: 12px !important;
+    font-weight: 700;
+  }
+
+  .mobile-view {
+    display: none !important;
+    position: fixed !important;
+    top: var(--headerH, 52px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: calc(var(--tabsInset, 92px) + 10px) !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 8px var(--tabsPad, calc(92px + 28px + env(safe-area-inset-bottom, 0px))) !important;
+  }
+
+  body.mobile-view-status #mobileViewStatus,
+  body.mobile-view-action #mobileViewAction,
+  body.mobile-view-codes  #mobileViewCodes,
+  body.mobile-view-shop   #mobileViewShop,
+  body.mobile-view-log    #mobileViewLog {
+    display: block !important;
+  }
+
+  /* Keep cards readable and scrollable inside each mobile screen. */
+  #mobileViewStatus > *,
+  #mobileViewAction > *,
+  #mobileViewCodes > *,
+  #mobileViewShop > *,
+  #mobileViewLog > * {
+    width: 100%;
+  }
+
+  #mobileViewStatus .stat-box,
+  #mobileViewAction .stat-box,
+  #mobileViewCodes .stat-box,
+  #mobileViewShop .stat-box,
+  #mobileViewLog .stat-box {
+    min-height: 0;
+  }
+
+  #shopList,
+  #logList,
+  #codeList {
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #codeList li {
+    padding: 12px 10px !important;
+    min-height: 44px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  #btnUpgradeCode,
+  #btnEvolveCode {
+    width: 100% !important;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px !important;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  body.mobile-tabs-hidden .mobile-tabs {
+    transform: translateY(calc(100% + var(--safeBottom, env(safe-area-inset-bottom, 0px)) + 20px)) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  body.mobile-tabs-hidden .mobile-view {
+    bottom: 10px !important;
+    padding-bottom: calc(24px + var(--safeBottom, env(safe-area-inset-bottom, 0px))) !important;
+  }
+
+  body.keyboard-open .mobile-tabs {
+    transform: translateY(calc(-1 * var(--vvKeyboardOffset, 0px))) !important;
+  }
+}
