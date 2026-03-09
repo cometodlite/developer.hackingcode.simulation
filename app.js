@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(k1)';
+    const CURRENT_VERSION = 'v1.6.11(L)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -93,6 +93,14 @@
 
     // 업데이트 로그
     const updateLogs = [
+      {
+        version: 'v1.6.11(L)',
+        lines: [
+          '튜토리얼 시스템과 관련 UI를 완전히 제거했습니다.',
+          '퀘스트를 확장했습니다. (DAILY +2 / WEEKLY +5 / MONTH +8 / GENERAL +30)',
+          '상점 일일 구매 제한과 성장 밸런스 조정을 유지했습니다.'
+        ]
+      },
       {
         version: 'HackSim Java Edition → HCSiG Web',
         lines: [
@@ -237,7 +245,7 @@
       items: { energyPack: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
-      tutorial: { completed: true, step: 0, seen: false },
+      tutorial: { completed: true, step: 0, seen: true },
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -364,40 +372,40 @@
         id: 'school_lab',
         name: '학교 실습 서버',
         security: 20,
-        minReward: 10,
-        maxReward: 25,
+        minReward: 8,
+        maxReward: 18,
         minLevel: 1
       },
       {
         id: 'bank_backup',
         name: '은행 백업 노드',
         security: 35,
-        minReward: 25,
-        maxReward: 50,
+        minReward: 18,
+        maxReward: 35,
         minLevel: 2
       },
       {
         id: 'gov_archive',
         name: '정부 기록 보관 노드',
         security: 50,
-        minReward: 40,
-        maxReward: 80,
+        minReward: 28,
+        maxReward: 55,
         minLevel: 3
       },
       {
         id: 'central_core',
         name: '중앙 코어 그리드',
         security: 70,
-        minReward: 70,
-        maxReward: 140,
+        minReward: 45,
+        maxReward: 95,
         minLevel: 4
       },
       {
         id: 'deep_space',
         name: '딥 스페이스 릴레이',
         security: 90,
-        minReward: 100,
-        maxReward: 200,
+        minReward: 65,
+        maxReward: 130,
         minLevel: 5
       }
     ];
@@ -453,12 +461,12 @@
       {
         id: 'scanner_module',
         name: '고급 스캐너 모듈',
-        desc: '코드 스캔 시 경험치 +2 추가.',
+        desc: '코드 스캔 시 경험치 +1 추가.',
         cost: 350,
         rarity: 'UNCOMMON',
         category: 'SYSTEM',
         buy: () => {
-          modifiers.scanExtraExp += 2;
+          modifiers.scanExtraExp += 1;
         }
       },
       {
@@ -523,13 +531,13 @@
       {
         id: 'big_credit_pack',
         name: '데이터 크레딧 팩',
-        desc: '즉시 크레딧 +300. (일일 구매 제한: 2회)',
+        desc: '즉시 크레딧 +300. (일일 구매 제한: 1회)',
         cost: 400,
         rarity: 'COMMON',
         category: 'ECONOMY',
         buy: () => {
-          state.credits += 500;
-          state.stats.creditsEarnedTotal += 500;
+          state.credits += 300;
+          state.stats.creditsEarnedTotal += 300;
         }
       },
       {
@@ -574,14 +582,21 @@
         { id: 'daily_hack3',   name: '일일 침입자 I',     type: 'hackSuccess',   target: 3,   rewardCredits: 80,  desc: '서버 해킹 성공 3회' },
         { id: 'daily_hack5',   name: '일일 침입자 II',    type: 'hackSuccess',   target: 5,   rewardCredits: 100, desc: '서버 해킹 성공 5회' },
         { id: 'daily_energy30',name: '에너지 소비자',      type: 'energySpent',   target: 30,  rewardCredits: 70,  desc: '에너지 30 소모하기' },
-        { id: 'daily_action10_pack', name: '보급 루틴',    type: 'actions',       target: 10,  rewardCredits: 60,  rewardEnergyPack: 1, desc: '코드 스캔/서버 해킹 총 10회 수행' }
+        { id: 'daily_action10_pack', name: '보급 루틴',    type: 'actions',       target: 10,  rewardCredits: 60,  rewardEnergyPack: 1, desc: '코드 스캔/서버 해킹 총 10회 수행' },
+        { id: 'daily_risk1',     name: '일일 리스크',      type: 'riskHackSuccess', target: 1,   rewardCredits: 90,  desc: '위험 해킹 모드로 서버 해킹 성공 1회' },
+        { id: 'daily_buy1',      name: '일일 조달',        type: 'shopPurchases',   target: 1,   rewardCredits: 50,  desc: '상점에서 1회 구매하기' }
       ],
       weekly: [
         { id: 'weekly_scan30',   name: '주간 스캐너',        type: 'scans',       target: 30,  rewardCredits: 120, desc: '코드 스캔 30회 수행' },
         { id: 'weekly_scan50',   name: '집요한 스캐너',      type: 'scans',       target: 50,  rewardCredits: 180, desc: '코드 스캔 50회 수행' },
         { id: 'weekly_hack20',   name: '주간 침입자',        type: 'hackSuccess', target: 20,  rewardCredits: 200, desc: '서버 해킹 성공 20회' },
         { id: 'weekly_energy100',name: '에너지 소모왕',       type: 'energySpent', target: 100, rewardCredits: 200, desc: '에너지 100 소모하기' },
-        { id: 'weekly_level10',  name: '주간 성장',          type: 'level',       target: 10,  rewardCredits: 250, desc: '플레이어 레벨 10 달성' }
+        { id: 'weekly_level10',  name: '주간 성장',          type: 'level',       target: 10,  rewardCredits: 250, desc: '플레이어 레벨 10 달성' },
+        { id: 'weekly_actions40',  name: '주간 루프',          type: 'actions',       target: 40,  rewardCredits: 180, desc: '코드 스캔/서버 해킹 총 40회 수행' },
+        { id: 'weekly_hack_risk5', name: '위험한 한 주',        type: 'riskHackSuccess', target: 5, rewardCredits: 240, desc: '위험 해킹 모드로 서버 해킹 성공 5회' },
+        { id: 'weekly_buy5',       name: '주간 소비',          type: 'shopPurchases', target: 5,   rewardCredits: 160, desc: '상점에서 5회 구매하기' },
+        { id: 'weekly_credit800',  name: '주간 수익',          type: 'creditsEarnedTotal', target: 800, rewardCredits: 180, desc: '누적 획득 크레딧 800 달성' },
+        { id: 'weekly_energy0',    name: '방전 습관',          type: 'energy0Flag', target: 1,   rewardCredits: 150, desc: '이번 주 최소 1회 에너지를 0까지 소모' }
       ],
       month: [
         { id: 'month_scan100',     name: '월간 스캐너',        type: 'scans',           target: 100, rewardCredits: 300, desc: '코드 스캔 100회 수행' },
@@ -590,7 +605,15 @@
         { id: 'month_energy300',   name: '에너지 브레이커',     type: 'energySpent',     target: 300, rewardCredits: 450, desc: '에너지 300 소모하기' },
         { id: 'month_level15',     name: '월간 성장',          type: 'level',           target: 15,  rewardCredits: 500, desc: '플레이어 레벨 15 달성' },
         { id: 'month_scan_risk',   name: '위험한 분석',        type: 'riskHackSuccess', target: 30,  rewardCredits: 500, desc: '위험 해킹 모드로 서버 해킹 성공 30회' },
-        { id: 'month_energy0',     name: '한계 돌파',          type: 'energy0Flag',     target: 1,   rewardCredits: 350, desc: '한 달 동안 최소 1회 에너지를 0까지 소모' }
+        { id: 'month_energy0',     name: '한계 돌파',          type: 'energy0Flag',     target: 1,   rewardCredits: 350, desc: '한 달 동안 최소 1회 에너지를 0까지 소모' },
+        { id: 'month_scan350',      name: '월간 스캐너 II',     type: 'scans',           target: 350, rewardCredits: 650, desc: '코드 스캔 350회 수행' },
+        { id: 'month_hack100',      name: '월간 침입자 II',     type: 'hackSuccess',     target: 100, rewardCredits: 700, desc: '서버 해킹 성공 100회' },
+        { id: 'month_actions200',   name: '장기 루틴',          type: 'actions',         target: 200, rewardCredits: 600, desc: '코드 스캔/서버 해킹 총 200회 수행' },
+        { id: 'month_energy500',    name: '에너지 파쇄기',      type: 'energySpent',     target: 500, rewardCredits: 650, desc: '에너지 500 소모하기' },
+        { id: 'month_level20',      name: '월간 도약',          type: 'level',           target: 20,  rewardCredits: 700, desc: '플레이어 레벨 20 달성' },
+        { id: 'month_buy20',        name: '월간 소비자',        type: 'shopPurchases',   target: 20,  rewardCredits: 500, desc: '상점에서 20회 구매하기' },
+        { id: 'month_credits5000',  name: '월간 수익 관리자',    type: 'creditsEarnedTotal', target: 5000, rewardCredits: 650, desc: '누적 획득 크레딧 5000 달성' },
+        { id: 'month_risk60',       name: '위험 중독',          type: 'riskHackSuccess', target: 60,  rewardCredits: 800, desc: '위험 해킹 모드로 서버 해킹 성공 60회' }
       ],
       // GENERAL: 장기 과제 ~30개
       general: [
@@ -636,7 +659,51 @@
         { id: 'gen_mission_40',    name: '퀘스트 매니악',        type: 'missionsCompleted', target: 40,   rewardCredits: 800,  desc: '누적 퀘스트 40개 완료' },
 
         { id: 'gen_risk_10',       name: '위험 친화 I',          type: 'riskHackSuccess',   target: 10,   rewardCredits: 400,  desc: '위험 해킹 모드로 해킹 성공 10회' },
-        { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' }
+        { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' },
+
+        { id: 'gen_scan_500',       name: '분석가 III',          type: 'scans',             target: 500,  rewardCredits: 700,  desc: '누적 코드 스캔 500회' },
+        { id: 'gen_scan_800',       name: '분석가 IV',           type: 'scans',             target: 800,  rewardCredits: 1000, desc: '누적 코드 스캔 800회' },
+        { id: 'gen_scan_1200',      name: '분석가 V',            type: 'scans',             target: 1200, rewardCredits: 1400, desc: '누적 코드 스캔 1200회' },
+
+        { id: 'gen_hack_200',       name: '침입 마스터 II',      type: 'hackSuccess',       target: 200,  rewardCredits: 850,  desc: '누적 해킹 성공 200회' },
+        { id: 'gen_hack_400',       name: '침입 마스터 III',     type: 'hackSuccess',       target: 400,  rewardCredits: 1300, desc: '누적 해킹 성공 400회' },
+        { id: 'gen_hack_700',       name: '침입 마스터 IV',      type: 'hackSuccess',       target: 700,  rewardCredits: 1800, desc: '누적 해킹 성공 700회' },
+
+        { id: 'gen_energy_spent_1500', name: '에너지 브루탈 II', type: 'energySpentTotal',  target: 1500, rewardCredits: 900,  desc: '누적 에너지 1500 소모' },
+        { id: 'gen_energy_spent_2500', name: '에너지 브루탈 III',type: 'energySpentTotal',  target: 2500, rewardCredits: 1300, desc: '누적 에너지 2500 소모' },
+        { id: 'gen_energy_spent_4000', name: '에너지 브루탈 IV', type: 'energySpentTotal',  target: 4000, rewardCredits: 1800, desc: '누적 에너지 4000 소모' },
+
+        { id: 'gen_level_25',       name: '고급 운영자 II',      type: 'level',             target: 25,   rewardCredits: 800,  desc: '플레이어 레벨 25 달성' },
+        { id: 'gen_level_30',       name: '코어 관리자',         type: 'level',             target: 30,   rewardCredits: 1100, desc: '플레이어 레벨 30 달성' },
+        { id: 'gen_level_40',       name: '시스템 지배자',       type: 'level',             target: 40,   rewardCredits: 1800, desc: '플레이어 레벨 40 달성' },
+
+        { id: 'gen_cpu_7',          name: 'CPU 튜너 III',        type: 'cpuTier',           target: 7,    rewardCredits: 650,  desc: 'CPU 티어 7 달성' },
+        { id: 'gen_cpu_10',         name: 'CPU 튜너 IV',         type: 'cpuTier',           target: 10,   rewardCredits: 1000, desc: 'CPU 티어 10 달성' },
+        { id: 'gen_cpu_15',         name: 'CPU 초월자',          type: 'cpuTier',           target: 15,   rewardCredits: 1600, desc: 'CPU 티어 15 달성' },
+
+        { id: 'gen_energyMax_35',   name: '에너지 저장고 II',    type: 'energyMax',         target: 35,   rewardCredits: 800,  desc: '에너지 최대치 35 달성' },
+        { id: 'gen_energyMax_40',   name: '에너지 저장고 III',   type: 'energyMax',         target: 40,   rewardCredits: 1200, desc: '에너지 최대치 40 달성' },
+        { id: 'gen_energyMax_50',   name: '에너지 아카이브',     type: 'energyMax',         target: 50,   rewardCredits: 1800, desc: '에너지 최대치 50 달성' },
+
+        { id: 'gen_shop_50',        name: '쇼핑 매니아 II',      type: 'shopPurchases',     target: 50,   rewardCredits: 700,  desc: '상점에서 누적 50회 구매' },
+        { id: 'gen_shop_80',        name: '쇼핑 매니아 III',     type: 'shopPurchases',     target: 80,   rewardCredits: 1100, desc: '상점에서 누적 80회 구매' },
+        { id: 'gen_shop_120',       name: '쇼핑 제왕',           type: 'shopPurchases',     target: 120,  rewardCredits: 1700, desc: '상점에서 누적 120회 구매' },
+
+        { id: 'gen_credits_50000',  name: '데이터 자본가 III',   type: 'creditsEarnedTotal',target: 50000,rewardCredits: 1000, desc: '누적 획득 크레딧 50000 달성' },
+        { id: 'gen_credits_100000', name: '데이터 자본가 IV',    type: 'creditsEarnedTotal',target: 100000,rewardCredits: 1700, desc: '누적 획득 크레딧 100000 달성' },
+        { id: 'gen_credits_250000', name: '데이터 제국',         type: 'creditsEarnedTotal',target: 250000,rewardCredits: 2600, desc: '누적 획득 크레딧 250000 달성' },
+
+        { id: 'gen_achieve_20',     name: '기록 수집가 IV',      type: 'achievements',      target: 20,   rewardCredits: 700,  desc: '업적 20개 달성' },
+        { id: 'gen_achieve_30',     name: '기록 수집가 V',       type: 'achievements',      target: 30,   rewardCredits: 1100, desc: '업적 30개 달성' },
+        { id: 'gen_achieve_45',     name: '기록 박물관',         type: 'achievements',      target: 45,   rewardCredits: 1700, desc: '업적 45개 달성' },
+
+        { id: 'gen_mission_60',     name: '퀘스트 매니악 II',    type: 'missionsCompleted', target: 60,   rewardCredits: 1000, desc: '누적 퀘스트 60개 완료' },
+        { id: 'gen_mission_100',    name: '퀘스트 매니악 III',   type: 'missionsCompleted', target: 100,  rewardCredits: 1600, desc: '누적 퀘스트 100개 완료' },
+        { id: 'gen_mission_160',    name: '퀘스트 아카이브',     type: 'missionsCompleted', target: 160,  rewardCredits: 2400, desc: '누적 퀘스트 160개 완료' },
+
+        { id: 'gen_risk_50',        name: '위험 친화 III',       type: 'riskHackSuccess',   target: 50,   rewardCredits: 1000, desc: '위험 해킹 모드로 해킹 성공 50회' },
+        { id: 'gen_risk_100',       name: '위험 친화 IV',        type: 'riskHackSuccess',   target: 100,  rewardCredits: 1600, desc: '위험 해킹 모드로 해킹 성공 100회' },
+        { id: 'gen_risk_180',       name: '위험 그 자체',        type: 'riskHackSuccess',   target: 180,  rewardCredits: 2400, desc: '위험 해킹 모드로 해킹 성공 180회' }
       ]
     };
 
@@ -761,179 +828,36 @@
     const setToastMs = document.getElementById('setToastMs');
     const setAutoSaveToast = document.getElementById('setAutoSaveToast');
 
-    const tutorialBackdrop = document.getElementById('tutorialBackdrop');
-    const tutorialStepLabel = document.getElementById('tutorialStepLabel');
-    const tutorialStepTitle = document.getElementById('tutorialStepTitle');
-    const tutorialStepText = document.getElementById('tutorialStepText');
-    const tutorialStepHint = document.getElementById('tutorialStepHint');
-    const btnTutorialPrev = document.getElementById('btnTutorialPrev');
-    const btnTutorialNext = document.getElementById('btnTutorialNext');
-    const btnTutorialFinish = document.getElementById('btnTutorialFinish');
-    const btnTutorialSkip = document.getElementById('btnTutorialSkip');
-    const btnOpenTutorial = document.getElementById('btnOpenTutorial');
-
-    const btnExportSave = document.getElementById('btnExportSave');
-    const btnImportSaveFile = document.getElementById('btnImportSaveFile');
-    const fileImportSave = document.getElementById('fileImportSave');
-    const importSaveText = document.getElementById('importSaveText');
-    const btnImportSaveText = document.getElementById('btnImportSaveText');
-
-    // 상태
-    let missionScopeActive = 'daily';
-    let logsHidden = false;
-    let scanRunning = false;
-    let tutorialOpenedOnce = false;
-
-    const tutorialSteps = [
-      {
-        title: '환영합니다',
-        text: 'HCSiG에 오신 것을 환영합니다. 이 튜토리얼은 첫 플레이에서 필요한 핵심 루프만 짧게 안내합니다.',
-        hint: '다음 버튼을 눌러 진행하세요.',
-        waitAction: false
-      },
-      {
-        title: 'HOME 확인',
-        text: '여기서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
-        hint: '상태를 확인했다면 다음 단계로 이동하세요.',
-        waitAction: false
-      },
-      {
-        title: '코드 스캔 실행',
-        text: '먼저 코드 스캔을 1회 실행해 보세요. 스캔은 새로운 코드를 찾거나 기존 코드를 강화하는 출발점입니다.',
-        hint: 'HOME의 [코드 스캔] 버튼을 눌러 주세요. 완료되면 자동으로 다음 단계로 넘어갑니다.',
-        waitAction: true
-      },
-      {
-        title: '코드 선택',
-        text: '획득한 코드는 코드 인벤토리에서 확인할 수 있습니다. 코드를 눌러 활성 코드로 바꾸고 상세 정보를 확인해 보세요.',
-        hint: '코드 인벤토리의 항목을 한 번 클릭하면 자동으로 다음 단계로 넘어갑니다.',
-        waitAction: true
-      },
-      {
-        title: '서버 해킹',
-        text: '선택한 코드와 CPU 성능을 바탕으로 서버 해킹을 시도할 수 있습니다. 해킹은 크레딧과 성장의 핵심 루프입니다.',
-        hint: 'HOME의 [서버 해킹] 버튼을 눌러 1회 시도해 보세요. 성공 여부와 관계없이 다음 단계로 진행됩니다.',
-        waitAction: true
-      },
-      {
-        title: '성장과 상점',
-        text: '크레딧을 모아 CPU를 업그레이드하고, 상점을 활용해 성장 속도를 조절할 수 있습니다. 이제 기본 흐름을 모두 익혔습니다.',
-        hint: '시작하기를 누르면 튜토리얼이 종료되고 자유 플레이로 전환됩니다.',
-        waitAction: false
-      }
-    ];
-
-    function getDayKey() {
-      return new Date().toISOString().slice(0, 10);
-    }
-    function getWeekKey() {
-      return Math.floor(Date.now() / (7 * 24 * 3600 * 1000));
-    }
-    function getMonthKey() {
-      const d = new Date();
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-    }
+    const tutorialBackdrop = null;
+    const tutorialStepLabel = null;
+    const tutorialStepTitle = null;
+    const tutorialStepText = null;
+    const tutorialStepHint = null;
+    const btnTutorialPrev = null;
+    const btnTutorialNext = null;
+    const btnTutorialFinish = null;
+    const btnTutorialSkip = null;
+    const btnOpenTutorial = null;
 
     function ensureTutorialDefaults() {
-      state.tutorial = state.tutorial || {};
-      if (typeof state.tutorial.completed !== 'boolean') state.tutorial.completed = false;
-      if (!Number.isInteger(state.tutorial.step)) state.tutorial.step = 0;
-      if (state.tutorial.step < 0) state.tutorial.step = 0;
-      if (state.tutorial.step >= tutorialSteps.length) state.tutorial.step = tutorialSteps.length - 1;
-      if (typeof state.tutorial.seen !== 'boolean') state.tutorial.seen = false;
+      state.tutorial = { completed: true, step: 0, seen: true };
     }
 
     function isTutorialOpen() {
-      return !!(tutorialBackdrop && tutorialBackdrop.classList.contains('show'));
+      return false;
     }
 
-    function renderTutorial() {
-      if (!tutorialBackdrop) return;
+    function renderTutorial() {}
+    function openTutorial() {}
+    function closeTutorial() {
       ensureTutorialDefaults();
-      const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
-      const step = tutorialSteps[idx];
-      tutorialStepLabel.textContent = `STEP ${idx + 1} / ${tutorialSteps.length}`;
-      tutorialStepTitle.textContent = step.title;
-      tutorialStepText.textContent = step.text;
-      tutorialStepHint.textContent = step.hint || '';
-      tutorialStepHint.style.display = step.hint ? '' : 'none';
-      const interactive = !!step.waitAction;
-      tutorialBackdrop.classList.toggle('interactive', interactive);
-      document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
-      btnTutorialPrev.disabled = idx <= 0;
-      const waiting = interactive;
-      btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
-      btnTutorialNext.disabled = waiting;
-      btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
     }
-
-    function openTutorial(forceRestart = false) {
-      if (!tutorialBackdrop) return;
+    function nextTutorialStep() {}
+    function prevTutorialStep() {}
+    function onTutorialAction() {}
+    function maybeStartTutorial() {
       ensureTutorialDefaults();
-      if (forceRestart) {
-        state.tutorial.completed = false;
-        state.tutorial.step = 0;
-      }
-      renderTutorial();
-      tutorialBackdrop.classList.add('show');
-      tutorialBackdrop.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('tutorial-open');
-      const step = tutorialSteps[Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1)];
-      document.body.classList.toggle('tutorial-interactive', !!step.waitAction);
-      tutorialOpenedOnce = true;
     }
-
-    function closeTutorial(markCompleted = false) {
-      if (!tutorialBackdrop) return;
-      if (markCompleted) {
-        state.tutorial.completed = true;
-        state.tutorial.step = tutorialSteps.length - 1;
-      }
-      tutorialBackdrop.classList.remove('show');
-      tutorialBackdrop.classList.remove('interactive');
-      tutorialBackdrop.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('tutorial-open');
-      document.body.classList.remove('tutorial-interactive');
-      saveGame(true);
-    }
-
-    function nextTutorialStep() {
-      ensureTutorialDefaults();
-      if (state.tutorial.step < tutorialSteps.length - 1) {
-        state.tutorial.step += 1;
-        renderTutorial();
-        saveGame(true);
-      }
-    }
-
-    function prevTutorialStep() {
-      ensureTutorialDefaults();
-      if (state.tutorial.step > 0) {
-        state.tutorial.step -= 1;
-        renderTutorial();
-      }
-    }
-
-    function onTutorialAction(action) {
-      ensureTutorialDefaults();
-      if (state.tutorial.completed) return;
-      const mapping = { scan: 2, selectCode: 3, hack: 4 };
-      const expected = mapping[action];
-      if (expected === undefined) return;
-      if (state.tutorial.step !== expected) return;
-      const followUp = () => {
-        nextTutorialStep();
-        if (!isTutorialOpen()) openTutorial(false);
-      };
-      if (isTutorialOpen()) {
-        followUp();
-      } else {
-        openTutorial(false);
-        setTimeout(followUp, 0);
-      }
-    }
-
-    function maybeStartTutorial(){ return; }
 
     function updateStatsUI() {
       statLevel.textContent = state.level;
@@ -1090,9 +1014,9 @@
       ensureMissionResets();
       state.level++;
       state.requiredExp = requiredExp(state.level);
-      state.credits += 100;
-      state.stats.creditsEarnedTotal += 100;
-      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +100 지급.`, 'level');
+      state.credits += 50;
+      state.stats.creditsEarnedTotal += 50;
+      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +50 지급.`, 'level');
 
       state.missionProgress.weekly.levelReached = Math.max(
         state.missionProgress.weekly.levelReached,
@@ -1336,7 +1260,11 @@
     // =========================
     const SHOP_LIMITS = {
       // Daily cap
-      big_credit_pack: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
+      big_credit_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      energy_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      energy_boost_1: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
+      energy_boost_2: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      level_ticket: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
       // One-time (no stacking)
       perm_credit_boost: { type: 'once', limit: 1, label: '1회' },
       risk_support: { type: 'once', limit: 1, label: '1회' },
@@ -1799,7 +1727,7 @@
         const rawReward =
           server.minReward + Math.random() * (server.maxReward - server.minReward);
         const rewardCredits = Math.round(rawReward * creditMultiplier);
-        const gainedExp = 8;
+        const gainedExp = 5;
 
         state.credits += rewardCredits;
         state.stats.creditsEarnedTotal += rewardCredits;
@@ -2754,7 +2682,7 @@
       applySettings();
       syncSettingsUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (v1.6.11(j) Tutorial Update)', 'system');
+      log('HCSiG 초기화 완료. (v1.6.11(L))', 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
