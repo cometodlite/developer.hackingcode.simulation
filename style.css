@@ -1154,3 +1154,19 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
   z-index: 9999;
 }
 
+
+
+/* === MOBILE TOAST ABOVE BOTTOM TAB BAR (v1.6.11-toastfix1) === */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  #toastContainer{
+    left: 12px;
+    right: 12px;
+    width: auto;
+    transform: none;
+    bottom: calc(72px + 12px + var(--safe-bottom));
+    z-index: 12000;
+  }
+  .toast{
+    margin-bottom: 0;
+  }
+}
