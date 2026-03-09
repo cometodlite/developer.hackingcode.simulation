@@ -1225,3 +1225,31 @@ body.tutorial-open{ overflow:hidden; }
   #tutorialBody{ padding: 16px 14px 14px; }
   #tutorialBody h3{ font-size: 18px; }
 }
+
+
+/* v1.6.11(k) tutorial interactive-step fix */
+#tutorialBackdrop.interactive{
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: calc(var(--headerH, 56px) + 12px);
+}
+#tutorialBackdrop.interactive #tutorialModal{
+  pointer-events: auto;
+  width: min(520px, calc(100vw - 20px));
+  box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+}
+body.tutorial-open.tutorial-interactive{ overflow:auto; }
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+  #tutorialBackdrop.interactive{
+    padding: calc(var(--headerH, 52px) + 8px) 8px 8px;
+    align-items: flex-start;
+  }
+  #tutorialBackdrop.interactive #tutorialModal{
+    width: calc(100vw - 16px);
+    border-radius: 16px;
+    margin: 0;
+  }
+}

@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.11(j)';
+    const CURRENT_VERSION = 'v1.6.11(k)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -857,8 +857,11 @@
       tutorialStepText.textContent = step.text;
       tutorialStepHint.textContent = step.hint || '';
       tutorialStepHint.style.display = step.hint ? '' : 'none';
+      const interactive = !!step.waitAction;
+      tutorialBackdrop.classList.toggle('interactive', interactive);
+      document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
       btnTutorialPrev.disabled = idx <= 0;
-      const waiting = !!step.waitAction;
+      const waiting = interactive;
       btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
       btnTutorialNext.disabled = waiting;
       btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
@@ -875,6 +878,8 @@
       tutorialBackdrop.classList.add('show');
       tutorialBackdrop.setAttribute('aria-hidden', 'false');
       document.body.classList.add('tutorial-open');
+      const step = tutorialSteps[Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1)];
+      document.body.classList.toggle('tutorial-interactive', !!step.waitAction);
       tutorialOpenedOnce = true;
     }
 
@@ -885,8 +890,10 @@
         state.tutorial.step = tutorialSteps.length - 1;
       }
       tutorialBackdrop.classList.remove('show');
+      tutorialBackdrop.classList.remove('interactive');
       tutorialBackdrop.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('tutorial-open');
+      document.body.classList.remove('tutorial-interactive');
       saveGame(true);
     }
 
