@@ -309,14 +309,14 @@
         name: 'Overflow_Inject',
         rarity: 'EPIC',
         basePower: 26,
-        description: '성공 시 크레딧 +30%, 실패 시 에너지를 1 추가로 소모합니다.'
+        description: '성공 시 크레딧 +15%, 실패 시 에너지를 1 추가로 소모합니다.'
       },
       ghost_script: {
         id: 'ghost_script',
         name: 'Ghost_Script',
         rarity: 'LEGENDARY',
         basePower: 30,
-        description: '해킹 성공 시 추가 레벨 업 1회를 발생시킵니다.'
+        description: '해킹 성공 시 현재 레벨 필요 경험치의 25%를 추가 획득합니다.'
       },
       auto_patch: {
         id: 'auto_patch',
@@ -418,12 +418,12 @@
       {
         id: 'credit_boost_run',
         name: '크레딧 멀티플라이어 (세션)',
-        desc: '현재 세션 동안 해킹 성공 시 크레딧 1.5배.',
+        desc: '현재 세션 동안 해킹 성공 시 크레딧 1.35배.',
         cost: 700,
         rarity: 'RARE',
         category: 'ECONOMY',
         buy: () => {
-          modifiers.creditMultiplierSession = 1.5;
+          modifiers.creditMultiplierSession = 1.35;
         }
       },
       {
@@ -511,13 +511,13 @@
       {
         id: 'big_credit_pack',
         name: '데이터 크레딧 팩',
-        desc: '즉시 크레딧 +500. (일일 구매 제한: 2회)',
+        desc: '즉시 크레딧 +350. (일일 구매 제한: 2회)',
         cost: 400,
         rarity: 'COMMON',
         category: 'ECONOMY',
         buy: () => {
-          state.credits += 500;
-          state.stats.creditsEarnedTotal += 500;
+          state.credits += 350;
+          state.stats.creditsEarnedTotal += 350;
         }
       },
       {
@@ -534,12 +534,12 @@
       {
         id: 'level_ticket',
         name: '시뮬레이션 레벨 티켓',
-        desc: '즉시 레벨 1회 상승.',
+        desc: '현재 레벨 필요 경험치의 25%를 즉시 획득합니다.',
         cost: 1000,
         rarity: 'EPIC',
         category: 'UTILITY',
         buy: () => {
-          levelUp();
+          addExp(Math.max(10, Math.floor(state.requiredExp * 0.25)));
         }
       }
     ];
@@ -907,7 +907,7 @@
 
 
     function requiredExp(level) {
-      return 20 + (level - 1) * 10;
+      return Math.floor(30 + Math.pow(level, 1.22) * 12);
     }
 
     function addExp(amount) {
@@ -926,9 +926,9 @@
       ensureMissionResets();
       state.level++;
       state.requiredExp = requiredExp(state.level);
-      state.credits += 100;
-      state.stats.creditsEarnedTotal += 100;
-      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +100 지급.`, 'level');
+      state.credits += 20;
+      state.stats.creditsEarnedTotal += 20;
+      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +20 지급.`, 'level');
 
       state.missionProgress.weekly.levelReached = Math.max(
         state.missionProgress.weekly.levelReached,
@@ -1111,7 +1111,7 @@
         log('강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', 'system');
         return;
       }
-      const cost = 100 * code.level;
+      const cost = 160 * code.level;
       if (state.credits < cost) {
         log(`코드 강화 실패: 크레딧이 부족합니다. (필요: ${cost})`, 'system');
         return;
@@ -1611,13 +1611,13 @@
         successChanceBonus += 0.1;
       }
       if (def && def.id === 'overflow_inject') {
-        creditMultiplier *= 1.3;
+        creditMultiplier *= 1.15;
       }
 
       if (state.riskMode) {
         successChanceBonus -= 0.15;
         successChanceBonus += modifiers.riskSuccessBonus;
-        creditMultiplier *= 2.0;
+        creditMultiplier *= 1.6;
       }
 
       const effectivePower = code.power * (1 + 0.1 * (state.cpuTier - 1));
@@ -1668,8 +1668,9 @@
         }
 
         if (def && def.id === 'ghost_script') {
-          levelUp();
-          log('Ghost_Script 효과: 추가 레벨 업 발생!', 'hack');
+          const ghostExp = Math.max(10, Math.floor(state.requiredExp * 0.25));
+          addExp(ghostExp);
+          log(`Ghost_Script 효과: 추가 경험치 +${ghostExp} 획득!`, 'hack');
         }
       } else {
         log(
@@ -1709,7 +1710,7 @@
     }
 
     function upgradeCpu() {
-      const rawCost = 500 * state.cpuTier;
+      const rawCost = 700 * state.cpuTier;
       const cost = Math.round(rawCost * modifiers.cpuUpgradeDiscount);
       if (state.credits < cost) {
         log(`CPU 업그레이드 실패: 크레딧이 부족합니다. (필요: ${cost})`, 'system');
