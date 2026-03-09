@@ -65,7 +65,7 @@
     }
 
     #leftPanel {
-      flex: 0 0 24%;
+      flex: 0 0 32%;
       overflow: hidden; /* STATUS 고정 + SHOP만 내부 스크롤 */
       display: flex;
       flex-direction: column;
@@ -84,7 +84,7 @@
     }
 
     #rightPanel {
-      flex: 0 0 26%;
+      flex: 0 0 22%;
       border-right: none;
       background: #04050a;
     }
@@ -896,19 +896,18 @@ button:hover {
    ========================= */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
   body { overflow:hidden; }
-  .mobile-tabs { grid-template-columns: repeat(5, 1fr) !important; }
+  .mobile-tabs { grid-template-columns: repeat(4, 1fr) !important; }
   .mobile-tabs button{ font-size: 12px !important; }
   /* Hide PC panels on mobile to avoid fixed-position overlay capturing taps */
   #leftPanel, #centerPanel, #rightPanel { display: none !important; }
   .mobile-view { display:none !important; }
-  body.mobile-view-status #mobileViewStatus,
-  body.mobile-view-action #mobileViewAction,
-  body.mobile-view-codes  #mobileViewCodes,
-  body.mobile-view-shop   #mobileViewShop,
-  body.mobile-view-log    #mobileViewLog { display:block !important; }
+  body.mobile-view-home  #mobileViewHome,
+  body.mobile-view-codes #mobileViewCodes,
+  body.mobile-view-shop  #mobileViewShop,
+  body.mobile-view-log   #mobileViewLog { display:block !important; }
 
   
-#mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+#mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
   /* Use fixed insets instead of vh math (iOS first-paint vh bug) */
   position: fixed;
   top: var(--headerH, 52px);
@@ -965,7 +964,7 @@ button:hover {
     padding-bottom: calc(var(--mobileTabsH) + var(--mobileTabsPad) + var(--safeBottom, 0px)) !important;
   }
 
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  #mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
     height: auto !important;
     max-height: none !important;
     min-height: 0 !important;
@@ -1027,7 +1026,7 @@ button:hover {
   }
 
   /* Reduce accidental horizontal scroll */
-  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
+  #mobileViewHome, #mobileViewCodes, #mobileViewShop, #mobileViewLog{
     overflow-x: hidden !important;
   }
 }
@@ -1156,100 +1155,92 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
 
-/* === TUTORIAL MODAL v1.6.11(j) === */
+/* === v1.6.11(f) PC HOME / SHOP LAYOUT FIX === */
+#main{ width:100% !important; max-width:100%; overflow-x:hidden !important; }
+#leftPanel, #centerPanel, #rightPanel, .panel, .center-inner, .code-inventory-box, .code-detail-box { min-width:0; }
+#scanOverlay{ pointer-events:none; }
+#scanOverlay.active{ pointer-events:auto; }
+#codeList, #codeList li, #codeList li *{
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+}
+#codeList li{ touch-action:manipulation; }
+@media (min-width: 901px){
+  #leftPanel{ flex:0 0 34% !important; display:flex; flex-direction:column; gap:10px; overflow:auto; }
+  #centerPanel{ flex:1 1 auto !important; overflow:auto; }
+  #rightPanel{ flex:0 0 30% !important; display:flex; flex-direction:column; gap:10px; overflow:auto; }
+  #leftPanel > .stat-box:last-child{ margin-bottom:0; }
+  #centerPanel .center-inner{ min-width:0; }
+  #centerPanel .code-inventory-box{ flex:1 1 auto; min-height:220px; }
+  #rightPanel .code-detail-box{ flex:1 1 auto; }
+  #rightPanel .shop-list-panel{ flex:1 1 auto; min-height:220px; overflow:auto; }
+}
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+  #scanOverlay{
+    position:fixed;
+    top:calc(var(--header-h, 52px) + var(--safe-top, 0px) + 10px);
+    left:10px;
+    right:10px;
+    bottom:calc(var(--mobileTabsH, 72px) + 14px + var(--safe-bottom, 0px));
+    inset:auto;
+    z-index:16000;
+  }
+  #scanText{ overflow:auto; }
+}
+
+
+/* v1.6.11(g) codes + detail merge */
+@media (min-width: 901px){
+  #leftPanel{ flex:0 0 32% !important; }
+  #centerPanel{ flex:1 1 auto !important; display:flex; flex-direction:column; overflow:auto; }
+  #centerPanel .center-inner{ display:flex; flex-direction:column; gap:10px; min-height:100%; }
+  #centerPanel .code-inventory-box{ flex:1 1 0; min-height:260px; }
+  #centerPanel .code-detail-box{ flex:0 0 auto; min-height:240px; }
+  #rightPanel{ flex:0 0 26% !important; display:flex; flex-direction:column; gap:10px; overflow:auto; }
+  #rightPanel .shop-list-panel{ flex:1 1 auto; min-height:320px; overflow:auto; }
+}
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+  #mobileViewCodes .code-detail-box{ margin-top:10px; }
+}
+
+
+/* v1.6.11(l) tutorial overlay (merged on latest HOME/CODES layout) */
 #tutorialBackdrop{
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(3, 8, 18, 0.76);
-  backdrop-filter: blur(4px);
-  z-index: 20000;
+  position: fixed; inset: 0; display:none; align-items:center; justify-content:center;
+  background: rgba(2,6,23,0.72); z-index: 18000; padding: 20px;
 }
 #tutorialBackdrop.show{ display:flex; }
 #tutorialModal{
-  width: min(560px, calc(100vw - 24px));
-  background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(10,15,25,0.98));
-  border: 1px solid rgba(96,165,250,0.24);
-  border-radius: 18px;
-  box-shadow: 0 18px 48px rgba(0,0,0,0.45);
-  overflow: hidden;
+  width: min(560px, calc(100vw - 32px));
+  background: #08101d; border: 1px solid #243145; border-radius: 22px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45); overflow:hidden;
 }
 #tutorialHeader, #tutorialFooter{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap: 10px;
-  padding: 14px 16px;
-  background: rgba(255,255,255,0.03);
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding: 14px 18px; background: rgba(255,255,255,0.02); border-bottom: 1px solid #1b2a40;
 }
-#tutorialHeader h2{
-  margin: 6px 0 0;
-  font-size: 18px;
-}
-#tutorialBody{
-  padding: 18px 16px 16px;
-}
-#tutorialBody h3{
-  margin: 8px 0 10px;
-  font-size: 20px;
-}
-#tutorialStepText{
-  margin: 0;
-  line-height: 1.6;
-  color: #e5e7eb;
-}
-#tutorialStepHint{
-  margin-top: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(59,130,246,0.14);
-  border: 1px solid rgba(96,165,250,0.18);
-  color: #bfdbfe;
-}
-#tutorialFooter{
-  justify-content:flex-end;
-}
+#tutorialFooter{ border-top: 1px solid #1b2a40; border-bottom:0; justify-content:flex-end; }
+#tutorialHeader h2{ margin:4px 0 0; font-size: 18px; }
+#tutorialBody{ padding: 18px; }
+#tutorialBody h3{ margin: 6px 0 10px; font-size: 22px; }
+#tutorialStepText{ margin:0; line-height:1.55; color:#dbeafe; white-space:pre-line; }
+#tutorialStepHint{ margin-top:12px; color:#93c5fd; line-height:1.45; }
 #tutorialFooter button:disabled,
-#btnTutorialPrev:disabled{
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+#tutorialHeader button:disabled{ opacity:0.45; cursor:not-allowed; }
 body.tutorial-open{ overflow:hidden; }
-@media (max-width: 900px), (hover: none) and (pointer: coarse){
+#tutorialBackdrop.interactive{ background: transparent; align-items:flex-start; justify-content:center; padding-top: calc(var(--headerH, 56px) + 12px); pointer-events:none; }
+#tutorialBackdrop.interactive #tutorialModal{ width: min(520px, calc(100vw - 24px)); box-shadow: 0 10px 28px rgba(0,0,0,0.35); pointer-events:auto; }
+body.tutorial-open.tutorial-interactive{ overflow:auto; }
+@media (max-width: 900px){
   #tutorialBackdrop{ padding: 12px; align-items:flex-end; }
   #tutorialModal{ width: calc(100vw - 12px); border-radius: 18px 18px 0 0; margin-bottom: calc(8px + var(--safe-bottom, 0px)); }
   #tutorialHeader, #tutorialFooter{ padding: 12px 14px; }
   #tutorialBody{ padding: 16px 14px 14px; }
   #tutorialBody h3{ font-size: 18px; }
-}
-
-
-/* v1.6.11(k) tutorial interactive-step fix */
-#tutorialBackdrop.interactive{
-  background: transparent;
-  backdrop-filter: none;
-  pointer-events: none;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: calc(var(--headerH, 56px) + 12px);
-}
-#tutorialBackdrop.interactive #tutorialModal{
-  pointer-events: auto;
-  width: min(520px, calc(100vw - 20px));
-  box-shadow: 0 12px 28px rgba(0,0,0,0.38);
-}
-body.tutorial-open.tutorial-interactive{ overflow:auto; }
-@media (max-width: 900px), (hover: none) and (pointer: coarse){
-  #tutorialBackdrop.interactive{
-    padding: calc(var(--headerH, 52px) + 8px) 8px 8px;
-    align-items: flex-start;
-  }
+  #tutorialBackdrop.interactive{ align-items:flex-start; padding: calc(var(--headerH, 56px) + 10px) 10px 0; }
   #tutorialBackdrop.interactive #tutorialModal{
-    width: calc(100vw - 16px);
-    border-radius: 16px;
-    margin: 0;
+    width: calc(100vw - 20px); border-radius: 16px; margin-bottom: 0;
   }
 }
