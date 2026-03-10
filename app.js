@@ -106,7 +106,7 @@ const I18N = {
     full:'FULL', seconds:'초',
     toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +100 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
     noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.',
-    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.'
+    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
   },
   en: {
     appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
@@ -125,7 +125,7 @@ const I18N = {
     full:'FULL', seconds:'s',
     toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +100.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
     noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.',
-    noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.'
+    noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
   }
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
@@ -168,6 +168,78 @@ function localizeShopName(item){
 }
 function localizeShopDesc(item){
   return (getLang()==='en' && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].desc) ? TEXT_DATA.en.shop[item.id].desc : item.desc;
+}
+function localizeRarityLabel(rarity){
+  const map={COMMON:'rarityCommon',UNCOMMON:'rarityUncommon',RARE:'rarityRare',EPIC:'rarityEpic',LEGENDARY:'rarityLegendary'};
+  return t(map[rarity] || rarity);
+}
+function localizeShopLimitLabel(info){
+  if (!info) return '';
+  if (info.type === 'daily') return t('dailyResetLabel', { n: info.limit });
+  if (info.type === 'once') return t('onceLabel');
+  return info.label || '';
+}
+function translateLogMessage(message){
+  if (!message || getLang() !== 'en') return message;
+  const patterns = [
+    [/^\[상점\] (.+) 구매 \(💰 -(\d+)\)$/, '[Shop] Purchased $1 (💰 -$2)'],
+    [/^\[시스템\] 일일 상점 제한이 초기화되었습니다\. \(05:00 리셋\)$/, '[System] Daily shop limits have been reset. (05:00 reset)'],
+    [/^업적 달성: (.+)$/, 'Achievement unlocked: $1'],
+    [/^\[업적 달성\] (.+)$/, '[Achievement] $1 unlocked'],
+    [/^활성 코드 변경: (.+)$/, 'Active code changed: $1'],
+    [/^레벨 업! Lv\.(\d+) 달성\. 크레딧 \+100 지급\.$/, 'Level up! Reached Lv.$1. Credits +100 granted.'],
+    [/^에너지 팩이 없습니다\.$/, 'You do not have any Energy Packs.'],
+    [/^이미 에너지가 가득 찼습니다\.$/, 'Your energy is already full.'],
+    [/^에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다\.$/, 'Used 1 Energy Pack and fully restored your energy.'],
+    [/^동기화할 코드가 없습니다\.$/, 'There is no code to sync.'],
+    [/^코드 동기화 실패: 중복 조각이 부족합니다\. \(필요: (\d+), 보유: (\d+)\)$/, 'Code sync failed: not enough duplicate shards. (Need: $1, Have: $2)'],
+    [/^코드 동기화 완료: (.+) 동기화 (\d+)단계 달성\. 파워 \+(\d+), 성공률 보정 \+(\d+)%\.$/, 'Code sync complete: $1 reached sync stage $2. Power +$3, success bonus +$4%.'],
+    [/^(.+) 동기화 (\d+)단계$/, '$1 sync stage $2'],
+    [/^강화할 코드가 없습니다\. 먼저 코드를 스캔하세요\.$/, 'There is no code to upgrade. Scan a code first.'],
+    [/^코드 강화 실패: 크레딧이 부족합니다\. \(필요: (\d+)\)$/, 'Code upgrade failed: not enough credits. (Need: $1)'],
+    [/^코드 강화: (.+) Lv\.(\d+) \(파워 \+5 → (\d+)\), 크레딧 -(\d+)\.$/, 'Code upgraded: $1 Lv.$2 (Power +5 → $3), Credits -$4.'],
+    [/^진화할 코드가 없습니다\.$/, 'There is no code to evolve.'],
+    [/^이미 최상위 희귀도\(LEGENDARY\)입니다\. 더 이상 진화할 수 없습니다\.$/, 'Already at the highest rarity (LEGENDARY). It cannot evolve further.'],
+    [/^코드 진화 실패: 진화에는 최소 Lv\.5 이상이 필요합니다\.$/, 'Code evolution failed: evolution requires at least Lv.5.'],
+    [/^진화를 처리할 수 없습니다\.$/, 'Cannot process evolution.'],
+    [/^코드 진화 성공: (.+)가 (.+) 등급으로 승급, 파워 \+10 → (\d+)\.$/, 'Code evolution success: $1 advanced to $2, Power +10 → $3.'],
+    [/^에너지가 부족하여 코드 스캔을 수행할 수 없습니다\.$/, 'Not enough energy to scan a code.'],
+    [/^에너지가 부족하여 서버 해킹을 수행할 수 없습니다\.$/, 'Not enough energy to hack the server.'],
+    [/^에너지 팩 \+1 \(보유: (\d+)\)$/, 'Energy Pack +1 (Owned: $1)'],
+    [/^오프라인 동안 에너지 (\d+) 회복 \((.+) 경과\)$/, 'Recovered $1 energy while offline ($2 elapsed)'],
+    [/^오프라인 회복: 에너지 \+(\d+)$/, 'Offline recovery: Energy +$1'],
+    [/^저장 데이터 내보내기 완료$/, 'Save data exported.'],
+    [/^저장 데이터 불러오기 완료$/, 'Save data imported.'],
+    [/^불러오기 실패: JSON 형식을 확인하세요\.$/, 'Import failed: please check the JSON format.'],
+    [/^텍스트가 비어 있습니다\.$/, 'The text box is empty.'],
+    [/^HCSiG 초기화 완료\. \(언어 설정, 중복 조각\/코드 동기화, 모바일 UI, 상점 분류 적용\)$/, 'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)'],
+    [/^Coming Soon - 준비 중인 기능입니다\.$/, 'Coming Soon - This feature is in preparation.'],
+    [/^미션 완료: (.+) \((.+)\)$/, 'Mission complete: $1 ($2)'],
+    [/^크레딧 \+(\d+)$/, 'Credits +$1'],
+    [/^에너지 팩 \+(\d+)$/, 'Energy Pack +$1'],
+    [/^크레딧 \+(\d+) \/ 에너지 팩 \+(\d+)$/, 'Credits +$1 / Energy Pack +$2'],
+    [/^해당 서버를 해킹하려면 최소 Lv\.(\d+) 이상이어야 합니다\.$/, 'You must be at least Lv.$1 to hack this server.'],
+    [/^보유 코드가 없습니다\. 먼저 코드 스캔으로 코드를 확보하세요\.$/, 'You do not own any codes yet. Scan codes first.'],
+    [/^새 코드 발견! (.+) \[(.+)\]$/, 'New code discovered! $1 [$2]'],
+    [/^중복 코드 감지: (.+) \[(.+)\] → 중복 조각 \+(\d+) \(보유 (\d+)\)\.$/, 'Duplicate code detected: $1 [$2] → Duplicate Shards +$3 (Owned $4).'],
+    [/^코드 스캔 완료: 경험치 \+(\d+)\.$/, 'Code scan complete: EXP +$1.'],
+    [/^서버 해킹 성공! \[(.+)\] 성공 확률 ([\d.]+)%\. 크레딧 \+(\d+), EXP \+(\d+)\.$/, 'Server hack success! [$1] Success chance $2%. Credits +$3, EXP +$4.'],
+    [/^서버 해킹 실패\. \[(.+)\] 성공 확률 ([\d.]+)%였음\.$/, 'Server hack failed. [$1] Success chance was $2%.']
+  ];
+  for (const [pat, rep] of patterns){
+    if (pat.test(message)) return message.replace(pat, rep);
+  }
+  return message;
+}
+function rerenderLogEntries(){
+  if (!logList) return;
+  logList.querySelectorAll('.log-entry').forEach(entry => {
+    const textSpan = entry.querySelector('span:last-child');
+    if (!textSpan) return;
+    const raw = entry.dataset.rawMessage || (textSpan.textContent || '').trim();
+    entry.dataset.rawMessage = raw;
+    textSpan.textContent = ' ' + translateLogMessage(raw);
+  });
 }
 function translatePhraseEn(str){
   if (!str || getLang() !== 'en') return str;
@@ -334,6 +406,7 @@ function applyLanguageToUI(){
   const btnImportSaveTextEl=document.getElementById('btnImportSaveText'); if(btnImportSaveTextEl) btnImportSaveTextEl.title=t('importJsonText');
   const loadoutSelectEl=document.getElementById('loadoutSelect'); if(loadoutSelectEl){ [...loadoutSelectEl.options].forEach(opt=>{ opt.textContent=t('loadoutSlot',{n:opt.value}); }); }
   refreshMobileTabTexts();
+  try { rerenderLogEntries(); } catch(e){}
   try { renderServers(); } catch(e){}
 }
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -1596,7 +1669,8 @@ function applyLanguageToUI(){
       tagSpan.textContent = type.toUpperCase();
 
       const textSpan = document.createElement('span');
-      textSpan.textContent = ' ' + message;
+      entry.dataset.rawMessage = message;
+      textSpan.textContent = ' ' + translateLogMessage(message);
 
       entry.appendChild(timeSpan);
       entry.appendChild(tagSpan);
@@ -2175,7 +2249,7 @@ function applyLanguageToUI(){
       const info = getShopRemaining(itemId);
       if (!info) return { ok: true };
       if (info.remaining <= 0) {
-        return { ok: false, reason: info.type === 'daily' ? '오늘 구매 제한에 도달했습니다.' : '이미 구매한 영구 아이템입니다.' };
+        return { ok: false, reason: info.type === 'daily' ? t('buyDailyLimit') : t('buyOnceLimit') };
       }
       return { ok: true };
     }
@@ -2275,7 +2349,7 @@ function applyLanguageToUI(){
         const rarityClass = 'shop-rarity-' + item.rarity.toLowerCase();
         const raritySpan = document.createElement('span');
         raritySpan.className = 'shop-rarity-pill ' + rarityClass;
-        raritySpan.textContent = item.rarity;
+        raritySpan.textContent = localizeRarityLabel(item.rarity);
 
         const catSpan = document.createElement('span');
         catSpan.className = 'shop-cat-pill';
@@ -2296,7 +2370,7 @@ function applyLanguageToUI(){
         if (lim) {
           const badge = document.createElement('span');
           badge.className = 'shop-limit-badge';
-          badge.textContent = `${lim.used}/${lim.limit} (${lim.label})`;
+          badge.textContent = `${lim.used}/${lim.limit} (${localizeShopLimitLabel(lim)})`; 
           badge.style.marginLeft = '8px';
           badge.style.opacity = '0.85';
           costSpan.appendChild(badge);
