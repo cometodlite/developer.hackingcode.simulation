@@ -132,6 +132,34 @@ const I18N = {
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
 function t(key, vars){ const lang=getLang(); let str=(I18N[lang]&&I18N[lang][key]) || I18N.ko[key] || key; if(vars){ for(const [k,v] of Object.entries(vars)){ str=str.replaceAll('{'+k+'}', String(v)); } } return str; }
+
+function bootstrapSavedUiLanguage(){
+  try {
+    let raw = localStorage.getItem(SAVE_KEY) || localStorage.getItem(OLD_SAVE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    const lang = data && data.state && data.state.ui && data.state.ui.lang;
+    if(lang === 'ko' || lang === 'en'){
+      state.ui = state.ui || {};
+      state.ui.lang = lang;
+      document.documentElement.lang = lang;
+    }
+  } catch(e) {}
+}
+
+function rerenderAllUiAfterLoad(){
+  try { applyLanguageToUI(); } catch(e) {}
+  try { applySettings(); } catch(e) {}
+  try { syncSettingsUI(); } catch(e) {}
+  try { updateStatsUI(); } catch(e) {}
+  try { renderServers(); } catch(e) {}
+  try { renderShop(); } catch(e) {}
+  try { renderMissions(); } catch(e) {}
+  try { renderAchievements(); } catch(e) {}
+  try { renderCodex(); } catch(e) {}
+  try { renderCodeList(); } catch(e) {}
+  try { renderCodeDetail(); } catch(e) {}
+}
 function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value; }
 function setHtml(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=value; }
 
@@ -3509,9 +3537,7 @@ function applyLanguageToUI(){
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
         ensureMissionResets();
-        applySettings();
-        syncSettingsUI();
-        updateStatsUI();
+        rerenderAllUiAfterLoad();
         log(t('saveLoaded'), 'system');
       } catch (e) {
         console.error(e);
@@ -3813,6 +3839,7 @@ function applyLanguageToUI(){
     btnLoadLoadout.addEventListener('click', loadLoadout);
 
     function init() {
+      bootstrapSavedUiLanguage();
       addCodeInstanceFromTemplate('basic');
       state.requiredExp = requiredExp(state.level);
       renderServers();
@@ -3828,11 +3855,10 @@ function applyLanguageToUI(){
         loadGame();
       } else {
         state.lastSeenAt = Date.now();
-        applyLanguageToUI();
-        updateStatsUI();
+        rerenderAllUiAfterLoad();
       }
 
-      applyLanguageToUI();
+      rerenderAllUiAfterLoad();
       renderUpdateLog();
       maybeShowUpdateOnStart();
       setTimeout(() => {
@@ -4302,7 +4328,7 @@ function applyLanguageToUI(){
       merged.className = 'stat-box codes-merged';
       const title = document.createElement('div');
       title.className = 'section-title';
-      title.textContent = 'Codes';
+      title.textContent = t('codeInventory');
       merged.appendChild(title);
       codesView.appendChild(merged);
     }
@@ -4507,4 +4533,85 @@ function applyLanguageToUI(){
   window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
   if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
   setSimpleTab('home');
+})();
+
+
+// === STARTUP REPAIR: language + mobile refresh recovery (k5r1) ===
+(function(){
+  function runRepair(){
+    try {
+      if (typeof state !== 'undefined' && state && state.ui) {
+        const sel = document.getElementById('setLanguage');
+        if (sel && state.ui.lang) sel.value = state.ui.lang;
+      }
+    } catch(e){}
+
+    try { if (typeof applyLanguageToUI === 'function') applyLanguageToUI(); } catch(e){}
+    try { if (typeof updateStatsUI === 'function') updateStatsUI(); } catch(e){}
+    try { if (typeof renderServers === 'function') renderServers(); } catch(e){}
+    try { if (typeof renderShop === 'function') renderShop(); } catch(e){}
+    try { if (typeof renderMissions === 'function') renderMissions(); } catch(e){}
+    try { if (typeof renderAchievements === 'function') renderAchievements(); } catch(e){}
+    try { if (typeof renderCodex === 'function') renderCodex(); } catch(e){}
+    try { if (typeof renderCodeList === 'function') renderCodeList(); } catch(e){}
+    try { if (typeof renderCodeDetail === 'function') renderCodeDetail(); } catch(e){}
+    try { if (typeof syncSettingsUI === 'function') syncSettingsUI(); } catch(e){}
+
+    try {
+      const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+      if(!isMobile) return;
+
+      if (document.body.classList.contains('mobile-simple-ui')) {
+        const hasViewClass = document.body.classList.contains('mobile-simple-view-home') || document.body.classList.contains('mobile-simple-view-codes') || document.body.classList.contains('mobile-simple-view-shop');
+        if (!hasViewClass) document.body.classList.add('mobile-simple-view-home');
+
+        const views = {
+          home: document.getElementById('mobileSimpleHome'),
+          codes: document.getElementById('mobileSimpleCodes'),
+          shop: document.getElementById('mobileSimpleShop')
+        };
+        const current = document.body.classList.contains('mobile-simple-view-codes') ? 'codes' : document.body.classList.contains('mobile-simple-view-shop') ? 'shop' : 'home';
+        try {
+          const navTextMap = { home: t('mobileHome'), codes: t('mobileCodes'), shop: t('mobileShop'), soon: t('mobileComing') };
+          const nav2 = document.querySelector('.mobile-simple-tabs, .mobile-tabs.mobile-simple-tabs');
+          if(nav2){ nav2.querySelectorAll('button').forEach(btn=>{ const key = btn.dataset.view || btn.dataset.mobileTab || ''; if(navTextMap[key]) btn.textContent = navTextMap[key]; }); }
+        } catch(e){}
+        Object.entries(views).forEach(([k, el]) => {
+          if(!el) return;
+          el.style.display = (k === current) ? 'block' : 'none';
+        });
+
+        const nav = document.querySelector('.mobile-simple-tabs, .mobile-tabs.mobile-simple-tabs');
+        if (nav) {
+          nav.querySelectorAll('button').forEach(btn => {
+            const v = btn.dataset.view || btn.dataset.mobileTab || '';
+            btn.classList.toggle('active', v === current);
+          });
+        }
+      } else {
+        const lp = document.getElementById('leftPanel');
+        const cp = document.getElementById('centerPanel');
+        if (lp && cp) {
+          const lpHidden = getComputedStyle(lp).display === 'none';
+          const cpHidden = getComputedStyle(cp).display === 'none';
+          if (lpHidden && cpHidden) document.body.classList.add('simple-tab-home');
+        }
+      }
+    } catch(e){}
+  }
+
+  const kick = () => {
+    runRepair();
+    setTimeout(runRepair, 120);
+    setTimeout(runRepair, 450);
+    setTimeout(runRepair, 1000);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', kick, { once: true });
+  } else {
+    kick();
+  }
+  window.addEventListener('load', kick);
+  window.addEventListener('pageshow', kick);
 })();
