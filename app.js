@@ -4615,3 +4615,100 @@ function applyLanguageToUI(){
   window.addEventListener('load', kick);
   window.addEventListener('pageshow', kick);
 })();
+
+
+// === COLD START HARD FIX: persisted language + mobile simple view recovery (k5r3) ===
+(function(){
+  function readSavedLang(){
+    try{
+      const raw = localStorage.getItem('HCSIG_SAVE_V1_6') || localStorage.getItem('HCSIG_SAVE_V1_5') || localStorage.getItem('HCSIG_SAVE') || localStorage.getItem('HCSIG_SAVE_V1');
+      if(!raw) return null;
+      const data = JSON.parse(raw);
+      const lang = data && data.state && data.state.ui && data.state.ui.lang;
+      return (lang === 'ko' || lang === 'en') ? lang : null;
+    }catch(e){ return null; }
+  }
+
+  function forceLangAndRerender(){
+    try{
+      const savedLang = readSavedLang();
+      if(savedLang){
+        if(typeof state !== 'undefined' && state){
+          state.ui = state.ui || {};
+          state.ui.lang = savedLang;
+        }
+        document.documentElement.lang = savedLang;
+        const sel = document.getElementById('setLanguage');
+        if(sel) sel.value = savedLang;
+      }
+    }catch(e){}
+
+    try{ if(typeof applyLanguageToUI === 'function') applyLanguageToUI(); }catch(e){}
+    try{ if(typeof renderServers === 'function') renderServers(); }catch(e){}
+    try{ if(typeof renderShop === 'function') renderShop(); }catch(e){}
+    try{ if(typeof renderMissions === 'function') renderMissions(); }catch(e){}
+    try{ if(typeof renderAchievements === 'function') renderAchievements(); }catch(e){}
+    try{ if(typeof renderCodex === 'function') renderCodex(); }catch(e){}
+    try{ if(typeof renderCodeList === 'function') renderCodeList(); }catch(e){}
+    try{ if(typeof renderCodeDetail === 'function') renderCodeDetail(); }catch(e){}
+    try{ if(typeof syncSettingsUI === 'function') syncSettingsUI(); }catch(e){}
+    try{ if(typeof updateStatsUI === 'function') updateStatsUI(); }catch(e){}
+  }
+
+  function repairMobileSimple(){
+    try{
+      const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+      if(!isMobile) return;
+      if(!document.body.classList.contains('mobile-simple-ui')) return;
+
+      const nav = document.querySelector('.mobile-simple-tabs, .mobile-tabs.mobile-simple-tabs');
+      const home = document.getElementById('mobileSimpleHome');
+      const codes = document.getElementById('mobileSimpleCodes');
+      const shop = document.getElementById('mobileSimpleShop');
+
+      let current = 'home';
+      if(document.body.classList.contains('mobile-simple-view-codes')) current = 'codes';
+      else if(document.body.classList.contains('mobile-simple-view-shop')) current = 'shop';
+      else {
+        document.body.classList.remove('mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
+        document.body.classList.add('mobile-simple-view-home');
+      }
+
+      const views = {home, codes, shop};
+      Object.entries(views).forEach(([k, el]) => {
+        if(!el) return;
+        el.hidden = false;
+        el.style.visibility = '';
+        el.style.opacity = '';
+        el.style.display = (k === current) ? 'block' : 'none';
+      });
+
+      if(nav){
+        const labels = {
+          home: (typeof t === 'function') ? t('mobileHome') : 'HOME',
+          codes: (typeof t === 'function') ? t('mobileCodes') : 'CODES',
+          shop: (typeof t === 'function') ? t('mobileShop') : 'SHOP',
+          soon: (typeof t === 'function') ? t('mobileComing') : 'COMING SOON'
+        };
+        nav.querySelectorAll('button').forEach(btn => {
+          const key = btn.dataset.view || btn.dataset.mobileTab || '';
+          if(labels[key]) btn.textContent = labels[key];
+          btn.classList.toggle('active', key === current);
+        });
+      }
+    }catch(e){}
+  }
+
+  function kick(){
+    forceLangAndRerender();
+    repairMobileSimple();
+    setTimeout(() => { forceLangAndRerender(); repairMobileSimple(); }, 150);
+    setTimeout(() => { forceLangAndRerender(); repairMobileSimple(); }, 600);
+    setTimeout(() => { forceLangAndRerender(); repairMobileSimple(); }, 1400);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kick, {once:true});
+  else kick();
+  window.addEventListener('load', kick);
+  window.addEventListener('pageshow', kick);
+})();
