@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.14-k2';
+    const CURRENT_VERSION = 'v1.6.14-k4';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -103,7 +103,8 @@ const I18N = {
     codexSummary:'발견 {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'기본 파워', ownedLvPwr:'보유 Lv.{lv} / PWR {pwr}', undiscoveredCode:'미발견 코드', undiscoveredDesc:'아직 발견하지 못한 코드입니다. 코드 스캔으로 해제하세요.', noCodes:'보유 코드 없음. [코드 스캔]으로 코드를 얻으세요.', selectCode:'보유 중인 코드를 선택하면 상세 정보가 표시됩니다.',
     levelLabel:'레벨: Lv.{v}', powerLabel:'파워: {v}', usageLabel:'사용 횟수: {v}', shardsLabel:'중복 조각: {v}', syncLabel:'동기화 단계: {v}', nextUpgrade:'다음 강화 비용: {v} 크레딧', nextSync:'다음 동기화 비용: 조각 {a} / 예상 성공률 보정 +{b}%', evolveReady:'진화 조건: 충족', evolveNeed:'진화 조건: Lv.5 이상 필요', ability:'능력', noDesc:'설명 없음.',
     missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'보상', none:'없음', complete:'완료', incomplete:'미완', achieved:'달성', notYet:'미달', hiddenAchievement:'히든 업적입니다. 달성 시 공개됩니다.', difficultyEasy:'일반', difficultyNormal:'보통', difficultyHard:'어려움', hidden:'HIDDEN',
-    full:'FULL', seconds:'초',
+    full:'FULL', seconds:'초', minutes:'분', visible:'표시', on:'ON', off:'OFF',
+    saveStateSaved:'게임 상태가 저장되었습니다.', saveComplete:'저장 완료', autosaveComplete:'✅ 자동 저장 완료', noSavedData:'저장된 데이터가 없습니다.', saveLoaded:'저장된 데이터를 불러왔습니다.', saveLoadError:'저장 데이터를 불러오는 중 오류가 발생했습니다.', saveDeleted:'저장 데이터가 삭제되었습니다.', exportFail:'내보내기 실패 (콘솔 확인)', riskModeLog:'위험 해킹 모드: {state}', riskPenaltyLog:'위험 해킹 모드 페널티: 실패로 인해 에너지가 추가로 1 소모되었습니다.', loadoutSaved:'로드아웃 슬롯 {slot}에 현재 설정을 저장했습니다.', loadoutEmpty:'로드아웃 슬롯 {slot}에 저장된 설정이 없습니다.', loadoutLoaded:'로드아웃 슬롯 {slot}을 불러왔습니다.',
     toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +100 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
     noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.',
     noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
@@ -122,7 +123,8 @@ const I18N = {
     codexSummary:'Discovered {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'Base Power', ownedLvPwr:'Owned Lv.{lv} / PWR {pwr}', undiscoveredCode:'Undiscovered Code', undiscoveredDesc:'You have not discovered this code yet. Unlock it by scanning codes.', noCodes:'No codes owned. Use [Scan Code] to get one.', selectCode:'Select an owned code to view details.',
     levelLabel:'Level: Lv.{v}', powerLabel:'Power: {v}', usageLabel:'Uses: {v}', shardsLabel:'Duplicate Shards: {v}', syncLabel:'Sync Level: {v}', nextUpgrade:'Next upgrade cost: {v} credits', nextSync:'Next sync cost: {a} shards / expected success bonus +{b}%', evolveReady:'Evolution requirement: Met', evolveNeed:'Evolution requirement: Need Lv.5+', ability:'Ability', noDesc:'No description.',
     missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'Reward', none:'None', complete:'Complete', incomplete:'Incomplete', achieved:'Achieved', notYet:'Not Yet', hiddenAchievement:'This is a hidden achievement. It will be revealed when completed.', difficultyEasy:'Easy', difficultyNormal:'Normal', difficultyHard:'Hard', hidden:'HIDDEN',
-    full:'FULL', seconds:'s',
+    full:'FULL', seconds:'sec', minutes:'min', visible:'Visible', on:'ON', off:'OFF',
+    saveStateSaved:'Game state saved.', saveComplete:'Save complete', autosaveComplete:'✅ Autosave complete', noSavedData:'No saved data found.', saveLoaded:'Saved data loaded.', saveLoadError:'An error occurred while loading save data.', saveDeleted:'Save data deleted.', exportFail:'Export failed (check console)', riskModeLog:'Risk Hack Mode: {state}', riskPenaltyLog:'Risk Hack Mode penalty: failure consumed 1 additional energy.', loadoutSaved:'Saved current setup to loadout slot {slot}.', loadoutEmpty:'There is no saved setup in loadout slot {slot}.', loadoutLoaded:'Loaded loadout slot {slot}.',
     toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +100.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
     noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.',
     noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
@@ -168,6 +170,31 @@ function localizeShopName(item){
 }
 function localizeShopDesc(item){
   return (getLang()==='en' && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].desc) ? TEXT_DATA.en.shop[item.id].desc : item.desc;
+}
+function localizeCodeDescription(def){
+  if (!def) return '';
+  if (getLang() !== 'en') return def.description || '';
+  const map = {
+    basic: 'Basic test code. No additional effect.',
+    port_scanner: 'Applies -10% target server security when hacking.',
+    pulse_ping: 'Increases hack success chance by +3%p.',
+    cache_sniffer: 'Grants +8 additional credits on successful hacks.',
+    shield_bypass: 'Applies -15% target server security when hacking.',
+    stack_tracer: 'Increases hack success chance by +5%p.',
+    credit_siphon: 'Applies +15% credit bonus on successful hacks.',
+    fallback_node: 'On hack failure, has a 12% chance to instantly recover 1 energy.',
+    data_phantom: 'Increases hack success chance by +10%p.',
+    auto_patch: 'On hack failure, has a 20% chance to grant +1 EXP.',
+    trace_scrambler: 'Reduces the Risk Hack Mode success penalty by 5%p.',
+    null_rewriter: 'Applies +25% credit bonus on successful hacks.',
+    rapid_exploit: 'Grants +3 additional EXP on successful hacks.',
+    overflow_inject: 'On success, grants +30% credits; on failure, consumes 1 extra energy.',
+    fortress_breaker: 'Applies -25% target server security when hacking.',
+    quantum_splice: 'Applies +12%p success chance and +20% credits on success.',
+    ghost_script: 'Triggers 1 additional level up on successful hacks.',
+    singularity_root: 'Applies +10%p success chance and +40% credits on success.'
+  };
+  return map[def.id] || def.description || '';
 }
 function localizeRarityLabel(rarity){
   const map={COMMON:'rarityCommon',UNCOMMON:'rarityUncommon',RARE:'rarityRare',EPIC:'rarityEpic',LEGENDARY:'rarityLegendary'};
@@ -224,7 +251,19 @@ function translateLogMessage(message){
     [/^중복 코드 감지: (.+) \[(.+)\] → 중복 조각 \+(\d+) \(보유 (\d+)\)\.$/, 'Duplicate code detected: $1 [$2] → Duplicate Shards +$3 (Owned $4).'],
     [/^코드 스캔 완료: 경험치 \+(\d+)\.$/, 'Code scan complete: EXP +$1.'],
     [/^서버 해킹 성공! \[(.+)\] 성공 확률 ([\d.]+)%\. 크레딧 \+(\d+), EXP \+(\d+)\.$/, 'Server hack success! [$1] Success chance $2%. Credits +$3, EXP +$4.'],
-    [/^서버 해킹 실패\. \[(.+)\] 성공 확률 ([\d.]+)%였음\.$/, 'Server hack failed. [$1] Success chance was $2%.']
+    [/^서버 해킹 실패\. \[(.+)\] 성공 확률 ([\d.]+)%였음\.$/, 'Server hack failed. [$1] Success chance was $2%.'],
+    [/^게임 상태가 저장되었습니다\.$/, 'Game state saved.'],
+    [/^저장 완료$/, 'Save complete'],
+    [/^✅ 자동 저장 완료$/, '✅ Autosave complete'],
+    [/^저장된 데이터가 없습니다\.$/, 'No saved data found.'],
+    [/^저장된 데이터를 불러왔습니다\.$/, 'Saved data loaded.'],
+    [/^저장 데이터를 불러오는 중 오류가 발생했습니다\.$/, 'An error occurred while loading save data.'],
+    [/^저장 데이터가 삭제되었습니다\.$/, 'Save data deleted.'],
+    [/^위험 해킹 모드: (ON|OFF)$/, 'Risk Hack Mode: $1'],
+    [/^위험 해킹 모드 페널티: 실패로 인해 에너지가 추가로 1 소모되었습니다\.$/, 'Risk Hack Mode penalty: failure consumed 1 additional energy.'],
+    [/^로드아웃 슬롯 (\d+)에 현재 설정을 저장했습니다\.$/, 'Saved current setup to loadout slot $1.'],
+    [/^로드아웃 슬롯 (\d+)에 저장된 설정이 없습니다\.$/, 'There is no saved setup in loadout slot $1.'],
+    [/^로드아웃 슬롯 (\d+)을 불러왔습니다\.$/, 'Loaded loadout slot $1.']
   ];
   for (const [pat, rep] of patterns){
     if (pat.test(message)) return message.replace(pat, rep);
@@ -366,7 +405,17 @@ function localizeAchievementDesc(def){
   for (const [pat, rep] of patterns){
     if (pat.test(d)) return d.replace(pat, rep);
   }
-  return translatePhraseEn(d);
+  return translatePhraseEn(d)
+    .replaceAll('코드 도감', 'code codex')
+    .replaceAll('플레이어 레벨', 'player level')
+    .replaceAll('에너지 최대치', 'max energy')
+    .replaceAll('누적 획득 크레딧', 'total earned credits')
+    .replaceAll('중복 조각', 'duplicate shards')
+    .replaceAll('상점', 'shop')
+    .replaceAll('코드', 'code')
+    .replaceAll('달성했습니다.', 'completed.')
+    .replaceAll('확보했습니다.', 'secured.')
+    .replaceAll('사용했습니다.', 'used.');
 }
 function refreshMobileTabTexts(){
   const selectors = [
@@ -395,9 +444,11 @@ function applyLanguageToUI(){
   setText('btnSaveGame', t('saveNow')); setText('btnLoadGame', t('loadNow')); setText('btnClearSave', t('clearSave')); setText('btnExportSave', t('exportSave')); setText('btnImportSaveFile', t('importFile')); setText('importTextTitle', t('importText')); const ist=document.getElementById('importSaveText'); if(ist) ist.placeholder=t('importTextPlaceholder'); setText('btnImportSaveText', t('importTextBtn')); setHtml('saveHelp', t('saveHelp'));
   const shopSort=document.getElementById('shopSortSelect'); if(shopSort){ const map=['shopSortUpdate','shopSortNew','shopSortRarity','shopSortPrice','shopSortName']; [...shopSort.options].forEach((opt,i)=>opt.text=t(map[i])); shopSort.title=t('shopSortTitle'); }
   const codeSort=document.getElementById('codeSortSelect'); if(codeSort){ const map=['codeSortRecent','codeSortRarity','codeSortPower','codeSortLevel','codeSortName']; [...codeSort.options].forEach((opt,i)=>opt.text=t(map[i])); codeSort.title=t('codeSortTitle'); }
-  const setLangEl=document.getElementById('setLanguage'); if(setLangEl) setLangEl.title=t('languageTitle');
+  const setLangEl=document.getElementById('setLanguage'); if(setLangEl){ setLangEl.title=t('languageTitle'); [...setLangEl.options].forEach(opt=>{ if(opt.value==='ko') opt.textContent = getLang()==='en' ? 'Korean' : '한국어'; if(opt.value==='en') opt.textContent = 'English'; }); }
   const setUiZoomEl=document.getElementById('setUiZoom'); if(setUiZoomEl) setUiZoomEl.title=t('uiScaleTitle');
-  const setToastMsEl=document.getElementById('setToastMs'); if(setToastMsEl) setToastMsEl.title=t('toastTitle');
+  const setToastMsEl=document.getElementById('setToastMs'); if(setToastMsEl){ setToastMsEl.title=t('toastTitle'); [...setToastMsEl.options].forEach(opt=>{ const secs=Math.round(Number(opt.value||0)/1000); opt.textContent = `${secs}${getLang()==='en' ? ' sec' : '초'}`; }); }
+  ['setSnow','setAnim'].forEach(id=>{ const input=document.getElementById(id); if(input && input.parentElement){ input.parentElement.lastChild.textContent = ' ' + t('enabled'); } });
+  const ast=document.getElementById('setAutoSaveToast'); if(ast && ast.parentElement){ ast.parentElement.lastChild.textContent = ' ' + t('visible'); }
   const btnSaveGameEl=document.getElementById('btnSaveGame'); if(btnSaveGameEl) btnSaveGameEl.title=t('saveToLocal');
   const btnLoadGameEl=document.getElementById('btnLoadGame'); if(btnLoadGameEl) btnLoadGameEl.title=t('loadFromLocal');
   const btnClearSaveEl=document.getElementById('btnClearSave'); if(btnClearSaveEl) btnClearSaveEl.title=t('deleteSave');
@@ -1591,7 +1642,7 @@ function applyLanguageToUI(){
         statEnergyTimer.textContent = t('full');
       } else {
         const sec = state.energyTimerMs / 1000;
-        statEnergyTimer.textContent = sec.toFixed(1) + '초';
+        statEnergyTimer.textContent = sec.toFixed(1) + ' ' + t('seconds');
       }
 
       const ratio = state.energy / state.energyMax;
@@ -1898,8 +1949,8 @@ function applyLanguageToUI(){
         const meta = document.createElement('div');
         meta.className = 'small';
         meta.textContent = owned
-          ? `[${def.rarity}] ${t('basePower')} ${def.basePower} · ${t('ownedLvPwr', { lv: owned.level, pwr: owned.power })}`
-          : `[${def.rarity}] ${t('undiscoveredCode')}`;
+          ? `[${localizeRarityLabel(def.rarity)}] ${t('basePower')} ${def.basePower} · ${t('ownedLvPwr', { lv: owned.level, pwr: owned.power })}`
+          : `[${localizeRarityLabel(def.rarity)}] ${t('undiscoveredCode')}`;
         nameWrap.appendChild(title);
         nameWrap.appendChild(meta);
 
@@ -1912,7 +1963,7 @@ function applyLanguageToUI(){
 
         const body = document.createElement('div');
         body.className = 'small codex-desc';
-        body.textContent = owned ? def.description : t('undiscoveredDesc');
+        body.textContent = owned ? localizeCodeDescription(def) : t('undiscoveredDesc');
 
         item.appendChild(head);
         item.appendChild(body);
@@ -1985,7 +2036,7 @@ function applyLanguageToUI(){
 
         const right = document.createElement('span');
         right.className = 'meta';
-        right.textContent = `[${code.rarity}] Lv.${code.level} / PWR ${code.power}`;
+        right.textContent = `[${localizeRarityLabel(code.rarity)}] Lv.${code.level} / PWR ${code.power}`;
 
         li.appendChild(left);
         li.appendChild(right);
@@ -2014,7 +2065,7 @@ function applyLanguageToUI(){
         return;
       }
       const def = codeDefs[code.id];
-      const ability = def ? def.description : t('noDesc');
+      const ability = def ? localizeCodeDescription(def) : t('noDesc');
       const usage = code.usage || 0;
       const shardCount = code.shards || 0;
       const syncLevel = code.syncLevel || 0;
@@ -2027,17 +2078,17 @@ function applyLanguageToUI(){
       const html = `
         <div style="margin-bottom:4px;">
           <strong class="${rarityClass}">${code.name}</strong>
-          <span class="rarity-tag ${rarityClass}">[${code.rarity}]</span>
+          <span class="rarity-tag ${rarityClass}">[${localizeRarityLabel(code.rarity)}]</span>
         </div>
-        <div class="small">레벨: Lv.${code.level}</div>
-        <div class="small">파워: ${code.power}</div>
-        <div class="small">사용 횟수: ${usage}</div>
-        <div class="small">중복 조각: ${shardCount}</div>
-        <div class="small">동기화 단계: ${syncLevel}</div>
-        <div class="small code-next-meta">다음 강화 비용: ${upgradeCost} 크레딧</div>
-        <div class="small code-next-meta">다음 동기화 비용: 조각 ${syncCost} / 예상 성공률 보정 +${syncBonusText}%</div>
-        <div class="small code-next-meta">진화 조건: ${evolveReady ? '충족' : 'Lv.5 이상 필요'}</div>
-        <div class="small" style="margin-top:6px; color:#a5b4fc;">능력</div>
+        <div class="small">${t('levelLabel', { v: code.level })}</div>
+        <div class="small">${t('powerLabel', { v: code.power })}</div>
+        <div class="small">${t('usageLabel', { v: usage })}</div>
+        <div class="small">${t('shardsLabel', { v: shardCount })}</div>
+        <div class="small">${t('syncLabel', { v: syncLevel })}</div>
+        <div class="small code-next-meta">${t('nextUpgrade', { v: upgradeCost })}</div>
+        <div class="small code-next-meta">${t('nextSync', { a: syncCost, b: syncBonusText })}</div>
+        <div class="small code-next-meta">${evolveReady ? t('evolveReady') : t('evolveNeed')}</div>
+        <div class="small" style="margin-top:6px; color:#a5b4fc;">${t('ability')}</div>
         <div class="small">${ability}</div>
       `;
       codeDetailEl.innerHTML = html;
@@ -2727,7 +2778,7 @@ function applyLanguageToUI(){
           if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
             state.energyTimerMs = ENERGY_INTERVAL_MS;
           }
-          log('위험 해킹 모드 페널티: 실패로 인해 에너지가 추가로 1 소모되었습니다.', 'hack');
+          log(t('riskPenaltyLog'), 'hack');
           if (state.energy === 0) unlockAchievement('energy_zero');
         }
 
@@ -3102,14 +3153,14 @@ function applyLanguageToUI(){
         serverId: server ? server.id : null,
         riskMode: state.riskMode
       };
-      log(`로드아웃 슬롯 ${slot}에 현재 설정을 저장했습니다.`, 'system');
+      log(t('loadoutSaved', { slot }), 'system');
     }
 
     function loadLoadout() {
       const slot = loadoutSelect.value || '1';
       const data = state.loadouts[slot];
       if (!data || (!data.codeId && !data.serverId)) {
-        log(`로드아웃 슬롯 ${slot}에 저장된 설정이 없습니다.`, 'system');
+        log(t('loadoutEmpty', { slot }), 'system');
         return;
       }
       if (data.codeId && getOwnedCode(data.codeId)) {
@@ -3123,7 +3174,7 @@ function applyLanguageToUI(){
       }
       state.riskMode = !!data.riskMode;
       chkRiskMode.checked = state.riskMode;
-      log(`로드아웃 슬롯 ${slot}을 불러왔습니다.`, 'system');
+      log(t('loadoutLoaded', { slot }), 'system');
       updateStatsUI();
     }
 
@@ -3322,7 +3373,7 @@ function applyLanguageToUI(){
       if (recovered > 0) {
         const mins = Math.floor(elapsedMs / 60000);
         const secs = Math.floor((elapsedMs % 60000) / 1000);
-        const label = mins > 0 ? `${mins}분 ${secs}초` : `${secs}초`;
+        const label = mins > 0 ? `${mins}${t('minutes')} ${secs}${t('seconds')}` : `${secs}${t('seconds')}`;
         log(t('offlineRecoverLog', { v: recovered, label }), 'system');
         showToast(t('offlineRecoverToast', { v: recovered }), 'save');
       }
@@ -3342,10 +3393,10 @@ function applyLanguageToUI(){
       localStorage.setItem(LAST_SEEN_VERSION_KEY, CURRENT_VERSION);
 
       if (!silent) {
-        log('게임 상태가 저장되었습니다.', 'system');
-        showToast('저장 완료', 'save');
+        log(t('saveStateSaved'), 'system');
+        showToast(t('saveComplete'), 'save');
       } else if (state.ui && state.ui.autoSaveToast) {
-        showToast('✅ 자동 저장 완료', 'save');
+        showToast(t('autosaveComplete'), 'save');
       }
       updateStatsUI();
     }
@@ -3360,7 +3411,7 @@ function applyLanguageToUI(){
         }
       }
       if (!raw) {
-        log('저장된 데이터가 없습니다.', 'system');
+        log(t('noSavedData'), 'system');
         return;
       }
       try {
@@ -3418,16 +3469,16 @@ function applyLanguageToUI(){
         applySettings();
         syncSettingsUI();
         updateStatsUI();
-        log('저장된 데이터를 불러왔습니다.', 'system');
+        log(t('saveLoaded'), 'system');
       } catch (e) {
         console.error(e);
-        log('저장 데이터를 불러오는 중 오류가 발생했습니다.', 'system');
+        log(t('saveLoadError'), 'system');
       }
     }
 
     function clearSave() {
       localStorage.removeItem(SAVE_KEY);
-      log('저장 데이터가 삭제되었습니다.', 'system');
+      log(t('saveDeleted'), 'system');
     }
 
     btnSaveGame.addEventListener('click', saveGame);
@@ -3569,6 +3620,9 @@ function applyLanguageToUI(){
         renderMissions();
         renderAchievements();
         renderCodex();
+        renderCodeList();
+        renderCodeDetail();
+        syncSettingsUI();
         saveGame(true);
       });
     }
@@ -3658,7 +3712,7 @@ function applyLanguageToUI(){
         showToast(t('exportDone'), 'save');
       } catch (e) {
         console.error(e);
-        showToast('내보내기 실패 (콘솔 확인)', 'warn');
+        showToast(t('exportFail'), 'warn');
       }
     }
 
@@ -3709,7 +3763,7 @@ function applyLanguageToUI(){
 
     chkRiskMode.addEventListener('change', () => {
       state.riskMode = chkRiskMode.checked;
-      log(`위험 해킹 모드: ${state.riskMode ? 'ON' : 'OFF'}`, 'system');
+      log(t('riskModeLog', { state: state.riskMode ? t('on') : t('off') }), 'system');
     });
 
     btnSaveLoadout.addEventListener('click', saveCurrentLoadout);
