@@ -85,9 +85,70 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.13-k4(k2)';
+    const CURRENT_VERSION = 'v1.6.14-k1';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
+const I18N = {
+  ko: {
+    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', more: '더보기 ▾', moreTitle: '더보기', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'코드 인벤토리', codeDetail:'코드 상세',
+    level:'레벨', exp:'경험치', credits:'크레딧', cpuTier:'CPU 티어', energy:'에너지', nextRecovery:'다음 회복까지', energyPack:'에너지 팩', lastSave:'마지막 저장', use:'사용', sort:'정렬', category:'분류', all:'전체', system:'시스템', economy:'경제', utility:'유틸',
+    codeScan:'코드 스캔', serverHack:'서버 해킹', cpuUpgrade:'CPU 업그레이드', targetServer:'타겟 서버', loadout:'로드아웃', saveSlot:'슬롯 저장', loadSlot:'슬롯 불러오기', riskMode:'위험 해킹 모드 (성공 확률 -15%p + 보정, 보상 크레딧 ×2, 실패 시 에너지 추가 -1)',
+    actionsDesc1:'· 에너지 1칸 = 120초, 0.1초 단위로 카운트다운 표시', actionsDesc2:'· 코드 스캔: 에너지 1, 스캔 EXP 소량 (희귀도별 스캔 시간 차등)', actionsDesc3:'· 서버 해킹: 에너지 2, 성공 시 크레딧·EXP 획득', actionsDesc4:'· 레벨업 시 크레딧 +100, CPU 업그레이드 비용 = 500 × 티어 × 할인 계수',
+    codeUpgrade:'코드 강화', codeSync:'코드 동기화', codeEvolve:'코드 진화', codeDesc1:'· 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).', codeDesc2:'· 동기화: 중복 조각을 모아 성공률 보정과 파워를 함께 강화합니다.', codeDesc3:'· 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).',
+    mission:'미션', achievement:'업적', codex:'코드 도감', logs:'로그', settings:'설정', data:'데이터', quest:'퀘스트', records:'기록', envSettings:'환경 설정', dataManage:'데이터 관리', close:'닫기',
+    logSearchHelp:'로그 검색 (로그 항목 클릭 → 핀/해제)', searchPlaceholder:'검색어 입력...', clearLogs:'로그 초기화', hideLogs:'로그 숨기기', showLogs:'로그 보이기', logFilter:'로그 필터',
+    language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.',
+    saveNow:'저장하기', loadNow:'불러오기', clearSave:'저장 데이터 삭제', exportSave:'내보내기', importFile:'파일 불러오기', importText:'텍스트로 불러오기', importTextPlaceholder:'여기에 JSON을 붙여넣고 불러오기를 누르세요.', importTextBtn:'텍스트 불러오기', saveHelp:'· 저장 위치: 브라우저 LocalStorage (이 브라우저, 이 기기 한정)<br/>· 자동 저장: 약 60초마다 한 번씩 백그라운드 저장',
+    shopSortUpdate:'업데이트순', shopSortNew:'신규 우선', shopSortRarity:'희귀도순', shopSortPrice:'가격순', shopSortName:'이름순', codeSortRecent:'최신', codeSortRarity:'희귀도', codeSortPower:'파워', codeSortLevel:'레벨', codeSortName:'이름',
+    codexSummary:'발견 {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'기본 파워', ownedLvPwr:'보유 Lv.{lv} / PWR {pwr}', undiscoveredCode:'미발견 코드', undiscoveredDesc:'아직 발견하지 못한 코드입니다. 코드 스캔으로 해제하세요.', noCodes:'보유 코드 없음. [코드 스캔]으로 코드를 얻으세요.', selectCode:'보유 중인 코드를 선택하면 상세 정보가 표시됩니다.',
+    levelLabel:'레벨: Lv.{v}', powerLabel:'파워: {v}', usageLabel:'사용 횟수: {v}', shardsLabel:'중복 조각: {v}', syncLabel:'동기화 단계: {v}', nextUpgrade:'다음 강화 비용: {v} 크레딧', nextSync:'다음 동기화 비용: 조각 {a} / 예상 성공률 보정 +{b}%', evolveReady:'진화 조건: 충족', evolveNeed:'진화 조건: Lv.5 이상 필요', ability:'능력', noDesc:'설명 없음.',
+    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'보상', none:'없음', complete:'완료', incomplete:'미완', achieved:'달성', notYet:'미달', hiddenAchievement:'히든 업적입니다. 달성 시 공개됩니다.', difficultyEasy:'일반', difficultyNormal:'보통', difficultyHard:'어려움', hidden:'HIDDEN',
+    full:'FULL', seconds:'초',
+    toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +100 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
+    noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.',
+    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)'
+  },
+  en: {
+    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
+    level:'Level', exp:'EXP', credits:'Credits', cpuTier:'CPU Tier', energy:'Energy', nextRecovery:'Next Recovery', energyPack:'Energy Pack', lastSave:'Last Save', use:'Use', sort:'Sort', category:'Category', all:'All', system:'System', economy:'Economy', utility:'Utility',
+    codeScan:'Scan Code', serverHack:'Hack Server', cpuUpgrade:'Upgrade CPU', targetServer:'Target Server', loadout:'Loadout', saveSlot:'Save Slot', loadSlot:'Load Slot', riskMode:'Risk Hack Mode (success -15%p + modifiers, reward credits ×2, failure costs +1 energy)',
+    actionsDesc1:'· 1 energy = 120 seconds, shown with 0.1-second countdown', actionsDesc2:'· Scan Code: costs 1 energy, small scan EXP gain (scan time varies by rarity)', actionsDesc3:'· Hack Server: costs 2 energy, grants credits and EXP on success', actionsDesc4:'· Level up gives +100 credits, CPU upgrade cost = 500 × tier × discount factor',
+    codeUpgrade:'Upgrade Code', codeSync:'Sync Code', codeEvolve:'Evolve Code', codeDesc1:'· Upgrade: costs credits based on code level and raises power (no destruction).', codeDesc2:'· Sync: spend duplicate shards to raise success bonus and power together.', codeDesc3:'· Evolve: rank up at a required level (COMMON → UNCOMMON → … → LEGENDARY).',
+    mission:'Mission', achievement:'Achievements', codex:'Code Codex', logs:'Logs', settings:'Settings', data:'Data', quest:'Quests', records:'Records', envSettings:'Settings', dataManage:'Data Management', close:'Close',
+    logSearchHelp:'Search logs (click a log entry to pin/unpin)', searchPlaceholder:'Type to search...', clearLogs:'Clear Logs', hideLogs:'Hide Logs', showLogs:'Show Logs', logFilter:'Log Filter',
+    language:'Language', fontScale:'Font Size', snow:'Snow Effect', uiScale:'UI Scale', animation:'Animation', toastTime:'Toast Duration', autosaveToast:'Autosave Toast', enabled:'Enabled', settingsHelp:'· Settings are stored with save data and remain after refresh.',
+    saveNow:'Save', loadNow:'Load', clearSave:'Delete Save Data', exportSave:'Export', importFile:'Import File', importText:'Import from Text', importTextPlaceholder:'Paste JSON here and press import.', importTextBtn:'Import Text', saveHelp:'· Save location: browser LocalStorage (this browser/device only)<br/>· Autosave: background save about once every 60 seconds',
+    shopSortUpdate:'By Update', shopSortNew:'Newest First', shopSortRarity:'By Rarity', shopSortPrice:'By Price', shopSortName:'By Name', codeSortRecent:'Recent', codeSortRarity:'Rarity', codeSortPower:'Power', codeSortLevel:'Level', codeSortName:'Name',
+    codexSummary:'Discovered {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'Base Power', ownedLvPwr:'Owned Lv.{lv} / PWR {pwr}', undiscoveredCode:'Undiscovered Code', undiscoveredDesc:'You have not discovered this code yet. Unlock it by scanning codes.', noCodes:'No codes owned. Use [Scan Code] to get one.', selectCode:'Select an owned code to view details.',
+    levelLabel:'Level: Lv.{v}', powerLabel:'Power: {v}', usageLabel:'Uses: {v}', shardsLabel:'Duplicate Shards: {v}', syncLabel:'Sync Level: {v}', nextUpgrade:'Next upgrade cost: {v} credits', nextSync:'Next sync cost: {a} shards / expected success bonus +{b}%', evolveReady:'Evolution requirement: Met', evolveNeed:'Evolution requirement: Need Lv.5+', ability:'Ability', noDesc:'No description.',
+    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'Reward', none:'None', complete:'Complete', incomplete:'Incomplete', achieved:'Achieved', notYet:'Not Yet', hiddenAchievement:'This is a hidden achievement. It will be revealed when completed.', difficultyEasy:'Easy', difficultyNormal:'Normal', difficultyHard:'Hard', hidden:'HIDDEN',
+    full:'FULL', seconds:'s',
+    toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +100.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
+    noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.',
+    noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)'
+  }
+};
+function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
+function t(key, vars){ const lang=getLang(); let str=(I18N[lang]&&I18N[lang][key]) || I18N.ko[key] || key; if(vars){ for(const [k,v] of Object.entries(vars)){ str=str.replaceAll('{'+k+'}', String(v)); } } return str; }
+function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value; }
+function setHtml(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=value; }
+function applyLanguageToUI(){
+  try{ document.documentElement.lang = getLang(); document.title = t('appTitle'); }catch(e){}
+  setText('subtitleText', t('subtitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle'));
+  setText('titleStatus', t('status')); setText('titleShop', t('shop')); setText('titleActions', t('actions')); setText('titleCodeInventory', t('codeInventory')); setText('titleCodeDetail', t('codeDetail'));
+  setText('labelLevel', t('level')); setText('labelExp', t('exp')); setText('labelCredits', t('credits')); setText('labelCpuTier', t('cpuTier')); setText('labelEnergy', t('energy')); setText('labelEnergyTimer', t('nextRecovery')); setText('labelEnergyPack', t('energyPack')); setText('labelLastSave', t('lastSave')); setText('btnUseEnergyPack', t('use'));
+  setText('shopSortLabel', t('sort')); setText('shopCategoryLabel', t('category')); setText('shopCatAll', t('all')); setText('shopCatEnergy', t('energy')); setText('shopCatSystem', t('system')); setText('shopCatEconomy', t('economy')); setText('shopCatUtility', t('utility'));
+  setText('btnScan', t('codeScan')); setText('btnHack', t('serverHack')); setText('btnUpgradeCpu', t('cpuUpgrade')); setText('labelTargetServer', t('targetServer')); setText('labelLoadout', t('loadout')); setText('btnSaveLoadout', t('saveSlot')); setText('btnLoadLoadout', t('loadSlot')); setText('riskModeText', t('riskMode'));
+  setText('actionsDesc1', t('actionsDesc1')); setText('actionsDesc2', t('actionsDesc2')); setText('actionsDesc3', t('actionsDesc3')); setText('actionsDesc4', t('actionsDesc4'));
+  setText('btnUpgradeCode', t('codeUpgrade')); setText('btnSyncCode', t('codeSync')); setText('btnEvolveCode', t('codeEvolve')); setText('codeDesc1', t('codeDesc1')); setText('codeDesc2', t('codeDesc2')); setText('codeDesc3', t('codeDesc3'));
+  setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnLogs', t('logs')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data'));
+  setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('logsTabTitle', t('records')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnMoreClose2', t('close'));
+  setText('logSearchHelp', t('logSearchHelp')); const lsi=document.getElementById('logSearchInput'); if(lsi) lsi.placeholder=t('searchPlaceholder'); setText('btnClearLogs', t('clearLogs')); const btnToggle=document.getElementById('btnToggleLogs'); if(btnToggle){ btnToggle.textContent = (window.logsHidden ? t('showLogs') : t('hideLogs')); } setText('logFilterTitle', t('logFilter'));
+  setText('labelLanguage', t('language')); setText('labelFontScale', t('fontScale')); setText('labelSnow', t('snow')); setText('labelUiScale', t('uiScale')); setText('labelAnim', t('animation')); setText('labelToastMs', t('toastTime')); setText('labelAutoSaveToast', t('autosaveToast')); setHtml('settingsHelp', t('settingsHelp'));
+  setText('btnSaveGame', t('saveNow')); setText('btnLoadGame', t('loadNow')); setText('btnClearSave', t('clearSave')); setText('btnExportSave', t('exportSave')); setText('btnImportSaveFile', t('importFile')); setText('importTextTitle', t('importText')); const ist=document.getElementById('importSaveText'); if(ist) ist.placeholder=t('importTextPlaceholder'); setText('btnImportSaveText', t('importTextBtn')); setHtml('saveHelp', t('saveHelp'));
+  const shopSort=document.getElementById('shopSortSelect'); if(shopSort){ const map=['shopSortUpdate','shopSortNew','shopSortRarity','shopSortPrice','shopSortName']; [...shopSort.options].forEach((opt,i)=>opt.text=t(map[i])); }
+  const codeSort=document.getElementById('codeSortSelect'); if(codeSort){ const map=['codeSortRecent','codeSortRarity','codeSortPower','codeSortLevel','codeSortName']; [...codeSort.options].forEach((opt,i)=>opt.text=t(map[i])); }
+}
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
     const LAST_SEEN_VERSION_KEY = 'HCSiG_LAST_SEEN_VERSION';
 
@@ -304,7 +365,7 @@
         shop: true,
         level: true
       },
-      ui: { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
+      ui: { lang: 'ko', shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
       stats: {
         scanCount: 0,
         hackSuccessCount: 0,
@@ -1087,6 +1148,7 @@
     const logPanelBody = document.getElementById('logPanelBody');
     const logSearchInput = document.getElementById('logSearchInput');
 
+    const setLanguage = document.getElementById('setLanguage');
     const setFontScale = document.getElementById('setFontScale');
     const setFontScaleLabel = document.getElementById('setFontScaleLabel');
     const setSnow = document.getElementById('setSnow');
@@ -1266,7 +1328,7 @@
       statEnergyValue.textContent = `${state.energy} / ${state.energyMax}`;
 
       if (state.energy >= state.energyMax) {
-        statEnergyTimer.textContent = 'FULL';
+        statEnergyTimer.textContent = t('full');
       } else {
         const sec = state.energyTimerMs / 1000;
         statEnergyTimer.textContent = sec.toFixed(1) + '초';
@@ -1416,7 +1478,7 @@
       state.requiredExp = requiredExp(state.level);
       state.credits += 100;
       state.stats.creditsEarnedTotal += 100;
-      log(`레벨 업! Lv.${state.level} 달성. 크레딧 +100 지급.`, 'level');
+      log(t('levelUpLog', { lv: state.level }), 'level');
 
       state.missionProgress.weekly.levelReached = Math.max(
         state.missionProgress.weekly.levelReached,
@@ -1466,11 +1528,11 @@
 
       const packCount = state.items.energyPack || 0;
       if (packCount <= 0) {
-        log('에너지 팩이 없습니다.', 'system');
+        log(t('noEnergyPack'), 'system');
         return;
       }
       if (state.energy >= state.energyMax) {
-        log('이미 에너지가 가득 찼습니다.', 'system');
+        log(t('energyFull'), 'system');
         return;
       }
 
@@ -1480,7 +1542,7 @@
 
       state.stats.energyPacksUsed = (state.stats.energyPacksUsed || 0) + 1;
 
-      log('에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.', 'system');
+      log(t('usedEnergyPack'), 'system');
       updateStatsUI();
       saveGame();
     }
@@ -1557,7 +1619,7 @@
       });
       const discovered = getCodexDiscoveredCount();
       if (codexSummaryEl) {
-        codexSummaryEl.textContent = `발견 ${discovered} / ${defs.length}`;
+        codexSummaryEl.textContent = t('codexSummary', { a: discovered, b: defs.length });
       }
       codexListEl.innerHTML = '';
       defs.forEach(def => {
@@ -1575,21 +1637,21 @@
         const meta = document.createElement('div');
         meta.className = 'small';
         meta.textContent = owned
-          ? `[${def.rarity}] 기본 파워 ${def.basePower} · 보유 Lv.${owned.level} / PWR ${owned.power}`
-          : `[${def.rarity}] 미발견 코드`;
+          ? `[${def.rarity}] ${t('basePower')} ${def.basePower} · ${t('ownedLvPwr', { lv: owned.level, pwr: owned.power })}`
+          : `[${def.rarity}] ${t('undiscoveredCode')}`;
         nameWrap.appendChild(title);
         nameWrap.appendChild(meta);
 
         const badge = document.createElement('span');
         badge.className = 'badge';
-        badge.textContent = owned ? 'DISCOVERED' : 'LOCKED';
+        badge.textContent = owned ? t('discovered') : t('locked');
 
         head.appendChild(nameWrap);
         head.appendChild(badge);
 
         const body = document.createElement('div');
         body.className = 'small codex-desc';
-        body.textContent = owned ? def.description : '아직 발견하지 못한 코드입니다. 코드 스캔으로 해제하세요.';
+        body.textContent = owned ? def.description : t('undiscoveredDesc');
 
         item.appendChild(head);
         item.appendChild(body);
@@ -1645,7 +1707,7 @@
       codeListEl.innerHTML = '';
       if (ownedCodes.length === 0) {
         const li = document.createElement('li');
-        li.textContent = '보유 코드 없음. [코드 스캔]으로 코드를 얻으세요.';
+        li.textContent = t('noCodes');
         li.style.opacity = '0.7';
         codeListEl.appendChild(li);
         return;
@@ -1670,7 +1732,7 @@
         li.addEventListener('click', () => {
           state.activeCodeId = code.id;
           updateStatsUI();
-          log(`활성 코드 변경: ${code.name}`, 'system');
+          log(t('activeCode', { name: code.name }), 'system');
           onTutorialAction('selectCode');
           if (window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches) {
             setTimeout(() => {
@@ -1687,11 +1749,11 @@
     function renderCodeDetail() {
       const code = getActiveCodeInstance();
       if (!code) {
-        codeDetailEl.innerHTML = '<div class="small">보유 중인 코드를 선택하면 상세 정보가 표시됩니다.</div>';
+        codeDetailEl.innerHTML = `<div class="small">${t('selectCode')}</div>`;
         return;
       }
       const def = codeDefs[code.id];
-      const ability = def ? def.description : '설명 없음.';
+      const ability = def ? def.description : t('noDesc');
       const usage = code.usage || 0;
       const shardCount = code.shards || 0;
       const syncLevel = code.syncLevel || 0;
@@ -1760,7 +1822,7 @@
     function syncSelectedCode() {
       const code = getActiveCodeInstance();
       if (!code) {
-        log('동기화할 코드가 없습니다.', 'system');
+        log(t('noCodeSync'), 'system');
         return;
       }
 
@@ -1769,7 +1831,7 @@
 
       const shardCost = getSyncShardCost(code.syncLevel);
       if (code.shards < shardCost) {
-        log(`코드 동기화 실패: 중복 조각이 부족합니다. (필요: ${shardCost}, 보유: ${code.shards})`, 'system');
+        log(t('syncFailShards', { need: shardCost, have: code.shards }), 'system');
         return;
       }
 
@@ -1779,27 +1841,27 @@
       code.power += powerBonus;
       state.stats.codeSyncCount = (state.stats.codeSyncCount || 0) + 1;
 
-      log(`코드 동기화 완료: ${code.name} 동기화 ${code.syncLevel}단계 달성. 파워 +${powerBonus}, 성공률 보정 +${Math.round(getSyncSuccessBonus(code.syncLevel) * 100)}%.`, 'system');
-      showToast(`${code.name} 동기화 ${code.syncLevel}단계`, 'system');
+      log(t('syncDone', { name: code.name, lv: code.syncLevel, pwr: powerBonus, rate: Math.round(getSyncSuccessBonus(code.syncLevel) * 100) }), 'system');
+      showToast(t('syncToast', { name: code.name, lv: code.syncLevel }), 'system');
       updateStatsUI();
     }
 
     function upgradeSelectedCode() {
       const code = getActiveCodeInstance();
       if (!code) {
-        log('강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', 'system');
+        log(t('noCodeUpgrade'), 'system');
         return;
       }
       const cost = 100 * code.level;
       if (state.credits < cost) {
-        log(`코드 강화 실패: 크레딧이 부족합니다. (필요: ${cost})`, 'system');
+        log(t('upgradeFailCredits', { cost }), 'system');
         return;
       }
       state.credits -= cost;
       code.level++;
       code.power += 5;
       state.stats.codeUpgradeCount = (state.stats.codeUpgradeCount || 0) + 1;
-      log(`코드 강화: ${code.name} Lv.${code.level} (파워 +5 → ${code.power}), 크레딧 -${cost}.`, 'system');
+      log(t('upgradeDone', { name: code.name, lv: code.level, pwr: code.power, cost }), 'system');
       updateStatsUI();
       checkMissions('general');
     }
@@ -1807,27 +1869,27 @@
     function evolveSelectedCode() {
       const code = getActiveCodeInstance();
       if (!code) {
-        log('진화할 코드가 없습니다.', 'system');
+        log(t('noCodeEvolve'), 'system');
         return;
       }
       if (code.rarity === 'LEGENDARY') {
-        log('이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', 'system');
+        log(t('maxRarity'), 'system');
         return;
       }
       if (code.level < 5) {
-        log('코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', 'system');
+        log(t('evolveNeedLv'), 'system');
         return;
       }
       const idx = rarityOrder.indexOf(code.rarity);
       if (idx === -1 || idx === rarityOrder.length - 1) {
-        log('진화를 처리할 수 없습니다.', 'system');
+        log(t('evolveCannot'), 'system');
         return;
       }
       const nextRarity = rarityOrder[idx + 1];
       code.rarity = nextRarity;
       code.power += 10;
       state.stats.codeEvolutionCount = (state.stats.codeEvolutionCount || 0) + 1;
-      log(`코드 진화 성공: ${code.name}가 ${nextRarity} 등급으로 승급, 파워 +10 → ${code.power}.`, 'system');
+      log(t('evolveDone', { name: code.name, rarity: nextRarity, pwr: code.power }), 'system');
 
       if (nextRarity === 'EPIC' || nextRarity === 'LEGENDARY') {
         unlockAchievement('get_epic_code');
@@ -1951,7 +2013,7 @@
       shopList.innerHTML = '';
 
       const categoryLabel = {
-        ENERGY: '에너지',
+        ENERGY: t('energy'),
         UTILITY: '유틸',
         ECONOMY: '경제',
         SYSTEM: '시스템'
@@ -2098,7 +2160,7 @@
           state.stats.shopPurchaseCount++;
           log(`[상점] ${item.name} 구매 (💰 -${item.cost})`, 'shop');
           if (item.id === 'energy_pack') {
-            showToast(`에너지 팩 +1 (보유: ${state.items.energyPack})`, 'shop');
+            showToast(t('energyPackToast', { v: state.items.energyPack }), 'shop');
           } else {
             showToast(`${item.name} 구매 완료`, 'shop');
           }
@@ -2195,7 +2257,7 @@
 
       const energyCost = 1;
       if (!consumeEnergy(energyCost)) {
-        log('에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', 'scan');
+        log(t('noEnergyScan'), 'scan');
         return;
       }
       state.stats.scanCount++;
@@ -2291,7 +2353,7 @@
 
       const energyCost = 2;
       if (!consumeEnergy(energyCost)) {
-        log('에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', 'hack');
+        log(t('noEnergyHack'), 'hack');
         return;
       }
 
@@ -2588,10 +2650,10 @@
       missionListEl.innerHTML = '';
       const scope = missionScopeActive;
       const titleMap = {
-        daily: 'DAILY QUEST',
-        weekly: 'WEEKLY QUEST',
-        month: 'MONTH QUEST',
-        general: 'GENERAL QUEST'
+        daily: t('missionHeaderDaily'),
+        weekly: t('missionHeaderWeekly'),
+        month: t('missionHeaderMonth'),
+        general: t('missionHeaderGeneral')
       };
 
       const defs = missionDefs[scope];
@@ -2616,12 +2678,12 @@
         main.innerHTML = `
           <div>${def.name}</div>
           <div class="mission-progress">${def.desc} (${progVal} / ${def.target})</div>
-          <div class="mission-reward">보상: ${def.rewardCredits ? ('크레딧 +' + def.rewardCredits) : ''}${def.rewardEnergyPack ? ((def.rewardCredits ? ' / ' : '') + ('에너지 팩 +' + def.rewardEnergyPack)) : ''}${(!def.rewardCredits && !def.rewardEnergyPack) ? '없음' : ''}</div>
+          <div class="mission-reward">${t('reward')}: ${def.rewardCredits ? (t('credits') + ' +' + def.rewardCredits) : ''}${def.rewardEnergyPack ? ((def.rewardCredits ? ' / ' : '') + (t('energyPack') + ' +' + def.rewardEnergyPack)) : ''}${(!def.rewardCredits && !def.rewardEnergyPack) ? t('none') : ''}</div>
         `;
 
         const tag = document.createElement('span');
         tag.className = completed ? 'tag-complete' : 'tag-incomplete';
-        tag.textContent = completed ? '완료' : '미완';
+        tag.textContent = completed ? t('complete') : t('incomplete');
 
         item.appendChild(main);
         item.appendChild(tag);
@@ -2634,8 +2696,8 @@
       const def = achievementDefs.find(a => a.id === id);
       if (!def) return;
       state.achievements[id] = true;
-      log(`[업적 달성] ${def.name}`, 'system');
-      showToast(`업적 달성: ${def.name}`, 'achievement');
+      log(t('achievementLog', { name: def.name }), 'system');
+      showToast(t('toastAchievement', { name: def.name }), 'achievement');
       renderAchievements();
       checkMissions('general'); // 업적 기반 GENERAL QUEST 체크
     }
@@ -2725,9 +2787,9 @@
       achievementListEl.innerHTML = '';
 
       const diffLabel = {
-        easy: '일반',
-        normal: '보통',
-        hard: '어려움'
+        easy: t('difficultyEasy'),
+        normal: t('difficultyNormal'),
+        hard: t('difficultyHard')
       };
 
       achievementDefs.forEach(def => {
@@ -2741,7 +2803,7 @@
 
         const displayName = def.hidden && !completed ? '???' : def.name;
         const displayDesc = def.hidden && !completed
-          ? '히든 업적입니다. 달성 시 공개됩니다.'
+          ? t('hiddenAchievement')
           : def.desc;
 
         let diffClass = 'diff-easy';
@@ -2752,14 +2814,14 @@
           <div>
             ${displayName}
             <span class="diff-pill ${diffClass}">${diffLabel[def.difficulty] || ''}</span>
-            ${def.hidden ? '<span class="diff-pill" style="background:#4b5563;color:#e5e7eb;">HIDDEN</span>' : ''}
+            ${def.hidden ? `<span class="diff-pill" style="background:#4b5563;color:#e5e7eb;">${t('hidden')}</span>` : ''}
           </div>
           <div class="mission-progress">${displayDesc}</div>
         `;
 
         const tag = document.createElement('span');
         tag.className = completed ? 'tag-complete' : 'tag-incomplete';
-        tag.textContent = completed ? '달성' : '미달';
+        tag.textContent = completed ? t('achieved') : t('notYet');
 
         item.appendChild(main);
         item.appendChild(tag);
@@ -2997,8 +3059,8 @@
         const mins = Math.floor(elapsedMs / 60000);
         const secs = Math.floor((elapsedMs % 60000) / 1000);
         const label = mins > 0 ? `${mins}분 ${secs}초` : `${secs}초`;
-        log(`오프라인 동안 에너지 ${recovered} 회복 (${label} 경과)`, 'system');
-        showToast(`오프라인 회복: 에너지 +${recovered}`, 'save');
+        log(t('offlineRecoverLog', { v: recovered, label }), 'system');
+        showToast(t('offlineRecoverToast', { v: recovered }), 'save');
       }
     }
 
@@ -3149,7 +3211,7 @@
     btnToggleLogs.addEventListener('click', () => {
       logsHidden = !logsHidden;
       logPanelBody.style.display = logsHidden ? 'none' : '';
-      btnToggleLogs.textContent = logsHidden ? '로그 보이기' : '로그 숨기기';
+      btnToggleLogs.textContent = logsHidden ? t('showLogs') : t('hideLogs');
     });
 
     // 미션 스코프 버튼
@@ -3228,7 +3290,22 @@
       setAnim.checked = ui.anim !== false;
       setToastMs.value = String(ui.toastDurationMs || 3000);
       setAutoSaveToast.checked = !!ui.autoSaveToast;
+      if (setLanguage) setLanguage.value = ui.lang || 'ko';
       if (logSearchInput) logSearchInput.value = ui.logSearch || '';
+    }
+
+    
+    if (setLanguage) {
+      setLanguage.addEventListener('change', () => {
+        state.ui.lang = setLanguage.value || 'ko';
+        applyLanguageToUI();
+        updateStatsUI();
+        renderShop();
+        renderMissions();
+        renderAchievements();
+        renderCodex();
+        saveGame(true);
+      });
     }
 
     if (setFontScale) {
@@ -3313,7 +3390,7 @@
         a.click();
         a.remove();
         URL.revokeObjectURL(a.href);
-        showToast('저장 데이터 내보내기 완료', 'save');
+        showToast(t('exportDone'), 'save');
       } catch (e) {
         console.error(e);
         showToast('내보내기 실패 (콘솔 확인)', 'warn');
@@ -3325,10 +3402,10 @@
         const obj = JSON.parse(text);
         localStorage.setItem(SAVE_KEY, JSON.stringify(obj));
         loadGame();
-        showToast('저장 데이터 불러오기 완료', 'save');
+        showToast(t('importDone'), 'save');
       } catch (e) {
         console.error(e);
-        showToast('불러오기 실패: JSON 형식을 확인하세요.', 'warn');
+        showToast(t('importFail'), 'warn');
       }
     }
 
@@ -3349,7 +3426,7 @@
       btnImportSaveText.addEventListener('click', () => {
         const text = (importSaveText.value || '').trim();
         if (!text) {
-          showToast('텍스트가 비어 있습니다.', 'warn');
+          showToast(t('emptyText'), 'warn');
           return;
         }
         importSaveFromText(text);
@@ -3381,16 +3458,19 @@
       ensureMissionResets();
       applySettings();
       syncSettingsUI();
+      applyLanguageToUI();
       updateStatsUI();
-      log('HCSiG 초기화 완료. (중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', 'system');
+      log(t('initLog'), 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
       } else {
         state.lastSeenAt = Date.now();
+        applyLanguageToUI();
         updateStatsUI();
       }
 
+      applyLanguageToUI();
       renderUpdateLog();
       maybeShowUpdateOnStart();
       setTimeout(() => {
