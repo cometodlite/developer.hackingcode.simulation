@@ -135,7 +135,19 @@
 <div class="flex-row flex-grow">
 <!-- 코드 인벤토리 -->
 <div class="stat-box" style="flex: 0 0 45%;">
-<div class="section-title">코드 인벤토리</div>
+<div class="section-title-row">
+<div class="section-title" style="margin-bottom:0;">코드 인벤토리</div>
+<div class="code-sort-inline">
+<span class="shop-sort-label">정렬</span>
+<select id="codeSortSelect" title="코드 인벤토리 정렬 기준을 선택합니다.">
+<option value="recent">최신</option>
+<option value="rarity">희귀도</option>
+<option value="power">파워</option>
+<option value="level">레벨</option>
+<option value="name">이름</option>
+</select>
+</div>
+</div>
 <ul id="codeList"></ul>
 </div>
 <!-- 코드 상세 -->

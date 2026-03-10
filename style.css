@@ -104,6 +104,37 @@
       color: #8ab4ff;
     }
 
+
+    .section-title-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:6px;
+      flex-wrap:wrap;
+    }
+
+    .code-sort-inline{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      margin-left:auto;
+    }
+
+    #codeSortSelect{
+      background:#0b1220;
+      border:1px solid #263042;
+      color:#e5e7eb;
+      border-radius:10px;
+      padding:6px 10px;
+      font-size:12px;
+      outline:none;
+    }
+    #codeSortSelect:focus{
+      border-color:#4b7fff;
+      box-shadow:0 0 0 2px rgba(75,127,255,0.18);
+    }
+
     .stat-box {
       border: 1px solid #222;
       border-radius: 6px;
@@ -1595,4 +1626,9 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   .shop-sort-row{ grid-template-columns: 1fr !important; }
   .shop-category-tabs{ width:100%; }
   .shop-category-tab{ flex:1 1 calc(33.333% - 6px); min-height:38px; }
+}
+
+@media (max-width: 900px){
+  .code-sort-inline{ width:100%; justify-content:flex-end; }
+  #codeSortSelect{ min-width:110px; }
 }

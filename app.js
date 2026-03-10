@@ -304,7 +304,7 @@
         shop: true,
         level: true
       },
-      ui: { shopSortMode: 'update', shopCategory: 'all', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
+      ui: { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null },
       stats: {
         scanCount: 0,
         hackSuccessCount: 0,
@@ -1025,6 +1025,7 @@
 
     const codeListEl = document.getElementById('codeList');
     const codeDetailEl = document.getElementById('codeDetail');
+    const codeSortSelect = document.getElementById('codeSortSelect');
 
     const scanOverlay = document.getElementById('scanOverlay');
     const scanProgressInner = document.getElementById('scanProgressInner');
@@ -1596,6 +1597,50 @@
       });
     }
 
+    function getCodeSortValue(code) {
+      const mode = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
+      const rarityRank = { LEGENDARY: 5, EPIC: 4, RARE: 3, UNCOMMON: 2, COMMON: 1 };
+      switch (mode) {
+        case 'rarity':
+          return rarityRank[code.rarity] || 0;
+        case 'power':
+          return Number(code.power || 0);
+        case 'level':
+          return Number(code.level || 0);
+        case 'name':
+          return String(code.name || '');
+        case 'recent':
+        default:
+          return Number(code.obtainedAt || 0);
+      }
+    }
+
+    function getSortedOwnedCodes() {
+      const mode = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
+      const rarityRank = { LEGENDARY: 5, EPIC: 4, RARE: 3, UNCOMMON: 2, COMMON: 1 };
+      return [...ownedCodes].sort((a, b) => {
+        if (mode === 'name') {
+          const byName = String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+          if (byName !== 0) return byName;
+          return (b.power || 0) - (a.power || 0);
+        }
+        if (mode === 'rarity') {
+          const rarityDiff = (rarityRank[b.rarity] || 0) - (rarityRank[a.rarity] || 0);
+          if (rarityDiff !== 0) return rarityDiff;
+          const powerDiff = (b.power || 0) - (a.power || 0);
+          if (powerDiff !== 0) return powerDiff;
+          return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+        }
+        const valueDiff = Number(getCodeSortValue(b)) - Number(getCodeSortValue(a));
+        if (valueDiff !== 0) return valueDiff;
+        if (mode !== 'power') {
+          const powerDiff = (b.power || 0) - (a.power || 0);
+          if (powerDiff !== 0) return powerDiff;
+        }
+        return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+      });
+    }
+
     function renderCodeList() {
       codeListEl.innerHTML = '';
       if (ownedCodes.length === 0) {
@@ -1606,7 +1651,7 @@
         return;
       }
 
-      ownedCodes.forEach(code => {
+      getSortedOwnedCodes().forEach(code => {
         const li = document.createElement('li');
         if (state.activeCodeId === code.id) li.classList.add('active');
 
@@ -1925,7 +1970,16 @@
 
       const mode = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       const categoryMode = (state.ui && state.ui.shopCategory) ? state.ui.shopCategory : 'all';
-      if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
+      if (codeSortSelect) {
+      codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
+      codeSortSelect.addEventListener('change', () => {
+        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
+        state.ui.codeSortMode = codeSortSelect.value;
+        renderCodeList();
+      });
+    }
+
+    if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
         shopCategoryTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.category === categoryMode));
       }
       const items = shopItems.filter(item => categoryMode === 'all' ? true : item.category === categoryMode);
@@ -3016,9 +3070,10 @@
         state.missionProgress.daily.actions = state.missionProgress.daily.actions || 0;
 
         // v1.6.1 UI 설정 보정
-        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all' };
+        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
         state.ui.shopSortMode = state.ui.shopSortMode || 'update';
         state.ui.shopCategory = state.ui.shopCategory || 'all';
+        state.ui.codeSortMode = state.ui.codeSortMode || 'recent';
 
         // v1.6.5 UI 설정 보정
         state.ui.toastDurationMs = state.ui.toastDurationMs || 3000;
@@ -3113,7 +3168,7 @@
     if (shopSortSelect) {
       shopSortSelect.value = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       shopSortSelect.addEventListener('change', () => {
-        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all' };
+        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
         state.ui.shopSortMode = shopSortSelect.value;
         renderShop();
       });
