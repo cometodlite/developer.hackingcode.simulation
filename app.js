@@ -130,36 +130,9 @@ const I18N = {
     noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
   }
 };
+window.__HCSIG_SIMPLE_MOBILE__ = true;
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
 function t(key, vars){ const lang=getLang(); let str=(I18N[lang]&&I18N[lang][key]) || I18N.ko[key] || key; if(vars){ for(const [k,v] of Object.entries(vars)){ str=str.replaceAll('{'+k+'}', String(v)); } } return str; }
-
-function bootstrapSavedUiLanguage(){
-  try {
-    let raw = localStorage.getItem(SAVE_KEY) || localStorage.getItem(OLD_SAVE_KEY);
-    if(!raw) return;
-    const data = JSON.parse(raw);
-    const lang = data && data.state && data.state.ui && data.state.ui.lang;
-    if(lang === 'ko' || lang === 'en'){
-      state.ui = state.ui || {};
-      state.ui.lang = lang;
-      document.documentElement.lang = lang;
-    }
-  } catch(e) {}
-}
-
-function rerenderAllUiAfterLoad(){
-  try { applyLanguageToUI(); } catch(e) {}
-  try { applySettings(); } catch(e) {}
-  try { syncSettingsUI(); } catch(e) {}
-  try { updateStatsUI(); } catch(e) {}
-  try { renderServers(); } catch(e) {}
-  try { renderShop(); } catch(e) {}
-  try { renderMissions(); } catch(e) {}
-  try { renderAchievements(); } catch(e) {}
-  try { renderCodex(); } catch(e) {}
-  try { renderCodeList(); } catch(e) {}
-  try { renderCodeDetail(); } catch(e) {}
-}
 function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value; }
 function setHtml(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=value; }
 
@@ -3537,7 +3510,9 @@ function applyLanguageToUI(){
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
         ensureMissionResets();
-        rerenderAllUiAfterLoad();
+        applySettings();
+        syncSettingsUI();
+        updateStatsUI();
         log(t('saveLoaded'), 'system');
       } catch (e) {
         console.error(e);
@@ -3839,7 +3814,6 @@ function applyLanguageToUI(){
     btnLoadLoadout.addEventListener('click', loadLoadout);
 
     function init() {
-      bootstrapSavedUiLanguage();
       addCodeInstanceFromTemplate('basic');
       state.requiredExp = requiredExp(state.level);
       renderServers();
@@ -3855,10 +3829,11 @@ function applyLanguageToUI(){
         loadGame();
       } else {
         state.lastSeenAt = Date.now();
-        rerenderAllUiAfterLoad();
+        applyLanguageToUI();
+        updateStatsUI();
       }
 
-      rerenderAllUiAfterLoad();
+      applyLanguageToUI();
       renderUpdateLog();
       maybeShowUpdateOnStart();
       setTimeout(() => {
@@ -4265,129 +4240,9 @@ function applyLanguageToUI(){
 
 // === MOBILE SIMPLE NAV (k1 hotfix) ===
 (function(){
-  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-  if(!isMobile) return;
-
-  const main = document.getElementById('main');
-  const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  const toast = (msg, kind='info') => {
-    try { if (typeof showToast === 'function') showToast(msg, kind); } catch(e){}
-  };
-  if(!main || !left || !center) return;
-
-  document.body.classList.add('mobile-simple-ui');
-  document.body.classList.remove(
-    'mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log',
-    'mobile-tab-left','mobile-tab-center','mobile-tab-right'
-  );
-
-  const oldTabs = document.querySelector('.mobile-tabs');
-  if(oldTabs) oldTabs.remove();
-
-  function ensureView(id){
-    let el = document.getElementById(id);
-    if(!el){
-      el = document.createElement('section');
-      el.id = id;
-      el.className = 'mobile-simple-view';
-      main.insertBefore(el, main.firstChild);
-    }
-    return el;
-  }
-
-  const homeView = ensureView('mobileSimpleHome');
-  const codesView = ensureView('mobileSimpleCodes');
-  const shopView = ensureView('mobileSimpleShop');
-
-  const leftChildren = Array.from(left.children);
-  const centerInner = center.querySelector('.center-inner') || center;
-  const centerChildren = Array.from(centerInner.children);
-
-  const statusTitle = leftChildren[0] || null;
-  const statusBox = leftChildren[1] || null;
-  const shopTitle = left.querySelector('.section-title:nth-of-type(2)') || leftChildren.find(el => el.classList && el.classList.contains('section-title') && /shop/i.test(el.textContent||''));
-  const shopSortRow = left.querySelector('.shop-sort-row');
-  const shopList = document.getElementById('shopList');
-  const actionBox = centerChildren.find(el => el.classList && el.classList.contains('stat-box')) || null;
-  const codeRow = center.querySelector('.flex-row.flex-grow');
-
-  if(statusTitle && statusTitle.parentElement !== homeView) homeView.appendChild(statusTitle);
-  if(statusBox && statusBox.parentElement !== homeView) homeView.appendChild(statusBox);
-  if(actionBox && actionBox.parentElement !== homeView) homeView.appendChild(actionBox);
-
-  if(shopTitle && shopTitle.parentElement !== shopView) shopView.appendChild(shopTitle);
-  if(shopSortRow && shopSortRow.parentElement !== shopView) shopView.appendChild(shopSortRow);
-  if(shopList && shopList.parentElement !== shopView) shopView.appendChild(shopList);
-
-  if(codeRow){
-    let merged = document.getElementById('mobileCodesMerged');
-    if(!merged){
-      merged = document.createElement('div');
-      merged.id = 'mobileCodesMerged';
-      merged.className = 'stat-box codes-merged';
-      const title = document.createElement('div');
-      title.className = 'section-title';
-      title.textContent = t('codeInventory');
-      merged.appendChild(title);
-      codesView.appendChild(merged);
-    }
-    const codeBoxes = Array.from(codeRow.children).filter(el => el.classList && el.classList.contains('stat-box'));
-    codeBoxes.forEach(box => {
-      if(box.parentElement !== merged) merged.appendChild(box);
-    });
-    if(codeRow.parentElement) codeRow.parentElement.removeChild(codeRow);
-  }
-
-  const nav = document.createElement('nav');
-  nav.className = 'mobile-tabs mobile-simple-tabs';
-  nav.innerHTML = `
-    <button type="button" data-view="home">${t('mobileHome')}</button>
-    <button type="button" data-view="codes">${t('mobileCodes')}</button>
-    <button type="button" data-view="shop">${t('mobileShop')}</button>
-    <button type="button" data-view="soon">${t('mobileComing')}</button>
-  `;
-  document.body.appendChild(nav);
-
-  let currentView = 'home';
-  function setView(view){
-    if(view === 'soon'){
-      toast(t('comingSoonToast'), 'system');
-      nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === currentView));
-      return;
-    }
-    currentView = view;
-    document.body.classList.remove('mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
-    document.body.classList.add('mobile-simple-view-' + view);
-    nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
-    const target = view === 'home' ? homeView : view === 'codes' ? codesView : shopView;
-    if(target) target.scrollTop = 0;
-    try {
-      const tabsH = Math.ceil(nav.getBoundingClientRect().height);
-      document.documentElement.style.setProperty('--mobileTabsH', tabsH + 'px');
-    } catch(e) {}
-  }
-
-  nav.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => setView(btn.dataset.view));
-  });
-
-  const codeList = document.getElementById('codeList');
-  const codeDetail = document.getElementById('codeDetail');
-  if(codeList && codeDetail){
-    codeList.addEventListener('click', (e) => {
-      const li = e.target.closest('li');
-      if(!li) return;
-      setView('codes');
-      setTimeout(() => {
-        try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
-      }, 40);
-    });
-  }
-
-  setView('home');
+  // disabled in r4: this block moved DOM into separate views and caused blank-screen issues on cold start.
+  return;
 })();
-
 
 /* === CHRISTMAS SNOW EFFECT (v1.6.6: toggle + stop) === */
 (function(){
@@ -4571,11 +4426,6 @@ function applyLanguageToUI(){
           shop: document.getElementById('mobileSimpleShop')
         };
         const current = document.body.classList.contains('mobile-simple-view-codes') ? 'codes' : document.body.classList.contains('mobile-simple-view-shop') ? 'shop' : 'home';
-        try {
-          const navTextMap = { home: t('mobileHome'), codes: t('mobileCodes'), shop: t('mobileShop'), soon: t('mobileComing') };
-          const nav2 = document.querySelector('.mobile-simple-tabs, .mobile-tabs.mobile-simple-tabs');
-          if(nav2){ nav2.querySelectorAll('button').forEach(btn=>{ const key = btn.dataset.view || btn.dataset.mobileTab || ''; if(navTextMap[key]) btn.textContent = navTextMap[key]; }); }
-        } catch(e){}
         Object.entries(views).forEach(([k, el]) => {
           if(!el) return;
           el.style.display = (k === current) ? 'block' : 'none';
@@ -4617,98 +4467,30 @@ function applyLanguageToUI(){
 })();
 
 
-// === COLD START HARD FIX: persisted language + mobile simple view recovery (k5r3) ===
+// === STARTUP REPAIR: simple mobile tab restore (k5r4) ===
 (function(){
-  function readSavedLang(){
-    try{
-      const raw = localStorage.getItem('HCSIG_SAVE_V1_6') || localStorage.getItem('HCSIG_SAVE_V1_5') || localStorage.getItem('HCSIG_SAVE') || localStorage.getItem('HCSIG_SAVE_V1');
-      if(!raw) return null;
-      const data = JSON.parse(raw);
-      const lang = data && data.state && data.state.ui && data.state.ui.lang;
-      return (lang === 'ko' || lang === 'en') ? lang : null;
-    }catch(e){ return null; }
-  }
-
-  function forceLangAndRerender(){
-    try{
-      const savedLang = readSavedLang();
-      if(savedLang){
-        if(typeof state !== 'undefined' && state){
-          state.ui = state.ui || {};
-          state.ui.lang = savedLang;
-        }
-        document.documentElement.lang = savedLang;
-        const sel = document.getElementById('setLanguage');
-        if(sel) sel.value = savedLang;
-      }
-    }catch(e){}
-
-    try{ if(typeof applyLanguageToUI === 'function') applyLanguageToUI(); }catch(e){}
-    try{ if(typeof renderServers === 'function') renderServers(); }catch(e){}
-    try{ if(typeof renderShop === 'function') renderShop(); }catch(e){}
-    try{ if(typeof renderMissions === 'function') renderMissions(); }catch(e){}
-    try{ if(typeof renderAchievements === 'function') renderAchievements(); }catch(e){}
-    try{ if(typeof renderCodex === 'function') renderCodex(); }catch(e){}
-    try{ if(typeof renderCodeList === 'function') renderCodeList(); }catch(e){}
-    try{ if(typeof renderCodeDetail === 'function') renderCodeDetail(); }catch(e){}
-    try{ if(typeof syncSettingsUI === 'function') syncSettingsUI(); }catch(e){}
-    try{ if(typeof updateStatsUI === 'function') updateStatsUI(); }catch(e){}
-  }
-
-  function repairMobileSimple(){
+  function kick(){
     try{
       const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
       if(!isMobile) return;
-      if(!document.body.classList.contains('mobile-simple-ui')) return;
-
-      const nav = document.querySelector('.mobile-simple-tabs, .mobile-tabs.mobile-simple-tabs');
-      const home = document.getElementById('mobileSimpleHome');
-      const codes = document.getElementById('mobileSimpleCodes');
-      const shop = document.getElementById('mobileSimpleShop');
-
-      let current = 'home';
-      if(document.body.classList.contains('mobile-simple-view-codes')) current = 'codes';
-      else if(document.body.classList.contains('mobile-simple-view-shop')) current = 'shop';
-      else {
-        document.body.classList.remove('mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
-        document.body.classList.add('mobile-simple-view-home');
-      }
-
-      const views = {home, codes, shop};
-      Object.entries(views).forEach(([k, el]) => {
-        if(!el) return;
-        el.hidden = false;
-        el.style.visibility = '';
-        el.style.opacity = '';
-        el.style.display = (k === current) ? 'block' : 'none';
+      const body = document.body;
+      if(body.classList.contains('mobile-simple-ui')) return;
+      const wrap = document.querySelector('.mobile-simple-tabs');
+      if(!wrap) return;
+      const has = body.classList.contains('simple-tab-home') || body.classList.contains('simple-tab-codes') || body.classList.contains('simple-tab-shop');
+      if(!has) body.classList.add('simple-tab-home');
+      const current = body.classList.contains('simple-tab-codes') ? 'codes' : body.classList.contains('simple-tab-shop') ? 'shop' : 'home';
+      wrap.querySelectorAll('button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mobileTab === current);
       });
-
-      if(nav){
-        const labels = {
-          home: (typeof t === 'function') ? t('mobileHome') : 'HOME',
-          codes: (typeof t === 'function') ? t('mobileCodes') : 'CODES',
-          shop: (typeof t === 'function') ? t('mobileShop') : 'SHOP',
-          soon: (typeof t === 'function') ? t('mobileComing') : 'COMING SOON'
-        };
-        nav.querySelectorAll('button').forEach(btn => {
-          const key = btn.dataset.view || btn.dataset.mobileTab || '';
-          if(labels[key]) btn.textContent = labels[key];
-          btn.classList.toggle('active', key === current);
-        });
-      }
+      try{
+        const header = document.querySelector('header');
+        const h = header ? Math.ceil(header.getBoundingClientRect().height) : 52;
+        document.documentElement.style.setProperty('--header-h', h + 'px');
+      }catch(e){}
     }catch(e){}
   }
-
-  function kick(){
-    forceLangAndRerender();
-    repairMobileSimple();
-    setTimeout(() => { forceLangAndRerender(); repairMobileSimple(); }, 150);
-    setTimeout(() => { forceLangAndRerender(); repairMobileSimple(); }, 600);
-    setTimeout(() => { forceLangAndRerender(); repairMobileSimple(); }, 1400);
-  }
-
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', kick, {once:true});
-  else kick();
+  document.addEventListener('DOMContentLoaded', kick, {once:true});
   window.addEventListener('load', kick);
   window.addEventListener('pageshow', kick);
 })();
