@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=1.6.11ip1" rel="stylesheet"/>
+<link href="style.css?v=1.6.12" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.11(i-p1) (Web)</span>
+<span class="header-version">v1.6.12 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle">Hacking Code Simulator Game</span>
@@ -138,10 +138,12 @@
 </div>
 <div class="button-row" style="margin-top:8px;">
 <button id="btnUpgradeCode" title="선택한 코드를 강화합니다. 크레딧 소모, 파워 증가.">코드 강화</button>
+<button id="btnSyncCode" title="중복 조각을 사용해 코드 동기화 단계를 올립니다.">코드 동기화</button>
 <button id="btnEvolveCode" title="조건을 만족하면 선택한 코드를 상위 희귀도로 진화합니다.">코드 진화</button>
 </div>
 <div class="small">
               · 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).<br/>
+              · 동기화: 중복 조각을 모아 성공률 보정과 파워를 함께 강화합니다.<br/>
               · 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).
             </div>
 </div>
@@ -309,6 +311,10 @@
 <div class="small" style="margin-top:6px;">
               · 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.
             </div>
+<div class="button-row" style="margin-top:8px;">
+<button id="btnOpenTutorial" title="초기 튜토리얼을 다시 확인합니다.">튜토리얼 다시 보기</button>
+</div>
+
 </div>
 </div>
 <!-- 저장 탭 -->
@@ -345,6 +351,29 @@
 </div>
 </div>
 </div>
+<div id="tutorialBackdrop" aria-hidden="true">
+<div id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+  <div id="tutorialHeader">
+    <div>
+      <span class="badge">TUTORIAL</span>
+      <h2 id="tutorialTitle">초기 가이드</h2>
+    </div>
+    <button id="btnTutorialSkip" title="튜토리얼 건너뛰기">건너뛰기</button>
+  </div>
+  <div id="tutorialBody">
+    <div id="tutorialStepLabel" class="small">STEP 1 / 6</div>
+    <h3 id="tutorialStepTitle">환영합니다</h3>
+    <p id="tutorialStepText">여기는 HCSiG입니다.</p>
+    <div id="tutorialStepHint" class="small"></div>
+  </div>
+  <div id="tutorialFooter">
+    <button id="btnTutorialPrev">이전</button>
+    <button id="btnTutorialNext">다음</button>
+    <button id="btnTutorialFinish" style="display:none;">시작하기</button>
+  </div>
+</div>
+</div>
+
 <div id="toastContainer"></div>
 
 
@@ -354,5 +383,5 @@
 
 
 
-<script src="app.js?v=1.6.11ip1"></script></body>
+<script src="app.js?v=1.6.12"></script></body>
 </html>

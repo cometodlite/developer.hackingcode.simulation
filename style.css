@@ -1156,10 +1156,354 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 
 
 
-/* === i-p1 patch: toast above mobile bottom bar === */
+/* === TUTORIAL MODAL v1.6.11(j) === */
+#tutorialBackdrop{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(3, 8, 18, 0.76);
+  backdrop-filter: blur(4px);
+  z-index: 20000;
+}
+#tutorialBackdrop.show{ display:flex; }
+#tutorialModal{
+  width: min(560px, calc(100vw - 24px));
+  background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(10,15,25,0.98));
+  border: 1px solid rgba(96,165,250,0.24);
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+#tutorialHeader, #tutorialFooter{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.03);
+}
+#tutorialHeader h2{
+  margin: 6px 0 0;
+  font-size: 18px;
+}
+#tutorialBody{
+  padding: 18px 16px 16px;
+}
+#tutorialBody h3{
+  margin: 8px 0 10px;
+  font-size: 20px;
+}
+#tutorialStepText{
+  margin: 0;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+#tutorialStepHint{
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(59,130,246,0.14);
+  border: 1px solid rgba(96,165,250,0.18);
+  color: #bfdbfe;
+}
+#tutorialFooter{
+  justify-content:flex-end;
+}
+#tutorialFooter button:disabled,
+#btnTutorialPrev:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+body.tutorial-open{ overflow:hidden; }
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+  #tutorialBackdrop{ padding: 12px; align-items:flex-end; }
+  #tutorialModal{ width: calc(100vw - 12px); border-radius: 18px 18px 0 0; margin-bottom: calc(8px + var(--safe-bottom, 0px)); }
+  #tutorialHeader, #tutorialFooter{ padding: 12px 14px; }
+  #tutorialBody{ padding: 16px 14px 14px; }
+  #tutorialBody h3{ font-size: 18px; }
+}
+
+
+/* v1.6.11(k) tutorial interactive-step fix */
+#tutorialBackdrop.interactive{
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: calc(var(--headerH, 56px) + 12px);
+}
+#tutorialBackdrop.interactive #tutorialModal{
+  pointer-events: auto;
+  width: min(520px, calc(100vw - 20px));
+  box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+}
+body.tutorial-open.tutorial-interactive{ overflow:auto; }
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+  #tutorialBackdrop.interactive{
+    padding: calc(var(--headerH, 52px) + 8px) 8px 8px;
+    align-items: flex-start;
+  }
+  #tutorialBackdrop.interactive #tutorialModal{
+    width: calc(100vw - 16px);
+    border-radius: 16px;
+    margin: 0;
+  }
+}
+
+
+/* === k1 hotfix: toast above mobile bottom bar === */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
   #toastContainer{
     bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom)) !important;
+    width: min(520px, calc(100vw - 24px)) !important;
     z-index: 10001 !important;
+  }
+}
+
+/* === k1 hotfix: simple mobile nav (HOME / CODES / SHOP / COMING SOON) === */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  body.mobile-simple-ui {
+    overflow: hidden;
+    padding-bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.mobile-simple-ui #leftPanel,
+  body.mobile-simple-ui #centerPanel,
+  body.mobile-simple-ui .resizer {
+    display: none !important;
+  }
+
+  body.mobile-simple-ui #main {
+    position: relative;
+    display: block !important;
+    height: calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
+    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+
+  body.mobile-simple-ui .mobile-simple-tabs {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    background: rgba(8, 12, 24, 0.96);
+    border: 1px solid rgba(71, 85, 105, 0.5);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+  }
+
+  body.mobile-simple-ui .mobile-simple-tabs button {
+    min-height: 48px !important;
+    font-size: 12px !important;
+    font-weight: 800;
+    border-radius: 14px;
+  }
+
+  body.mobile-simple-ui .mobile-simple-tabs button.active {
+    outline: 2px solid rgba(96, 165, 250, 0.75);
+    background: #1b2540;
+    border-color: #5b87ff;
+  }
+
+  body.mobile-simple-ui .mobile-simple-view {
+    display: none !important;
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 10px calc(var(--mobileTabsH, 86px) + 26px + env(safe-area-inset-bottom)) 10px;
+    background: #060812;
+  }
+
+  body.mobile-simple-ui.mobile-simple-view-home #mobileSimpleHome,
+  body.mobile-simple-ui.mobile-simple-view-codes #mobileSimpleCodes,
+  body.mobile-simple-ui.mobile-simple-view-shop #mobileSimpleShop {
+    display: block !important;
+  }
+
+  body.mobile-simple-ui #mobileSimpleHome > .stat-box,
+  body.mobile-simple-ui #mobileSimpleCodes > .stat-box,
+  body.mobile-simple-ui #mobileSimpleShop > .stat-box,
+  body.mobile-simple-ui #mobileSimpleShop > .shop-sort-row,
+  body.mobile-simple-ui #mobileSimpleHome > .section-title,
+  body.mobile-simple-ui #mobileSimpleShop > .section-title {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  body.mobile-simple-ui #mobileSimpleCodes .codes-merged {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  body.mobile-simple-ui #mobileSimpleCodes .codes-merged > .stat-box {
+    width: 100% !important;
+    flex: none !important;
+    resize: none !important;
+    margin-bottom: 0;
+  }
+
+  body.mobile-simple-ui #mobileSimpleCodes #codeList,
+  body.mobile-simple-ui #mobileSimpleShop #shopList {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  body.mobile-simple-ui #mobileSimpleCodes .button-row {
+    flex-wrap: wrap;
+  }
+
+  body.mobile-simple-ui #mobileSimpleCodes #btnUpgradeCode,
+  body.mobile-simple-ui #mobileSimpleCodes #btnEvolveCode {
+    width: 100% !important;
+  }
+}
+
+
+/* === SIMPLE MOBILE NAV HOTFIX (v1.6.11k) === */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  .mobile-tabs, .mobile-view,
+  #mobileViewStatus, #mobileViewAction, #mobileViewCodes, #mobileViewShop, #mobileViewLog {
+    display: none !important;
+  }
+
+  body {
+    overflow: hidden !important;
+    padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  #main {
+    display: block !important;
+    height: calc(100dvh - var(--header-h, 56px) - env(safe-area-inset-bottom, 0px)) !important;
+    max-height: calc(100dvh - var(--header-h, 56px) - env(safe-area-inset-bottom, 0px)) !important;
+    overflow: hidden !important;
+  }
+
+  #leftPanel, #centerPanel {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    top: var(--header-h, 56px);
+    bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: auto !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    background: #060812 !important;
+    padding-bottom: 18px !important;
+  }
+
+  #leftPanel { display: none !important; }
+  #centerPanel { display: none !important; }
+
+  body.simple-tab-home #leftPanel,
+  body.simple-tab-home #centerPanel {
+    display: block !important;
+  }
+
+  body.simple-tab-codes #centerPanel {
+    display: block !important;
+  }
+
+  body.simple-tab-shop #leftPanel {
+    display: block !important;
+  }
+
+  body.simple-tab-home .mobile-shop-only,
+  body.simple-tab-codes .mobile-home-only,
+  body.simple-tab-codes .mobile-shop-only,
+  body.simple-tab-shop .mobile-home-only,
+  body.simple-tab-shop .mobile-codes-only {
+    display: none !important;
+  }
+
+  body.simple-tab-home .mobile-codes-only {
+    display: none !important;
+  }
+
+  body.simple-tab-codes .mobile-codes-only,
+  body.simple-tab-shop .mobile-shop-only,
+  body.simple-tab-home .mobile-home-only {
+    display: block !important;
+  }
+
+  body.simple-tab-home #shopList,
+  body.simple-tab-shop #shopList {
+    overflow: auto !important;
+    min-height: 240px !important;
+  }
+
+  body.simple-tab-home .center-inner,
+  body.simple-tab-codes .center-inner {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  body.simple-tab-codes .mobile-codes-only {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  body.simple-tab-codes .mobile-codes-only > .stat-box {
+    margin-bottom: 10px !important;
+  }
+
+  .mobile-simple-tabs {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    padding: 8px;
+    border-radius: 16px;
+    background: rgba(14,17,23,0.96);
+    border: 1px solid rgba(35,42,53,0.95);
+    z-index: 9998;
+  }
+
+  .mobile-simple-tabs button {
+    width: 100%;
+    min-height: 46px;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 12px;
+  }
+
+  .mobile-simple-tabs button.active {
+    outline: 2px solid rgba(148,163,184,0.75);
+    background: #1b2238;
+    border-color: #4b7fff;
+  }
+
+  #toastContainer {
+    bottom: calc(118px + env(safe-area-inset-bottom, 0px)) !important;
+    z-index: 10010 !important;
+  }
+
+  .toast {
+    margin-bottom: 8px;
+  }
+
+  #scanOverlay.mobile-scan-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 10020 !important;
   }
 }
