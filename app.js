@@ -136,6 +136,8 @@ function setText(id, value){ const el=document.getElementById(id); if(el) el.tex
 function setHtml(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=value; }
 
 
+window.__HCSIG_SIMPLE_MOBILE__ = true;
+
 const HELP_CONTENT = {
   ko: {
     sections: [
@@ -4293,8 +4295,9 @@ function applyLanguageToUI(){
 
 
 
-// === MOBILE SIMPLE NAV (k1 hotfix) ===
+// === MOBILE SIMPLE NAV (legacy block disabled; unified mobile nav used below) ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -4496,9 +4499,8 @@ function applyLanguageToUI(){
   const header = document.querySelector('header');
   if(!left || !center) return;
 
-  const sectionTitles = Array.from(left.querySelectorAll('.section-title'));
-  const statusTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'status');
-  const shopTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'shop');
+  const statusTitle = document.getElementById('titleStatus') || Array.from(left.querySelectorAll('.section-title')).find(el => /status/i.test((el.textContent || '').trim()));
+  const shopTitle = document.getElementById('titleShop') || Array.from(left.querySelectorAll('.section-title')).find(el => /shop/i.test((el.textContent || '').trim()));
   const statusBox = left.querySelector('.stat-box');
   const shopSortRow = left.querySelector('.shop-sort-row');
   const shopListEl = document.getElementById('shopList');
