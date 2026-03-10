@@ -264,6 +264,13 @@ function translateLogMessage(message){
     [/^로드아웃 슬롯 (\d+)에 현재 설정을 저장했습니다\.$/, 'Saved current setup to loadout slot $1.'],
     [/^로드아웃 슬롯 (\d+)에 저장된 설정이 없습니다\.$/, 'There is no saved setup in loadout slot $1.'],
     [/^로드아웃 슬롯 (\d+)을 불러왔습니다\.$/, 'Loaded loadout slot $1.']
+    [/^\[Shop\] Not enough credits\. \(Need: (\d+)\)$/, '[Shop] Not enough credits. (Need: $1)'],
+    [/^타겟 서버 선택에 실패했습니다\.$/, 'Failed to select a target server.'],
+    [/^Ghost_Script 효과: 추가 레벨 업 발생!$/, 'Ghost_Script effect: triggered an additional level up!'],
+    [/^Overflow_Inject 페널티: 에너지가 추가로 1 소모되었습니다\.$/, 'Overflow_Inject penalty: consumed 1 additional energy.'],
+    [/^AutoPatch\(\) 효과: 해킹 실패 보정으로 경험치 \+1\.$/, 'AutoPatch() effect: EXP +1 from failure compensation.'],
+    [/^Fallback_Node 효과: 에너지 1을 즉시 회복했습니다\.$/, 'Fallback_Node effect: instantly recovered 1 energy.'],
+    [/^CPU 업그레이드 실패: 크레딧이 부족합니다\. \(필요: (\d+)\)$/, 'CPU upgrade failed: not enough credits. (Need: $1)'],
   ];
   for (const [pat, rep] of patterns){
     if (pat.test(message)) return message.replace(pat, rep);
@@ -317,13 +324,38 @@ function translatePhraseEn(str){
     ['첫 진화', 'First Evolution'], ['진화 루틴', 'Evolution Routine'], ['조각 수집', 'Shard Collection'], ['비상 보급', 'Emergency Supply'],
     ['일일 리스크', 'Daily Risk'], ['일일 조달', 'Daily Procurement'], ['집요한 스캐너', 'Persistent Scanner'],
     ['주간 루프', 'Weekly Loop'], ['주간 소비', 'Weekly Spending'], ['주간 수익', 'Weekly Revenue'], ['방전 습관', 'Drain Habit'],
-    ['월간 소비자', 'Monthly Consumer']
+    ['월간 소비자', 'Monthly Consumer'],
+    ['기록 박물관', 'Record Museum'], ['에너지 분해', 'Energy Breakdown'], ['에너지 브루탈', 'Energy Brutality'],
+    ['코어 관리자', 'Core Administrator'], ['시스템 지배자', 'System Dominator'], ['CPU 초월자', 'CPU Transcendent'],
+    ['에너지 아카이브', 'Energy Archive'], ['도감 수집', 'Codex Collector'], ['코드 콜렉터', 'Code Collector'],
+    ['성공적인 침입자', 'Successful Intruder'], ['고급 코드 확보', 'High-Tier Code Secured'], ['첫 쇼핑', 'First Purchase'],
+    ['기진맥진', 'Exhausted'], ['데이터 크레딧 팩', 'Data Credit Pack'], ['영구 크레딧 멀티플라이어', 'Permanent Credit Multiplier'],
+    ['위험 해킹 서포터', 'Risk Hack Supporter'], ['시뮬레이션 레벨 티켓', 'Simulation Level Ticket'], ['에너지 팩', 'Energy Pack'],
+    ['에너지 부스터', 'Energy Booster'], ['고급 스캐너 모듈', 'Advanced Scanner Module'], ['경험치 증폭기', 'EXP Amplifier'],
+    ['CPU 업그레이드 쿠폰', 'CPU Upgrade Coupon'], ['정밀 스캐너', 'Precision Scanner'], ['에너지 최대치 업그레이드', 'Max Energy Upgrade'],
+    ['크레딧 멀티플라이어', 'Credit Multiplier']
   ];
   let out = str;
   for (const [ko, en] of map) out = out.replaceAll(ko, en);
   return out;
 }
-function localizeMissionName(def){ return getLang()==='en' ? translatePhraseEn(def.name) : def.name; }
+function localizeMissionName(def){
+  if (getLang() !== 'en') return def.name;
+  const direct = {
+    gen_mission_160: 'Quest Archive',
+    gen_achieve_45: 'Record Museum',
+    gen_energy_spent_200: 'Energy Breakdown I',
+    gen_energy_spent_500: 'Energy Breakdown II',
+    gen_energy_spent_1500: 'Energy Brutality II',
+    gen_energy_spent_2500: 'Energy Brutality III',
+    gen_energy_spent_4000: 'Energy Brutality IV',
+    gen_level_30: 'Core Administrator',
+    gen_level_40: 'System Dominator',
+    gen_cpu_15: 'CPU Transcendent',
+    gen_energyMax_50: 'Energy Archive'
+  };
+  return direct[def.id] || translatePhraseEn(def.name);
+}
 function localizeMissionDesc(def){
   if (getLang() !== 'en') return def.desc;
   const d = def.desc;
@@ -357,7 +389,16 @@ function localizeMissionDesc(def){
     .replaceAll('누적 획득 크레딧', 'total earned credits')
     .replaceAll('상점', 'shop');
 }
-function localizeAchievementName(def){ return getLang()==='en' ? translatePhraseEn(def.name) : def.name; }
+function localizeAchievementName(def){
+  if (getLang() !== 'en') return def.name;
+  const direct = {
+    collector_beginner: 'Code Collector I',
+    hack_30_success: 'Successful Intruder',
+    codex_total_3: 'Codex Collector I',
+    codex_total_5: 'Codex Collector II'
+  };
+  return direct[def.id] || translatePhraseEn(def.name);
+}
 function localizeAchievementDesc(def){
   if (getLang() !== 'en') return def.desc;
   let d = def.desc;
@@ -415,7 +456,10 @@ function localizeAchievementDesc(def){
     .replaceAll('코드', 'code')
     .replaceAll('달성했습니다.', 'completed.')
     .replaceAll('확보했습니다.', 'secured.')
-    .replaceAll('사용했습니다.', 'used.');
+    .replaceAll('사용했습니다.', 'used.')
+    .replaceAll('처음 획득했습니다.', 'obtained for the first time.')
+    .replaceAll('처음으로 아이템을 구매했습니다.', 'purchased an item for the first time.')
+    .replaceAll('처음으로 서버 해킹에 성공했습니다.', 'succeeded in a server hack for the first time.');
 }
 function refreshMobileTabTexts(){
   const selectors = [
@@ -2456,7 +2500,7 @@ function applyLanguageToUI(){
           }
 
           if (state.credits < item.cost) {
-            log(t('shopLog', { msg: `${t('notEnoughCredits')} (Need: ${item.cost})` }), 'shop');
+            log(t('shopLog', { msg: `${t('notEnoughCredits')} (${getLang()==='en' ? 'Need' : '필요'}: ${item.cost})` }), 'shop');
             showToast(t('notEnoughCredits'), 'shop');
             return;
           }
@@ -2657,7 +2701,7 @@ function applyLanguageToUI(){
       const def = codeDefs[code.id];
       const server = getSelectedServer();
       if (!server) {
-        log('타겟 서버 선택에 실패했습니다.', 'hack');
+        log(getLang()==='en' ? 'Failed to select a target server.' : '타겟 서버 선택에 실패했습니다.', 'hack');
         return;
       }
       if (state.level < server.minLevel) {
@@ -2725,8 +2769,7 @@ function applyLanguageToUI(){
         addExp(gainedExp);
 
         log(
-          `서버 해킹 성공! [${server.name}] 성공 확률 ${Math.round(successChance * 100)}%. ` +
-          `크레딧 +${rewardCredits}, 경험치 +${gainedExp}.`,
+          t('hackSuccessLog', { server: localizeServerName(server), chance: Math.round(successChance * 100), credits: rewardCredits, exp: gainedExp }),
           'hack'
         );
 
@@ -2755,7 +2798,7 @@ function applyLanguageToUI(){
 
         if (def && def.id === 'ghost_script') {
           levelUp();
-          log('Ghost_Script 효과: 추가 레벨 업 발생!', 'hack');
+          log(getLang()==='en' ? 'Ghost_Script effect: triggered an additional level up!' : 'Ghost_Script 효과: 추가 레벨 업 발생!', 'hack');
         }
       } else {
         log(
@@ -2769,7 +2812,7 @@ function applyLanguageToUI(){
           if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
             state.energyTimerMs = ENERGY_INTERVAL_MS;
           }
-          log('Overflow_Inject 페널티: 에너지가 추가로 1 소모되었습니다.', 'hack');
+          log(getLang()==='en' ? 'Overflow_Inject penalty: consumed 1 additional energy.' : 'Overflow_Inject 페널티: 에너지가 추가로 1 소모되었습니다.', 'hack');
         }
 
         if (state.riskMode) {
@@ -2784,13 +2827,13 @@ function applyLanguageToUI(){
 
         if (def && def.id === 'auto_patch' && Math.random() < 0.2) {
           state.exp += 1;
-          log('AutoPatch() 효과: 해킹 실패 보정으로 경험치 +1.', 'hack');
+          log(getLang()==='en' ? 'AutoPatch() effect: EXP +1 from failure compensation.' : 'AutoPatch() 효과: 해킹 실패 보정으로 경험치 +1.', 'hack');
         }
 
         if (def && def.id === 'fallback_node' && Math.random() < 0.12) {
           state.energy = Math.min(state.energyMax, state.energy + 1);
           if (state.energy >= state.energyMax) state.energyTimerMs = 0;
-          log('Fallback_Node 효과: 에너지 1을 즉시 회복했습니다.', 'hack');
+          log(getLang()==='en' ? 'Fallback_Node effect: instantly recovered 1 energy.' : 'Fallback_Node 효과: 에너지 1을 즉시 회복했습니다.', 'hack');
         }
 
         updateStatsUI();
@@ -2804,7 +2847,7 @@ function applyLanguageToUI(){
       const rawCost = 500 * state.cpuTier;
       const cost = Math.round(rawCost * modifiers.cpuUpgradeDiscount);
       if (state.credits < cost) {
-        log(`CPU 업그레이드 실패: 크레딧이 부족합니다. (필요: ${cost})`, 'system');
+        log(getLang()==='en' ? `CPU upgrade failed: not enough credits. (Need: ${cost})` : `CPU 업그레이드 실패: 크레딧이 부족합니다. (필요: ${cost})`, 'system');
         return;
       }
       state.credits -= cost;
