@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=1.6.13" rel="stylesheet"/>
+<link href="style.css?v=1.6.14-k2" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.13 (Web)</span>
+<span class="header-version">v1.6.14 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -69,8 +69,8 @@
 </div>
 <div class="section-title" id="titleShop">Shop</div>
 <div class="shop-sort-row">
-<span class="shop-sort-label" id="codeSortLabelRef">정렬</span>
-<select id="shopSortSelect" title="상점 아이템 정렬 기준을 선택합니다.">
+<span class="shop-sort-label" id="shopSortLabel">정렬</span>
+<select id="shopSortSelect" title="Sort shop items">
 <option value="update">업데이트순</option>
 <option value="new">신규 우선</option>
 <option value="rarity">희귀도순</option>
@@ -139,7 +139,7 @@
 <div class="section-title" style="margin-bottom:0;" id="titleCodeInventory">코드 인벤토리</div>
 <div class="code-sort-inline">
 <span class="shop-sort-label" id="codeSortLabelRef">정렬</span>
-<select id="codeSortSelect" title="코드 인벤토리 정렬 기준을 선택합니다.">
+<select id="codeSortSelect" title="Sort code inventory">
 <option value="recent">최신</option>
 <option value="rarity">희귀도</option>
 <option value="power">파워</option>
@@ -265,7 +265,7 @@
 <div class="stat-row" style="align-items:center;">
 <span class="label" id="labelLanguage">언어</span>
 <span class="value">
-<select id="setLanguage" title="게임 언어를 선택합니다.">
+<select id="setLanguage" title="Select language">
 <option value="ko">한국어</option>
 <option value="en">English</option>
 </select>
@@ -289,7 +289,7 @@
 <div class="stat-row" style="align-items:center;">
 <span class="label" id="labelUiScale">UI 스케일</span>
 <span class="value">
-<select id="setUiZoom" title="전체 UI 배율을 조정합니다.">
+<select id="setUiZoom" title="Adjust UI scale">
 <option value="0.8">0.8x</option>
 <option value="1">1.0x</option>
 <option value="1.2">1.2x</option>
@@ -307,7 +307,7 @@
 <div class="stat-row" style="align-items:center;">
 <span class="label" id="labelToastMs">토스트 시간</span>
 <span class="value">
-<select id="setToastMs" title="화면 알림(토스트) 표시 시간을 설정합니다.">
+<select id="setToastMs" title="Set toast duration">
 <option value="3000">3초</option>
 <option value="5000">5초</option>
 <option value="7000">7초</option>
@@ -374,5 +374,5 @@
 
 
 
-<script src="app.js?v=1.6.14"></script></body>
+<script src="app.js?v=1.6.14-k2"></script></body>
 </html>

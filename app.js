@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.14-k1';
+    const CURRENT_VERSION = 'v1.6.14-k2';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -106,7 +106,7 @@ const I18N = {
     full:'FULL', seconds:'초',
     toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +100 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
     noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.',
-    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)'
+    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.'
   },
   en: {
     appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
@@ -125,13 +125,188 @@ const I18N = {
     full:'FULL', seconds:'s',
     toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +100.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
     noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.',
-    noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)'
+    noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.'
   }
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
 function t(key, vars){ const lang=getLang(); let str=(I18N[lang]&&I18N[lang][key]) || I18N.ko[key] || key; if(vars){ for(const [k,v] of Object.entries(vars)){ str=str.replaceAll('{'+k+'}', String(v)); } } return str; }
 function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value; }
 function setHtml(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=value; }
+
+const TEXT_DATA = {
+  en: {
+    servers: {
+      school_lab: 'School Practice Server',
+      bank_backup: 'Bank Backup Node',
+      gov_archive: 'Government Archive Node',
+      central_core: 'Central Core Grid',
+      deep_space: 'Deep Space Relay'
+    },
+    shop: {
+      energy_pack: { name:'Energy Pack', desc:'A consumable stored in your inventory. Restores your energy to full when used.' },
+      energy_boost_1: { name:'Energy Booster I', desc:'Instantly restores +5 energy.' },
+      credit_boost_run: { name:'Credit Multiplier (Session)', desc:'Credits gained from successful hacks are multiplied by 1.5 for the current session.' },
+      max_energy_up: { name:'Max Energy Upgrade', desc:'Permanently increases max energy by +5.' },
+      scanner_module: { name:'Advanced Scanner Module', desc:'Gain +2 extra EXP when scanning codes.' },
+      energy_boost_2: { name:'Energy Booster II', desc:'Instantly restores +10 energy.' },
+      exp_boost: { name:'EXP Amplifier', desc:'Permanently increases EXP gain by 20%.' },
+      cpu_discount: { name:'CPU Upgrade Coupon', desc:'Reduces CPU upgrade cost by 10% (stacks).' },
+      perm_credit_boost: { name:'Permanent Credit Multiplier', desc:'Permanently increases hack credit rewards by 15% (one-time purchase).' },
+      risk_support: { name:'Risk Hack Supporter', desc:'Permanently adds +5%p success chance in Risk Hack Mode (one-time purchase).' },
+      big_credit_pack: { name:'Data Credit Pack', desc:'Instantly grants +500 credits. (Daily purchase limit: 2)' },
+      scanner_plus: { name:'Precision Scanner', desc:'Gain +1 extra EXP when scanning codes (permanent, one-time purchase).' },
+      level_ticket: { name:'Simulation Level Ticket', desc:'Instantly raises your level by 1.' }
+    }
+  }
+};
+
+function localizeServerName(server){
+  return (getLang()==='en' && TEXT_DATA.en.servers[server.id]) ? TEXT_DATA.en.servers[server.id] : server.name;
+}
+function localizeShopName(item){
+  return (getLang()==='en' && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].name) ? TEXT_DATA.en.shop[item.id].name : item.name;
+}
+function localizeShopDesc(item){
+  return (getLang()==='en' && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].desc) ? TEXT_DATA.en.shop[item.id].desc : item.desc;
+}
+function translatePhraseEn(str){
+  if (!str || getLang() !== 'en') return str;
+  const map = [
+    ['위험 그 자체', 'Risk Itself'], ['월간 수익 관리자', 'Monthly Revenue Manager'], ['고급 코드 확보', 'High-Tier Code Secured'],
+    ['에너지 소비자', 'Energy Consumer'], ['에너지 브레이커', 'Energy Breaker'], ['에너지 파쇄기', 'Energy Crusher'],
+    ['에너지 소모왕', 'Energy Spender'], ['에너지 저장고', 'Energy Reservoir'], ['에너지 버퍼', 'Energy Buffer'],
+    ['에너지 분해', 'Energy Burn'], ['에너지 브루탈', 'Energy Brutality'],
+    ['위험한 승부사', 'Risk Taker'], ['위험한 한 주', 'Dangerous Week'], ['위험한 분석', 'Risky Analysis'], ['위험 중독', 'Risk Addiction'],
+    ['지속 가능한 에너지', 'Sustainable Energy'], ['한계 돌파', 'Break the Limit'], ['장기 루틴', 'Long-Term Routine'],
+    ['보급 루틴', 'Supply Routine'], ['주간 루틴', 'Weekly Routine'], ['월간 마스터', 'Monthly Master'],
+    ['일일 침입자', 'Daily Intruder'], ['주간 침입자', 'Weekly Intruder'], ['월간 침입자', 'Monthly Intruder'],
+    ['일일 스캐너', 'Daily Scanner'], ['주간 스캐너', 'Weekly Scanner'], ['월간 스캐너', 'Monthly Scanner'],
+    ['광적인 분석가', 'Obsessive Analyst'], ['데이터 광신도', 'Data Fanatic'], ['데이터 중독', 'Data Addict'], ['데이터 광', 'Data Maniac'],
+    ['분석 입문', 'Analysis Initiate'], ['분석가', 'Analyst'], ['침입 전문가', 'Intrusion Specialist'], ['침입 마스터', 'Intrusion Master'],
+    ['성장 관찰', 'Growth Observer'], ['성장 가속', 'Growth Acceleration'], ['성장 폭주', 'Growth Surge'],
+    ['월간 성장', 'Monthly Growth'], ['주간 성장', 'Weekly Growth'], ['월간 도약', 'Monthly Leap'],
+    ['고급 운영자', 'Advanced Operator'], ['CPU 튜너', 'CPU Tuner'],
+    ['쇼핑 애호가', 'Shopping Enthusiast'], ['쇼핑 매니아', 'Shopping Maniac'], ['쇼핑 제왕', 'Shopping King'],
+    ['데이터 자본가', 'Data Capitalist'], ['기록 수집가', 'Record Collector'],
+    ['퀘스트 러너', 'Quest Runner'], ['퀘스트 헌터', 'Quest Hunter'], ['퀘스트 매니악', 'Quest Maniac'], ['퀘스트 아카이브', 'Quest Archive'],
+    ['위험 친화', 'Risk Affinity'], ['위험 중독', 'Risk Addiction'],
+    ['데일리 스타터', 'Daily Starter'], ['스캐너 입문', 'Scanner Initiate'], ['스캐너 숙련', 'Skilled Scanner'],
+    ['첫 침입', 'First Breach'], ['첫 쇼핑', 'First Purchase'], ['기진맥진', 'Exhausted'],
+    ['초보 해커', 'Novice Hacker'], ['중급 해커', 'Intermediate Hacker'], ['오버클러커', 'Overclocker'],
+    ['스캔 누적', 'Scan Milestone'], ['해킹 누적', 'Hack Milestone'],
+    ['레벨 브론즈', 'Bronze Level'], ['레벨 실버', 'Silver Level'], ['레벨 골드', 'Gold Level'], ['레벨 플래티넘', 'Platinum Level'],
+    ['자본 시동', 'Capital Start'], ['자본 축적', 'Capital Growth'], ['자본 확대', 'Capital Expansion'],
+    ['쇼핑 루키', 'Shopping Rookie'], ['쇼핑 중수', 'Shopping Adept'], ['쇼핑 고수', 'Shopping Expert'],
+    ['연료 점화', 'Fuel Ignition'], ['연료 과열', 'Fuel Overheat'], ['연료 폭주', 'Fuel Overdrive'],
+    ['리스크 테스트', 'Risk Test'], ['리스크 러너', 'Risk Runner'],
+    ['도감 입문', 'Codex Initiate'], ['도감 수집', 'Codex Collection'], ['도감 완성', 'Codex Complete'],
+    ['파워 셋업', 'Power Setup'], ['파워 튜닝', 'Power Tuning'], ['파워 드라이브', 'Power Drive'],
+    ['코드 육성', 'Code Training'], ['첫 강화', 'First Upgrade'], ['강화 루틴', 'Upgrade Routine'], ['강화 전문가', 'Upgrade Specialist'],
+    ['첫 동기화', 'First Sync'], ['동기화 루틴', 'Sync Routine'], ['동기화 전문가', 'Sync Specialist'], ['동기화 단계', 'Sync Stage'],
+    ['첫 진화', 'First Evolution'], ['진화 루틴', 'Evolution Routine'], ['조각 수집', 'Shard Collection'], ['비상 보급', 'Emergency Supply'],
+    ['일일 리스크', 'Daily Risk'], ['일일 조달', 'Daily Procurement'], ['집요한 스캐너', 'Persistent Scanner'],
+    ['주간 루프', 'Weekly Loop'], ['주간 소비', 'Weekly Spending'], ['주간 수익', 'Weekly Revenue'], ['방전 습관', 'Drain Habit'],
+    ['월간 소비자', 'Monthly Consumer']
+  ];
+  let out = str;
+  for (const [ko, en] of map) out = out.replaceAll(ko, en);
+  return out;
+}
+function localizeMissionName(def){ return getLang()==='en' ? translatePhraseEn(def.name) : def.name; }
+function localizeMissionDesc(def){
+  if (getLang() !== 'en') return def.desc;
+  const d = def.desc;
+  const patterns = [
+    [/^코드 스캔 (\d+)회 수행$/, 'Perform $1 code scans'],
+    [/^서버 해킹 성공 (\d+)회$/, 'Achieve $1 successful server hacks'],
+    [/^에너지 (\d+) 소모하기$/, 'Spend $1 energy'],
+    [/^코드 스캔\/서버 해킹 총 (\d+)회 수행$/, 'Perform $1 total Scan Code / Hack Server actions'],
+    [/^위험 해킹 모드로 서버 해킹 성공 (\d+)회$/, 'Achieve $1 successful server hacks in Risk Hack Mode'],
+    [/^상점에서 (\d+)회 구매하기$/, 'Purchase from the shop $1 times'],
+    [/^플레이어 레벨 (\d+) 달성$/, 'Reach player level $1'],
+    [/^누적 획득 크레딧 (\d+) 달성$/, 'Reach $1 total earned credits'],
+    [/^이번 주 최소 1회 에너지를 0까지 소모$/, 'Reduce energy to 0 at least once this week'],
+    [/^한 달 동안 최소 1회 에너지를 0까지 소모$/, 'Reduce energy to 0 at least once this month'],
+    [/^누적 코드 스캔 (\d+)회$/, 'Perform $1 total code scans'],
+    [/^누적 해킹 성공 (\d+)회$/, 'Achieve $1 total successful hacks'],
+    [/^누적 에너지 (\d+) 소모$/, 'Spend $1 energy in total'],
+    [/^CPU 티어 (\d+) 달성$/, 'Reach CPU tier $1'],
+    [/^에너지 최대치 (\d+) 달성$/, 'Reach max energy $1'],
+    [/^상점에서 누적 (\d+)회 구매$/, 'Purchase from the shop $1 times in total'],
+    [/^업적 (\d+)개 달성$/, 'Unlock $1 achievements'],
+    [/^누적 퀘스트 (\d+)개 완료$/, 'Complete $1 quests in total'],
+    [/^위험 해킹 모드로 해킹 성공 (\d+)회$/, 'Achieve $1 successful hacks in Risk Hack Mode']
+  ];
+  for (const [pat, rep] of patterns){
+    if (pat.test(d)) return d.replace(pat, rep);
+  }
+  return translatePhraseEn(d)
+    .replaceAll('코드 도감', 'code codex')
+    .replaceAll('플레이어 레벨', 'player level')
+    .replaceAll('누적 획득 크레딧', 'total earned credits')
+    .replaceAll('상점', 'shop');
+}
+function localizeAchievementName(def){ return getLang()==='en' ? translatePhraseEn(def.name) : def.name; }
+function localizeAchievementDesc(def){
+  if (getLang() !== 'en') return def.desc;
+  let d = def.desc;
+  const patterns = [
+    [/^처음으로 서버 해킹에 성공했습니다\.$/, 'Succeeded in a server hack for the first time.'],
+    [/^플레이어 레벨 (\d+)에 도달했습니다\.$/, 'Reached player level $1.'],
+    [/^코드 스캔을 (\d+)회 수행했습니다\.$/, 'Performed $1 code scans.'],
+    [/^상점에서 처음으로 아이템을 구매했습니다\.$/, 'Purchased an item from the shop for the first time.'],
+    [/^에너지를 0까지 모두 소모했습니다\.$/, 'Drained all energy down to 0.'],
+    [/^서로 다른 코드를 (\d+)개 이상 보유했습니다\.$/, 'Owned at least $1 different codes.'],
+    [/^데일리 퀘스트를 (\d+)개 이상 완료했습니다\.$/, 'Completed at least $1 daily quests.'],
+    [/^위클리 퀘스트를 (\d+)개 이상 완료했습니다\.$/, 'Completed at least $1 weekly quests.'],
+    [/^EPIC 이상 등급의 코드를 처음 획득했습니다\.$/, 'Obtained your first EPIC-or-higher code.'],
+    [/^서버 해킹에 (\d+)회 이상 성공했습니다\.$/, 'Succeeded in server hacks at least $1 times.'],
+    [/^에너지 최대치를 (\d+) 이상으로 확장했습니다\.$/, 'Expanded max energy to at least $1.'],
+    [/^누적 획득 크레딧 (\d+)을 달성했습니다\.$/, 'Reached $1 total earned credits.'],
+    [/^누적 퀘스트 (\d+)개를 완료했습니다\.$/, 'Completed $1 quests in total.'],
+    [/^CPU 티어를 (\d+) 이상으로 업그레이드했습니다\.$/, 'Upgraded CPU tier to at least $1.'],
+    [/^한 달 동안 모든 MONTH QUEST를 완료했습니다\.$/, 'Completed every MONTH QUEST within a single month.'],
+    [/^위험 해킹 모드로 해킹 성공 (\d+)회를 달성했습니다\.$/, 'Achieved $1 successful hacks in Risk Hack Mode.'],
+    [/^해킹 성공 (\d+)회를 달성했습니다\.$/, 'Achieved $1 successful hacks.'],
+    [/^퀘스트 (\d+)개를 완료했습니다\.$/, 'Completed $1 quests.'],
+    [/^상점에서 (\d+)회 구매했습니다\.$/, 'Purchased from the shop $1 times.'],
+    [/^에너지를 누적 (\d+) 소모했습니다\.$/, 'Spent $1 energy in total.'],
+    [/^위험 해킹 모드로 (\d+)회 성공했습니다\.$/, 'Succeeded $1 times in Risk Hack Mode.'],
+    [/^코드 도감에서 (\d+)종을 발견했습니다\.$/, 'Discovered $1 entries in the code codex.'],
+    [/^현재 코드 도감의 모든 코드\((\d+)종\)를 발견했습니다\.$/, 'Discovered all $1 codes currently listed in the code codex.'],
+    [/^코드 파워 (\d+) 이상을 달성했습니다\.$/, 'Reached code power $1 or higher.'],
+    [/^코드 레벨 (\d+) 이상을 달성했습니다\.$/, 'Reached code level $1 or higher.'],
+    [/^코드를 (\d+)회 강화했습니다\.$/, 'Upgraded a code $1 times.'],
+    [/^코드를 (\d+)회 동기화했습니다\.$/, 'Synced a code $1 times.'],
+    [/^코드 동기화 (\d+)단계를 달성했습니다\.$/, 'Reached sync stage $1 on a code.'],
+    [/^코드를 (\d+)회 진화시켰습니다\.$/, 'Evolved a code $1 times.'],
+    [/^중복 조각을 누적 (\d+)개 획득했습니다\.$/, 'Obtained $1 duplicate shards in total.'],
+    [/^에너지 팩을 (\d+)회 사용했습니다\.$/, 'Used an energy pack $1 times.'],
+    [/^업적 (\d+)개를 달성했습니다\.$/, 'Unlocked $1 achievements.'],
+    [/^COMMON 코드를 (\d+)개 이상 확보했습니다\.$/, 'Secured at least $1 COMMON codes.'],
+    [/^RARE 코드를 (\d+)개 이상 확보했습니다\.$/, 'Secured at least $1 RARE codes.'],
+    [/^EPIC 이상 코드를 (\d+)개 이상 확보했습니다\.$/, 'Secured at least $1 EPIC-or-higher codes.'],
+    [/^LEGENDARY 코드를 (\d+)개 이상 확보했습니다\.$/, 'Secured at least $1 LEGENDARY codes.'],
+    [/^RARE 이상 코드를 (\d+)개 이상 확보했습니다\.$/, 'Secured at least $1 RARE-or-higher codes.'],
+    [/^CPU 티어를 (\d+) 이상 달성했습니다\.$/, 'Reached CPU tier $1 or higher.'],
+    [/^에너지 최대치를 (\d+) 이상 달성했습니다\.$/, 'Reached max energy $1 or higher.']
+  ];
+  for (const [pat, rep] of patterns){
+    if (pat.test(d)) return d.replace(pat, rep);
+  }
+  return translatePhraseEn(d);
+}
+function refreshMobileTabTexts(){
+  const selectors = [
+    ['[data-view="home"], [data-mobile-tab="home"]', t('mobileHome')],
+    ['[data-view="codes"], [data-mobile-tab="codes"]', t('mobileCodes')],
+    ['[data-view="shop"], [data-mobile-tab="shop"]', t('mobileShop')],
+    ['[data-view="soon"], [data-mobile-tab="coming"]', t('mobileComing')]
+  ];
+  selectors.forEach(([sel, label]) => {
+    document.querySelectorAll(sel).forEach(el => { el.textContent = label; });
+  });
+}
 function applyLanguageToUI(){
   try{ document.documentElement.lang = getLang(); document.title = t('appTitle'); }catch(e){}
   setText('subtitleText', t('subtitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle'));
@@ -146,8 +321,20 @@ function applyLanguageToUI(){
   setText('logSearchHelp', t('logSearchHelp')); const lsi=document.getElementById('logSearchInput'); if(lsi) lsi.placeholder=t('searchPlaceholder'); setText('btnClearLogs', t('clearLogs')); const btnToggle=document.getElementById('btnToggleLogs'); if(btnToggle){ btnToggle.textContent = (window.logsHidden ? t('showLogs') : t('hideLogs')); } setText('logFilterTitle', t('logFilter'));
   setText('labelLanguage', t('language')); setText('labelFontScale', t('fontScale')); setText('labelSnow', t('snow')); setText('labelUiScale', t('uiScale')); setText('labelAnim', t('animation')); setText('labelToastMs', t('toastTime')); setText('labelAutoSaveToast', t('autosaveToast')); setHtml('settingsHelp', t('settingsHelp'));
   setText('btnSaveGame', t('saveNow')); setText('btnLoadGame', t('loadNow')); setText('btnClearSave', t('clearSave')); setText('btnExportSave', t('exportSave')); setText('btnImportSaveFile', t('importFile')); setText('importTextTitle', t('importText')); const ist=document.getElementById('importSaveText'); if(ist) ist.placeholder=t('importTextPlaceholder'); setText('btnImportSaveText', t('importTextBtn')); setHtml('saveHelp', t('saveHelp'));
-  const shopSort=document.getElementById('shopSortSelect'); if(shopSort){ const map=['shopSortUpdate','shopSortNew','shopSortRarity','shopSortPrice','shopSortName']; [...shopSort.options].forEach((opt,i)=>opt.text=t(map[i])); }
-  const codeSort=document.getElementById('codeSortSelect'); if(codeSort){ const map=['codeSortRecent','codeSortRarity','codeSortPower','codeSortLevel','codeSortName']; [...codeSort.options].forEach((opt,i)=>opt.text=t(map[i])); }
+  const shopSort=document.getElementById('shopSortSelect'); if(shopSort){ const map=['shopSortUpdate','shopSortNew','shopSortRarity','shopSortPrice','shopSortName']; [...shopSort.options].forEach((opt,i)=>opt.text=t(map[i])); shopSort.title=t('shopSortTitle'); }
+  const codeSort=document.getElementById('codeSortSelect'); if(codeSort){ const map=['codeSortRecent','codeSortRarity','codeSortPower','codeSortLevel','codeSortName']; [...codeSort.options].forEach((opt,i)=>opt.text=t(map[i])); codeSort.title=t('codeSortTitle'); }
+  const setLangEl=document.getElementById('setLanguage'); if(setLangEl) setLangEl.title=t('languageTitle');
+  const setUiZoomEl=document.getElementById('setUiZoom'); if(setUiZoomEl) setUiZoomEl.title=t('uiScaleTitle');
+  const setToastMsEl=document.getElementById('setToastMs'); if(setToastMsEl) setToastMsEl.title=t('toastTitle');
+  const btnSaveGameEl=document.getElementById('btnSaveGame'); if(btnSaveGameEl) btnSaveGameEl.title=t('saveToLocal');
+  const btnLoadGameEl=document.getElementById('btnLoadGame'); if(btnLoadGameEl) btnLoadGameEl.title=t('loadFromLocal');
+  const btnClearSaveEl=document.getElementById('btnClearSave'); if(btnClearSaveEl) btnClearSaveEl.title=t('deleteSave');
+  const btnExportSaveEl=document.getElementById('btnExportSave'); if(btnExportSaveEl) btnExportSaveEl.title=t('exportJson');
+  const btnImportSaveFileEl=document.getElementById('btnImportSaveFile'); if(btnImportSaveFileEl) btnImportSaveFileEl.title=t('importJsonFile');
+  const btnImportSaveTextEl=document.getElementById('btnImportSaveText'); if(btnImportSaveTextEl) btnImportSaveTextEl.title=t('importJsonText');
+  const loadoutSelectEl=document.getElementById('loadoutSelect'); if(loadoutSelectEl){ [...loadoutSelectEl.options].forEach(opt=>{ opt.textContent=t('loadoutSlot',{n:opt.value}); }); }
+  refreshMobileTabTexts();
+  try { renderServers(); } catch(e){}
 }
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
     const LAST_SEEN_VERSION_KEY = 'HCSiG_LAST_SEEN_VERSION';
@@ -1903,7 +2090,7 @@ function applyLanguageToUI(){
       servers.forEach(s => {
         const option = document.createElement('option');
         option.value = s.id;
-        option.textContent = `${s.name} (보안 ${s.security}, Lv${s.minLevel}+ )`;
+        option.textContent = t('serverOption', { name: localizeServerName(s), sec: s.security, lv: s.minLevel });
         serverSelect.appendChild(option);
       });
     }
@@ -1960,7 +2147,7 @@ function applyLanguageToUI(){
         meta.date = today;
         meta.daily = {}; // reset daily counts
         saveShopMeta(meta);
-        log('[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', 'system');
+        log(t('logDailyShopReset'), 'system');
       }
       return meta;
     }
@@ -2014,9 +2201,9 @@ function applyLanguageToUI(){
 
       const categoryLabel = {
         ENERGY: t('energy'),
-        UTILITY: '유틸',
-        ECONOMY: '경제',
-        SYSTEM: '시스템'
+        UTILITY: t('utility'),
+        ECONOMY: t('economy'),
+        SYSTEM: t('system')
       };
 
       const rarityRank = {
@@ -2067,9 +2254,9 @@ function applyLanguageToUI(){
       }
       else if (mode === 'name') {
         items.sort((a, b) => {
-          const na = String(a.name || '');
-          const nb = String(b.name || '');
-          const c = na.localeCompare(nb, 'ko');
+          const na = String(localizeShopName(a) || '');
+          const nb = String(localizeShopName(b) || '');
+          const c = na.localeCompare(nb, getLang()==='en' ? 'en' : 'ko');
           if (c !== 0) return c;
           return (baseOrder.get(a.id) || 0) - (baseOrder.get(b.id) || 0);
         });
@@ -2097,7 +2284,9 @@ function applyLanguageToUI(){
         const leftWrap = document.createElement('span');
         leftWrap.appendChild(raritySpan);
         leftWrap.appendChild(catSpan);
-        leftWrap.appendChild(document.createTextNode(item.name));
+        const itemName = localizeShopName(item);
+        const itemDesc = localizeShopDesc(item);
+        leftWrap.appendChild(document.createTextNode(itemName));
 
         const costSpan = document.createElement('span');
         costSpan.className = 'shop-cost';
@@ -2120,36 +2309,36 @@ function applyLanguageToUI(){
 
         const desc = document.createElement('div');
         desc.className = 'shop-desc';
-        desc.textContent = item.desc;
+        desc.textContent = itemDesc;
 
         const btn = document.createElement('button');
         btn.className = 'shop-buy';
-        btn.textContent = '구매';
-        btn.title = '구매하면 크레딧이 소모됩니다.';
+        btn.textContent = t('buy');
+        btn.title = t('buySpendTitle');
         const lim2 = getShopRemaining(item.id);
         if (lim2 && lim2.remaining <= 0) {
           btn.disabled = true;
-          btn.textContent = '구매 불가';
-          btn.title = lim2.type === 'daily' ? '오늘 구매 제한에 도달했습니다.' : '이미 구매한 영구 아이템입니다.';
+          btn.textContent = t('buyUnavailable');
+          btn.title = lim2.type === 'daily' ? t('buyDailyLimit') : t('buyOnceLimit');
         }
         btn.addEventListener('click', () => {
           // purchase cap check (daily/once)
           const cap = canBuyShopItem(item.id);
           if (!cap.ok) {
-            log(`[상점] ${cap.reason}`, 'shop');
+            log(t('shopLog', { msg: cap.reason }), 'shop');
             showToast(cap.reason, 'shop');
             return;
           }
 
           if (state.credits < item.cost) {
-            log(`[상점] 크레딧이 부족합니다. (필요: ${item.cost})`, 'shop');
-            showToast('크레딧이 부족합니다.', 'shop');
+            log(t('shopLog', { msg: `${t('notEnoughCredits')} (Need: ${item.cost})` }), 'shop');
+            showToast(t('notEnoughCredits'), 'shop');
             return;
           }
           // 고가/고희귀 구매 확인
           const rr = rarityRank[item.rarity] || 0;
           if (rr >= 4) {
-            const ok = window.confirm(`${item.name} (${item.rarity}) 을(를) 구매할까요?\n💰 ${item.cost} 크레딧이 소모됩니다.`);
+            const ok = window.confirm(`${itemName} (${item.rarity})\n💰 ${item.cost}`);
             if (!ok) return;
           }
           state.credits -= item.cost;
@@ -2158,11 +2347,11 @@ function applyLanguageToUI(){
           markShopPurchase(item.id);
 
           state.stats.shopPurchaseCount++;
-          log(`[상점] ${item.name} 구매 (💰 -${item.cost})`, 'shop');
+          log(t('shopLog', { msg: t('shopBought', { name: itemName, cost: item.cost }) }), 'shop');
           if (item.id === 'energy_pack') {
             showToast(t('energyPackToast', { v: state.items.energyPack }), 'shop');
           } else {
-            showToast(`${item.name} 구매 완료`, 'shop');
+            showToast(`${itemName} ${t('buyDone')}`, 'shop');
           }
           if (state.stats.shopPurchaseCount >= 3) unlockAchievement('shop_first_buy');
           updateStatsUI();
@@ -2296,7 +2485,7 @@ function applyLanguageToUI(){
         const existing = getOwnedCode(chosen.id);
         if (!existing) {
           addCodeInstanceFromTemplate(chosen.id);
-          log(`새 코드 발견! ${chosen.name} [${chosen.rarity}]`, 'scan');
+          log(t('scanFound', { name: chosen.name, rarity: chosen.rarity }), 'scan');
           const def = codeDefs[chosen.id];
           if (def && (def.rarity === 'EPIC' || def.rarity === 'LEGENDARY')) {
             unlockAchievement('get_epic_code');
@@ -2305,7 +2494,7 @@ function applyLanguageToUI(){
           const shardGain = getShardGainByRarity(rarity);
           existing.shards = (existing.shards || 0) + shardGain;
           state.stats.codeShardsTotal = (state.stats.codeShardsTotal || 0) + shardGain;
-          log(`중복 코드 감지: ${chosen.name} [${rarity}] → 중복 조각 +${shardGain} (보유 ${existing.shards}).`, 'scan');
+          log(t('scanDuplicate', { name: chosen.name, rarity, gain: shardGain, have: existing.shards }), 'scan');
           showToast(`${chosen.name} 조각 +${shardGain}`, 'scan');
           const def = codeDefs[existing.id];
           if (def && (def.rarity === 'EPIC' || def.rarity === 'LEGENDARY')) {
@@ -2315,7 +2504,7 @@ function applyLanguageToUI(){
 
         const expGain = 2 + modifiers.scanExtraExp;
         addExp(expGain);
-        log(`코드 스캔 완료: 경험치 +${expGain}.`, 'scan');
+        log(t('scanDone', { exp: expGain }), 'scan');
         onTutorialAction('scan');
 
         checkAchievements('scan');
@@ -2337,7 +2526,7 @@ function applyLanguageToUI(){
 
       const code = getActiveCodeInstance();
       if (!code) {
-        log('보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', 'hack');
+        log(t('noOwnedCodes'), 'hack');
         return;
       }
       const def = codeDefs[code.id];
@@ -2347,7 +2536,7 @@ function applyLanguageToUI(){
         return;
       }
       if (state.level < server.minLevel) {
-        log(`해당 서버를 해킹하려면 최소 Lv.${server.minLevel} 이상이어야 합니다.`, 'hack');
+        log(t('serverLevelNeed', { lv: server.minLevel }), 'hack');
         return;
       }
 
@@ -2445,7 +2634,7 @@ function applyLanguageToUI(){
         }
       } else {
         log(
-          `서버 해킹 실패. [${server.name}] 성공 확률 ${Math.round(successChance * 100)}%였음.`,
+          t('hackFailLog', { server: localizeServerName(server), chance: Math.round(successChance * 100) }),
           'hack'
         );
 
@@ -2594,7 +2783,7 @@ function applyLanguageToUI(){
               'system'
             );
           
-            showToast(`미션 완료: ${def.name} (크레딧 +${def.rewardCredits})`, 'mission');
+            showToast(t('missionDoneToast', { name: localizeMissionName(def), reward: t('missionDoneCredits', { v: def.rewardCredits }) }), 'mission');
 }
           return;
         }
@@ -2676,8 +2865,8 @@ function applyLanguageToUI(){
         const main = document.createElement('div');
         main.className = 'mission-main';
         main.innerHTML = `
-          <div>${def.name}</div>
-          <div class="mission-progress">${def.desc} (${progVal} / ${def.target})</div>
+          <div>${localizeMissionName(def)}</div>
+          <div class="mission-progress">${localizeMissionDesc(def)} (${progVal} / ${def.target})</div>
           <div class="mission-reward">${t('reward')}: ${def.rewardCredits ? (t('credits') + ' +' + def.rewardCredits) : ''}${def.rewardEnergyPack ? ((def.rewardCredits ? ' / ' : '') + (t('energyPack') + ' +' + def.rewardEnergyPack)) : ''}${(!def.rewardCredits && !def.rewardEnergyPack) ? t('none') : ''}</div>
         `;
 
@@ -2696,8 +2885,9 @@ function applyLanguageToUI(){
       const def = achievementDefs.find(a => a.id === id);
       if (!def) return;
       state.achievements[id] = true;
-      log(t('achievementLog', { name: def.name }), 'system');
-      showToast(t('toastAchievement', { name: def.name }), 'achievement');
+      const achName = localizeAchievementName(def);
+      log(t('achievementLog', { name: achName }), 'system');
+      showToast(t('toastAchievement', { name: achName }), 'achievement');
       renderAchievements();
       checkMissions('general'); // 업적 기반 GENERAL QUEST 체크
     }
@@ -2801,10 +2991,10 @@ function applyLanguageToUI(){
         const main = document.createElement('div');
         main.className = 'achievement-main';
 
-        const displayName = def.hidden && !completed ? '???' : def.name;
+        const displayName = def.hidden && !completed ? '???' : localizeAchievementName(def);
         const displayDesc = def.hidden && !completed
           ? t('hiddenAchievement')
-          : def.desc;
+          : localizeAchievementDesc(def);
 
         let diffClass = 'diff-easy';
         if (def.difficulty === 'normal') diffClass = 'diff-normal';
@@ -3300,6 +3490,7 @@ function applyLanguageToUI(){
         state.ui.lang = setLanguage.value || 'ko';
         applyLanguageToUI();
         updateStatsUI();
+        renderServers();
         renderShop();
         renderMissions();
         renderAchievements();
@@ -3954,17 +4145,17 @@ function applyLanguageToUI(){
   const nav = document.createElement('nav');
   nav.className = 'mobile-tabs mobile-simple-tabs';
   nav.innerHTML = `
-    <button type="button" data-view="home">HOME</button>
-    <button type="button" data-view="codes">CODES</button>
-    <button type="button" data-view="shop">SHOP</button>
-    <button type="button" data-view="soon">COMING SOON</button>
+    <button type="button" data-view="home">${t('mobileHome')}</button>
+    <button type="button" data-view="codes">${t('mobileCodes')}</button>
+    <button type="button" data-view="shop">${t('mobileShop')}</button>
+    <button type="button" data-view="soon">${t('mobileComing')}</button>
   `;
   document.body.appendChild(nav);
 
   let currentView = 'home';
   function setView(view){
     if(view === 'soon'){
-      toast('Coming Soon - 준비 중인 기능입니다.', 'system');
+      toast(t('comingSoonToast'), 'system');
       nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === currentView));
       return;
     }
@@ -4103,10 +4294,10 @@ function applyLanguageToUI(){
   const wrap = document.createElement('div');
   wrap.className = 'mobile-simple-tabs';
   wrap.innerHTML = `
-    <button type="button" data-mobile-tab="home">HOME</button>
-    <button type="button" data-mobile-tab="codes">CODES</button>
-    <button type="button" data-mobile-tab="shop">SHOP</button>
-    <button type="button" data-mobile-tab="coming">COMING SOON</button>
+    <button type="button" data-mobile-tab="home">${t('mobileHome')}</button>
+    <button type="button" data-mobile-tab="codes">${t('mobileCodes')}</button>
+    <button type="button" data-mobile-tab="shop">${t('mobileShop')}</button>
+    <button type="button" data-mobile-tab="coming">${t('mobileComing')}</button>
   `;
   body.appendChild(wrap);
 
@@ -4134,7 +4325,7 @@ function applyLanguageToUI(){
     if(!btn) return;
     const tab = btn.dataset.mobileTab;
     if(tab === 'coming') {
-      showToast('Coming Soon - 준비 중인 기능입니다.', 'system');
+      showToast(t('comingSoonToast'), 'system');
       return;
     }
     setSimpleTab(tab);
