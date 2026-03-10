@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.12(k2)';
+    const CURRENT_VERSION = 'v1.6.13(k1)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -93,6 +93,16 @@
 
     // 업데이트 로그
     const updateLogs = [
+
+      {
+        version: 'v1.6.13(k1)',
+        lines: [
+          '상점 분류 UI를 드롭다운에서 탭형 버튼으로 교체했습니다. 모바일에서도 한 번에 누르기 쉽게 정리했습니다.',
+          '업적 50개를 신규 추가했습니다. 스캔, 해킹, 성장, 코드 관리, 수집 진행도까지 더 넓게 추적합니다.',
+          '코드 도감을 추가했습니다. 전체 코드 목록, 발견 여부, 희귀도, 기본 파워, 설명을 한 번에 확인할 수 있습니다.',
+          '더보기 탭 구성에 코드 도감을 추가하고 업데이트 로그를 v1.6.13 기준으로 갱신했습니다.'
+        ]
+      },
 
       {
         version: 'v1.6.12(k2)',
@@ -303,7 +313,11 @@
         creditsEarnedTotal: 0,
         missionsCompletedTotal: 0,
         riskHackSuccessCount: 0,
-        codeShardsTotal: 0
+        codeShardsTotal: 0,
+        codeUpgradeCount: 0,
+        codeSyncCount: 0,
+        codeEvolutionCount: 0,
+        energyPacksUsed: 0
       }
     };
 
@@ -717,7 +731,7 @@
     };
 
     // 업적 정의 (확장)
-    const achievementDefs = [
+    let achievementDefs = [
       // EASY
       { id: 'first_hack_success',   name: '첫 침입',           desc: '처음으로 서버 해킹에 성공했습니다.',         difficulty: 'easy',   hidden: false },
       { id: 'reach_level3',         name: '초보 해커',         desc: '플레이어 레벨 3에 도달했습니다.',             difficulty: 'easy',   hidden: false },
@@ -745,6 +759,61 @@
       { id: 'risk_10_success',      name: '위험한 승부사',     desc: '위험 해킹 모드로 해킹 성공 10회를 달성했습니다.',difficulty: 'hard',  hidden: true  }
     ];
 
+
+    const extraAchievementDefs = [
+      { id: 'scan_total_75', name: '스캔 누적 I', desc: '코드 스캔을 75회 수행했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'scan_total_120', name: '스캔 누적 II', desc: '코드 스캔을 120회 수행했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'scan_total_200', name: '스캔 누적 III', desc: '코드 스캔을 200회 수행했습니다.', difficulty: 'normal', hidden: true },
+      { id: 'scan_total_350', name: '스캔 누적 IV', desc: '코드 스캔을 350회 수행했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'scan_total_500', name: '스캔 누적 V', desc: '코드 스캔을 500회 수행했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'hack_total_10', name: '해킹 누적 I', desc: '해킹 성공 10회를 달성했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'hack_total_60', name: '해킹 누적 II', desc: '해킹 성공 60회를 달성했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'hack_total_120', name: '해킹 누적 III', desc: '해킹 성공 120회를 달성했습니다.', difficulty: 'normal', hidden: true },
+      { id: 'hack_total_250', name: '해킹 누적 IV', desc: '해킹 성공 250회를 달성했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'level_total_5', name: '레벨 브론즈', desc: '플레이어 레벨 5에 도달했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'level_total_15', name: '레벨 실버', desc: '플레이어 레벨 15에 도달했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'level_total_20', name: '레벨 골드', desc: '플레이어 레벨 20에 도달했습니다.', difficulty: 'normal', hidden: true },
+      { id: 'level_total_25', name: '레벨 플래티넘', desc: '플레이어 레벨 25에 도달했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'credits_total_1000', name: '자본 시동', desc: '누적 획득 크레딧 1000을 달성했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'credits_total_10000', name: '자본 축적', desc: '누적 획득 크레딧 10000을 달성했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'credits_total_50000', name: '자본 확대', desc: '누적 획득 크레딧 50000을 달성했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'missions_total_25', name: '퀘스트 러너 II', desc: '퀘스트 25개를 완료했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'missions_total_50', name: '퀘스트 러너 III', desc: '퀘스트 50개를 완료했습니다.', difficulty: 'normal', hidden: true },
+      { id: 'missions_total_100', name: '퀘스트 러너 IV', desc: '퀘스트 100개를 완료했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'shop_total_10', name: '쇼핑 루키', desc: '상점에서 10회 구매했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'shop_total_25', name: '쇼핑 중수', desc: '상점에서 25회 구매했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'shop_total_50', name: '쇼핑 고수', desc: '상점에서 50회 구매했습니다.', difficulty: 'normal', hidden: true },
+      { id: 'energy_spent_100', name: '연료 점화', desc: '에너지를 누적 100 소모했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'energy_spent_500', name: '연료 과열', desc: '에너지를 누적 500 소모했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'energy_spent_1000', name: '연료 폭주', desc: '에너지를 누적 1000 소모했습니다.', difficulty: 'normal', hidden: true },
+      { id: 'risk_total_5', name: '리스크 테스트', desc: '위험 해킹 모드로 5회 성공했습니다.', difficulty: 'easy', hidden: true },
+      { id: 'risk_total_25', name: '리스크 러너', desc: '위험 해킹 모드로 25회 성공했습니다.', difficulty: 'normal', hidden: true },
+      { id: 'codex_total_1', name: '도감 입문', desc: '코드 도감에서 1종을 발견했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'codex_total_3', name: '도감 수집 I', desc: '코드 도감에서 3종을 발견했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'codex_total_5', name: '도감 수집 II', desc: '코드 도감에서 5종을 발견했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'codex_total_6', name: '도감 완성', desc: '현재 코드 도감의 모든 코드를 발견했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'code_power_30', name: '파워 셋업', desc: '코드 파워 30 이상을 달성했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'code_power_50', name: '파워 튜닝', desc: '코드 파워 50 이상을 달성했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'code_power_80', name: '파워 드라이브', desc: '코드 파워 80 이상을 달성했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'code_level_3', name: '코드 육성 I', desc: '코드 레벨 3 이상을 달성했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'code_level_5', name: '코드 육성 II', desc: '코드 레벨 5 이상을 달성했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'code_level_10', name: '코드 육성 III', desc: '코드 레벨 10 이상을 달성했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'code_upgrade_1', name: '첫 강화', desc: '코드를 1회 강화했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'code_upgrade_5', name: '강화 루틴', desc: '코드를 5회 강화했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'code_upgrade_15', name: '강화 전문가', desc: '코드를 15회 강화했습니다.', difficulty: 'normal', hidden: true },
+      { id: 'code_sync_1', name: '첫 동기화', desc: '코드를 1회 동기화했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'code_sync_3', name: '동기화 루틴', desc: '코드를 3회 동기화했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'code_sync_8', name: '동기화 전문가', desc: '코드를 8회 동기화했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'sync_level_1', name: '동기화 단계 I', desc: '코드 동기화 1단계를 달성했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'sync_level_3', name: '동기화 단계 II', desc: '코드 동기화 3단계를 달성했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'code_evolve_1', name: '첫 진화', desc: '코드를 1회 진화시켰습니다.', difficulty: 'normal', hidden: false },
+      { id: 'code_evolve_3', name: '진화 루틴', desc: '코드를 3회 진화시켰습니다.', difficulty: 'hard', hidden: true },
+      { id: 'shards_total_10', name: '조각 수집 I', desc: '중복 조각을 누적 10개 획득했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'shards_total_30', name: '조각 수집 II', desc: '중복 조각을 누적 30개 획득했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'energy_pack_1', name: '비상 보급', desc: '에너지 팩을 1회 사용했습니다.', difficulty: 'easy', hidden: true },
+    ];
+    achievementDefs.push(...extraAchievementDefs);
+
     // DOM
     const statLevel = document.getElementById('statLevel');
     const statExp = document.getElementById('statExp');
@@ -768,7 +837,8 @@
 
     const shopList = document.getElementById('shopList');
     const shopSortSelect = document.getElementById('shopSortSelect');
-    const shopCategoryFilter = document.getElementById('shopCategoryFilter');
+    const shopCategoryTabs = document.getElementById('shopCategoryTabs');
+    const shopCategoryTabButtons = document.querySelectorAll('.shop-category-tab');
     const serverSelect = document.getElementById('serverSelect');
 
     const codeListEl = document.getElementById('codeList');
@@ -798,6 +868,8 @@
 
     const missionListEl = document.getElementById('missionList');
     const achievementListEl = document.getElementById('achievementList');
+    const codexListEl = document.getElementById('codexList');
+    const codexSummaryEl = document.getElementById('codexSummary');
 
     const chkRiskMode = document.getElementById('chkRiskMode');
     const loadoutSelect = document.getElementById('loadoutSelect');
@@ -814,6 +886,7 @@
     const tabUpdate = document.getElementById('tabUpdate');
     const tabMission = document.getElementById('tabMission');
     const tabAchievement = document.getElementById('tabAchievement');
+    const tabCodex = document.getElementById('tabCodex');
     const tabLogs = document.getElementById('tabLogs');
     const tabSettings = document.getElementById('tabSettings');
     const tabSave = document.getElementById('tabSave');
@@ -1044,6 +1117,7 @@
       renderCodeDetail();
       renderMissions();
       renderAchievements();
+      renderCodex();
     }
 
 
@@ -1270,6 +1344,76 @@
       });
     }
 
+
+    function getCodexDiscoveredCount() {
+      return Object.keys(codeDefs).filter(id => !!getOwnedCode(id)).length;
+    }
+
+    function getHighestCodePower() {
+      return ownedCodes.reduce((max, code) => Math.max(max, code.power || 0), 0);
+    }
+
+    function getHighestCodeLevel() {
+      return ownedCodes.reduce((max, code) => Math.max(max, code.level || 0), 0);
+    }
+
+    function getHighestSyncLevel() {
+      return ownedCodes.reduce((max, code) => Math.max(max, code.syncLevel || 0), 0);
+    }
+
+    function countCodesByRarity(rarity) {
+      return ownedCodes.filter(code => code.rarity === rarity).length;
+    }
+
+    function renderCodex() {
+      if (!codexListEl) return;
+      const defs = Object.values(codeDefs).sort((a, b) => {
+        const rarityGap = rarityOrder.indexOf(b.rarity) - rarityOrder.indexOf(a.rarity);
+        if (rarityGap !== 0) return rarityGap;
+        return a.name.localeCompare(b.name);
+      });
+      const discovered = getCodexDiscoveredCount();
+      if (codexSummaryEl) {
+        codexSummaryEl.textContent = `발견 ${discovered} / ${defs.length}`;
+      }
+      codexListEl.innerHTML = '';
+      defs.forEach(def => {
+        const owned = getOwnedCode(def.id);
+        const item = document.createElement('div');
+        item.className = 'codex-item' + (owned ? ' discovered' : ' hidden');
+
+        const head = document.createElement('div');
+        head.className = 'codex-head';
+
+        const nameWrap = document.createElement('div');
+        const title = document.createElement('strong');
+        title.className = 'rarity-' + def.rarity.toLowerCase();
+        title.textContent = owned ? def.name : '???';
+        const meta = document.createElement('div');
+        meta.className = 'small';
+        meta.textContent = owned
+          ? `[${def.rarity}] 기본 파워 ${def.basePower} · 보유 Lv.${owned.level} / PWR ${owned.power}`
+          : `[${def.rarity}] 미발견 코드`;
+        nameWrap.appendChild(title);
+        nameWrap.appendChild(meta);
+
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = owned ? 'DISCOVERED' : 'LOCKED';
+
+        head.appendChild(nameWrap);
+        head.appendChild(badge);
+
+        const body = document.createElement('div');
+        body.className = 'small codex-desc';
+        body.textContent = owned ? def.description : '아직 발견하지 못한 코드입니다. 코드 스캔으로 해제하세요.';
+
+        item.appendChild(head);
+        item.appendChild(body);
+        codexListEl.appendChild(item);
+      });
+    }
+
     function renderCodeList() {
       codeListEl.innerHTML = '';
       if (ownedCodes.length === 0) {
@@ -1406,6 +1550,7 @@
       code.syncLevel += 1;
       const powerBonus = getSyncPowerBonus(code.rarity);
       code.power += powerBonus;
+      state.stats.codeSyncCount = (state.stats.codeSyncCount || 0) + 1;
 
       log(`코드 동기화 완료: ${code.name} 동기화 ${code.syncLevel}단계 달성. 파워 +${powerBonus}, 성공률 보정 +${Math.round(getSyncSuccessBonus(code.syncLevel) * 100)}%.`, 'system');
       showToast(`${code.name} 동기화 ${code.syncLevel}단계`, 'system');
@@ -1426,6 +1571,7 @@
       state.credits -= cost;
       code.level++;
       code.power += 5;
+      state.stats.codeUpgradeCount = (state.stats.codeUpgradeCount || 0) + 1;
       log(`코드 강화: ${code.name} Lv.${code.level} (파워 +5 → ${code.power}), 크레딧 -${cost}.`, 'system');
       updateStatsUI();
       checkMissions('general');
@@ -1453,6 +1599,7 @@
       const nextRarity = rarityOrder[idx + 1];
       code.rarity = nextRarity;
       code.power += 10;
+      state.stats.codeEvolutionCount = (state.stats.codeEvolutionCount || 0) + 1;
       log(`코드 진화 성공: ${code.name}가 ${nextRarity} 등급으로 승급, 파워 +10 → ${code.power}.`, 'system');
 
       if (nextRarity === 'EPIC' || nextRarity === 'LEGENDARY') {
@@ -1596,6 +1743,9 @@
 
       const mode = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       const categoryMode = (state.ui && state.ui.shopCategory) ? state.ui.shopCategory : 'all';
+      if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
+        shopCategoryTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.category === categoryMode));
+      }
       const items = shopItems.filter(item => categoryMode === 'all' ? true : item.category === categoryMode);
 
       if (mode === 'rarity') {
@@ -2245,15 +2395,76 @@
       if (state.stats.scanCount >= 50) unlockAchievement('scan_50');
 
       if (ownedCodes.length >= 3) unlockAchievement('collector_beginner');
-
       if (state.stats.hackSuccessCount >= 30) unlockAchievement('hack_30_success');
-
       if (state.energyMax >= 25) unlockAchievement('energy_max_25');
-
       if (state.stats.creditsEarnedTotal >= 5000) unlockAchievement('credits_5000');
       if (state.stats.creditsEarnedTotal >= 20000) unlockAchievement('credits_20000');
-
       if (state.stats.missionsCompletedTotal >= 10) unlockAchievement('mission_10');
+
+      const completedAchievements = Object.keys(state.achievements).length;
+      const discoveredCodes = getCodexDiscoveredCount();
+      const highestPower = getHighestCodePower();
+      const highestLevel = getHighestCodeLevel();
+      const highestSync = getHighestSyncLevel();
+      const legendaryCount = countCodesByRarity('LEGENDARY');
+      const epicPlusCount = countCodesByRarity('EPIC') + legendaryCount;
+      const rarePlusCount = countCodesByRarity('RARE') + epicPlusCount;
+      const totalShards = state.stats.codeShardsTotal || 0;
+      const upgrades = state.stats.codeUpgradeCount || 0;
+      const syncs = state.stats.codeSyncCount || 0;
+      const evolves = state.stats.codeEvolutionCount || 0;
+      const packsUsed = state.stats.energyPacksUsed || 0;
+
+      const thresholds = {
+        scan: [75, 120, 200, 350, 500, 800, 1200, 2000],
+        hack: [10, 60, 120, 250, 400, 700],
+        level: [5, 15, 20, 25, 30, 40, 50],
+        credits: [1000, 10000, 50000, 100000, 250000],
+        missions: [25, 50, 100, 160],
+        purchases: [10, 25, 50, 80, 120],
+        energySpent: [100, 500, 1000, 2500, 4000],
+        risk: [5, 25, 50, 100, 180],
+        codex: [1, 3, 5, 6],
+        power: [30, 50, 80, 120],
+        codeLevel: [3, 5, 10, 15],
+        upgrades: [1, 5, 15, 30],
+        sync: [1, 3, 8, 15],
+        syncLevel: [1, 3, 5],
+        evolves: [1, 3, 6],
+        shards: [10, 30, 60, 120],
+        packs: [1, 5],
+        achievement: [10, 20, 30, 45, 60]
+      };
+
+      thresholds.scan.forEach(v => { if (state.stats.scanCount >= v) unlockAchievement(`scan_total_${v}`); });
+      thresholds.hack.forEach(v => { if (state.stats.hackSuccessCount >= v) unlockAchievement(`hack_total_${v}`); });
+      thresholds.level.forEach(v => { if (state.level >= v) unlockAchievement(`level_total_${v}`); });
+      thresholds.credits.forEach(v => { if (state.stats.creditsEarnedTotal >= v) unlockAchievement(`credits_total_${v}`); });
+      thresholds.missions.forEach(v => { if (state.stats.missionsCompletedTotal >= v) unlockAchievement(`missions_total_${v}`); });
+      thresholds.purchases.forEach(v => { if (state.stats.shopPurchaseCount >= v) unlockAchievement(`shop_total_${v}`); });
+      thresholds.energySpent.forEach(v => { if (state.stats.energySpentTotal >= v) unlockAchievement(`energy_spent_${v}`); });
+      thresholds.risk.forEach(v => { if (state.stats.riskHackSuccessCount >= v) unlockAchievement(`risk_total_${v}`); });
+      thresholds.codex.forEach(v => { if (discoveredCodes >= v) unlockAchievement(`codex_total_${v}`); });
+      thresholds.power.forEach(v => { if (highestPower >= v) unlockAchievement(`code_power_${v}`); });
+      thresholds.codeLevel.forEach(v => { if (highestLevel >= v) unlockAchievement(`code_level_${v}`); });
+      thresholds.upgrades.forEach(v => { if (upgrades >= v) unlockAchievement(`code_upgrade_${v}`); });
+      thresholds.sync.forEach(v => { if (syncs >= v) unlockAchievement(`code_sync_${v}`); });
+      thresholds.syncLevel.forEach(v => { if (highestSync >= v) unlockAchievement(`sync_level_${v}`); });
+      thresholds.evolves.forEach(v => { if (evolves >= v) unlockAchievement(`code_evolve_${v}`); });
+      thresholds.shards.forEach(v => { if (totalShards >= v) unlockAchievement(`shards_total_${v}`); });
+      thresholds.packs.forEach(v => { if (packsUsed >= v) unlockAchievement(`energy_pack_${v}`); });
+      thresholds.achievement.forEach(v => { if (completedAchievements >= v) unlockAchievement(`achievement_total_${v}`); });
+
+      if (countCodesByRarity('COMMON') >= 2) unlockAchievement('rarity_common_2');
+      if (countCodesByRarity('RARE') >= 2) unlockAchievement('rarity_rare_2');
+      if (epicPlusCount >= 2) unlockAchievement('rarity_epic_plus_2');
+      if (legendaryCount >= 1) unlockAchievement('legendary_1');
+      if (legendaryCount >= 2) unlockAchievement('legendary_2');
+      if (rarePlusCount >= 4) unlockAchievement('rare_plus_4');
+      if (state.cpuTier >= 5) unlockAchievement('cpu_tier_5_plus');
+      if (state.cpuTier >= 10) unlockAchievement('cpu_tier_10_plus');
+      if (state.energyMax >= 30) unlockAchievement('energy_max_30_plus');
+      if (state.energyMax >= 40) unlockAchievement('energy_max_40_plus');
     }
 
     function renderAchievements() {
@@ -2383,6 +2594,7 @@
         update: tabUpdate,
         mission: tabMission,
         achievement: tabAchievement,
+        codex: tabCodex,
         logs: tabLogs,
         settings: tabSettings,
         save: tabSave
@@ -2584,6 +2796,11 @@
         if (Array.isArray(data.ownedCodes)) {
           ownedCodes.length = 0;
           data.ownedCodes.forEach(c => { c.shards = c.shards || 0; c.syncLevel = c.syncLevel || 0; ownedCodes.push(c); });
+          data.stats = data.stats || {};
+          data.stats.codeUpgradeCount = data.stats.codeUpgradeCount || 0;
+          data.stats.codeSyncCount = data.stats.codeSyncCount || 0;
+          data.stats.codeEvolutionCount = data.stats.codeEvolutionCount || 0;
+          data.stats.energyPacksUsed = data.stats.energyPacksUsed || 0;
         }
         if (data.modifiers) {
           Object.assign(modifiers, data.modifiers);

@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=1.6.12" rel="stylesheet"/>
+<link href="style.css?v=1.6.13" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.12 (Web)</span>
+<span class="header-version">v1.6.13 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle">Hacking Code Simulator Game</span>
@@ -78,13 +78,13 @@
 <option value="name">이름순</option>
 </select>
 <span class="shop-sort-label">분류</span>
-<select id="shopCategoryFilter" title="상점 카테고리 필터를 선택합니다.">
-<option value="all">전체</option>
-<option value="ENERGY">에너지</option>
-<option value="SYSTEM">시스템</option>
-<option value="ECONOMY">경제</option>
-<option value="UTILITY">유틸리티</option>
-</select>
+<div class="shop-category-tabs" id="shopCategoryTabs" aria-label="상점 카테고리">
+<button type="button" class="shop-category-tab active" data-category="all">전체</button>
+<button type="button" class="shop-category-tab" data-category="ENERGY">에너지</button>
+<button type="button" class="shop-category-tab" data-category="SYSTEM">시스템</button>
+<button type="button" class="shop-category-tab" data-category="ECONOMY">경제</button>
+<button type="button" class="shop-category-tab" data-category="UTILITY">유틸</button>
+</div>
 </div>
 <div class="stat-box" id="shopList"></div>
 </div>
@@ -180,6 +180,7 @@
 <button class="more-tab-button active" data-tab="update">업데이트 로그</button>
 <button class="more-tab-button" data-tab="mission">미션</button>
 <button class="more-tab-button" data-tab="achievement">업적</button>
+<button class="more-tab-button" data-tab="codex">코드 도감</button>
 <button class="more-tab-button" data-tab="logs">로그</button>
 <button class="more-tab-button" data-tab="settings">설정</button>
 <button class="more-tab-button" data-tab="save">데이터</button>
@@ -227,6 +228,13 @@
 <span>업적</span>
 </div>
 <div class="stat-box" id="achievementList"></div>
+</div>
+<div class="more-tab-panel" id="tabCodex">
+<div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+<div><span class="badge">CODEX</span><span>코드 도감</span></div>
+<div class="small" id="codexSummary">발견 0 / 0</div>
+</div>
+<div class="stat-box" id="codexList"></div>
 </div>
 <!-- 로그 탭 -->
 <div class="more-tab-panel" id="tabLogs">
@@ -368,5 +376,5 @@
 
 
 
-<script src="app.js?v=1.6.12"></script></body>
+<script src="app.js?v=1.6.13"></script></body>
 </html>
