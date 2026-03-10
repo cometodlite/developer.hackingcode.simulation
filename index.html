@@ -77,6 +77,14 @@
 <option value="price">가격순</option>
 <option value="name">이름순</option>
 </select>
+<span class="shop-sort-label">분류</span>
+<select id="shopCategoryFilter" title="상점 카테고리 필터를 선택합니다.">
+<option value="all">전체</option>
+<option value="ENERGY">에너지</option>
+<option value="SYSTEM">시스템</option>
+<option value="ECONOMY">경제</option>
+<option value="UTILITY">유틸리티</option>
+</select>
 </div>
 <div class="stat-box" id="shopList"></div>
 </div>
@@ -136,7 +144,7 @@
 <div id="codeDetail">
 <div class="small">보유 중인 코드를 선택하면 상세 정보가 표시됩니다.</div>
 </div>
-<div class="button-row" style="margin-top:8px;">
+<div class="button-row code-action-row" style="margin-top:8px;">
 <button id="btnUpgradeCode" title="선택한 코드를 강화합니다. 크레딧 소모, 파워 증가.">코드 강화</button>
 <button id="btnSyncCode" title="중복 조각을 사용해 코드 동기화 단계를 올립니다.">코드 동기화</button>
 <button id="btnEvolveCode" title="조건을 만족하면 선택한 코드를 상위 희귀도로 진화합니다.">코드 진화</button>
@@ -311,8 +319,8 @@
 <div class="small" style="margin-top:6px;">
               · 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.
             </div>
-<div class="button-row" style="margin-top:8px;">
-<button id="btnOpenTutorial" title="초기 튜토리얼을 다시 확인합니다.">튜토리얼 다시 보기</button>
+<div class="button-row code-action-row" style="margin-top:8px;">
+
 </div>
 
 </div>
@@ -351,29 +359,6 @@
 </div>
 </div>
 </div>
-<div id="tutorialBackdrop" aria-hidden="true">
-<div id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
-  <div id="tutorialHeader">
-    <div>
-      <span class="badge">TUTORIAL</span>
-      <h2 id="tutorialTitle">초기 가이드</h2>
-    </div>
-    <button id="btnTutorialSkip" title="튜토리얼 건너뛰기">건너뛰기</button>
-  </div>
-  <div id="tutorialBody">
-    <div id="tutorialStepLabel" class="small">STEP 1 / 6</div>
-    <h3 id="tutorialStepTitle">환영합니다</h3>
-    <p id="tutorialStepText">여기는 HCSiG입니다.</p>
-    <div id="tutorialStepHint" class="small"></div>
-  </div>
-  <div id="tutorialFooter">
-    <button id="btnTutorialPrev">이전</button>
-    <button id="btnTutorialNext">다음</button>
-    <button id="btnTutorialFinish" style="display:none;">시작하기</button>
-  </div>
-</div>
-</div>
-
 <div id="toastContainer"></div>
 
 

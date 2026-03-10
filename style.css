@@ -1507,3 +1507,44 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
     z-index: 10020 !important;
   }
 }
+
+
+/* v1.6.12(k2) shop category + mobile code actions */
+#shopCategoryFilter{ min-width: 110px; }
+.code-next-meta{ opacity: 0.92; }
+.code-action-row button{ flex:1 1 0; }
+
+@media (max-width: 900px){
+  .shop-sort-row{
+    display:grid !important;
+    grid-template-columns: auto 1fr;
+    gap:8px;
+    align-items:center;
+  }
+  .shop-sort-row select{
+    width:100%;
+    min-width:0;
+  }
+  .code-action-row{
+    display:grid !important;
+    grid-template-columns: 1fr;
+    gap:8px;
+    position: sticky;
+    bottom: calc(10px + var(--safe-bottom, 0px));
+    z-index: 4;
+    padding-top: 8px;
+    background: linear-gradient(180deg, rgba(11,18,32,0), rgba(11,18,32,0.92) 18%, rgba(11,18,32,0.98));
+  }
+  .code-action-row button{
+    min-height: 46px;
+    font-size: 15px;
+  }
+  body.mobile-simple-ui #mobileSimpleCodes .codes-merged > .stat-box:last-child{
+    padding-bottom: calc(120px + var(--safe-bottom, 0px));
+  }
+}
+
+#btnOpenTutorial,
+#tutorialBackdrop{
+  display:none !important;
+}
