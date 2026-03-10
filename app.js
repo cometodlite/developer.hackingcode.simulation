@@ -336,12 +336,82 @@
         basePower: 18,
         description: '해킹 시 대상 서버 보안 -10%를 적용합니다.'
       },
+      pulse_ping: {
+        id: 'pulse_ping',
+        name: 'Pulse_Ping',
+        rarity: 'COMMON',
+        basePower: 16,
+        description: '해킹 성공 확률을 +3%p 증가시킵니다.'
+      },
+      cache_sniffer: {
+        id: 'cache_sniffer',
+        name: 'Cache_Sniffer',
+        rarity: 'COMMON',
+        basePower: 17,
+        description: '해킹 성공 시 추가 크레딧 +8을 획득합니다.'
+      },
+      shield_bypass: {
+        id: 'shield_bypass',
+        name: 'Shield_Bypass',
+        rarity: 'UNCOMMON',
+        basePower: 19,
+        description: '해킹 시 대상 서버 보안 -15%를 적용합니다.'
+      },
+      stack_tracer: {
+        id: 'stack_tracer',
+        name: 'Stack_Tracer',
+        rarity: 'UNCOMMON',
+        basePower: 20,
+        description: '해킹 성공 확률을 +5%p 증가시킵니다.'
+      },
+      credit_siphon: {
+        id: 'credit_siphon',
+        name: 'Credit_Siphon',
+        rarity: 'UNCOMMON',
+        basePower: 20,
+        description: '해킹 성공 시 크레딧 +15% 보정을 적용합니다.'
+      },
+      fallback_node: {
+        id: 'fallback_node',
+        name: 'Fallback_Node',
+        rarity: 'UNCOMMON',
+        basePower: 19,
+        description: '해킹 실패 시 12% 확률로 에너지 1을 즉시 회복합니다.'
+      },
       data_phantom: {
         id: 'data_phantom',
         name: 'Data_Phantom',
         rarity: 'RARE',
         basePower: 22,
         description: '해킹 성공 확률을 +10%p 증가시킵니다.'
+      },
+      auto_patch: {
+        id: 'auto_patch',
+        name: 'AutoPatch()',
+        rarity: 'RARE',
+        basePower: 20,
+        description: '해킹 실패 시 20% 확률로 경험치 +1 보정을 제공합니다.'
+      },
+      trace_scrambler: {
+        id: 'trace_scrambler',
+        name: 'Trace_Scrambler',
+        rarity: 'RARE',
+        basePower: 23,
+        description: '위험 해킹 모드의 성공률 페널티를 5%p 줄입니다.'
+      },
+      null_rewriter: {
+        id: 'null_rewriter',
+        name: 'Null_Rewriter',
+        rarity: 'RARE',
+        basePower: 24,
+        description: '해킹 성공 시 크레딧 +25% 보정을 적용합니다.'
+      },
+      rapid_exploit: {
+        id: 'rapid_exploit',
+        name: 'Rapid_Exploit',
+        rarity: 'RARE',
+        basePower: 22,
+        description: '해킹 성공 시 경험치 +3을 추가로 획득합니다.'
       },
       overflow_inject: {
         id: 'overflow_inject',
@@ -350,6 +420,20 @@
         basePower: 26,
         description: '성공 시 크레딧 +30%, 실패 시 에너지를 1 추가로 소모합니다.'
       },
+      fortress_breaker: {
+        id: 'fortress_breaker',
+        name: 'Fortress_Breaker',
+        rarity: 'EPIC',
+        basePower: 28,
+        description: '해킹 시 대상 서버 보안 -25%를 적용합니다.'
+      },
+      quantum_splice: {
+        id: 'quantum_splice',
+        name: 'Quantum_Splice',
+        rarity: 'EPIC',
+        basePower: 29,
+        description: '해킹 성공 확률 +12%p, 성공 시 크레딧 +20%를 적용합니다.'
+      },
       ghost_script: {
         id: 'ghost_script',
         name: 'Ghost_Script',
@@ -357,12 +441,12 @@
         basePower: 30,
         description: '해킹 성공 시 추가 레벨 업 1회를 발생시킵니다.'
       },
-      auto_patch: {
-        id: 'auto_patch',
-        name: 'AutoPatch()',
-        rarity: 'RARE',
-        basePower: 20,
-        description: '해킹 실패 시 20% 확률로 경험치 +1 보정을 제공합니다.'
+      singularity_root: {
+        id: 'singularity_root',
+        name: 'Singularity_Root',
+        rarity: 'LEGENDARY',
+        basePower: 34,
+        description: '해킹 성공 확률 +10%p, 성공 시 크레딧 +40%를 적용합니다.'
       }
     };
 
@@ -788,10 +872,10 @@
       { id: 'energy_spent_1000', name: '연료 폭주', desc: '에너지를 누적 1000 소모했습니다.', difficulty: 'normal', hidden: true },
       { id: 'risk_total_5', name: '리스크 테스트', desc: '위험 해킹 모드로 5회 성공했습니다.', difficulty: 'easy', hidden: true },
       { id: 'risk_total_25', name: '리스크 러너', desc: '위험 해킹 모드로 25회 성공했습니다.', difficulty: 'normal', hidden: true },
-      { id: 'codex_total_1', name: '도감 입문', desc: '코드 도감에서 1종을 발견했습니다.', difficulty: 'easy', hidden: false },
-      { id: 'codex_total_3', name: '도감 수집 I', desc: '코드 도감에서 3종을 발견했습니다.', difficulty: 'easy', hidden: false },
-      { id: 'codex_total_5', name: '도감 수집 II', desc: '코드 도감에서 5종을 발견했습니다.', difficulty: 'normal', hidden: false },
-      { id: 'codex_total_6', name: '도감 완성', desc: '현재 코드 도감의 모든 코드를 발견했습니다.', difficulty: 'hard', hidden: true },
+      { id: 'codex_total_1', name: '도감 입문', desc: '코드 도감에서 4종을 발견했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'codex_total_3', name: '도감 수집 I', desc: '코드 도감에서 8종을 발견했습니다.', difficulty: 'easy', hidden: false },
+      { id: 'codex_total_5', name: '도감 수집 II', desc: '코드 도감에서 12종을 발견했습니다.', difficulty: 'normal', hidden: false },
+      { id: 'codex_total_6', name: '도감 완성', desc: '현재 코드 도감의 모든 코드(18종)를 발견했습니다.', difficulty: 'hard', hidden: true },
       { id: 'code_power_30', name: '파워 셋업', desc: '코드 파워 30 이상을 달성했습니다.', difficulty: 'easy', hidden: false },
       { id: 'code_power_50', name: '파워 튜닝', desc: '코드 파워 50 이상을 달성했습니다.', difficulty: 'normal', hidden: false },
       { id: 'code_power_80', name: '파워 드라이브', desc: '코드 파워 80 이상을 달성했습니다.', difficulty: 'hard', hidden: true },
@@ -856,7 +940,7 @@
         shop_total_: [30, 75, 150, 240, 360],
         energy_spent_: [300, 1500, 3000, 7500, 12000],
         risk_total_: [15, 75, 150, 300, 540],
-        codex_total_: [2, 4, 6, 6],
+        codex_total_: [4, 8, 12, 18],
         code_power_: [90, 150, 240, 360],
         code_level_: [9, 15, 30, 45],
         code_upgrade_: [3, 15, 45, 90],
@@ -907,7 +991,7 @@
         }
       });
       const codexAll = achievementDefs.find(def => def.id === 'codex_total_6');
-      if (codexAll) codexAll.desc = '현재 코드 도감의 모든 코드를 발견했습니다.';
+      if (codexAll) codexAll.desc = `현재 코드 도감의 모든 코드(${Object.keys(codeDefs).length}종)를 발견했습니다.`;
     }
 
     applyAchievementRetune();
@@ -2164,18 +2248,28 @@
       let creditMultiplier = modifiers.creditMultiplierSession * modifiers.creditMultiplierPermanent;
       let successChanceBonus = getSyncSuccessBonus(code.syncLevel || 0);
 
-      if (def && def.id === 'port_scanner') {
-        serverSec = Math.floor(serverSec * 0.9);
-      }
-      if (def && def.id === 'data_phantom') {
-        successChanceBonus += 0.1;
-      }
-      if (def && def.id === 'overflow_inject') {
-        creditMultiplier *= 1.3;
+      if (def) {
+        if (def.id === 'port_scanner') serverSec = Math.floor(serverSec * 0.9);
+        if (def.id === 'shield_bypass') serverSec = Math.floor(serverSec * 0.85);
+        if (def.id === 'fortress_breaker') serverSec = Math.floor(serverSec * 0.75);
+
+        if (def.id === 'pulse_ping') successChanceBonus += 0.03;
+        if (def.id === 'stack_tracer') successChanceBonus += 0.05;
+        if (def.id === 'data_phantom') successChanceBonus += 0.1;
+        if (def.id === 'quantum_splice') successChanceBonus += 0.12;
+        if (def.id === 'singularity_root') successChanceBonus += 0.1;
+
+        if (def.id === 'credit_siphon') creditMultiplier *= 1.15;
+        if (def.id === 'null_rewriter') creditMultiplier *= 1.25;
+        if (def.id === 'overflow_inject') creditMultiplier *= 1.3;
+        if (def.id === 'quantum_splice') creditMultiplier *= 1.2;
+        if (def.id === 'singularity_root') creditMultiplier *= 1.4;
       }
 
       if (state.riskMode) {
-        successChanceBonus -= 0.15;
+        let riskPenalty = 0.15;
+        if (def && def.id === 'trace_scrambler') riskPenalty -= 0.05;
+        successChanceBonus -= riskPenalty;
         successChanceBonus += modifiers.riskSuccessBonus;
         creditMultiplier *= 2.0;
       }
@@ -2191,8 +2285,10 @@
       if (success) {
         const rawReward =
           server.minReward + Math.random() * (server.maxReward - server.minReward);
-        const rewardCredits = Math.round(rawReward * creditMultiplier);
-        const gainedExp = 8;
+        let rewardCredits = Math.round(rawReward * creditMultiplier);
+        let gainedExp = 8;
+        if (def && def.id === 'cache_sniffer') rewardCredits += 8;
+        if (def && def.id === 'rapid_exploit') gainedExp += 3;
 
         state.credits += rewardCredits;
         state.stats.creditsEarnedTotal += rewardCredits;
@@ -2259,6 +2355,12 @@
         if (def && def.id === 'auto_patch' && Math.random() < 0.2) {
           state.exp += 1;
           log('AutoPatch() 효과: 해킹 실패 보정으로 경험치 +1.', 'hack');
+        }
+
+        if (def && def.id === 'fallback_node' && Math.random() < 0.12) {
+          state.energy = Math.min(state.energyMax, state.energy + 1);
+          if (state.energy >= state.energyMax) state.energyTimerMs = 0;
+          log('Fallback_Node 효과: 에너지 1을 즉시 회복했습니다.', 'hack');
         }
 
         updateStatsUI();
@@ -2522,7 +2624,7 @@
         purchases: [30, 75, 150, 240, 360],
         energySpent: [300, 1500, 3000, 7500, 12000],
         risk: [15, 75, 150, 300, 540],
-        codex: [2, 4, 6, 6],
+        codex: [4, 8, 12, 18],
         power: [90, 150, 240, 360],
         codeLevel: [9, 15, 30, 45],
         upgrades: [3, 15, 45, 90],
