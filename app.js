@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.14-k4';
+    const CURRENT_VERSION = 'v1.6.14-k7';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -97,7 +97,7 @@ const I18N = {
     codeUpgrade:'코드 강화', codeSync:'코드 동기화', codeEvolve:'코드 진화', codeDesc1:'· 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).', codeDesc2:'· 동기화: 중복 조각을 모아 성공률 보정과 파워를 함께 강화합니다.', codeDesc3:'· 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).',
     mission:'미션', achievement:'업적', codex:'코드 도감', playGuide:'플레이 방법', logs:'로그', settings:'설정', data:'데이터', quest:'퀘스트', records:'기록', envSettings:'환경 설정', dataManage:'데이터 관리', howToPlayTitle:'게임 플레이 방법', howToPlaySummary:'서버를 스캔하고 코드를 수집해 해킹을 성공시키며 계정을 성장시키는 게임입니다. 아래 순서대로 익히면 빠르게 적응할 수 있습니다.', close:'닫기',
     logSearchHelp:'로그 검색 (로그 항목 클릭 → 핀/해제)', searchPlaceholder:'검색어 입력...', clearLogs:'로그 초기화', hideLogs:'로그 숨기기', showLogs:'로그 보이기', logFilter:'로그 필터',
-    language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.',
+    language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.', desktopWarnConfirm:'해당 버전 이후로 PC 버전은 업그레이드가 중단됩니다. 플레이하시겠어요?', desktopWarnBlocked:'PC 버전 업그레이드는 이 버전에서 중단됩니다. 계속하려면 새로고침 후 안내창에서 플레이를 선택하세요.',
     saveNow:'저장하기', loadNow:'불러오기', clearSave:'저장 데이터 삭제', exportSave:'내보내기', importFile:'파일 불러오기', importText:'텍스트로 불러오기', importTextPlaceholder:'여기에 JSON을 붙여넣고 불러오기를 누르세요.', importTextBtn:'텍스트 불러오기', saveHelp:'· 저장 위치: 브라우저 LocalStorage (이 브라우저, 이 기기 한정)<br/>· 자동 저장: 약 60초마다 한 번씩 백그라운드 저장',
     shopSortUpdate:'업데이트순', shopSortNew:'신규 우선', shopSortRarity:'희귀도순', shopSortPrice:'가격순', shopSortName:'이름순', codeSortRecent:'최신', codeSortRarity:'희귀도', codeSortPower:'파워', codeSortLevel:'레벨', codeSortName:'이름',
     codexSummary:'발견 {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'기본 파워', ownedLvPwr:'보유 Lv.{lv} / PWR {pwr}', undiscoveredCode:'미발견 코드', undiscoveredDesc:'아직 발견하지 못한 코드입니다. 코드 스캔으로 해제하세요.', noCodes:'보유 코드 없음. [코드 스캔]으로 코드를 얻으세요.', selectCode:'보유 중인 코드를 선택하면 상세 정보가 표시됩니다.',
@@ -117,7 +117,7 @@ const I18N = {
     codeUpgrade:'Upgrade Code', codeSync:'Sync Code', codeEvolve:'Evolve Code', codeDesc1:'· Upgrade: costs credits based on code level and raises power (no destruction).', codeDesc2:'· Sync: spend duplicate shards to raise success bonus and power together.', codeDesc3:'· Evolve: rank up at a required level (COMMON → UNCOMMON → … → LEGENDARY).',
     mission:'Mission', achievement:'Achievements', codex:'Code Codex', logs:'Logs', settings:'Settings', data:'Data', quest:'Quests', records:'Records', envSettings:'Settings', dataManage:'Data Management', close:'Close',
     logSearchHelp:'Search logs (click a log entry to pin/unpin)', searchPlaceholder:'Type to search...', clearLogs:'Clear Logs', hideLogs:'Hide Logs', showLogs:'Show Logs', logFilter:'Log Filter',
-    language:'Language', fontScale:'Font Size', snow:'Snow Effect', uiScale:'UI Scale', animation:'Animation', toastTime:'Toast Duration', autosaveToast:'Autosave Toast', enabled:'Enabled', settingsHelp:'· Settings are stored with save data and remain after refresh.',
+    language:'Language', fontScale:'Font Size', snow:'Snow Effect', uiScale:'UI Scale', animation:'Animation', toastTime:'Toast Duration', autosaveToast:'Autosave Toast', enabled:'Enabled', settingsHelp:'· Settings are stored with save data and remain after refresh.', desktopWarnConfirm:'PC version upgrades will be discontinued after this version. Do you want to play anyway?', desktopWarnBlocked:'PC version upgrades stop at this version. Refresh the page and choose to continue if you still want to play.',
     saveNow:'Save', loadNow:'Load', clearSave:'Delete Save Data', exportSave:'Export', importFile:'Import File', importText:'Import from Text', importTextPlaceholder:'Paste JSON here and press import.', importTextBtn:'Import Text', saveHelp:'· Save location: browser LocalStorage (this browser/device only)<br/>· Autosave: background save about once every 60 seconds',
     shopSortUpdate:'By Update', shopSortNew:'Newest First', shopSortRarity:'By Rarity', shopSortPrice:'By Price', shopSortName:'By Name', codeSortRecent:'Recent', codeSortRarity:'Rarity', codeSortPower:'Power', codeSortLevel:'Level', codeSortName:'Name',
     codexSummary:'Discovered {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'Base Power', ownedLvPwr:'Owned Lv.{lv} / PWR {pwr}', undiscoveredCode:'Undiscovered Code', undiscoveredDesc:'You have not discovered this code yet. Unlock it by scanning codes.', noCodes:'No codes owned. Use [Scan Code] to get one.', selectCode:'Select an owned code to view details.',
@@ -131,6 +131,38 @@ const I18N = {
   }
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
+
+function isLikelyDesktopAccess(){
+  try{
+    const ua = navigator.userAgent || '';
+    const mobileRe = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i;
+    const desktopRe = /Windows NT|Macintosh|Mac OS X|X11|Linux x86_64|Linux i686/i;
+    const finePointer = window.matchMedia('(min-width: 901px) and (hover: hover) and (pointer: fine)').matches;
+    return !mobileRe.test(ua) && (desktopRe.test(ua) || finePointer);
+  }catch(e){
+    return window.innerWidth >= 901;
+  }
+}
+function blockDesktopPlay(){
+  const main = document.getElementById('main');
+  if(main){
+    main.innerHTML = `<div class="panel" style="max-width:760px;margin:24px auto;"><div class="stat-box" style="padding:18px;"><div class="section-title">PC NOTICE</div><div style="line-height:1.7;">${t('desktopWarnBlocked')}</div></div></div>`;
+  }
+  document.querySelectorAll('button, select, input, textarea').forEach(el=>{
+    if(el && el.id !== 'btnMore') el.disabled = true;
+  });
+}
+function maybeShowDesktopSupportWarning(){
+  if(!isLikelyDesktopAccess()) return true;
+  if(sessionStorage.getItem('HCSIG_PC_WARN_ACCEPTED') === CURRENT_VERSION) return true;
+  const ok = window.confirm(t('desktopWarnConfirm'));
+  if(ok){
+    sessionStorage.setItem('HCSIG_PC_WARN_ACCEPTED', CURRENT_VERSION);
+    return true;
+  }
+  blockDesktopPlay();
+  return false;
+}
 function t(key, vars){ const lang=getLang(); let str=(I18N[lang]&&I18N[lang][key]) || I18N.ko[key] || key; if(vars){ for(const [k,v] of Object.entries(vars)){ str=str.replaceAll('{'+k+'}', String(v)); } } return str; }
 function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value; }
 function setHtml(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=value; }
@@ -3889,6 +3921,7 @@ function applyLanguageToUI(){
       }
 
       applyLanguageToUI();
+      if (!maybeShowDesktopSupportWarning()) return;
       renderUpdateLog();
       maybeShowUpdateOnStart();
       setTimeout(() => {
