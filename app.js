@@ -95,7 +95,7 @@ const I18N = {
     codeScan:'코드 스캔', serverHack:'서버 해킹', cpuUpgrade:'CPU 업그레이드', targetServer:'타겟 서버', loadout:'로드아웃', saveSlot:'슬롯 저장', loadSlot:'슬롯 불러오기', riskMode:'위험 해킹 모드 (성공 확률 -15%p + 보정, 보상 크레딧 ×2, 실패 시 에너지 추가 -1)',
     actionsDesc1:'· 에너지 1칸 = 120초, 0.1초 단위로 카운트다운 표시', actionsDesc2:'· 코드 스캔: 에너지 1, 스캔 EXP 소량 (희귀도별 스캔 시간 차등)', actionsDesc3:'· 서버 해킹: 에너지 2, 성공 시 크레딧·EXP 획득', actionsDesc4:'· 레벨업 시 크레딧 +100, CPU 업그레이드 비용 = 500 × 티어 × 할인 계수',
     codeUpgrade:'코드 강화', codeSync:'코드 동기화', codeEvolve:'코드 진화', codeDesc1:'· 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).', codeDesc2:'· 동기화: 중복 조각을 모아 성공률 보정과 파워를 함께 강화합니다.', codeDesc3:'· 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).',
-    mission:'미션', achievement:'업적', codex:'코드 도감', logs:'로그', settings:'설정', data:'데이터', quest:'퀘스트', records:'기록', envSettings:'환경 설정', dataManage:'데이터 관리', close:'닫기',
+    mission:'미션', achievement:'업적', codex:'코드 도감', playGuide:'플레이 방법', logs:'로그', settings:'설정', data:'데이터', quest:'퀘스트', records:'기록', envSettings:'환경 설정', dataManage:'데이터 관리', howToPlayTitle:'게임 플레이 방법', howToPlaySummary:'서버를 스캔하고 코드를 수집해 해킹을 성공시키며 계정을 성장시키는 게임입니다. 아래 순서대로 익히면 빠르게 적응할 수 있습니다.', close:'닫기',
     logSearchHelp:'로그 검색 (로그 항목 클릭 → 핀/해제)', searchPlaceholder:'검색어 입력...', clearLogs:'로그 초기화', hideLogs:'로그 숨기기', showLogs:'로그 보이기', logFilter:'로그 필터',
     language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.',
     saveNow:'저장하기', loadNow:'불러오기', clearSave:'저장 데이터 삭제', exportSave:'내보내기', importFile:'파일 불러오기', importText:'텍스트로 불러오기', importTextPlaceholder:'여기에 JSON을 붙여넣고 불러오기를 누르세요.', importTextBtn:'텍스트 불러오기', saveHelp:'· 저장 위치: 브라우저 LocalStorage (이 브라우저, 이 기기 한정)<br/>· 자동 저장: 약 60초마다 한 번씩 백그라운드 저장',
@@ -134,6 +134,58 @@ function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang 
 function t(key, vars){ const lang=getLang(); let str=(I18N[lang]&&I18N[lang][key]) || I18N.ko[key] || key; if(vars){ for(const [k,v] of Object.entries(vars)){ str=str.replaceAll('{'+k+'}', String(v)); } } return str; }
 function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value; }
 function setHtml(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=value; }
+
+
+const HELP_CONTENT = {
+  ko: {
+    sections: [
+      { title: '1. 게임 목표', body: ['서버를 스캔하고 코드를 모아 더 강한 해킹을 성공시키는 것이 핵심 목표입니다.', '크레딧을 모아 시스템을 강화하고, 미션과 업적을 달성하면서 장기적으로 계정을 성장시키세요.'] },
+      { title: '2. 기본 진행 순서', body: ['① 타겟 서버를 선택합니다.', '② 코드 스캔으로 새 코드를 얻습니다.', '③ 좋은 코드를 강화하거나 동기화합니다.', '④ 서버 해킹으로 크레딧과 경험치를 획득합니다.', '⑤ 상점, CPU 업그레이드, 미션 보상으로 성장합니다.'] },
+      { title: '3. 스캔과 해킹', body: ['코드 스캔은 새로운 코드를 얻는 핵심 행동입니다. 높은 희귀도일수록 더 드물게 등장합니다.', '서버 해킹은 크레딧과 경험치를 얻는 핵심 행동입니다. 더 좋은 코드와 높은 파워일수록 안정적으로 성공할 수 있습니다.'] },
+      { title: '4. 코드 성장', body: ['강화: 크레딧을 사용해 코드 레벨과 파워를 올립니다.', '동기화: 중복 코드에서 얻은 조각을 사용해 파워와 성공률 보정을 높입니다.', '진화: 일정 레벨 이상이 되면 더 높은 희귀도로 성장할 수 있습니다.'] },
+      { title: '5. 중복 코드', body: ['같은 코드를 다시 획득해도 자동으로 강화되지는 않습니다.', '중복 코드는 조각으로 바뀌며, 조각은 코드 동기화 재료로 사용됩니다.'] },
+      { title: '6. 상점과 자원', body: ['상점에서는 에너지, 성장 보조, 경제 보조 아이템 등을 구매할 수 있습니다.', '에너지가 부족하면 행동이 제한되므로 에너지 회복과 소비를 함께 관리하는 것이 중요합니다.'] },
+      { title: '7. 미션과 업적', body: ['미션은 단기 목표와 즉시 보상을 제공합니다.', '업적은 더 어렵고 장기적인 목표입니다. 한 번에 많이 깨기보다는 꾸준히 누적해서 달성하는 콘텐츠입니다.'] },
+      { title: '8. 초반 팁', body: ['처음에는 스캔과 해킹을 반복하며 크레딧을 모으는 데 집중하세요.', '좋은 코드가 나오면 우선 강화부터 진행하고, 중복 조각은 동기화에 투자하세요.', '미션 탭을 자주 확인하면 성장 효율이 크게 올라갑니다.'] }
+    ]
+  },
+  en: {
+    sections: [
+      { title: '1. Goal', body: ['Your main objective is to scan servers, collect codes, and succeed at stronger hacks.', 'Earn credits, upgrade your systems, and grow your account over time by clearing missions and achievements.'] },
+      { title: '2. Basic Flow', body: ['① Select a target server.', '② Scan codes to obtain new codes.', '③ Upgrade or sync strong codes.', '④ Hack servers to earn credits and EXP.', '⑤ Grow further through the shop, CPU upgrades, and mission rewards.'] },
+      { title: '3. Scanning and Hacking', body: ['Code Scan is the main way to obtain new codes. Higher rarities appear much less often.', 'Server Hack is the main way to earn credits and EXP. Better codes and higher power make success more reliable.'] },
+      { title: '4. Code Growth', body: ['Upgrade: Spend credits to raise a code’s level and power.', 'Sync: Use shards gained from duplicate codes to increase power and success bonuses.', 'Evolve: Once a code reaches the required level, it can advance to a higher rarity.'] },
+      { title: '5. Duplicate Codes', body: ['Getting the same code again does not power it up automatically.', 'Duplicate codes are converted into shards, and those shards are used for code synchronization.'] },
+      { title: '6. Shop and Resources', body: ['The shop sells energy items, growth support items, and economic support items.', 'Because low energy limits your actions, managing both energy recovery and energy spending is important.'] },
+      { title: '7. Missions and Achievements', body: ['Missions give you short-term goals and immediate rewards.', 'Achievements are harder long-term goals. They are meant to be cleared steadily over time, not all at once.'] },
+      { title: '8. Early Tips', body: ['At the start, focus on repeating scans and hacks to build up credits.', 'When you get a strong code, upgrade it first, and spend duplicate shards on synchronization.', 'Check the mission tab often for much faster progression.'] }
+    ]
+  }
+};
+
+function renderHowToPlay(){
+  const root = document.getElementById('howToPlayContent');
+  if(!root) return;
+  const lang = getLang();
+  const data = HELP_CONTENT[lang] || HELP_CONTENT.ko;
+  const title = t('howToPlayTitle');
+  const summary = t('howToPlaySummary');
+  root.innerHTML = `
+    <div class="help-overview-card">
+      <div class="help-overview-badge">INFO</div>
+      <div class="help-overview-title">${title}</div>
+      <div class="help-overview-text">${summary}</div>
+    </div>
+    <div class="help-section-list">
+      ${data.sections.map(section => `
+        <section class="help-section-card">
+          <h4>${section.title}</h4>
+          ${section.body.map(line => `<p>${line}</p>`).join('')}
+        </section>
+      `).join('')}
+    </div>
+  `;
+}
 
 const TEXT_DATA = {
   en: {
@@ -481,8 +533,8 @@ function applyLanguageToUI(){
   setText('btnScan', t('codeScan')); setText('btnHack', t('serverHack')); setText('btnUpgradeCpu', t('cpuUpgrade')); setText('labelTargetServer', t('targetServer')); setText('labelLoadout', t('loadout')); setText('btnSaveLoadout', t('saveSlot')); setText('btnLoadLoadout', t('loadSlot')); setText('riskModeText', t('riskMode'));
   setText('actionsDesc1', t('actionsDesc1')); setText('actionsDesc2', t('actionsDesc2')); setText('actionsDesc3', t('actionsDesc3')); setText('actionsDesc4', t('actionsDesc4'));
   setText('btnUpgradeCode', t('codeUpgrade')); setText('btnSyncCode', t('codeSync')); setText('btnEvolveCode', t('codeEvolve')); setText('codeDesc1', t('codeDesc1')); setText('codeDesc2', t('codeDesc2')); setText('codeDesc3', t('codeDesc3'));
-  setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnLogs', t('logs')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data'));
-  setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('logsTabTitle', t('records')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnMoreClose2', t('close'));
+  setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnHelp', t('playGuide')); setText('tabBtnLogs', t('logs')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data'));
+  setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('helpTabTitle', t('howToPlayTitle')); setText('logsTabTitle', t('records')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnMoreClose2', t('close'));
   setText('logSearchHelp', t('logSearchHelp')); const lsi=document.getElementById('logSearchInput'); if(lsi) lsi.placeholder=t('searchPlaceholder'); setText('btnClearLogs', t('clearLogs')); const btnToggle=document.getElementById('btnToggleLogs'); if(btnToggle){ btnToggle.textContent = (window.logsHidden ? t('showLogs') : t('hideLogs')); } setText('logFilterTitle', t('logFilter'));
   setText('labelLanguage', t('language')); setText('labelFontScale', t('fontScale')); setText('labelSnow', t('snow')); setText('labelUiScale', t('uiScale')); setText('labelAnim', t('animation')); setText('labelToastMs', t('toastTime')); setText('labelAutoSaveToast', t('autosaveToast')); setHtml('settingsHelp', t('settingsHelp'));
   setText('btnSaveGame', t('saveNow')); setText('btnLoadGame', t('loadNow')); setText('btnClearSave', t('clearSave')); setText('btnExportSave', t('exportSave')); setText('btnImportSaveFile', t('importFile')); setText('importTextTitle', t('importText')); const ist=document.getElementById('importSaveText'); if(ist) ist.placeholder=t('importTextPlaceholder'); setText('btnImportSaveText', t('importTextBtn')); setHtml('saveHelp', t('saveHelp'));
@@ -503,6 +555,7 @@ function applyLanguageToUI(){
   refreshMobileTabTexts();
   try { rerenderLogEntries(); } catch(e){}
   try { renderServers(); } catch(e){}
+  try { renderHowToPlay(); } catch(e){}
 }
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
     const LAST_SEEN_VERSION_KEY = 'HCSiG_LAST_SEEN_VERSION';
@@ -1469,6 +1522,7 @@ function applyLanguageToUI(){
     const achievementListEl = document.getElementById('achievementList');
     const codexListEl = document.getElementById('codexList');
     const codexSummaryEl = document.getElementById('codexSummary');
+    const howToPlayContent = document.getElementById('howToPlayContent');
 
     const chkRiskMode = document.getElementById('chkRiskMode');
     const loadoutSelect = document.getElementById('loadoutSelect');
@@ -1486,6 +1540,7 @@ function applyLanguageToUI(){
     const tabMission = document.getElementById('tabMission');
     const tabAchievement = document.getElementById('tabAchievement');
     const tabCodex = document.getElementById('tabCodex');
+    const tabHelp = document.getElementById('tabHelp');
     const tabLogs = document.getElementById('tabLogs');
     const tabSettings = document.getElementById('tabSettings');
     const tabSave = document.getElementById('tabSave');
@@ -3268,6 +3323,7 @@ function applyLanguageToUI(){
         mission: tabMission,
         achievement: tabAchievement,
         codex: tabCodex,
+        help: tabHelp,
         logs: tabLogs,
         settings: tabSettings,
         save: tabSave

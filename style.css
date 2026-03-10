@@ -626,6 +626,71 @@ button:hover {
       display: block;
     }
 
+
+    .help-panel-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .help-overview-card {
+      background: #0b1220;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .help-overview-badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #1d4ed8;
+      color: #dbeafe;
+      margin-bottom: 6px;
+    }
+
+    .help-overview-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .help-overview-text {
+      font-size: 12px;
+      line-height: 1.6;
+      color: #d1d5db;
+    }
+
+    .help-section-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .help-section-card {
+      background: #0f172a;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .help-section-card h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+    }
+
+    .help-section-card p {
+      margin: 0 0 6px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #d1d5db;
+    }
+
+    .help-section-card p:last-child {
+      margin-bottom: 0;
+    }
+
     .diff-pill {
       font-size: 10px;
       padding: 2px 6px;
