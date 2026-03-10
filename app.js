@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.13(k2)';
+    const CURRENT_VERSION = 'v1.6.13-k4(k2)';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v15';
@@ -453,11 +453,11 @@
     const rarityOrder = ['COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY'];
 
     const rarityWeights = {
-      COMMON: 50,
-      UNCOMMON: 25,
-      RARE: 15,
-      EPIC: 7,
-      LEGENDARY: 3
+      COMMON: 70,
+      UNCOMMON: 20,
+      RARE: 7,
+      EPIC: 2.5,
+      LEGENDARY: 0.5
     };
 
     const rarityPowerUp = {
