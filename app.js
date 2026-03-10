@@ -1230,6 +1230,19 @@ function applyLanguageToUI(){
 ]
     };
 
+    // 경제/성장 너프 2차: 미션/업적 연계 보상 축소
+    const missionRewardNerfByScope = { daily: 0.75, weekly: 0.7, month: 0.65, general: 0.6 };
+    Object.entries(missionDefs).forEach(([scope, defs]) => {
+      const scopeRate = missionRewardNerfByScope[scope] || 1;
+      defs.forEach(def => {
+        if (typeof def.rewardCredits === 'number' && def.rewardCredits > 0) {
+          let rate = scopeRate;
+          if (def.type === 'achievements') rate *= 0.85;
+          def.rewardCredits = Math.max(10, Math.round(def.rewardCredits * rate));
+        }
+      });
+    });
+
     // 업적 정의 (확장)
     let achievementDefs = [
       // EASY
