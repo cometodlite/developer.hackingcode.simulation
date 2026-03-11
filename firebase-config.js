@@ -5,14 +5,14 @@
   // 3) Authentication > Sign-in method: enable Email/Password and Google
   // 4) Firestore Database: create database in production or test mode, then add the provided rules
   const cfg = {
-    enabled: false,
+    enabled: true,
     firebase: {
-      apiKey: 'PASTE_API_KEY_HERE',
-      authDomain: 'PASTE_PROJECT.firebaseapp.com',
-      projectId: 'PASTE_PROJECT_ID_HERE',
-      storageBucket: 'PASTE_PROJECT.firebasestorage.app',
-      messagingSenderId: 'PASTE_MESSAGING_SENDER_ID_HERE',
-      appId: 'PASTE_APP_ID_HERE'
+      apiKey: 'AIzaSyDoZEixsQ7wA-CrZ1FJH0LTqzW2WVGECoU',
+      authDomain: 'hcsig-21122.firebaseapp.com',
+      projectId: 'hcsig-21122',
+      storageBucket: 'hcsig-21122.firebasestorage.app',
+      messagingSenderId: '387120003846',
+      appId: '1:387120003846:web:c73d77f88bd6a0bd1b3c87'
     }
   };
 
