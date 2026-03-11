@@ -12,58 +12,6 @@
 
 
 
-
-// --- All mobile browsers fallback to desktop panels: disable mobile-simple UI everywhere on mobile ---
-(function(){
-  try {
-    const isMobileLike = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-    if (!isMobileLike) return;
-
-    const markDesktopFallback = () => {
-      try { document.body && document.body.classList.add('force-desktop-panels'); } catch(_) {}
-    };
-    markDesktopFallback();
-    window.__HCSIG_DISABLE_SIMPLE_MOBILE__ = true;
-
-    const restoreDesktopPanels = () => {
-      try {
-        markDesktopFallback();
-        document.body.classList.remove(
-          'mobile-simple-ui','mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop',
-          'mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log',
-          'mobile-tab-left','mobile-tab-center','mobile-tab-right',
-          'simple-tab-home','simple-tab-codes','simple-tab-shop','mobile-tabs-hidden'
-        );
-        document.querySelectorAll('.mobile-simple-tabs,.mobile-tabs,#mobileSimpleHome,#mobileSimpleCodes,#mobileSimpleShop,#mobileViewStatus,#mobileViewAction,#mobileViewCodes,#mobileViewShop,#mobileViewLog,#mobileCodesMerged').forEach(el=>el.remove());
-        ['leftPanel','centerPanel','rightPanel'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) {
-            el.style.display = '';
-            el.style.position = '';
-            el.style.left = '';
-            el.style.right = '';
-            el.style.top = '';
-            el.style.bottom = '';
-            el.hidden = false;
-            el.removeAttribute('aria-hidden');
-          }
-        });
-      } catch(_) {}
-    };
-
-    window.__HCSIG_RESTORE_DESKTOP_PANELS__ = restoreDesktopPanels;
-    document.addEventListener('DOMContentLoaded', restoreDesktopPanels);
-    window.addEventListener('load', restoreDesktopPanels);
-    window.addEventListener('pageshow', () => setTimeout(restoreDesktopPanels, 0));
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) setTimeout(restoreDesktopPanels, 0);
-    });
-    setTimeout(restoreDesktopPanels, 0);
-    setTimeout(restoreDesktopPanels, 120);
-    setTimeout(restoreDesktopPanels, 500);
-  } catch(e) {}
-})();
-
 // --- Layout vars sync (header/tabs/viewport). Fixes initial "pushed up" until a UI event happens. ---
 (function(){
   const root = document.documentElement;
@@ -137,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.15-k6c0';
+    const CURRENT_VERSION = 'v1.6.15-k6b4';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -3548,29 +3496,31 @@ function applyLanguageToUI(){
     }
 
 
-    function rebuildUIAfterRestore() {
-      try { applySettings(); } catch (e) {}
-      try { syncSettingsUI(); } catch (e) {}
-      try { applyLanguageToUI(); } catch (e) {}
-      try { renderServers(); } catch (e) {}
-      try { renderShop(); } catch (e) {}
-      try { renderMissions(); } catch (e) {}
-      try { renderAchievements(); } catch (e) {}
-      try { renderCodex(); } catch (e) {}
-      try { renderCodeList(); } catch (e) {}
-      try { renderCodeDetail(); } catch (e) {}
-      try { renderUpdateLog(); } catch (e) {}
-      try { updateStatsUI(); } catch (e) {}
-      try { refreshMobileTabTexts(); } catch (e) {}
+    function refreshMobileNavLabels() {
       try {
-        window.dispatchEvent(new Event('resize'));
-        window.dispatchEvent(new Event('pageshow'));
-      } catch (e) {}
-      try {
-        const vv = window.visualViewport;
-        if (vv) vv.dispatchEvent(new Event('resize'));
-      } catch (e) {}
-      try { if (window.scrollY !== 0) window.scrollTo(0, 0); } catch (e) {}
+        document.querySelectorAll('.mobile-simple-tabs [data-view="home"], .mobile-simple-tabs [data-mobile-tab="home"]').forEach(btn => btn.textContent = t('mobileHome'));
+        document.querySelectorAll('.mobile-simple-tabs [data-view="codes"], .mobile-simple-tabs [data-mobile-tab="codes"]').forEach(btn => btn.textContent = t('mobileCodes'));
+        document.querySelectorAll('.mobile-simple-tabs [data-view="shop"], .mobile-simple-tabs [data-mobile-tab="shop"]').forEach(btn => btn.textContent = t('mobileShop'));
+        document.querySelectorAll('.mobile-simple-tabs [data-view="soon"], .mobile-simple-tabs [data-mobile-tab="coming"]').forEach(btn => btn.textContent = t('mobileComing'));
+      } catch (e) {
+        console.warn('[MobileNav] label refresh failed:', e);
+      }
+    }
+
+    function rerenderAllUIAfterRestore() {
+      try { applyLanguageToUI(); } catch (e) { console.warn('[BootFix] applyLanguageToUI failed:', e); }
+      try { applySettings(); } catch (e) { console.warn('[BootFix] applySettings failed:', e); }
+      try { syncSettingsUI(); } catch (e) { console.warn('[BootFix] syncSettingsUI failed:', e); }
+      try { renderServers(); } catch (e) { console.warn('[BootFix] renderServers failed:', e); }
+      try { renderShop(); } catch (e) { console.warn('[BootFix] renderShop failed:', e); }
+      try { renderCodeList(); } catch (e) { console.warn('[BootFix] renderCodeList failed:', e); }
+      try { renderCodeDetail(); } catch (e) { console.warn('[BootFix] renderCodeDetail failed:', e); }
+      try { renderMissions(); } catch (e) { console.warn('[BootFix] renderMissions failed:', e); }
+      try { renderAchievements(); } catch (e) { console.warn('[BootFix] renderAchievements failed:', e); }
+      try { renderCodex(); } catch (e) { console.warn('[BootFix] renderCodex failed:', e); }
+      try { renderUpdateLog(); } catch (e) { console.warn('[BootFix] renderUpdateLog failed:', e); }
+      try { updateStatsUI(); } catch (e) { console.warn('[BootFix] updateStatsUI failed:', e); }
+      try { refreshMobileNavLabels(); } catch (e) { console.warn('[BootFix] refreshMobileNavLabels failed:', e); }
     }
 
     function loadGame(rawOverride = null) {
@@ -3638,7 +3588,7 @@ function applyLanguageToUI(){
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
         ensureMissionResets();
-        rebuildUIAfterRestore();
+        rerenderAllUIAfterRestore();
         log(t('saveLoaded'), 'system');
       } catch (e) {
         console.error(e);
@@ -3945,17 +3895,21 @@ function applyLanguageToUI(){
       renderServers();
       renderShop();
       ensureMissionResets();
-      rebuildUIAfterRestore();
+      applySettings();
+      syncSettingsUI();
+      applyLanguageToUI();
+      updateStatsUI();
       log(t('initLog'), 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
       } else {
         state.lastSeenAt = Date.now();
-        rebuildUIAfterRestore();
+        applyLanguageToUI();
+        updateStatsUI();
       }
 
-      rebuildUIAfterRestore();
+      applyLanguageToUI();
       renderUpdateLog();
       maybeShowUpdateOnStart();
       setTimeout(() => {
@@ -4012,21 +3966,8 @@ function applyLanguageToUI(){
     }
 
     init();
+  
 
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        if (localStorage.getItem(SAVE_KEY)) rebuildUIAfterRestore();
-      }, 80);
-      setTimeout(() => {
-        if (localStorage.getItem(SAVE_KEY)) rebuildUIAfterRestore();
-      }, 260);
-    });
-
-    window.addEventListener('pageshow', () => {
-      setTimeout(() => {
-        if (localStorage.getItem(SAVE_KEY)) rebuildUIAfterRestore();
-      }, 60);
-    });
 
 // === MOBILE PATCH: disable resizers on touch devices ===
 (function(){
@@ -4056,7 +3997,6 @@ function applyLanguageToUI(){
   if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
-  if(window.__HCSIG_DISABLE_SIMPLE_MOBILE__){ try{ window.__HCSIG_RESTORE_DESKTOP_PANELS__ && window.__HCSIG_RESTORE_DESKTOP_PANELS__(); }catch(e){} return; }
 
   // IMPORTANT: This build uses the newer 5-tab "MOBILE VIEWS" system.
   // The legacy 3-tab (left/center/right) switcher can create an invisible overlay that blocks taps on iOS
@@ -4424,9 +4364,9 @@ function applyLanguageToUI(){
 
 // === MOBILE SIMPLE NAV (k1 hotfix) ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
-  if(window.__HCSIG_DISABLE_SIMPLE_MOBILE__){ try{ window.__HCSIG_RESTORE_DESKTOP_PANELS__ && window.__HCSIG_RESTORE_DESKTOP_PANELS__(); }catch(e){} return; }
 
   const main = document.getElementById('main');
   const left = document.getElementById('leftPanel');
@@ -4435,6 +4375,12 @@ function applyLanguageToUI(){
     try { if (typeof showToast === 'function') showToast(msg, kind); } catch(e){}
   };
   if(!main || !left || !center) return;
+
+  document.body.classList.add('mobile-simple-ui');
+  document.body.classList.remove(
+    'mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log',
+    'mobile-tab-left','mobile-tab-center','mobile-tab-right'
+  );
 
   const oldTabs = document.querySelector('.mobile-tabs');
   if(oldTabs) oldTabs.remove();
@@ -4450,115 +4396,96 @@ function applyLanguageToUI(){
     return el;
   }
 
-  try {
-    const homeView = ensureView('mobileSimpleHome');
-    const codesView = ensureView('mobileSimpleCodes');
-    const shopView = ensureView('mobileSimpleShop');
+  const homeView = ensureView('mobileSimpleHome');
+  const codesView = ensureView('mobileSimpleCodes');
+  const shopView = ensureView('mobileSimpleShop');
 
-    const leftChildren = Array.from(left.children);
-    const centerInner = center.querySelector('.center-inner') || center;
-    const centerChildren = Array.from(centerInner.children);
+  const leftChildren = Array.from(left.children);
+  const centerInner = center.querySelector('.center-inner') || center;
+  const centerChildren = Array.from(centerInner.children);
 
-    const statusTitle = leftChildren[0] || null;
-    const statusBox = leftChildren[1] || null;
-    const shopTitle = left.querySelector('.section-title:nth-of-type(2)') || leftChildren.find(el => el.classList && el.classList.contains('section-title') && /shop/i.test(el.textContent||''));
-    const shopSortRow = left.querySelector('.shop-sort-row');
-    const shopList = document.getElementById('shopList');
-    const actionBox = centerChildren.find(el => el.classList && el.classList.contains('stat-box')) || null;
-    const codeRow = center.querySelector('.flex-row.flex-grow');
+  const statusTitle = leftChildren[0] || null;
+  const statusBox = leftChildren[1] || null;
+  const shopTitle = left.querySelector('.section-title:nth-of-type(2)') || leftChildren.find(el => el.classList && el.classList.contains('section-title') && /shop/i.test(el.textContent||''));
+  const shopSortRow = left.querySelector('.shop-sort-row');
+  const shopList = document.getElementById('shopList');
+  const actionBox = centerChildren.find(el => el.classList && el.classList.contains('stat-box')) || null;
+  const codeRow = center.querySelector('.flex-row.flex-grow');
 
-    if(statusTitle && statusTitle.parentElement !== homeView) homeView.appendChild(statusTitle);
-    if(statusBox && statusBox.parentElement !== homeView) homeView.appendChild(statusBox);
-    if(actionBox && actionBox.parentElement !== homeView) homeView.appendChild(actionBox);
+  if(statusTitle && statusTitle.parentElement !== homeView) homeView.appendChild(statusTitle);
+  if(statusBox && statusBox.parentElement !== homeView) homeView.appendChild(statusBox);
+  if(actionBox && actionBox.parentElement !== homeView) homeView.appendChild(actionBox);
 
-    if(shopTitle && shopTitle.parentElement !== shopView) shopView.appendChild(shopTitle);
-    if(shopSortRow && shopSortRow.parentElement !== shopView) shopView.appendChild(shopSortRow);
-    if(shopList && shopList.parentElement !== shopView) shopView.appendChild(shopList);
+  if(shopTitle && shopTitle.parentElement !== shopView) shopView.appendChild(shopTitle);
+  if(shopSortRow && shopSortRow.parentElement !== shopView) shopView.appendChild(shopSortRow);
+  if(shopList && shopList.parentElement !== shopView) shopView.appendChild(shopList);
 
-    if(codeRow){
-      let merged = document.getElementById('mobileCodesMerged');
-      if(!merged){
-        merged = document.createElement('div');
-        merged.id = 'mobileCodesMerged';
-        merged.className = 'stat-box codes-merged';
-        const title = document.createElement('div');
-        title.className = 'section-title';
-        title.textContent = 'Codes';
-        merged.appendChild(title);
-        codesView.appendChild(merged);
-      }
-      const codeBoxes = Array.from(codeRow.children).filter(el => el.classList && el.classList.contains('stat-box'));
-      codeBoxes.forEach(box => {
-        if(box.parentElement !== merged) merged.appendChild(box);
-      });
-      if(codeRow.parentElement) codeRow.parentElement.removeChild(codeRow);
+  if(codeRow){
+    let merged = document.getElementById('mobileCodesMerged');
+    if(!merged){
+      merged = document.createElement('div');
+      merged.id = 'mobileCodesMerged';
+      merged.className = 'stat-box codes-merged';
+      const title = document.createElement('div');
+      title.className = 'section-title';
+      title.textContent = 'Codes';
+      merged.appendChild(title);
+      codesView.appendChild(merged);
     }
-
-    const nav = document.createElement('nav');
-    nav.className = 'mobile-tabs mobile-simple-tabs';
-    nav.innerHTML = `
-      <button type="button" data-view="home">${t('mobileHome')}</button>
-      <button type="button" data-view="codes">${t('mobileCodes')}</button>
-      <button type="button" data-view="shop">${t('mobileShop')}</button>
-      <button type="button" data-view="soon">${t('mobileComing')}</button>
-    `;
-    document.body.appendChild(nav);
-
-    document.body.classList.add('mobile-simple-ui');
-    document.body.classList.remove(
-      'mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log',
-      'mobile-tab-left','mobile-tab-center','mobile-tab-right'
-    );
-
-    let currentView = 'home';
-    function setView(view){
-      if(view === 'soon'){
-        toast(t('comingSoonToast'), 'system');
-        nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === currentView));
-        return;
-      }
-      currentView = view;
-      document.body.classList.remove('mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
-      document.body.classList.add('mobile-simple-view-' + view);
-      nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
-      const target = view === 'home' ? homeView : view === 'codes' ? codesView : shopView;
-      if(target) target.scrollTop = 0;
-      try {
-        const tabsH = Math.ceil(nav.getBoundingClientRect().height);
-        document.documentElement.style.setProperty('--mobileTabsH', tabsH + 'px');
-      } catch(e) {}
-    }
-
-    nav.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => setView(btn.dataset.view));
+    const codeBoxes = Array.from(codeRow.children).filter(el => el.classList && el.classList.contains('stat-box'));
+    codeBoxes.forEach(box => {
+      if(box.parentElement !== merged) merged.appendChild(box);
     });
-
-    const codeList = document.getElementById('codeList');
-    const codeDetail = document.getElementById('codeDetail');
-    if(codeList && codeDetail){
-      codeList.addEventListener('click', (e) => {
-        const li = e.target.closest('li');
-        if(!li) return;
-        setView('codes');
-        setTimeout(() => {
-          try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
-        }, 40);
-      });
-    }
-
-    setView('home');
-  } catch (e) {
-    console.error('[HCSIG mobile boot]', e);
-    document.body.classList.remove('mobile-simple-ui','mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
-    const brokenTabs = document.querySelector('.mobile-simple-tabs, .mobile-tabs');
-    if (brokenTabs) brokenTabs.remove();
-    ['mobileSimpleHome','mobileSimpleCodes','mobileSimpleShop'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.remove();
-    });
-    if (left) left.style.display = '';
-    if (center) center.style.display = '';
+    if(codeRow.parentElement) codeRow.parentElement.removeChild(codeRow);
   }
+
+  const nav = document.createElement('nav');
+  nav.className = 'mobile-tabs mobile-simple-tabs';
+  nav.innerHTML = `
+    <button type="button" data-view="home">${t('mobileHome')}</button>
+    <button type="button" data-view="codes">${t('mobileCodes')}</button>
+    <button type="button" data-view="shop">${t('mobileShop')}</button>
+    <button type="button" data-view="soon">${t('mobileComing')}</button>
+  `;
+  document.body.appendChild(nav);
+
+  let currentView = 'home';
+  function setView(view){
+    if(view === 'soon'){
+      toast(t('comingSoonToast'), 'system');
+      nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === currentView));
+      return;
+    }
+    currentView = view;
+    document.body.classList.remove('mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
+    document.body.classList.add('mobile-simple-view-' + view);
+    nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
+    const target = view === 'home' ? homeView : view === 'codes' ? codesView : shopView;
+    if(target) target.scrollTop = 0;
+    try {
+      const tabsH = Math.ceil(nav.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--mobileTabsH', tabsH + 'px');
+    } catch(e) {}
+  }
+
+  nav.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => setView(btn.dataset.view));
+  });
+
+  const codeList = document.getElementById('codeList');
+  const codeDetail = document.getElementById('codeDetail');
+  if(codeList && codeDetail){
+    codeList.addEventListener('click', (e) => {
+      const li = e.target.closest('li');
+      if(!li) return;
+      setView('codes');
+      setTimeout(() => {
+        try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
+      }, 40);
+    });
+  }
+
+  setView('home');
 })();
 
 
@@ -4706,4 +4633,105 @@ function applyLanguageToUI(){
   window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
   if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
   setSimpleTab('home');
+})();
+
+
+// === MOBILE BOOT LANGUAGE FAILSAFE (k6c1) ===
+(function(){
+  function isMobileNow(){
+    try {
+      return window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+    } catch (e) {
+      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+    }
+  }
+
+  function bootLooksBroken(){
+    if(!isMobileNow()) return false;
+    const main = document.getElementById('main');
+    if(!main) return false;
+    const mainRect = main.getBoundingClientRect();
+    if(window.__HCSIG_SIMPLE_MOBILE__){
+      const nav = document.querySelector('.mobile-simple-tabs');
+      const hasTabClass = document.body.classList.contains('simple-tab-home') || document.body.classList.contains('simple-tab-codes') || document.body.classList.contains('simple-tab-shop');
+      const visiblePanel = document.querySelector('.mobile-home-only, .mobile-shop-only, .mobile-codes-only, .mobile-simple-view');
+      return !nav || !hasTabClass || mainRect.height < 140 || !visiblePanel;
+    }
+    return mainRect.height < 140;
+  }
+
+  function saveLangDirect(lang){
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      data.state = data.state || {};
+      data.state.ui = data.state.ui || {};
+      data.state.ui.lang = lang;
+      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('[LangFallback] direct save failed:', e);
+    }
+  }
+
+  let fallbackTimer = null;
+  let armed = false;
+  function showFallbackNotice(){
+    let el = document.getElementById('mobileLangFallbackNotice');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'mobileLangFallbackNotice';
+      el.style.position = 'fixed';
+      el.style.left = '16px';
+      el.style.right = '16px';
+      el.style.bottom = 'calc(env(safe-area-inset-bottom, 0px) + 18px)';
+      el.style.zIndex = '99999';
+      el.style.padding = '14px 16px';
+      el.style.borderRadius = '14px';
+      el.style.background = 'rgba(10,18,28,.95)';
+      el.style.color = '#fff';
+      el.style.fontSize = '14px';
+      el.style.lineHeight = '1.45';
+      el.style.boxShadow = '0 12px 32px rgba(0,0,0,.35)';
+      el.style.textAlign = 'center';
+      document.body.appendChild(el);
+    }
+    el.textContent = '언어 적용에 문제가 있어 3초 후 한국어로 돌아갑니다.';
+  }
+
+  function armLanguageFallback(){
+    if(armed) return;
+    if(!isMobileNow()) return;
+    if(typeof getLang === 'function' && getLang() === 'ko') return;
+    if(!bootLooksBroken()) return;
+    armed = true;
+    showFallbackNotice();
+    fallbackTimer = window.setTimeout(() => {
+      try {
+        if(state && state.ui) state.ui.lang = 'ko';
+      } catch (e) {}
+      try {
+        const setLanguage = document.getElementById('setLanguage');
+        if(setLanguage) setLanguage.value = 'ko';
+      } catch (e) {}
+      try {
+        if(typeof saveGame === 'function') saveGame(true);
+      } catch (e) {
+        console.warn('[LangFallback] saveGame failed:', e);
+      }
+      saveLangDirect('ko');
+      location.reload();
+    }, 3000);
+  }
+
+  function scheduleCheck(){
+    if(!isMobileNow()) return;
+    window.setTimeout(armLanguageFallback, 1200);
+  }
+
+  window.addEventListener('load', scheduleCheck);
+  window.addEventListener('pageshow', scheduleCheck);
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible') scheduleCheck();
+  });
 })();
