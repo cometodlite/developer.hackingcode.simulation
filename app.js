@@ -3495,34 +3495,6 @@ function applyLanguageToUI(){
       updateStatsUI();
     }
 
-
-    function refreshMobileNavLabels() {
-      try {
-        document.querySelectorAll('.mobile-simple-tabs [data-view="home"], .mobile-simple-tabs [data-mobile-tab="home"]').forEach(btn => btn.textContent = t('mobileHome'));
-        document.querySelectorAll('.mobile-simple-tabs [data-view="codes"], .mobile-simple-tabs [data-mobile-tab="codes"]').forEach(btn => btn.textContent = t('mobileCodes'));
-        document.querySelectorAll('.mobile-simple-tabs [data-view="shop"], .mobile-simple-tabs [data-mobile-tab="shop"]').forEach(btn => btn.textContent = t('mobileShop'));
-        document.querySelectorAll('.mobile-simple-tabs [data-view="soon"], .mobile-simple-tabs [data-mobile-tab="coming"]').forEach(btn => btn.textContent = t('mobileComing'));
-      } catch (e) {
-        console.warn('[MobileNav] label refresh failed:', e);
-      }
-    }
-
-    function rerenderAllUIAfterRestore() {
-      try { applyLanguageToUI(); } catch (e) { console.warn('[BootFix] applyLanguageToUI failed:', e); }
-      try { applySettings(); } catch (e) { console.warn('[BootFix] applySettings failed:', e); }
-      try { syncSettingsUI(); } catch (e) { console.warn('[BootFix] syncSettingsUI failed:', e); }
-      try { renderServers(); } catch (e) { console.warn('[BootFix] renderServers failed:', e); }
-      try { renderShop(); } catch (e) { console.warn('[BootFix] renderShop failed:', e); }
-      try { renderCodeList(); } catch (e) { console.warn('[BootFix] renderCodeList failed:', e); }
-      try { renderCodeDetail(); } catch (e) { console.warn('[BootFix] renderCodeDetail failed:', e); }
-      try { renderMissions(); } catch (e) { console.warn('[BootFix] renderMissions failed:', e); }
-      try { renderAchievements(); } catch (e) { console.warn('[BootFix] renderAchievements failed:', e); }
-      try { renderCodex(); } catch (e) { console.warn('[BootFix] renderCodex failed:', e); }
-      try { renderUpdateLog(); } catch (e) { console.warn('[BootFix] renderUpdateLog failed:', e); }
-      try { updateStatsUI(); } catch (e) { console.warn('[BootFix] updateStatsUI failed:', e); }
-      try { refreshMobileNavLabels(); } catch (e) { console.warn('[BootFix] refreshMobileNavLabels failed:', e); }
-    }
-
     function loadGame(rawOverride = null) {
       let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
       // v1.5.x 저장 데이터 자동 마이그레이션
@@ -3588,7 +3560,9 @@ function applyLanguageToUI(){
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
         ensureMissionResets();
-        rerenderAllUIAfterRestore();
+        applySettings();
+        syncSettingsUI();
+        updateStatsUI();
         log(t('saveLoaded'), 'system');
       } catch (e) {
         console.error(e);
@@ -4364,7 +4338,6 @@ function applyLanguageToUI(){
 
 // === MOBILE SIMPLE NAV (k1 hotfix) ===
 (function(){
-  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -4633,105 +4606,4 @@ function applyLanguageToUI(){
   window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
   if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
   setSimpleTab('home');
-})();
-
-
-// === MOBILE BOOT LANGUAGE FAILSAFE (k6c1) ===
-(function(){
-  function isMobileNow(){
-    try {
-      return window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-    } catch (e) {
-      return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
-    }
-  }
-
-  function bootLooksBroken(){
-    if(!isMobileNow()) return false;
-    const main = document.getElementById('main');
-    if(!main) return false;
-    const mainRect = main.getBoundingClientRect();
-    if(window.__HCSIG_SIMPLE_MOBILE__){
-      const nav = document.querySelector('.mobile-simple-tabs');
-      const hasTabClass = document.body.classList.contains('simple-tab-home') || document.body.classList.contains('simple-tab-codes') || document.body.classList.contains('simple-tab-shop');
-      const visiblePanel = document.querySelector('.mobile-home-only, .mobile-shop-only, .mobile-codes-only, .mobile-simple-view');
-      return !nav || !hasTabClass || mainRect.height < 140 || !visiblePanel;
-    }
-    return mainRect.height < 140;
-  }
-
-  function saveLangDirect(lang){
-    try {
-      const raw = localStorage.getItem(SAVE_KEY);
-      if(!raw) return;
-      const data = JSON.parse(raw);
-      data.state = data.state || {};
-      data.state.ui = data.state.ui || {};
-      data.state.ui.lang = lang;
-      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    } catch (e) {
-      console.warn('[LangFallback] direct save failed:', e);
-    }
-  }
-
-  let fallbackTimer = null;
-  let armed = false;
-  function showFallbackNotice(){
-    let el = document.getElementById('mobileLangFallbackNotice');
-    if(!el){
-      el = document.createElement('div');
-      el.id = 'mobileLangFallbackNotice';
-      el.style.position = 'fixed';
-      el.style.left = '16px';
-      el.style.right = '16px';
-      el.style.bottom = 'calc(env(safe-area-inset-bottom, 0px) + 18px)';
-      el.style.zIndex = '99999';
-      el.style.padding = '14px 16px';
-      el.style.borderRadius = '14px';
-      el.style.background = 'rgba(10,18,28,.95)';
-      el.style.color = '#fff';
-      el.style.fontSize = '14px';
-      el.style.lineHeight = '1.45';
-      el.style.boxShadow = '0 12px 32px rgba(0,0,0,.35)';
-      el.style.textAlign = 'center';
-      document.body.appendChild(el);
-    }
-    el.textContent = '언어 적용에 문제가 있어 3초 후 한국어로 돌아갑니다.';
-  }
-
-  function armLanguageFallback(){
-    if(armed) return;
-    if(!isMobileNow()) return;
-    if(typeof getLang === 'function' && getLang() === 'ko') return;
-    if(!bootLooksBroken()) return;
-    armed = true;
-    showFallbackNotice();
-    fallbackTimer = window.setTimeout(() => {
-      try {
-        if(state && state.ui) state.ui.lang = 'ko';
-      } catch (e) {}
-      try {
-        const setLanguage = document.getElementById('setLanguage');
-        if(setLanguage) setLanguage.value = 'ko';
-      } catch (e) {}
-      try {
-        if(typeof saveGame === 'function') saveGame(true);
-      } catch (e) {
-        console.warn('[LangFallback] saveGame failed:', e);
-      }
-      saveLangDirect('ko');
-      location.reload();
-    }, 3000);
-  }
-
-  function scheduleCheck(){
-    if(!isMobileNow()) return;
-    window.setTimeout(armLanguageFallback, 1200);
-  }
-
-  window.addEventListener('load', scheduleCheck);
-  window.addEventListener('pageshow', scheduleCheck);
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible') scheduleCheck();
-  });
 })();
