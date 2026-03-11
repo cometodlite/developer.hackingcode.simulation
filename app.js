@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.15-k6b4';
+    const CURRENT_VERSION = 'v1.6.15-k6b5';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -3562,6 +3562,14 @@ function applyLanguageToUI(){
         ensureMissionResets();
         applySettings();
         syncSettingsUI();
+        applyLanguageToUI();
+        renderServers();
+        renderShop();
+        renderMissions();
+        renderAchievements();
+        renderCodex();
+        renderCodeList();
+        renderCodeDetail();
         updateStatsUI();
         log(t('saveLoaded'), 'system');
       } catch (e) {
@@ -3863,27 +3871,37 @@ function applyLanguageToUI(){
     btnSaveLoadout.addEventListener('click', saveCurrentLoadout);
     btnLoadLoadout.addEventListener('click', loadLoadout);
 
+    function rerenderAllUI() {
+      applyLanguageToUI();
+      updateStatsUI();
+      renderServers();
+      renderShop();
+      renderMissions();
+      renderAchievements();
+      renderCodex();
+      renderCodeList();
+      renderCodeDetail();
+      try { refreshMobileTabTexts(); } catch (e) {}
+      try {
+        if (typeof setTabsHeightVar === 'function') setTabsHeightVar();
+      } catch (e) {}
+    }
+
     function init() {
       addCodeInstanceFromTemplate('basic');
       state.requiredExp = requiredExp(state.level);
-      renderServers();
-      renderShop();
       ensureMissionResets();
-      applySettings();
-      syncSettingsUI();
-      applyLanguageToUI();
-      updateStatsUI();
-      log(t('initLog'), 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
       } else {
         state.lastSeenAt = Date.now();
-        applyLanguageToUI();
-        updateStatsUI();
+        applySettings();
+        syncSettingsUI();
       }
 
-      applyLanguageToUI();
+      rerenderAllUI();
+      log(t('initLog'), 'system');
       renderUpdateLog();
       maybeShowUpdateOnStart();
       setTimeout(() => {
