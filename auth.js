@@ -7,6 +7,16 @@
   };
 
   const USERS_COLLECTION = 'users';
+  const AVATAR_PRESETS = [
+    { id:'terminal', emoji:'💻', label:'터미널' },
+    { id:'shield', emoji:'🛡️', label:'방화벽' },
+    { id:'robot', emoji:'🤖', label:'봇' },
+    { id:'ghost', emoji:'👻', label:'고스트' },
+    { id:'satellite', emoji:'🛰️', label:'위성' },
+    { id:'diamond', emoji:'💎', label:'다이아' },
+    { id:'crown', emoji:'👑', label:'크라운' },
+    { id:'skull', emoji:'💀', label:'스컬' }
+  ];
   const el = {};
   function pick(id){ return document.getElementById(id); }
   function text(id, value){ if (el[id]) el[id].textContent = value; }
@@ -18,7 +28,7 @@
       'btnCloudRegister','btnCloudLogin','btnCloudGoogle','btnCloudSync','btnCloudPull','btnCloudLogout','cloudAccountHelp',
       'cloudNicknameInput','btnCloudNicknameSave','cloudProfileJoinDate','cloudProfileLastLoginAt','cloudProfileLastSaveAt',
       'cloudProfileHackCount','cloudProfileCreditsEarned','cloudProfileFavoriteCode','cloudProfileUid',
-      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave'
+      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave','cloudAvatarPreview','cloudAvatarSelect','btnCloudAvatarSave','cloudProfileAvatarLabel'
     ].forEach(id=>el[id]=pick(id));
   }
 
@@ -42,6 +52,30 @@
     } catch (e) {
       return '-';
     }
+  }
+
+  function getAvatarPreset(avatarId){
+    return AVATAR_PRESETS.find(item => item.id === avatarId) || AVATAR_PRESETS[0];
+  }
+
+  function refreshAvatarOptions(selectedId){
+    if (!el.cloudAvatarSelect) return;
+    const current = selectedId || (state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id;
+    el.cloudAvatarSelect.innerHTML = '';
+    AVATAR_PRESETS.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.id;
+      opt.textContent = item.emoji + ' ' + item.label;
+      if (item.id === current) opt.selected = true;
+      el.cloudAvatarSelect.appendChild(opt);
+    });
+  }
+
+  function applyAvatarUi(avatarId){
+    const avatar = getAvatarPreset(avatarId);
+    text('cloudAvatarPreview', avatar.emoji);
+    text('cloudProfileAvatarLabel', avatar.label);
+    if (el.cloudAvatarSelect) el.cloudAvatarSelect.value = avatar.id;
   }
 
   function getOwnedCodeOptions(){
@@ -118,7 +152,9 @@
     if (el.btnCloudLogin) el.btnCloudLogin.disabled = !window.HCSIG_FIREBASE_READY;
     if (el.btnCloudRegister) el.btnCloudRegister.disabled = !window.HCSIG_FIREBASE_READY;
     if (el.btnCloudNicknameSave) el.btnCloudNicknameSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
+    if (el.btnCloudAvatarSave) el.btnCloudAvatarSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
     if (el.btnCloudFavoriteCodeSave) el.btnCloudFavoriteCodeSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
+    if (el.cloudAvatarSelect) el.cloudAvatarSelect.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
     if (el.cloudFavoriteCodeSelect) el.cloudFavoriteCodeSelect.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY || getOwnedCodeOptions().length === 0;
     if (!loggedIn) {
       updateProfileUi(null);
@@ -154,6 +190,7 @@
         email: user.email || '',
         nickname: user.displayName || '플레이어',
         photoURL: user.photoURL || '',
+        avatarId: 'terminal',
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
         lastSaveAt: null,
@@ -201,6 +238,20 @@
       toast('프로필 저장 완료', 'save');
     } catch (err) {
       setStatus('닉네임 저장 실패: ' + (err.message || err.code || err));
+    }
+  }
+
+  async function saveAvatar(){
+    if (!state.user || !window.HCSIG_FIREBASE_READY || !window.HCSIG_FB) return;
+    const avatarId = String((el.cloudAvatarSelect && el.cloudAvatarSelect.value) || '').trim() || 'terminal';
+    try {
+      await getUserRef(state.user.uid).set({ avatarId }, { merge:true });
+      const next = Object.assign({}, state.profile || {}, { avatarId });
+      updateProfileUi(next);
+      setStatus('프로필 아이콘을 저장했습니다.');
+      toast('프로필 아이콘 저장 완료', 'save');
+    } catch (err) {
+      setStatus('프로필 아이콘 저장 실패: ' + (err.message || err.code || err));
     }
   }
 
@@ -270,6 +321,7 @@
     if (el.btnCloudGoogle) el.btnCloudGoogle.addEventListener('click', loginWithGoogle);
     if (el.btnCloudLogout) el.btnCloudLogout.addEventListener('click', logout);
     if (el.btnCloudNicknameSave) el.btnCloudNicknameSave.addEventListener('click', saveNickname);
+    if (el.btnCloudAvatarSave) el.btnCloudAvatarSave.addEventListener('click', saveAvatar);
     if (el.btnCloudFavoriteCodeSave) el.btnCloudFavoriteCodeSave.addEventListener('click', saveFavoriteCode);
   }
 

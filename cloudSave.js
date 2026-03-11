@@ -34,6 +34,9 @@
     if (currentProfile && Object.prototype.hasOwnProperty.call(currentProfile, 'favoriteCodeId')) {
       patch.favoriteCodeId = currentProfile.favoriteCodeId || '';
     }
+    if (currentProfile && Object.prototype.hasOwnProperty.call(currentProfile, 'avatarId')) {
+      patch.avatarId = currentProfile.avatarId || 'terminal';
+    }
     return patch;
   }
 

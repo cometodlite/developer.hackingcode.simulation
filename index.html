@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=v1.6.15-k4" rel="stylesheet"/>
+<link href="style.css?v=v1.6.15-k5" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.15-k4 (Web)</span>
+<span class="header-version">v1.6.15-k5 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -364,9 +364,14 @@
 <div class="small" id="cloudAccountDesc">Firebase를 연결하면 Safari / Chrome / Edge 등 다른 브라우저에서도 같은 계정으로 세이브를 이어갈 수 있습니다.</div>
 <div class="cloud-account-status" id="cloudAccountStatus">설정 대기 중</div>
 <div class="cloud-user-card" id="cloudUserCard" hidden>
+<div class="cloud-user-header-row">
+<div class="cloud-avatar-box">
+<div class="cloud-avatar-preview" id="cloudAvatarPreview">💻</div>
+</div>
 <div class="cloud-user-main">
 <div class="cloud-user-name" id="cloudUserName">-</div>
 <div class="cloud-user-email" id="cloudUserEmail">-</div>
+</div>
 </div>
 <div class="cloud-user-meta" id="cloudUserMeta">클라우드 저장 정보 없음</div>
 <div class="cloud-profile-grid">
@@ -377,6 +382,14 @@
 <button id="btnCloudNicknameSave" type="button">프로필 저장</button>
 </div>
 </div>
+<div class="cloud-profile-row">
+<span>프로필 아이콘</span>
+<div class="cloud-profile-inline cloud-avatar-inline">
+<select id="cloudAvatarSelect" title="프로필 아이콘 선택"></select>
+<button id="btnCloudAvatarSave" type="button">아이콘 저장</button>
+</div>
+</div>
+<div class="cloud-profile-row"><span>현재 아이콘</span><strong id="cloudProfileAvatarLabel">터미널</strong></div>
 <div class="cloud-profile-row"><span>UID</span><strong id="cloudProfileUid">-</strong></div>
 <div class="cloud-profile-row"><span>가입일</span><strong id="cloudProfileJoinDate">-</strong></div>
 <div class="cloud-profile-row"><span>최근 로그인</span><strong id="cloudProfileLastLoginAt">-</strong></div>
@@ -433,8 +446,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=v1.6.15-k4"></script>
-<script src="auth.js?v=v1.6.15-k4"></script>
-<script src="cloudSave.js?v=v1.6.15-k4"></script>
-<script src="app.js?v=v1.6.15-k4"></script></body>
+<script src="firebase-config.js?v=v1.6.15-k5"></script>
+<script src="auth.js?v=v1.6.15-k5"></script>
+<script src="cloudSave.js?v=v1.6.15-k5"></script>
+<script src="app.js?v=v1.6.15-k5"></script></body>
 </html>
