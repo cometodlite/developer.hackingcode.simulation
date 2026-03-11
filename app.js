@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.15-k1';
+    const CURRENT_VERSION = 'v1.6.15-k3';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {

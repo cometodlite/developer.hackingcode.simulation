@@ -1649,3 +1649,56 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
 .cloud-auth-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .cloud-auth-form input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #243145;background:#0b1220;color:#e5e7eb;font-size:12px;}
 @media (max-width: 700px){.cloud-auth-form{grid-template-columns:1fr;}}
+
+
+.cloud-profile-grid {
+  margin-top: 10px;
+  border-top: 1px solid #1d2333;
+  padding-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.cloud-profile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cloud-profile-row span {
+  opacity: 0.72;
+  font-size: 12px;
+}
+
+.cloud-profile-row strong {
+  font-size: 12px;
+  color: #f3f4f6;
+  text-align: right;
+  word-break: break-all;
+}
+
+.cloud-profile-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(100%, 320px);
+}
+
+#cloudNicknameInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: #0b1020;
+  border: 1px solid #20263b;
+  color: #e5e7eb;
+  border-radius: 6px;
+  padding: 7px 9px;
+  font-size: 12px;
+}
+
+#cloudNicknameInput:focus {
+  outline: none;
+  border-color: #4b7fff;
+  box-shadow: 0 0 0 2px rgba(75,127,255,0.16);
+}
