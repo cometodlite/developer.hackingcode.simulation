@@ -1802,6 +1802,7 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
 .cloud-avatar-actions strong{padding-top:0;min-width:64px;text-align:left;color:#cfe0ff;}
 #btnOpenAvatarPicker{background:#0f172a;border:1px solid #2b3950;color:#e5e7eb;}
 .cloud-avatar-modal{position:fixed;inset:0;background:rgba(2,6,23,.7);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1200;}
+.cloud-avatar-modal[hidden]{display:none !important;}
 .cloud-avatar-modal-card{width:min(760px,100%);max-height:min(78vh,760px);overflow:auto;background:#08111f;border:1px solid #243145;border-radius:18px;padding:16px;box-shadow:0 24px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:14px;}
 .cloud-avatar-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .cloud-avatar-modal-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
