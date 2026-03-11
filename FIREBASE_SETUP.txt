@@ -1,0 +1,37 @@
+HCSIG Firebase setup
+====================
+
+This package is ready for cloud account sync, but Firebase must be created in your own account.
+
+1. Create a Firebase project.
+2. Add a Web App.
+3. Copy the Web App config into firebase-config.js.
+4. Change enabled: false -> enabled: true.
+5. Authentication > Sign-in method
+   - Enable Email/Password
+   - Enable Google
+6. Firestore Database
+   - Create database
+   - Rules: paste firestore.rules contents
+7. Hosting / domain notes
+   - Add your game domain to Authentication > Settings > Authorized domains.
+   - If testing locally, use a local server, not raw file://.
+
+Checklist
+---------
+[ ] Firebase project created
+[ ] Web app config pasted
+[ ] enabled set to true
+[ ] Email/Password enabled
+[ ] Google enabled
+[ ] Firestore created
+[ ] Rules applied
+[ ] Domain added to authorized domains
+
+After setup, HCSIG cloud features will work:
+- Email register/login
+- Google login
+- Cloud save
+- Cloud load
+- Logout
+- Cross-browser account sync
