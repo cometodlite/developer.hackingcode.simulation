@@ -29,7 +29,7 @@
       'btnCloudRegister','btnCloudLogin','btnCloudGoogle','btnCloudSync','btnCloudPull','btnCloudLogout','cloudAccountHelp',
       'cloudNicknameInput','btnCloudNicknameSave','cloudProfileJoinDate','cloudProfileLastLoginAt','cloudProfileLastSaveAt',
       'cloudProfileHackCount','cloudProfileCreditsEarned','cloudProfileFavoriteCode','cloudProfileUid',
-      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave','cloudAvatarPreview','btnCloudAvatarSave','cloudProfileAvatarLabel','cloudAvatarPresetGrid','btnOpenAvatarPicker','cloudAvatarModal','btnAvatarPickerClose'
+      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave','cloudAvatarPreview','btnCloudAvatarSave','cloudProfileAvatarLabel','cloudAvatarPresetGrid','btnOpenAvatarPicker','cloudAvatarModal','btnAvatarPickerClose','btnOpenProfilePanel','cloudProfileModal','btnProfilePanelClose'
     ].forEach(id=>el[id]=pick(id));
   }
 
@@ -330,7 +330,17 @@
     }
   }
 
+  function openProfilePanel(){
+    if (el.cloudProfileModal) el.cloudProfileModal.hidden = false;
+  }
+
+  function closeProfilePanel(){
+    if (el.cloudProfileModal) el.cloudProfileModal.hidden = true;
+    closeAvatarPicker();
+  }
+
   function openAvatarPicker(){
+    if (el.cloudProfileModal) el.cloudProfileModal.hidden = false;
     if (el.cloudAvatarModal) el.cloudAvatarModal.hidden = false;
     renderAvatarPresetGrid(state.avatarDraftId || (state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id);
   }
@@ -340,6 +350,9 @@
   }
 
   function wireButtons(){
+    if (el.btnOpenProfilePanel) el.btnOpenProfilePanel.addEventListener('click', openProfilePanel);
+    if (el.btnProfilePanelClose) el.btnProfilePanelClose.addEventListener('click', closeProfilePanel);
+    if (el.cloudProfileModal) el.cloudProfileModal.addEventListener('click', (ev)=>{ if (ev.target === el.cloudProfileModal) closeProfilePanel(); });
     if (el.btnOpenAvatarPicker) el.btnOpenAvatarPicker.addEventListener('click', openAvatarPicker);
     if (el.btnAvatarPickerClose) el.btnAvatarPickerClose.addEventListener('click', closeAvatarPicker);
     if (el.cloudAvatarModal) el.cloudAvatarModal.addEventListener('click', (ev)=>{ if (ev.target === el.cloudAvatarModal) closeAvatarPicker(); });
@@ -388,7 +401,11 @@
   window.addEventListener('hcsig:ready', ()=> refreshFavoriteCodeOptions());
   window.addEventListener('hcsig:save', ()=> refreshFavoriteCodeOptions());
 
-  document.addEventListener('keydown', (ev)=>{ if (ev.key === 'Escape' && el.cloudAvatarModal && !el.cloudAvatarModal.hidden) closeAvatarPicker(); });
+  document.addEventListener('keydown', (ev)=>{
+    if (ev.key !== 'Escape') return;
+    if (el.cloudAvatarModal && !el.cloudAvatarModal.hidden) { closeAvatarPicker(); return; }
+    if (el.cloudProfileModal && !el.cloudProfileModal.hidden) { closeProfilePanel(); }
+  });
 
   window.HCSIG_AUTH = {
     getUser: ()=>state.user,

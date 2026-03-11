@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=v1.6.15-k6b1" rel="stylesheet"/>
+<link href="style.css?v=v1.6.15-k6b3" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.15-k6b1 (Web)</span>
+<span class="header-version">v1.6.15-k6b3 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -370,12 +370,12 @@
 <input id="cloudEmail" type="email" placeholder="이메일" autocomplete="username"/>
 <input id="cloudPassword" type="password" placeholder="비밀번호" autocomplete="current-password"/>
 </div>
-<div class="button-row" style="margin-top:8px;">
+<div class="cloud-auth-actions" style="margin-top:8px;">
 <button id="btnCloudRegister" type="button">회원가입</button>
 <button id="btnCloudLogin" type="button">이메일 로그인</button>
 <button id="btnCloudGoogle" type="button">Google 로그인</button>
 </div>
-<div class="button-row" style="margin-top:6px;">
+<div class="cloud-auth-actions" style="margin-top:6px;">
 <button id="btnCloudSync" type="button">클라우드 저장</button>
 <button id="btnCloudPull" type="button">클라우드 불러오기</button>
 <button id="btnCloudLogout" type="button">로그아웃</button>
@@ -393,10 +393,36 @@
 </div>
 <div class="cloud-user-meta" id="cloudUserMeta">클라우드 저장 정보 없음</div>
 </div>
-</div>
-<div class="cloud-section cloud-section-profile">
+<div class="cloud-profile-entry">
+<div class="cloud-profile-entry-copy">
 <div class="cloud-section-title">프로필</div>
-<div class="cloud-profile-grid">
+<div class="small">닉네임, 아이콘, 대표 코드는 별도 창에서 관리합니다.</div>
+</div>
+<button id="btnOpenProfilePanel" type="button">프로필 설정</button>
+</div>
+</div>
+<div class="cloud-section cloud-section-stats">
+<div class="cloud-section-title">클라우드 상태</div>
+<div class="cloud-profile-grid cloud-stats-grid">
+<div class="cloud-profile-row"><span>UID</span><strong id="cloudProfileUid">-</strong></div>
+<div class="cloud-profile-row"><span>가입일</span><strong id="cloudProfileJoinDate">-</strong></div>
+<div class="cloud-profile-row"><span>최근 로그인</span><strong id="cloudProfileLastLoginAt">-</strong></div>
+<div class="cloud-profile-row"><span>최근 클라우드 저장</span><strong id="cloudProfileLastSaveAt">-</strong></div>
+<div class="cloud-profile-row"><span>총 해킹 성공</span><strong id="cloudProfileHackCount">0</strong></div>
+<div class="cloud-profile-row"><span>누적 획득 크레딧</span><strong id="cloudProfileCreditsEarned">0</strong></div>
+</div>
+</div>
+</div>
+<div class="cloud-profile-modal" id="cloudProfileModal" hidden>
+<div class="cloud-profile-modal-card">
+<div class="cloud-profile-modal-head">
+<div>
+<div class="cloud-section-title">프로필 설정</div>
+<div class="small">닉네임, 아이콘, 대표 코드를 여기서 관리하세요.</div>
+</div>
+<button id="btnProfilePanelClose" type="button">닫기</button>
+</div>
+<div class="cloud-profile-grid cloud-profile-modal-grid">
 <div class="cloud-profile-row">
 <span>닉네임</span>
 <div class="cloud-profile-inline">
@@ -420,17 +446,6 @@
 </div>
 </div>
 <div class="cloud-profile-row"><span>현재 대표 코드</span><strong id="cloudProfileFavoriteCode">-</strong></div>
-</div>
-</div>
-<div class="cloud-section cloud-section-stats">
-<div class="cloud-section-title">클라우드 상태</div>
-<div class="cloud-profile-grid cloud-stats-grid">
-<div class="cloud-profile-row"><span>UID</span><strong id="cloudProfileUid">-</strong></div>
-<div class="cloud-profile-row"><span>가입일</span><strong id="cloudProfileJoinDate">-</strong></div>
-<div class="cloud-profile-row"><span>최근 로그인</span><strong id="cloudProfileLastLoginAt">-</strong></div>
-<div class="cloud-profile-row"><span>최근 클라우드 저장</span><strong id="cloudProfileLastSaveAt">-</strong></div>
-<div class="cloud-profile-row"><span>총 해킹 성공</span><strong id="cloudProfileHackCount">0</strong></div>
-<div class="cloud-profile-row"><span>누적 획득 크레딧</span><strong id="cloudProfileCreditsEarned">0</strong></div>
 </div>
 </div>
 </div>
@@ -474,5 +489,5 @@
 <script src="firebase-config.js?v=v1.6.15-k6"></script>
 <script src="auth.js?v=v1.6.15-k6"></script>
 <script src="cloudSave.js?v=v1.6.15-k6"></script>
-<script src="app.js?v=v1.6.15-k6b1"></script></body>
+<script src="app.js?v=v1.6.15-k6b3"></script></body>
 </html>
