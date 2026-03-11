@@ -1848,3 +1848,51 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   .cloud-profile-modal{padding:10px;}
   .cloud-profile-modal-card{padding:12px;max-height:84vh;}
 }
+
+
+/* === k6c0: All mobile browsers fallback to desktop panels === */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+  body.force-desktop-panels {
+    overflow: auto !important;
+    padding-bottom: 0 !important;
+  }
+  body.force-desktop-panels #main {
+    display: flex !important;
+    flex-direction: row !important;
+    height: calc(100vh - 48px) !important;
+    width: 100vw !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+  }
+  body.force-desktop-panels #leftPanel,
+  body.force-desktop-panels #centerPanel,
+  body.force-desktop-panels #rightPanel {
+    display: block !important;
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: auto !important;
+    padding-bottom: 0 !important;
+  }
+  body.force-desktop-panels #leftPanel {
+    flex: 0 0 24% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  body.force-desktop-panels #centerPanel { flex: 1 1 auto !important; }
+  body.force-desktop-panels #rightPanel { flex: 0 0 26% !important; }
+  body.force-desktop-panels .resizer { display: block !important; }
+  body.force-desktop-panels .mobile-tabs,
+  body.force-desktop-panels .mobile-simple-tabs,
+  body.force-desktop-panels .mobile-simple-view,
+  body.force-desktop-panels .mobile-view {
+    display: none !important;
+  }
+}

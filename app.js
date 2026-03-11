@@ -12,6 +12,58 @@
 
 
 
+
+// --- All mobile browsers fallback to desktop panels: disable mobile-simple UI everywhere on mobile ---
+(function(){
+  try {
+    const isMobileLike = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+    if (!isMobileLike) return;
+
+    const markDesktopFallback = () => {
+      try { document.body && document.body.classList.add('force-desktop-panels'); } catch(_) {}
+    };
+    markDesktopFallback();
+    window.__HCSIG_DISABLE_SIMPLE_MOBILE__ = true;
+
+    const restoreDesktopPanels = () => {
+      try {
+        markDesktopFallback();
+        document.body.classList.remove(
+          'mobile-simple-ui','mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop',
+          'mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log',
+          'mobile-tab-left','mobile-tab-center','mobile-tab-right',
+          'simple-tab-home','simple-tab-codes','simple-tab-shop','mobile-tabs-hidden'
+        );
+        document.querySelectorAll('.mobile-simple-tabs,.mobile-tabs,#mobileSimpleHome,#mobileSimpleCodes,#mobileSimpleShop,#mobileViewStatus,#mobileViewAction,#mobileViewCodes,#mobileViewShop,#mobileViewLog,#mobileCodesMerged').forEach(el=>el.remove());
+        ['leftPanel','centerPanel','rightPanel'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.style.display = '';
+            el.style.position = '';
+            el.style.left = '';
+            el.style.right = '';
+            el.style.top = '';
+            el.style.bottom = '';
+            el.hidden = false;
+            el.removeAttribute('aria-hidden');
+          }
+        });
+      } catch(_) {}
+    };
+
+    window.__HCSIG_RESTORE_DESKTOP_PANELS__ = restoreDesktopPanels;
+    document.addEventListener('DOMContentLoaded', restoreDesktopPanels);
+    window.addEventListener('load', restoreDesktopPanels);
+    window.addEventListener('pageshow', () => setTimeout(restoreDesktopPanels, 0));
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) setTimeout(restoreDesktopPanels, 0);
+    });
+    setTimeout(restoreDesktopPanels, 0);
+    setTimeout(restoreDesktopPanels, 120);
+    setTimeout(restoreDesktopPanels, 500);
+  } catch(e) {}
+})();
+
 // --- Layout vars sync (header/tabs/viewport). Fixes initial "pushed up" until a UI event happens. ---
 (function(){
   const root = document.documentElement;
@@ -85,7 +137,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.15-k6b8';
+    const CURRENT_VERSION = 'v1.6.15-k6c0';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -4004,6 +4056,7 @@ function applyLanguageToUI(){
   if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
+  if(window.__HCSIG_DISABLE_SIMPLE_MOBILE__){ try{ window.__HCSIG_RESTORE_DESKTOP_PANELS__ && window.__HCSIG_RESTORE_DESKTOP_PANELS__(); }catch(e){} return; }
 
   // IMPORTANT: This build uses the newer 5-tab "MOBILE VIEWS" system.
   // The legacy 3-tab (left/center/right) switcher can create an invisible overlay that blocks taps on iOS
@@ -4373,6 +4426,7 @@ function applyLanguageToUI(){
 (function(){
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
+  if(window.__HCSIG_DISABLE_SIMPLE_MOBILE__){ try{ window.__HCSIG_RESTORE_DESKTOP_PANELS__ && window.__HCSIG_RESTORE_DESKTOP_PANELS__(); }catch(e){} return; }
 
   const main = document.getElementById('main');
   const left = document.getElementById('leftPanel');
