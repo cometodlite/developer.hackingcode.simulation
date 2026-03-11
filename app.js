@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.14-k5b3';
+    const CURRENT_VERSION = 'v1.6.15-k1';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -3475,6 +3475,17 @@ function applyLanguageToUI(){
       localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
       localStorage.setItem(LAST_SEEN_VERSION_KEY, CURRENT_VERSION);
 
+      try {
+        window.dispatchEvent(new CustomEvent('hcsig:save', {
+          detail: {
+            silent,
+            saveData: JSON.parse(JSON.stringify(saveData))
+          }
+        }));
+      } catch (e) {
+        console.warn('[CloudBridge] save event dispatch failed:', e);
+      }
+
       if (!silent) {
         log(t('saveStateSaved'), 'system');
         showToast(t('saveComplete'), 'save');
@@ -3484,8 +3495,8 @@ function applyLanguageToUI(){
       updateStatsUI();
     }
 
-    function loadGame() {
-      let raw = localStorage.getItem(SAVE_KEY);
+    function loadGame(rawOverride = null) {
+      let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
       // v1.5.x 저장 데이터 자동 마이그레이션
       if (!raw) {
         raw = localStorage.getItem(OLD_SAVE_KEY);
@@ -3878,6 +3889,54 @@ function applyLanguageToUI(){
       setTimeout(() => {
         maybeStartTutorial();
       }, 180);
+
+      try {
+        window.HCSIG_BRIDGE = {
+          version: CURRENT_VERSION,
+          saveKey: SAVE_KEY,
+          oldSaveKey: OLD_SAVE_KEY,
+          getCurrentSaveData: () => ({
+            version: CURRENT_VERSION,
+            savedAt: state.lastSavedAt || Date.now(),
+            state: JSON.parse(JSON.stringify(state)),
+            ownedCodes: JSON.parse(JSON.stringify(ownedCodes)),
+            modifiers: JSON.parse(JSON.stringify(modifiers))
+          }),
+          saveLocal: (silent = true) => saveGame(silent),
+          loadFromRaw: (raw) => loadGame(raw),
+          loadFromObject: (obj) => {
+            if (!obj) return;
+            localStorage.setItem(SAVE_KEY, JSON.stringify(obj));
+            loadGame(JSON.stringify(obj));
+          },
+          getLanguage: () => getLang(),
+          getStateSummary: () => ({
+            level: state.level,
+            credits: state.credits,
+            energy: state.energy,
+            lastSavedAt: state.lastSavedAt || 0
+          }),
+          toast: (message, type = 'save') => showToast(message, type),
+          log: (message, type = 'system') => log(message, type),
+          refresh: () => {
+            applyLanguageToUI();
+            updateStatsUI();
+            renderCodeList();
+            renderCodeDetail();
+            renderMissions();
+            renderAchievements();
+            renderCodex();
+          }
+        };
+        window.dispatchEvent(new CustomEvent('hcsig:ready', {
+          detail: {
+            version: CURRENT_VERSION,
+            hasLocalSave: !!localStorage.getItem(SAVE_KEY)
+          }
+        }));
+      } catch (bridgeErr) {
+        console.warn('[CloudBridge] ready event dispatch failed:', bridgeErr);
+      }
     }
 
     init();

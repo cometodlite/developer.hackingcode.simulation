@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=1.6.14-k5b3" rel="stylesheet"/>
+<link href="style.css?v=v1.6.15-k1" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.14-k5b3 (Web)</span>
+<span class="header-version">v1.6.15-k1 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -353,6 +353,39 @@
 <div class="button-row" style="margin-top:6px;">
 <button id="btnImportSaveText" title="텍스트(JSON)로 저장 데이터를 불러옵니다.">텍스트 불러오기</button>
 </div>
+<div class="cloud-account-box" id="cloudAccountBox">
+<div class="cloud-account-header">
+<div>
+<div class="small cloud-account-eyebrow">ACCOUNT</div>
+<div class="cloud-account-title" id="cloudAccountTitle">클라우드 계정 연동</div>
+</div>
+<span class="cloud-badge" id="cloudStatusBadge">LOCAL ONLY</span>
+</div>
+<div class="small" id="cloudAccountDesc">Firebase를 연결하면 Safari / Chrome / Edge 등 다른 브라우저에서도 같은 계정으로 세이브를 이어갈 수 있습니다.</div>
+<div class="cloud-account-status" id="cloudAccountStatus">설정 대기 중</div>
+<div class="cloud-user-card" id="cloudUserCard" hidden>
+<div class="cloud-user-main">
+<div class="cloud-user-name" id="cloudUserName">-</div>
+<div class="cloud-user-email" id="cloudUserEmail">-</div>
+</div>
+<div class="cloud-user-meta" id="cloudUserMeta">클라우드 저장 정보 없음</div>
+</div>
+<div class="cloud-auth-form" id="cloudAuthForm">
+<input id="cloudEmail" type="email" placeholder="이메일" autocomplete="username"/>
+<input id="cloudPassword" type="password" placeholder="비밀번호" autocomplete="current-password"/>
+</div>
+<div class="button-row" style="margin-top:8px;">
+<button id="btnCloudRegister" type="button">회원가입</button>
+<button id="btnCloudLogin" type="button">이메일 로그인</button>
+<button id="btnCloudGoogle" type="button">Google 로그인</button>
+</div>
+<div class="button-row" style="margin-top:6px;">
+<button id="btnCloudSync" type="button">클라우드 저장</button>
+<button id="btnCloudPull" type="button">클라우드 불러오기</button>
+<button id="btnCloudLogout" type="button">로그아웃</button>
+</div>
+<div class="small" id="cloudAccountHelp">※ firebase-config.js에 프로젝트 키를 넣기 전까지는 로컬 저장만 동작합니다.</div>
+</div>
 <div class="small" id="saveHelp">
               · 저장 위치: 브라우저 LocalStorage (이 브라우저, 이 기기 한정)<br/>
               · 자동 저장: 약 60초마다 한 번씩 백그라운드 저장
@@ -374,5 +407,11 @@
 
 
 
-<script src="app.js?v=1.6.14-k5b3"></script></body>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js?v=v1.6.15-k1"></script>
+<script src="auth.js?v=v1.6.15-k1"></script>
+<script src="cloudSave.js?v=v1.6.15-k1"></script>
+<script src="app.js?v=v1.6.15-k1"></script></body>
 </html>

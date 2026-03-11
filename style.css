@@ -1632,3 +1632,20 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   .code-sort-inline{ width:100%; justify-content:flex-end; }
   #codeSortSelect{ min-width:110px; }
 }
+
+
+/* === v1.6.15-k1 cloud account panel === */
+.cloud-account-box{margin-top:10px;padding:12px;border:1px solid #243145;border-radius:14px;background:rgba(8,14,24,.88);display:flex;flex-direction:column;gap:8px;}
+.cloud-account-header{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.cloud-account-eyebrow{opacity:.72;letter-spacing:.12em;}
+.cloud-account-title{font-weight:700;font-size:14px;}
+.cloud-badge{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;border:1px solid #35506d;background:#122033;font-size:11px;font-weight:700;}
+.cloud-badge.is-ready{border-color:#2e6f54;background:#113326;color:#bdf6d4;}
+.cloud-badge.is-error{border-color:#7a3641;background:#31131b;color:#ffc8cf;}
+.cloud-account-status,.cloud-user-card{padding:10px 12px;border-radius:12px;background:#0b1220;border:1px solid #1f2b3d;}
+.cloud-user-card{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;}
+.cloud-user-name{font-weight:700;}
+.cloud-user-email,.cloud-user-meta{font-size:12px;opacity:.82;}
+.cloud-auth-form{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cloud-auth-form input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #243145;background:#0b1220;color:#e5e7eb;font-size:12px;}
+@media (max-width: 700px){.cloud-auth-form{grid-template-columns:1fr;}}
