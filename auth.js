@@ -17,7 +17,8 @@
       'cloudStatusBadge','cloudAccountStatus','cloudUserCard','cloudUserName','cloudUserEmail','cloudUserMeta','cloudEmail','cloudPassword',
       'btnCloudRegister','btnCloudLogin','btnCloudGoogle','btnCloudSync','btnCloudPull','btnCloudLogout','cloudAccountHelp',
       'cloudNicknameInput','btnCloudNicknameSave','cloudProfileJoinDate','cloudProfileLastLoginAt','cloudProfileLastSaveAt',
-      'cloudProfileHackCount','cloudProfileCreditsEarned','cloudProfileFavoriteCode','cloudProfileUid'
+      'cloudProfileHackCount','cloudProfileCreditsEarned','cloudProfileFavoriteCode','cloudProfileUid',
+      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave'
     ].forEach(id=>el[id]=pick(id));
   }
 
@@ -43,6 +44,50 @@
     }
   }
 
+  function getOwnedCodeOptions(){
+    try {
+      const saveData = window.HCSIG_BRIDGE && window.HCSIG_BRIDGE.getCurrentSaveData ? window.HCSIG_BRIDGE.getCurrentSaveData() : null;
+      const list = saveData && Array.isArray(saveData.ownedCodes) ? saveData.ownedCodes : [];
+      return list.map(code => ({
+        id: code.id,
+        label: (code.name || code.id || 'Unknown') + (code.rarity ? ' [' + code.rarity + ']' : '')
+      }));
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function refreshFavoriteCodeOptions(selectedId){
+    if (!el.cloudFavoriteCodeSelect) return;
+    const options = getOwnedCodeOptions();
+    const current = selectedId || (state.profile && state.profile.favoriteCodeId) || '';
+    el.cloudFavoriteCodeSelect.innerHTML = '';
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = options.length ? '대표 코드를 선택하세요' : '보유 코드 없음';
+    el.cloudFavoriteCodeSelect.appendChild(placeholder);
+
+    options.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.id;
+      opt.textContent = item.label;
+      if (item.id === current) opt.selected = true;
+      el.cloudFavoriteCodeSelect.appendChild(opt);
+    });
+
+    el.cloudFavoriteCodeSelect.disabled = options.length === 0 || !state.user || !window.HCSIG_FIREBASE_READY;
+    if (current && !options.find(item => item.id === current)) {
+      el.cloudFavoriteCodeSelect.value = '';
+    }
+  }
+
+  function getFavoriteCodeLabel(codeId){
+    if (!codeId) return '-';
+    const found = getOwnedCodeOptions().find(item => item.id === codeId);
+    return found ? found.label : codeId;
+  }
+
   function updateProfileUi(profile){
     state.profile = profile || null;
     const p = profile || {};
@@ -51,11 +96,12 @@
     text('cloudProfileLastSaveAt', formatDate(p.lastSaveAt));
     text('cloudProfileHackCount', String(p.totalHackCount || 0));
     text('cloudProfileCreditsEarned', String(p.totalCreditsEarned || 0));
-    text('cloudProfileFavoriteCode', p.favoriteCodeId || '-');
+    text('cloudProfileFavoriteCode', getFavoriteCodeLabel(p.favoriteCodeId));
     text('cloudProfileUid', p.uid || (state.user && state.user.uid) || '-');
     if (el.cloudNicknameInput && document.activeElement !== el.cloudNicknameInput) {
       val('cloudNicknameInput', p.nickname || (state.user && (state.user.displayName || '플레이어')) || '플레이어');
     }
+    refreshFavoriteCodeOptions(p.favoriteCodeId);
     if (state.user) {
       text('cloudUserName', p.nickname || state.user.displayName || 'HCSIG Player');
       text('cloudUserEmail', state.user.email || state.user.uid);
@@ -72,6 +118,8 @@
     if (el.btnCloudLogin) el.btnCloudLogin.disabled = !window.HCSIG_FIREBASE_READY;
     if (el.btnCloudRegister) el.btnCloudRegister.disabled = !window.HCSIG_FIREBASE_READY;
     if (el.btnCloudNicknameSave) el.btnCloudNicknameSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
+    if (el.btnCloudFavoriteCodeSave) el.btnCloudFavoriteCodeSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
+    if (el.cloudFavoriteCodeSelect) el.cloudFavoriteCodeSelect.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY || getOwnedCodeOptions().length === 0;
     if (!loggedIn) {
       updateProfileUi(null);
       return;
@@ -156,6 +204,20 @@
     }
   }
 
+  async function saveFavoriteCode(){
+    if (!state.user || !window.HCSIG_FIREBASE_READY || !window.HCSIG_FB) return;
+    const favoriteCodeId = String((el.cloudFavoriteCodeSelect && el.cloudFavoriteCodeSelect.value) || '').trim();
+    try {
+      await getUserRef(state.user.uid).set({ favoriteCodeId }, { merge:true });
+      const next = Object.assign({}, state.profile || {}, { favoriteCodeId });
+      updateProfileUi(next);
+      setStatus(favoriteCodeId ? '대표 코드를 저장했습니다.' : '대표 코드를 해제했습니다.');
+      toast(favoriteCodeId ? '대표 코드 저장 완료' : '대표 코드 해제 완료', 'save');
+    } catch (err) {
+      setStatus('대표 코드 저장 실패: ' + (err.message || err.code || err));
+    }
+  }
+
   async function registerWithEmail(){
     const email = (el.cloudEmail && el.cloudEmail.value || '').trim();
     const password = (el.cloudPassword && el.cloudPassword.value || '').trim();
@@ -208,6 +270,7 @@
     if (el.btnCloudGoogle) el.btnCloudGoogle.addEventListener('click', loginWithGoogle);
     if (el.btnCloudLogout) el.btnCloudLogout.addEventListener('click', logout);
     if (el.btnCloudNicknameSave) el.btnCloudNicknameSave.addEventListener('click', saveNickname);
+    if (el.btnCloudFavoriteCodeSave) el.btnCloudFavoriteCodeSave.addEventListener('click', saveFavoriteCode);
   }
 
   function startAuthObserver(){
@@ -243,12 +306,16 @@
     startAuthObserver();
   }
 
+  window.addEventListener('hcsig:ready', ()=> refreshFavoriteCodeOptions());
+  window.addEventListener('hcsig:save', ()=> refreshFavoriteCodeOptions());
+
   window.HCSIG_AUTH = {
     getUser: ()=>state.user,
     isReady: ()=>!!(state.initialized && window.HCSIG_FIREBASE_READY),
     getProfile: ()=>state.profile,
     refreshProfile: async ()=> state.user ? await loadProfile(state.user) : null,
     setProfileData: (profile)=>updateProfileUi(profile),
+    refreshFavoriteCodeOptions,
     setCloudMeta: (message)=>{ if (el.cloudUserMeta) el.cloudUserMeta.textContent = message; },
     setStatus,
     toast

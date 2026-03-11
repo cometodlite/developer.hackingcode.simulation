@@ -23,14 +23,18 @@
     const save = payload || {};
     const gameState = save.state || {};
     const stats = gameState.stats || {};
-    return {
+    const currentProfile = auth() && auth().getProfile ? auth().getProfile() : null;
+    const patch = {
       uid: authUser.uid,
       email: authUser.email || '',
-      favoriteCodeId: gameState.activeCodeId || '',
       totalHackCount: Number(stats.hackSuccessCount || 0),
       totalCreditsEarned: Number(stats.creditsEarnedTotal || 0),
       lastSaveAt: firebase.firestore.FieldValue.serverTimestamp()
     };
+    if (currentProfile && Object.prototype.hasOwnProperty.call(currentProfile, 'favoriteCodeId')) {
+      patch.favoriteCodeId = currentProfile.favoriteCodeId || '';
+    }
+    return patch;
   }
 
   async function saveCloud(reason){
