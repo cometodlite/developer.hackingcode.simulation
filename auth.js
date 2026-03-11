@@ -28,7 +28,7 @@
       'btnCloudRegister','btnCloudLogin','btnCloudGoogle','btnCloudSync','btnCloudPull','btnCloudLogout','cloudAccountHelp',
       'cloudNicknameInput','btnCloudNicknameSave','cloudProfileJoinDate','cloudProfileLastLoginAt','cloudProfileLastSaveAt',
       'cloudProfileHackCount','cloudProfileCreditsEarned','cloudProfileFavoriteCode','cloudProfileUid',
-      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave','cloudAvatarPreview','cloudAvatarSelect','btnCloudAvatarSave','cloudProfileAvatarLabel'
+      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave','cloudAvatarPreview','cloudAvatarSelect','btnCloudAvatarSave','cloudProfileAvatarLabel','cloudAvatarPresetGrid'
     ].forEach(id=>el[id]=pick(id));
   }
 
@@ -69,6 +69,28 @@
       if (item.id === current) opt.selected = true;
       el.cloudAvatarSelect.appendChild(opt);
     });
+    renderAvatarPresetGrid(current);
+  }
+
+  
+
+  function renderAvatarPresetGrid(selectedId){
+    if (!el.cloudAvatarPresetGrid) return;
+    const current = selectedId || (state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id;
+    el.cloudAvatarPresetGrid.innerHTML = '';
+    AVATAR_PRESETS.forEach(item => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cloud-avatar-preset-btn' + (item.id === current ? ' is-selected' : '');
+      btn.dataset.avatarId = item.id;
+      btn.disabled = !state.user || !window.HCSIG_FIREBASE_READY;
+      btn.innerHTML = '<span class="emoji">' + item.emoji + '</span><span class="label">' + item.label + '</span>';
+      btn.addEventListener('click', () => {
+        if (el.cloudAvatarSelect) el.cloudAvatarSelect.value = item.id;
+        renderAvatarPresetGrid(item.id);
+      });
+      el.cloudAvatarPresetGrid.appendChild(btn);
+    });
   }
 
   function applyAvatarUi(avatarId){
@@ -76,6 +98,7 @@
     text('cloudAvatarPreview', avatar.emoji);
     text('cloudProfileAvatarLabel', avatar.label);
     if (el.cloudAvatarSelect) el.cloudAvatarSelect.value = avatar.id;
+    renderAvatarPresetGrid(avatar.id);
   }
 
   function getOwnedCodeOptions(){
@@ -155,6 +178,7 @@
     if (el.btnCloudAvatarSave) el.btnCloudAvatarSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
     if (el.btnCloudFavoriteCodeSave) el.btnCloudFavoriteCodeSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
     if (el.cloudAvatarSelect) el.cloudAvatarSelect.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
+    renderAvatarPresetGrid((state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id);
     if (el.cloudFavoriteCodeSelect) el.cloudFavoriteCodeSelect.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY || getOwnedCodeOptions().length === 0;
     if (!loggedIn) {
       updateProfileUi(null);
@@ -316,6 +340,7 @@
   }
 
   function wireButtons(){
+    if (el.cloudAvatarSelect) el.cloudAvatarSelect.addEventListener('change', ()=> renderAvatarPresetGrid(el.cloudAvatarSelect.value));
     if (el.btnCloudRegister) el.btnCloudRegister.addEventListener('click', registerWithEmail);
     if (el.btnCloudLogin) el.btnCloudLogin.addEventListener('click', loginWithEmail);
     if (el.btnCloudGoogle) el.btnCloudGoogle.addEventListener('click', loginWithGoogle);

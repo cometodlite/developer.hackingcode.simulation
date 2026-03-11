@@ -1730,3 +1730,53 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
 .cloud-avatar-inline select {
   min-width:170px;
 }
+
+.cloud-avatar-preset-wrap {
+  display:grid;
+  gap:8px;
+  margin-top:6px;
+}
+
+.cloud-avatar-preset-title {
+  opacity:0.85;
+}
+
+.cloud-avatar-preset-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+
+.cloud-avatar-preset-btn {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  justify-content:flex-start;
+  width:100%;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid #2b3950;
+  background:#0f172a;
+  color:#e5e7eb;
+  cursor:pointer;
+}
+
+.cloud-avatar-preset-btn .emoji {
+  font-size:18px;
+  line-height:1;
+}
+
+.cloud-avatar-preset-btn .label {
+  font-size:12px;
+}
+
+.cloud-avatar-preset-btn.is-selected {
+  border-color:#60a5fa;
+  box-shadow:0 0 0 1px rgba(96,165,250,0.3) inset;
+  background:#111f38;
+}
+
+.cloud-avatar-preset-btn:disabled {
+  opacity:0.5;
+  cursor:not-allowed;
+}
