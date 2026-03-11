@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.15-k6b6';
+    const CURRENT_VERSION = 'v1.6.15-k6b7';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -3495,6 +3495,32 @@ function applyLanguageToUI(){
       updateStatsUI();
     }
 
+
+    function rebuildUIAfterRestore() {
+      try { applySettings(); } catch (e) {}
+      try { syncSettingsUI(); } catch (e) {}
+      try { applyLanguageToUI(); } catch (e) {}
+      try { renderServers(); } catch (e) {}
+      try { renderShop(); } catch (e) {}
+      try { renderMissions(); } catch (e) {}
+      try { renderAchievements(); } catch (e) {}
+      try { renderCodex(); } catch (e) {}
+      try { renderCodeList(); } catch (e) {}
+      try { renderCodeDetail(); } catch (e) {}
+      try { renderUpdateLog(); } catch (e) {}
+      try { updateStatsUI(); } catch (e) {}
+      try { refreshMobileTabTexts(); } catch (e) {}
+      try {
+        window.dispatchEvent(new Event('resize'));
+        window.dispatchEvent(new Event('pageshow'));
+      } catch (e) {}
+      try {
+        const vv = window.visualViewport;
+        if (vv) vv.dispatchEvent(new Event('resize'));
+      } catch (e) {}
+      try { if (window.scrollY !== 0) window.scrollTo(0, 0); } catch (e) {}
+    }
+
     function loadGame(rawOverride = null) {
       let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
       // v1.5.x 저장 데이터 자동 마이그레이션
@@ -3560,7 +3586,7 @@ function applyLanguageToUI(){
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
         ensureMissionResets();
-        refreshGameUIAfterLoad();
+        rebuildUIAfterRestore();
         log(t('saveLoaded'), 'system');
       } catch (e) {
         console.error(e);
@@ -3699,48 +3725,6 @@ function applyLanguageToUI(){
       setAutoSaveToast.checked = !!ui.autoSaveToast;
       if (setLanguage) setLanguage.value = ui.lang || 'ko';
       if (logSearchInput) logSearchInput.value = ui.logSearch || '';
-    }
-
-    function refreshMobileNavLabels(){
-      try {
-        const simple = document.querySelector('.mobile-simple-tabs');
-        if (simple) {
-          const home = simple.querySelector('[data-mobile-tab="home"]');
-          const codes = simple.querySelector('[data-mobile-tab="codes"]');
-          const shop = simple.querySelector('[data-mobile-tab="shop"]');
-          const coming = simple.querySelector('[data-mobile-tab="coming"]');
-          if (home) home.textContent = t('mobileHome');
-          if (codes) codes.textContent = t('mobileCodes');
-          if (shop) shop.textContent = t('mobileShop');
-          if (coming) coming.textContent = t('mobileComing');
-        }
-        const legacy = document.querySelector('.mobile-tabs:not(.mobile-simple-tabs)');
-        if (legacy) {
-          legacy.querySelectorAll('[data-view="status"],[data-tab="left"]').forEach(el=>el.textContent='STATUS');
-          legacy.querySelectorAll('[data-view="action"],[data-tab="center"]').forEach(el=>el.textContent='ACTION');
-          legacy.querySelectorAll('[data-view="codes"]').forEach(el=>el.textContent='CODES');
-          legacy.querySelectorAll('[data-view="shop"]').forEach(el=>el.textContent='SHOP');
-          legacy.querySelectorAll('[data-view="log"],[data-tab="right"]').forEach(el=>el.textContent='LOG');
-        }
-      } catch (e) {
-        console.warn('[LangRefresh] mobile labels update failed:', e);
-      }
-    }
-
-    function refreshGameUIAfterLoad(){
-      try { applySettings(); } catch(e){}
-      try { syncSettingsUI(); } catch(e){}
-      try { applyLanguageToUI(); } catch(e){}
-      try { refreshMobileNavLabels(); } catch(e){}
-      try { renderServers(); } catch(e){}
-      try { renderShop(); } catch(e){}
-      try { renderMissions(); } catch(e){}
-      try { renderAchievements(); } catch(e){}
-      try { renderCodex(); } catch(e){}
-      try { renderCodeList(); } catch(e){}
-      try { renderCodeDetail(); } catch(e){}
-      try { renderUpdateLog(); } catch(e){}
-      try { updateStatsUI(); } catch(e){}
     }
 
     
@@ -3909,15 +3893,17 @@ function applyLanguageToUI(){
       renderServers();
       renderShop();
       ensureMissionResets();
+      rebuildUIAfterRestore();
+      log(t('initLog'), 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
       } else {
         state.lastSeenAt = Date.now();
-        refreshGameUIAfterLoad();
+        rebuildUIAfterRestore();
       }
 
-      log(t('initLog'), 'system');
+      rebuildUIAfterRestore();
       renderUpdateLog();
       maybeShowUpdateOnStart();
       setTimeout(() => {
@@ -3974,8 +3960,21 @@ function applyLanguageToUI(){
     }
 
     init();
-  
 
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (localStorage.getItem(SAVE_KEY)) rebuildUIAfterRestore();
+      }, 80);
+      setTimeout(() => {
+        if (localStorage.getItem(SAVE_KEY)) rebuildUIAfterRestore();
+      }, 260);
+    });
+
+    window.addEventListener('pageshow', () => {
+      setTimeout(() => {
+        if (localStorage.getItem(SAVE_KEY)) rebuildUIAfterRestore();
+      }, 60);
+    });
 
 // === MOBILE PATCH: disable resizers on touch devices ===
 (function(){
