@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=v1.6.15-k5" rel="stylesheet"/>
+<link href="style.css?v=v1.6.15-k6" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.6.15-k5 (Web)</span>
+<span class="header-version">v1.6.15-k6 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -363,53 +363,9 @@
 </div>
 <div class="small" id="cloudAccountDesc">Firebase를 연결하면 Safari / Chrome / Edge 등 다른 브라우저에서도 같은 계정으로 세이브를 이어갈 수 있습니다.</div>
 <div class="cloud-account-status" id="cloudAccountStatus">설정 대기 중</div>
-<div class="cloud-user-card" id="cloudUserCard" hidden>
-<div class="cloud-user-header-row">
-<div class="cloud-avatar-box">
-<div class="cloud-avatar-preview" id="cloudAvatarPreview">💻</div>
-</div>
-<div class="cloud-user-main">
-<div class="cloud-user-name" id="cloudUserName">-</div>
-<div class="cloud-user-email" id="cloudUserEmail">-</div>
-</div>
-</div>
-<div class="cloud-user-meta" id="cloudUserMeta">클라우드 저장 정보 없음</div>
-<div class="cloud-profile-grid">
-<div class="cloud-profile-row">
-<span>닉네임</span>
-<div class="cloud-profile-inline">
-<input id="cloudNicknameInput" maxlength="12" placeholder="닉네임" type="text"/>
-<button id="btnCloudNicknameSave" type="button">프로필 저장</button>
-</div>
-</div>
-<div class="cloud-profile-row">
-<span>프로필 아이콘</span>
-<div class="cloud-profile-inline cloud-avatar-inline">
-<select id="cloudAvatarSelect" title="프로필 아이콘 선택"></select>
-<button id="btnCloudAvatarSave" type="button">아이콘 저장</button>
-</div>
-</div>
-<div class="cloud-avatar-preset-wrap">
-<div class="small cloud-avatar-preset-title">아이콘 빠른 선택</div>
-<div class="cloud-avatar-preset-grid" id="cloudAvatarPresetGrid"></div>
-</div>
-<div class="cloud-profile-row"><span>현재 아이콘</span><strong id="cloudProfileAvatarLabel">터미널</strong></div>
-<div class="cloud-profile-row"><span>UID</span><strong id="cloudProfileUid">-</strong></div>
-<div class="cloud-profile-row"><span>가입일</span><strong id="cloudProfileJoinDate">-</strong></div>
-<div class="cloud-profile-row"><span>최근 로그인</span><strong id="cloudProfileLastLoginAt">-</strong></div>
-<div class="cloud-profile-row"><span>최근 클라우드 저장</span><strong id="cloudProfileLastSaveAt">-</strong></div>
-<div class="cloud-profile-row"><span>총 해킹 성공</span><strong id="cloudProfileHackCount">0</strong></div>
-<div class="cloud-profile-row"><span>누적 획득 크레딧</span><strong id="cloudProfileCreditsEarned">0</strong></div>
-<div class="cloud-profile-row">
-<span>대표 코드</span>
-<div class="cloud-profile-inline cloud-favorite-inline">
-<select id="cloudFavoriteCodeSelect" title="대표 코드 선택"></select>
-<button id="btnCloudFavoriteCodeSave" type="button">대표 코드 저장</button>
-</div>
-</div>
-<div class="cloud-profile-row"><span>현재 대표 코드</span><strong id="cloudProfileFavoriteCode">-</strong></div>
-</div>
-</div>
+<div class="cloud-account-layout">
+<div class="cloud-section cloud-section-account">
+<div class="cloud-section-title">계정</div>
 <div class="cloud-auth-form" id="cloudAuthForm">
 <input id="cloudEmail" type="email" placeholder="이메일" autocomplete="username"/>
 <input id="cloudPassword" type="password" placeholder="비밀번호" autocomplete="current-password"/>
@@ -425,6 +381,71 @@
 <button id="btnCloudLogout" type="button">로그아웃</button>
 </div>
 <div class="small" id="cloudAccountHelp">※ firebase-config.js에 프로젝트 키를 넣기 전까지는 로컬 저장만 동작합니다.</div>
+<div class="cloud-user-card" id="cloudUserCard" hidden>
+<div class="cloud-user-header-row">
+<div class="cloud-avatar-box">
+<div class="cloud-avatar-preview" id="cloudAvatarPreview">💻</div>
+</div>
+<div class="cloud-user-main">
+<div class="cloud-user-name" id="cloudUserName">-</div>
+<div class="cloud-user-email" id="cloudUserEmail">-</div>
+</div>
+</div>
+<div class="cloud-user-meta" id="cloudUserMeta">클라우드 저장 정보 없음</div>
+</div>
+</div>
+<div class="cloud-section cloud-section-profile">
+<div class="cloud-section-title">프로필</div>
+<div class="cloud-profile-grid">
+<div class="cloud-profile-row">
+<span>닉네임</span>
+<div class="cloud-profile-inline">
+<input id="cloudNicknameInput" maxlength="12" placeholder="닉네임" type="text"/>
+<button id="btnCloudNicknameSave" type="button">프로필 저장</button>
+</div>
+</div>
+<div class="cloud-profile-row cloud-profile-avatar-row">
+<span>프로필 아이콘</span>
+<div class="cloud-profile-inline cloud-avatar-actions">
+<strong id="cloudProfileAvatarLabel">터미널</strong>
+<button id="btnOpenAvatarPicker" type="button">아이콘 변경</button>
+<button id="btnCloudAvatarSave" type="button">아이콘 저장</button>
+</div>
+</div>
+<div class="cloud-profile-row">
+<span>대표 코드</span>
+<div class="cloud-profile-inline cloud-favorite-inline">
+<select id="cloudFavoriteCodeSelect" title="대표 코드 선택"></select>
+<button id="btnCloudFavoriteCodeSave" type="button">대표 코드 저장</button>
+</div>
+</div>
+<div class="cloud-profile-row"><span>현재 대표 코드</span><strong id="cloudProfileFavoriteCode">-</strong></div>
+</div>
+</div>
+<div class="cloud-section cloud-section-stats">
+<div class="cloud-section-title">클라우드 상태</div>
+<div class="cloud-profile-grid cloud-stats-grid">
+<div class="cloud-profile-row"><span>UID</span><strong id="cloudProfileUid">-</strong></div>
+<div class="cloud-profile-row"><span>가입일</span><strong id="cloudProfileJoinDate">-</strong></div>
+<div class="cloud-profile-row"><span>최근 로그인</span><strong id="cloudProfileLastLoginAt">-</strong></div>
+<div class="cloud-profile-row"><span>최근 클라우드 저장</span><strong id="cloudProfileLastSaveAt">-</strong></div>
+<div class="cloud-profile-row"><span>총 해킹 성공</span><strong id="cloudProfileHackCount">0</strong></div>
+<div class="cloud-profile-row"><span>누적 획득 크레딧</span><strong id="cloudProfileCreditsEarned">0</strong></div>
+</div>
+</div>
+</div>
+<div class="cloud-avatar-modal" id="cloudAvatarModal" hidden>
+<div class="cloud-avatar-modal-card">
+<div class="cloud-avatar-modal-head">
+<div>
+<div class="cloud-section-title">아이콘 선택</div>
+<div class="small">프로필 아이콘을 고르고 저장하세요.</div>
+</div>
+<button id="btnAvatarPickerClose" type="button">닫기</button>
+</div>
+<div class="cloud-avatar-preset-grid cloud-avatar-modal-grid" id="cloudAvatarPresetGrid"></div>
+</div>
+</div>
 </div>
 <div class="small" id="saveHelp">
               · 저장 위치: 브라우저 LocalStorage (이 브라우저, 이 기기 한정)<br/>
@@ -450,8 +471,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=v1.6.15-k5"></script>
-<script src="auth.js?v=v1.6.15-k5"></script>
-<script src="cloudSave.js?v=v1.6.15-k5"></script>
-<script src="app.js?v=v1.6.15-k5"></script></body>
+<script src="firebase-config.js?v=v1.6.15-k6"></script>
+<script src="auth.js?v=v1.6.15-k6"></script>
+<script src="cloudSave.js?v=v1.6.15-k6"></script>
+<script src="app.js?v=v1.6.15-k6"></script></body>
 </html>

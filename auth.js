@@ -3,7 +3,8 @@
     user: null,
     initialized: false,
     bridgeReady: false,
-    profile: null
+    profile: null,
+    avatarDraftId: 'terminal'
   };
 
   const USERS_COLLECTION = 'users';
@@ -28,7 +29,7 @@
       'btnCloudRegister','btnCloudLogin','btnCloudGoogle','btnCloudSync','btnCloudPull','btnCloudLogout','cloudAccountHelp',
       'cloudNicknameInput','btnCloudNicknameSave','cloudProfileJoinDate','cloudProfileLastLoginAt','cloudProfileLastSaveAt',
       'cloudProfileHackCount','cloudProfileCreditsEarned','cloudProfileFavoriteCode','cloudProfileUid',
-      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave','cloudAvatarPreview','cloudAvatarSelect','btnCloudAvatarSave','cloudProfileAvatarLabel','cloudAvatarPresetGrid'
+      'cloudFavoriteCodeSelect','btnCloudFavoriteCodeSave','cloudAvatarPreview','btnCloudAvatarSave','cloudProfileAvatarLabel','cloudAvatarPresetGrid','btnOpenAvatarPicker','cloudAvatarModal','btnAvatarPickerClose'
     ].forEach(id=>el[id]=pick(id));
   }
 
@@ -58,21 +59,10 @@
     return AVATAR_PRESETS.find(item => item.id === avatarId) || AVATAR_PRESETS[0];
   }
 
-  function refreshAvatarOptions(selectedId){
-    if (!el.cloudAvatarSelect) return;
-    const current = selectedId || (state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id;
-    el.cloudAvatarSelect.innerHTML = '';
-    AVATAR_PRESETS.forEach(item => {
-      const opt = document.createElement('option');
-      opt.value = item.id;
-      opt.textContent = item.emoji + ' ' + item.label;
-      if (item.id === current) opt.selected = true;
-      el.cloudAvatarSelect.appendChild(opt);
-    });
-    renderAvatarPresetGrid(current);
+  function setAvatarDraft(avatarId){
+    state.avatarDraftId = avatarId || (state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id;
+    applyAvatarUi(state.avatarDraftId);
   }
-
-  
 
   function renderAvatarPresetGrid(selectedId){
     if (!el.cloudAvatarPresetGrid) return;
@@ -86,8 +76,7 @@
       btn.disabled = !state.user || !window.HCSIG_FIREBASE_READY;
       btn.innerHTML = '<span class="emoji">' + item.emoji + '</span><span class="label">' + item.label + '</span>';
       btn.addEventListener('click', () => {
-        if (el.cloudAvatarSelect) el.cloudAvatarSelect.value = item.id;
-        renderAvatarPresetGrid(item.id);
+        setAvatarDraft(item.id);
       });
       el.cloudAvatarPresetGrid.appendChild(btn);
     });
@@ -97,7 +86,6 @@
     const avatar = getAvatarPreset(avatarId);
     text('cloudAvatarPreview', avatar.emoji);
     text('cloudProfileAvatarLabel', avatar.label);
-    if (el.cloudAvatarSelect) el.cloudAvatarSelect.value = avatar.id;
     renderAvatarPresetGrid(avatar.id);
   }
 
@@ -159,6 +147,8 @@
       val('cloudNicknameInput', p.nickname || (state.user && (state.user.displayName || '플레이어')) || '플레이어');
     }
     refreshFavoriteCodeOptions(p.favoriteCodeId);
+    state.avatarDraftId = p.avatarId || 'terminal';
+    applyAvatarUi(state.avatarDraftId);
     if (state.user) {
       text('cloudUserName', p.nickname || state.user.displayName || 'HCSIG Player');
       text('cloudUserEmail', state.user.email || state.user.uid);
@@ -177,8 +167,8 @@
     if (el.btnCloudNicknameSave) el.btnCloudNicknameSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
     if (el.btnCloudAvatarSave) el.btnCloudAvatarSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
     if (el.btnCloudFavoriteCodeSave) el.btnCloudFavoriteCodeSave.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
-    if (el.cloudAvatarSelect) el.cloudAvatarSelect.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
-    renderAvatarPresetGrid((state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id);
+    if (el.btnOpenAvatarPicker) el.btnOpenAvatarPicker.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY;
+    renderAvatarPresetGrid(state.avatarDraftId || (state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id);
     if (el.cloudFavoriteCodeSelect) el.cloudFavoriteCodeSelect.disabled = !loggedIn || !window.HCSIG_FIREBASE_READY || getOwnedCodeOptions().length === 0;
     if (!loggedIn) {
       updateProfileUi(null);
@@ -267,11 +257,12 @@
 
   async function saveAvatar(){
     if (!state.user || !window.HCSIG_FIREBASE_READY || !window.HCSIG_FB) return;
-    const avatarId = String((el.cloudAvatarSelect && el.cloudAvatarSelect.value) || '').trim() || 'terminal';
+    const avatarId = String(state.avatarDraftId || '').trim() || 'terminal';
     try {
       await getUserRef(state.user.uid).set({ avatarId }, { merge:true });
       const next = Object.assign({}, state.profile || {}, { avatarId });
       updateProfileUi(next);
+      closeAvatarPicker();
       setStatus('프로필 아이콘을 저장했습니다.');
       toast('프로필 아이콘 저장 완료', 'save');
     } catch (err) {
@@ -339,8 +330,19 @@
     }
   }
 
+  function openAvatarPicker(){
+    if (el.cloudAvatarModal) el.cloudAvatarModal.hidden = false;
+    renderAvatarPresetGrid(state.avatarDraftId || (state.profile && state.profile.avatarId) || AVATAR_PRESETS[0].id);
+  }
+
+  function closeAvatarPicker(){
+    if (el.cloudAvatarModal) el.cloudAvatarModal.hidden = true;
+  }
+
   function wireButtons(){
-    if (el.cloudAvatarSelect) el.cloudAvatarSelect.addEventListener('change', ()=> renderAvatarPresetGrid(el.cloudAvatarSelect.value));
+    if (el.btnOpenAvatarPicker) el.btnOpenAvatarPicker.addEventListener('click', openAvatarPicker);
+    if (el.btnAvatarPickerClose) el.btnAvatarPickerClose.addEventListener('click', closeAvatarPicker);
+    if (el.cloudAvatarModal) el.cloudAvatarModal.addEventListener('click', (ev)=>{ if (ev.target === el.cloudAvatarModal) closeAvatarPicker(); });
     if (el.btnCloudRegister) el.btnCloudRegister.addEventListener('click', registerWithEmail);
     if (el.btnCloudLogin) el.btnCloudLogin.addEventListener('click', loginWithEmail);
     if (el.btnCloudGoogle) el.btnCloudGoogle.addEventListener('click', loginWithGoogle);
@@ -385,6 +387,8 @@
 
   window.addEventListener('hcsig:ready', ()=> refreshFavoriteCodeOptions());
   window.addEventListener('hcsig:save', ()=> refreshFavoriteCodeOptions());
+
+  document.addEventListener('keydown', (ev)=>{ if (ev.key === 'Escape' && el.cloudAvatarModal && !el.cloudAvatarModal.hidden) closeAvatarPicker(); });
 
   window.HCSIG_AUTH = {
     getUser: ()=>state.user,
