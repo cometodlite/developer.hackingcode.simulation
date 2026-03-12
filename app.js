@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.15-k6b4';
+    const CURRENT_VERSION = 'v1.6.15-k6c2';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -3495,6 +3495,28 @@ function applyLanguageToUI(){
       updateStatsUI();
     }
 
+
+    function rerenderAfterRestore() {
+      applySettings();
+      syncSettingsUI();
+      applyLanguageToUI();
+      updateStatsUI();
+      renderServers();
+      renderShop();
+      renderMissions();
+      renderAchievements();
+      renderCodex();
+      renderCodeList();
+      renderCodeDetail();
+      try {
+        if (typeof window.__hcsigSetupSimpleMobileNav === 'function') {
+          window.__hcsigSetupSimpleMobileNav({ preserveTab: true });
+        }
+      } catch (e) {
+        console.warn('[HCSIG] simple mobile rerender failed:', e);
+      }
+    }
+
     function loadGame(rawOverride = null) {
       let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
       // v1.5.x 저장 데이터 자동 마이그레이션
@@ -3560,9 +3582,7 @@ function applyLanguageToUI(){
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
         ensureMissionResets();
-        applySettings();
-        syncSettingsUI();
-        updateStatsUI();
+        rerenderAfterRestore();
         log(t('saveLoaded'), 'system');
       } catch (e) {
         console.error(e);
@@ -3707,17 +3727,17 @@ function applyLanguageToUI(){
     if (setLanguage) {
       setLanguage.addEventListener('change', () => {
         state.ui.lang = setLanguage.value || 'ko';
-        applyLanguageToUI();
-        updateStatsUI();
-        renderServers();
-        renderShop();
-        renderMissions();
-        renderAchievements();
-        renderCodex();
-        renderCodeList();
-        renderCodeDetail();
-        syncSettingsUI();
+        rerenderAfterRestore();
         saveGame(true);
+        setTimeout(() => {
+          try {
+            if (typeof window.__hcsigVerifyMobileBoot === 'function') {
+              window.__hcsigVerifyMobileBoot();
+            }
+          } catch (e) {
+            console.warn('[HCSIG] mobile boot verification after language change failed:', e);
+          }
+        }, 120);
       });
     }
 
@@ -3866,24 +3886,17 @@ function applyLanguageToUI(){
     function init() {
       addCodeInstanceFromTemplate('basic');
       state.requiredExp = requiredExp(state.level);
-      renderServers();
-      renderShop();
       ensureMissionResets();
-      applySettings();
-      syncSettingsUI();
-      applyLanguageToUI();
-      updateStatsUI();
-      log(t('initLog'), 'system');
 
       if (localStorage.getItem(SAVE_KEY)) {
         loadGame();
       } else {
         state.lastSeenAt = Date.now();
-        applyLanguageToUI();
-        updateStatsUI();
+        rerenderAfterRestore();
       }
 
-      applyLanguageToUI();
+      rerenderAfterRestore();
+      log(t('initLog'), 'system');
       renderUpdateLog();
       maybeShowUpdateOnStart();
       setTimeout(() => {
@@ -3940,7 +3953,9 @@ function applyLanguageToUI(){
     }
 
     init();
-  
+
+    // Use the original 3.11 simple mobile shell only. Disable older experimental mobile builders.
+    window.__HCSIG_SIMPLE_MOBILE__ = true;
 
 
 // === MOBILE PATCH: disable resizers on touch devices ===
@@ -4338,6 +4353,7 @@ function applyLanguageToUI(){
 
 // === MOBILE SIMPLE NAV (k1 hotfix) ===
 (function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
@@ -4527,83 +4543,168 @@ function applyLanguageToUI(){
 })();
 
 
+
 // === SIMPLE MOBILE NAV (HOME / CODES / SHOP / COMING SOON) ===
 (function(){
-  if(!window.__HCSIG_SIMPLE_MOBILE__) return;
-  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-  if(!isMobile) return;
-
-  const body = document.body;
-  const left = document.getElementById('leftPanel');
-  const center = document.getElementById('centerPanel');
-  const header = document.querySelector('header');
-  if(!left || !center) return;
-
-  const sectionTitles = Array.from(left.querySelectorAll('.section-title'));
-  const statusTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'status');
-  const shopTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'shop');
-  const statusBox = left.querySelector('.stat-box');
-  const shopSortRow = left.querySelector('.shop-sort-row');
-  const shopListEl = document.getElementById('shopList');
-  const centerInner = center.querySelector('.center-inner') || center;
-  const actionsBox = centerInner.querySelector('.stat-box');
-  const codesWrap = centerInner.querySelector('.flex-row.flex-grow');
-  const scanOverlay = document.getElementById('scanOverlay');
-
-  if(statusTitle) statusTitle.classList.add('mobile-home-only');
-  if(statusBox) statusBox.classList.add('mobile-home-only');
-  if(actionsBox) actionsBox.classList.add('mobile-home-only');
-  if(shopTitle) shopTitle.classList.add('mobile-shop-only');
-  if(shopSortRow) shopSortRow.classList.add('mobile-shop-only');
-  if(shopListEl) shopListEl.classList.add('mobile-shop-only');
-  if(codesWrap) codesWrap.classList.add('mobile-codes-only');
-
-  const existing = document.querySelector('.mobile-simple-tabs');
-  if(existing) existing.remove();
-
-  const wrap = document.createElement('div');
-  wrap.className = 'mobile-simple-tabs';
-  wrap.innerHTML = `
-    <button type="button" data-mobile-tab="home">${t('mobileHome')}</button>
-    <button type="button" data-mobile-tab="codes">${t('mobileCodes')}</button>
-    <button type="button" data-mobile-tab="shop">${t('mobileShop')}</button>
-    <button type="button" data-mobile-tab="coming">${t('mobileComing')}</button>
-  `;
-  body.appendChild(wrap);
-
-  function updateHeaderVar(){
-    const h = header ? Math.ceil(header.getBoundingClientRect().height) : 52;
-    document.documentElement.style.setProperty('--header-h', h + 'px');
+  function isSimpleMobileTarget(){
+    return !!window.__HCSIG_SIMPLE_MOBILE__ && window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   }
 
-  function setSimpleTab(tab){
+  function getSavedSimpleTab(){
+    try {
+      return sessionStorage.getItem('HCSIG_SIMPLE_MOBILE_TAB') || localStorage.getItem('HCSIG_SIMPLE_MOBILE_TAB') || 'home';
+    } catch(e) {
+      return 'home';
+    }
+  }
+
+  function saveSimpleTab(tab){
+    try {
+      sessionStorage.setItem('HCSIG_SIMPLE_MOBILE_TAB', tab);
+      localStorage.setItem('HCSIG_SIMPLE_MOBILE_TAB', tab);
+    } catch(e) {}
+  }
+
+  function setupSimpleMobileNav(options = {}) {
+    if(!isSimpleMobileTarget()) return false;
+
+    const body = document.body;
+    const left = document.getElementById('leftPanel');
+    const center = document.getElementById('centerPanel');
+    const header = document.querySelector('header');
+    if(!left || !center) return false;
+
+    body.classList.remove('mobile-simple-ui');
+
+    const sectionTitles = Array.from(left.querySelectorAll('.section-title'));
+    const statusTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'status');
+    const shopTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'shop');
+    const statusBox = left.querySelector('.stat-box');
+    const shopSortRow = left.querySelector('.shop-sort-row');
+    const shopListEl = document.getElementById('shopList');
+    const centerInner = center.querySelector('.center-inner') || center;
+    const actionsBox = centerInner.querySelector('.stat-box');
+    const codesWrap = centerInner.querySelector('.flex-row.flex-grow');
+    const scanOverlay = document.getElementById('scanOverlay');
+
+    if(statusTitle) statusTitle.classList.add('mobile-home-only');
+    if(statusBox) statusBox.classList.add('mobile-home-only');
+    if(actionsBox) actionsBox.classList.add('mobile-home-only');
+    if(shopTitle) shopTitle.classList.add('mobile-shop-only');
+    if(shopSortRow) shopSortRow.classList.add('mobile-shop-only');
+    if(shopListEl) shopListEl.classList.add('mobile-shop-only');
+    if(codesWrap) codesWrap.classList.add('mobile-codes-only');
+
+    let wrap = document.querySelector('.mobile-simple-tabs');
+    if(!wrap){
+      wrap = document.createElement('div');
+      wrap.className = 'mobile-simple-tabs';
+      body.appendChild(wrap);
+      wrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-mobile-tab]');
+        if(!btn) return;
+        const tab = btn.dataset.mobileTab;
+        if(tab === 'coming') {
+          showToast(t('comingSoonToast'), 'system');
+          return;
+        }
+        setSimpleTab(tab, { persist: true });
+      });
+    }
+
+    wrap.innerHTML = `
+      <button type="button" data-mobile-tab="home">${t('mobileHome')}</button>
+      <button type="button" data-mobile-tab="codes">${t('mobileCodes')}</button>
+      <button type="button" data-mobile-tab="shop">${t('mobileShop')}</button>
+      <button type="button" data-mobile-tab="coming">${t('mobileComing')}</button>
+    `;
+
+    function updateHeaderVar(){
+      const h = header ? Math.ceil(header.getBoundingClientRect().height) : 52;
+      document.documentElement.style.setProperty('--header-h', h + 'px');
+    }
+
+    updateHeaderVar();
+    window.addEventListener('resize', updateHeaderVar, { passive:true });
+    window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250), { passive:true });
+    if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
+
+    const nextTab = options && options.preserveTab ? getSavedSimpleTab() : 'home';
+    setSimpleTab(nextTab, { persist: false });
+    return true;
+  }
+
+  function setSimpleTab(tab, options = {}) {
+    if(!isSimpleMobileTarget()) return;
+    const body = document.body;
+    const left = document.getElementById('leftPanel');
+    const center = document.getElementById('centerPanel');
+    const wrap = document.querySelector('.mobile-simple-tabs');
+    const safeTab = ['home','codes','shop'].includes(tab) ? tab : 'home';
+
     body.classList.remove('simple-tab-home','simple-tab-codes','simple-tab-shop');
-    body.classList.add('simple-tab-' + tab);
-    wrap.querySelectorAll('button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mobileTab === tab);
-    });
-    if(tab === 'codes' && center) center.scrollTop = 0;
-    if(tab === 'shop' && left) left.scrollTop = 0;
-    if(tab === 'home') {
+    body.classList.add('simple-tab-' + safeTab);
+
+    if(wrap){
+      wrap.querySelectorAll('button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mobileTab === safeTab);
+      });
+    }
+
+    if(options.persist !== false) saveSimpleTab(safeTab);
+
+    if(safeTab === 'codes' && center) center.scrollTop = 0;
+    if(safeTab === 'shop' && left) left.scrollTop = 0;
+    if(safeTab === 'home') {
       if(left) left.scrollTop = 0;
       if(center) center.scrollTop = 0;
     }
   }
 
-  wrap.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-mobile-tab]');
-    if(!btn) return;
-    const tab = btn.dataset.mobileTab;
-    if(tab === 'coming') {
-      showToast(t('comingSoonToast'), 'system');
-      return;
-    }
-    setSimpleTab(tab);
-  });
+  function isSimpleMobileBootBroken(){
+    if(!isSimpleMobileTarget()) return false;
+    const left = document.getElementById('leftPanel');
+    const center = document.getElementById('centerPanel');
+    const tabs = document.querySelector('.mobile-simple-tabs');
+    if(!left || !center || !tabs) return true;
+    const leftVisible = window.getComputedStyle(left).display !== 'none' && !left.hidden;
+    const centerVisible = window.getComputedStyle(center).display !== 'none' && !center.hidden;
+    return !leftVisible && !centerVisible;
+  }
 
-  updateHeaderVar();
-  window.addEventListener('resize', updateHeaderVar);
-  window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
-  if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
-  setSimpleTab('home');
+  let langFallbackTimer = null;
+  function verifyMobileBoot(){
+    if(!isSimpleMobileTarget()) return;
+    try {
+      setupSimpleMobileNav({ preserveTab: true });
+    } catch(e) {
+      console.warn('[HCSIG] setupSimpleMobileNav failed:', e);
+    }
+    if(!isSimpleMobileBootBroken()) return;
+    if(typeof getLang === 'function' && getLang() !== 'ko' && !langFallbackTimer){
+      showToast('언어 적용에 문제가 있어 3초 후 한국어로 돌아갑니다.', 'warn');
+      langFallbackTimer = setTimeout(() => {
+        try {
+          state.ui = state.ui || {};
+          state.ui.lang = 'ko';
+          if(typeof saveGame === 'function') saveGame(true);
+        } catch(e) {
+          console.warn('[HCSIG] failed to persist Korean fallback:', e);
+        }
+        location.reload();
+      }, 3000);
+    }
+  }
+
+  window.__hcsigSetupSimpleMobileNav = setupSimpleMobileNav;
+  window.__hcsigSetSimpleTab = setSimpleTab;
+  window.__hcsigVerifyMobileBoot = verifyMobileBoot;
+
+  if(setupSimpleMobileNav({ preserveTab: true })) {
+    setTimeout(verifyMobileBoot, 180);
+    window.addEventListener('pageshow', () => setTimeout(verifyMobileBoot, 120));
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) setTimeout(verifyMobileBoot, 120);
+    });
+  }
 })();
