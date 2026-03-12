@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.15-k6c2b2';
+    const CURRENT_VERSION = 'v1.6.15-k6c2b3';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -3911,17 +3911,6 @@ function applyLanguageToUI(){
         rerenderAfterRestore();
       }
 
-      rerenderAfterRestore();
-      setTimeout(() => {
-        try {
-          rerenderAfterRestore();
-          if (typeof window.__hcsigVerifyMobileBoot === 'function') {
-            window.__hcsigVerifyMobileBoot();
-          }
-        } catch (e) {
-          console.warn('[HCSIG] delayed init rerender failed:', e);
-        }
-      }, 120);
       log(t('initLog'), 'system');
       renderUpdateLog();
       maybeShowUpdateOnStart();
@@ -4709,21 +4698,17 @@ function applyLanguageToUI(){
   let langFallbackTimer = null;
   function verifyMobileBoot(){
     if(!isSimpleMobileTarget()) return;
-    try {
-      setupSimpleMobileNav({ preserveTab: true });
-      if (typeof applyLanguageToUI === 'function') applyLanguageToUI();
-    } catch(e) {
-      console.warn('[HCSIG] setupSimpleMobileNav failed:', e);
-    }
+    // 정상 화면이면 절대 후행 재초기화를 태우지 않는다.
     if(!isSimpleMobileBootBroken()) return;
     try {
-      if (typeof renderServers === 'function') renderServers();
-      if (typeof renderShop === 'function') renderShop();
-      if (typeof renderCodeList === 'function') renderCodeList();
-      if (typeof renderCodeDetail === 'function') renderCodeDetail();
+      if (typeof rerenderAfterRestore === 'function') rerenderAfterRestore();
+    } catch(e) {
+      console.warn('[HCSIG] rerenderAfterRestore failed during mobile boot verify:', e);
+    }
+    try {
       setupSimpleMobileNav({ preserveTab: true });
-    } catch (e) {
-      console.warn('[HCSIG] mobile boot second pass failed:', e);
+    } catch(e) {
+      console.warn('[HCSIG] setupSimpleMobileNav failed:', e);
     }
     if(!isSimpleMobileBootBroken()) return;
     if(typeof getLang === 'function' && getLang() !== 'ko' && !langFallbackTimer){
@@ -4749,17 +4734,13 @@ function applyLanguageToUI(){
     setTimeout(verifyMobileBoot, 180);
     window.addEventListener('pageshow', () => {
       setTimeout(() => {
-        try { if (typeof rerenderAfterRestore === 'function') rerenderAfterRestore(); } catch (e) {}
-        try { setupSimpleMobileNav({ preserveTab: true }); } catch (e) {}
-        setTimeout(verifyMobileBoot, 120);
+        try { verifyMobileBoot(); } catch (e) {}
       }, 80);
     });
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         setTimeout(() => {
-          try { if (typeof rerenderAfterRestore === 'function') rerenderAfterRestore(); } catch (e) {}
-          try { setupSimpleMobileNav({ preserveTab: true }); } catch (e) {}
-          setTimeout(verifyMobileBoot, 120);
+          try { verifyMobileBoot(); } catch (e) {}
         }, 80);
       }
     });
