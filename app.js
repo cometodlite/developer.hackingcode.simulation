@@ -85,7 +85,7 @@
 
 
 
-    const CURRENT_VERSION = 'v1.6.15-k6c2b1';
+    const CURRENT_VERSION = 'v1.6.15-k6c2b2';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -3496,6 +3496,28 @@ function applyLanguageToUI(){
     }
 
 
+    let __mobileRebuildRaf = 0;
+    function scheduleMobileRebuild(preserveTab = true) {
+      try {
+        if (__mobileRebuildRaf) cancelAnimationFrame(__mobileRebuildRaf);
+      } catch (e) {}
+      __mobileRebuildRaf = requestAnimationFrame(() => {
+        __mobileRebuildRaf = 0;
+        try {
+          if (typeof window.__hcsigSetupSimpleMobileNav === 'function') {
+            window.__hcsigSetupSimpleMobileNav({ preserveTab });
+          }
+          if (typeof window.__hcsigVerifyMobileBoot === 'function') {
+            setTimeout(() => {
+              try { window.__hcsigVerifyMobileBoot(); } catch (e) {}
+            }, 60);
+          }
+        } catch (e) {
+          console.warn('[HCSIG] simple mobile rerender failed:', e);
+        }
+      });
+    }
+
     function rerenderAfterRestore() {
       applySettings();
       syncSettingsUI();
@@ -3508,13 +3530,7 @@ function applyLanguageToUI(){
       renderCodex();
       renderCodeList();
       renderCodeDetail();
-      try {
-        if (typeof window.__hcsigSetupSimpleMobileNav === 'function') {
-          window.__hcsigSetupSimpleMobileNav({ preserveTab: true });
-        }
-      } catch (e) {
-        console.warn('[HCSIG] simple mobile rerender failed:', e);
-      }
+      scheduleMobileRebuild(true);
     }
 
     function loadGame(rawOverride = null) {
@@ -3896,6 +3912,16 @@ function applyLanguageToUI(){
       }
 
       rerenderAfterRestore();
+      setTimeout(() => {
+        try {
+          rerenderAfterRestore();
+          if (typeof window.__hcsigVerifyMobileBoot === 'function') {
+            window.__hcsigVerifyMobileBoot();
+          }
+        } catch (e) {
+          console.warn('[HCSIG] delayed init rerender failed:', e);
+        }
+      }, 120);
       log(t('initLog'), 'system');
       renderUpdateLog();
       maybeShowUpdateOnStart();
@@ -4574,11 +4600,11 @@ function applyLanguageToUI(){
     const header = document.querySelector('header');
     if(!left || !center) return false;
 
-    body.classList.remove('mobile-simple-ui');
+    body.classList.remove('mobile-tab-left','mobile-tab-center','mobile-tab-right','mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
+    body.classList.add('mobile-simple-ui');
 
-    const sectionTitles = Array.from(left.querySelectorAll('.section-title'));
-    const statusTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'status');
-    const shopTitle = sectionTitles.find(el => (el.textContent || '').trim().toLowerCase() === 'shop');
+    const statusTitle = document.getElementById('titleStatus');
+    const shopTitle = document.getElementById('titleShop');
     const statusBox = left.querySelector('.stat-box');
     const shopSortRow = left.querySelector('.shop-sort-row');
     const shopListEl = document.getElementById('shopList');
@@ -4666,10 +4692,18 @@ function applyLanguageToUI(){
     const left = document.getElementById('leftPanel');
     const center = document.getElementById('centerPanel');
     const tabs = document.querySelector('.mobile-simple-tabs');
+    const activeHomeBtn = tabs && tabs.querySelector('button[data-mobile-tab="home"].active');
     if(!left || !center || !tabs) return true;
     const leftVisible = window.getComputedStyle(left).display !== 'none' && !left.hidden;
     const centerVisible = window.getComputedStyle(center).display !== 'none' && !center.hidden;
-    return !leftVisible && !centerVisible;
+    if (!leftVisible && !centerVisible) return true;
+    if (activeHomeBtn) {
+      const homeBits = document.querySelectorAll('.mobile-home-only');
+      if (!homeBits.length) return true;
+      const anyVisible = Array.from(homeBits).some(el => window.getComputedStyle(el).display !== 'none' && !el.hidden);
+      if (!anyVisible) return true;
+    }
+    return false;
   }
 
   let langFallbackTimer = null;
@@ -4677,8 +4711,19 @@ function applyLanguageToUI(){
     if(!isSimpleMobileTarget()) return;
     try {
       setupSimpleMobileNav({ preserveTab: true });
+      if (typeof applyLanguageToUI === 'function') applyLanguageToUI();
     } catch(e) {
       console.warn('[HCSIG] setupSimpleMobileNav failed:', e);
+    }
+    if(!isSimpleMobileBootBroken()) return;
+    try {
+      if (typeof renderServers === 'function') renderServers();
+      if (typeof renderShop === 'function') renderShop();
+      if (typeof renderCodeList === 'function') renderCodeList();
+      if (typeof renderCodeDetail === 'function') renderCodeDetail();
+      setupSimpleMobileNav({ preserveTab: true });
+    } catch (e) {
+      console.warn('[HCSIG] mobile boot second pass failed:', e);
     }
     if(!isSimpleMobileBootBroken()) return;
     if(typeof getLang === 'function' && getLang() !== 'ko' && !langFallbackTimer){
@@ -4702,9 +4747,21 @@ function applyLanguageToUI(){
 
   if(setupSimpleMobileNav({ preserveTab: true })) {
     setTimeout(verifyMobileBoot, 180);
-    window.addEventListener('pageshow', () => setTimeout(verifyMobileBoot, 120));
+    window.addEventListener('pageshow', () => {
+      setTimeout(() => {
+        try { if (typeof rerenderAfterRestore === 'function') rerenderAfterRestore(); } catch (e) {}
+        try { setupSimpleMobileNav({ preserveTab: true }); } catch (e) {}
+        setTimeout(verifyMobileBoot, 120);
+      }, 80);
+    });
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) setTimeout(verifyMobileBoot, 120);
+      if (!document.hidden) {
+        setTimeout(() => {
+          try { if (typeof rerenderAfterRestore === 'function') rerenderAfterRestore(); } catch (e) {}
+          try { setupSimpleMobileNav({ preserveTab: true }); } catch (e) {}
+          setTimeout(verifyMobileBoot, 120);
+        }, 80);
+      }
     });
   }
 })();
