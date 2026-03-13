@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a1';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a0';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -72,49 +72,21 @@ const TEXT_DATA = {
       scanner_plus: { name:'Precision Scanner', desc:'Gain +1 extra EXP when scanning codes (permanent, one-time purchase).' },
       level_ticket: { name:'Simulation Level Ticket', desc:'Instantly raises your level by 1.' }
     }
-  },
-  ja: {
-    servers: {
-      school_lab: '学校実習サーバー',
-      bank_backup: '銀行バックアップノード',
-      gov_archive: '政府アーカイブノード',
-      central_core: '中央コアグリッド',
-      deep_space: 'ディープスペース中継局'
-    },
-    shop: {
-      energy_pack: { name:'エナジーパック', desc:'インベントリに保存される消耗品です。使用するとエネルギーを最大まで回復します。' },
-      energy_boost_1: { name:'エナジーブースター I', desc:'エネルギーを即時に +5 回復します。' },
-      credit_boost_run: { name:'クレジット倍率（セッション）', desc:'現在のセッション中、ハック成功で得るクレジットが1.5倍になります。' },
-      max_energy_up: { name:'最大エネルギー強化', desc:'最大エネルギーを永久に +5 増加します。' },
-      scanner_module: { name:'高度スキャナーモジュール', desc:'コードスキャン時に追加で EXP +2 を獲得します。' },
-      energy_boost_2: { name:'エナジーブースター II', desc:'エネルギーを即時に +10 回復します。' },
-      exp_boost: { name:'EXP増幅器', desc:'EXP獲得量を永久に20%増加します。' },
-      cpu_discount: { name:'CPUアップグレードクーポン', desc:'CPUアップグレード費用を10%削減します（重複可）。' },
-      perm_credit_boost: { name:'永久クレジット倍率', desc:'ハック報酬クレジットを永久に15%増加します（1回購入）。' },
-      risk_support: { name:'リスクハック支援装置', desc:'リスクハックモードで成功率を永久に +5%p 増加します（1回購入）。' },
-      big_credit_pack: { name:'データクレジットパック', desc:'即時にクレジット +500 を獲得します。（1日の購入制限: 2回）' },
-      scanner_plus: { name:'精密スキャナー', desc:'コードスキャン時に追加で EXP +1 を獲得します（永久・1回購入）。' },
-      level_ticket: { name:'シミュレーションレベルチケット', desc:'レベルを即時に1上昇させます。' }
-    }
   }
 };
 
 function localizeServerName(server){
-  const lang = getLang();
-  return (TEXT_DATA[lang] && TEXT_DATA[lang].servers[server.id]) ? TEXT_DATA[lang].servers[server.id] : ((TEXT_DATA.en && TEXT_DATA.en.servers[server.id]) ? TEXT_DATA.en.servers[server.id] : server.name);
+  return (getLang()==='en' && TEXT_DATA.en.servers[server.id]) ? TEXT_DATA.en.servers[server.id] : server.name;
 }
 function localizeShopName(item){
-  const lang = getLang();
-  return (TEXT_DATA[lang] && TEXT_DATA[lang].shop[item.id] && TEXT_DATA[lang].shop[item.id].name) ? TEXT_DATA[lang].shop[item.id].name : ((TEXT_DATA.en && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].name) ? TEXT_DATA.en.shop[item.id].name : item.name);
+  return (getLang()==='en' && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].name) ? TEXT_DATA.en.shop[item.id].name : item.name;
 }
 function localizeShopDesc(item){
-  const lang = getLang();
-  return (TEXT_DATA[lang] && TEXT_DATA[lang].shop[item.id] && TEXT_DATA[lang].shop[item.id].desc) ? TEXT_DATA[lang].shop[item.id].desc : ((TEXT_DATA.en && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].desc) ? TEXT_DATA.en.shop[item.id].desc : item.desc);
+  return (getLang()==='en' && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].desc) ? TEXT_DATA.en.shop[item.id].desc : item.desc;
 }
 function localizeCodeDescription(def){
   if (!def) return '';
-  const lang = getLang();
-  if (lang !== 'en' && lang !== 'ja') return def.description || '';
+  if (getLang() !== 'en') return def.description || '';
   const map = {
     basic: 'Basic test code. No additional effect.',
     port_scanner: 'Applies -10% target server security when hacking.',
@@ -135,18 +107,8 @@ function localizeCodeDescription(def){
     ghost_script: 'On successful hacks, has a 25% chance to grant +10 EXP.',
     singularity_root: 'Applies +10%p success chance and +40% credits on success.'
   };
-  if (lang === 'ja') {
-    const jaMap = {
-      basic: '基本テストコード。追加効果なし。', port_scanner: 'ハック時に対象サーバーのセキュリティを -10% 適用。', pulse_ping: 'ハック成功率を +3%p 増加。', cache_sniffer: 'ハック成功時に追加クレジット +8 を獲得。',
-      shield_bypass: 'ハック時に対象サーバーのセキュリティを -15% 適用。', stack_tracer: 'ハック成功率を +5%p 増加。', credit_siphon: 'ハック成功時にクレジットボーナス +15% を適用。', fallback_node: 'ハック失敗時、12% の確率でエネルギーを1即時回復。',
-      data_phantom: 'ハック成功率を +10%p 増加。', auto_patch: 'ハック失敗時、20% の確率で EXP +1 を獲得。', trace_scrambler: 'リスクハックモードの成功率ペナルティを 5%p 軽減。', null_rewriter: 'ハック成功時にクレジットボーナス +25% を適用。', rapid_exploit: 'ハック成功時に追加で EXP +3 を獲得。',
-      overflow_inject: '成功時にクレジット +30%、失敗時にエネルギーを1追加消費。', fortress_breaker: 'ハック時に対象サーバーのセキュリティを -25% 適用。', quantum_splice: '成功率 +12%p と成功時クレジット +20% を適用。', ghost_script: 'ハック成功時、25% の確率で EXP +10 を獲得。', singularity_root: '成功率 +10%p と成功時クレジット +40% を適用。'
-    };
-    return jaMap[def.id] || map[def.id] || def.description || '';
-  }
   return map[def.id] || def.description || '';
 }
-
 function localizeRarityLabel(rarity){
   const map={COMMON:'rarityCommon',UNCOMMON:'rarityUncommon',RARE:'rarityRare',EPIC:'rarityEpic',LEGENDARY:'rarityLegendary'};
   return t(map[rarity] || rarity);
@@ -439,9 +401,9 @@ function applyLanguageToUI(){
   setText('btnSaveGame', t('saveNow')); setText('btnLoadGame', t('loadNow')); setText('btnClearSave', t('clearSave')); setText('btnExportSave', t('exportSave')); setText('btnImportSaveFile', t('importFile')); setText('importTextTitle', t('importText')); const ist=document.getElementById('importSaveText'); if(ist) ist.placeholder=t('importTextPlaceholder'); setText('btnImportSaveText', t('importTextBtn')); setHtml('saveHelp', t('saveHelp'));
   const shopSort=document.getElementById('shopSortSelect'); if(shopSort){ const map=['shopSortUpdate','shopSortNew','shopSortRarity','shopSortPrice','shopSortName']; [...shopSort.options].forEach((opt,i)=>opt.text=t(map[i])); shopSort.title=t('shopSortTitle'); }
   const codeSort=document.getElementById('codeSortSelect'); if(codeSort){ const map=['codeSortRecent','codeSortRarity','codeSortPower','codeSortLevel','codeSortName']; [...codeSort.options].forEach((opt,i)=>opt.text=t(map[i])); codeSort.title=t('codeSortTitle'); }
-  const setLangEl=document.getElementById('setLanguage'); if(setLangEl){ setLangEl.title=t('languageTitle'); [...setLangEl.options].forEach(opt=>{ if(opt.value==='ko') opt.textContent = getLang()==='ja' ? '韓国語' : (getLang()==='en' ? 'Korean' : '한국어'); if(opt.value==='en') opt.textContent = getLang()==='ja' ? '英語' : 'English'; if(opt.value==='ja') opt.textContent = '日本語'; }); }
+  const setLangEl=document.getElementById('setLanguage'); if(setLangEl){ setLangEl.title=t('languageTitle'); [...setLangEl.options].forEach(opt=>{ if(opt.value==='ko') opt.textContent = getLang()==='en' ? 'Korean' : '한국어'; if(opt.value==='en') opt.textContent = 'English'; }); }
   const setUiZoomEl=document.getElementById('setUiZoom'); if(setUiZoomEl) setUiZoomEl.title=t('uiScaleTitle');
-  const setToastMsEl=document.getElementById('setToastMs'); if(setToastMsEl){ setToastMsEl.title=t('toastTitle'); [...setToastMsEl.options].forEach(opt=>{ const secs=Math.round(Number(opt.value||0)/1000); opt.textContent = `${secs}${getLang()==='ja' ? '秒' : (getLang()==='en' ? ' sec' : '초')}`; }); }
+  const setToastMsEl=document.getElementById('setToastMs'); if(setToastMsEl){ setToastMsEl.title=t('toastTitle'); [...setToastMsEl.options].forEach(opt=>{ const secs=Math.round(Number(opt.value||0)/1000); opt.textContent = `${secs}${getLang()==='en' ? ' sec' : '초'}`; }); }
   ['setSnow','setAnim'].forEach(id=>{ const input=document.getElementById(id); if(input && input.parentElement){ input.parentElement.lastChild.textContent = ' ' + t('enabled'); } });
   const ast=document.getElementById('setAutoSaveToast'); if(ast && ast.parentElement){ ast.parentElement.lastChild.textContent = ' ' + t('visible'); }
   const btnSaveGameEl=document.getElementById('btnSaveGame'); if(btnSaveGameEl) btnSaveGameEl.title=t('saveToLocal');
@@ -2411,7 +2373,7 @@ function applyLanguageToUI(){
         items.sort((a, b) => {
           const na = String(localizeShopName(a) || '');
           const nb = String(localizeShopName(b) || '');
-          const c = na.localeCompare(nb, getLang()==='ja' ? 'ja' : (getLang()==='en' ? 'en' : 'ko'));
+          const c = na.localeCompare(nb, getLang()==='en' ? 'en' : 'ko');
           if (c !== 0) return c;
           return (baseOrder.get(a.id) || 0) - (baseOrder.get(b.id) || 0);
         });
@@ -2486,7 +2448,7 @@ function applyLanguageToUI(){
           }
 
           if (state.credits < item.cost) {
-            log(t('shopLog', { msg: `${t('notEnoughCredits')} (${getLang()==='ja' ? '必要' : (getLang()==='en' ? 'Need' : '필요')}: ${item.cost})` }), 'shop');
+            log(t('shopLog', { msg: `${t('notEnoughCredits')} (${getLang()==='en' ? 'Need' : '필요'}: ${item.cost})` }), 'shop');
             showToast(t('notEnoughCredits'), 'shop');
             return;
           }
@@ -2687,7 +2649,7 @@ function applyLanguageToUI(){
       const def = codeDefs[code.id];
       const server = getSelectedServer();
       if (!server) {
-        log(getLang()==='ja' ? '対象サーバーの選択に失敗しました。' : (getLang()==='en' ? 'Failed to select a target server.' : '타겟 서버 선택에 실패했습니다.'), 'hack');
+        log(getLang()==='en' ? 'Failed to select a target server.' : '타겟 서버 선택에 실패했습니다.', 'hack');
         return;
       }
       if (state.level < server.minLevel) {
@@ -2786,7 +2748,7 @@ function applyLanguageToUI(){
         if (def && def.id === 'ghost_script') {
           if (Math.random() < 0.25) {
             state.exp += 10;
-            log(getLang()==='ja' ? 'Ghost_Script 効果: ハック成功で EXP +10 が発動しました。' : (getLang()==='en' ? 'Ghost_Script effect: EXP +10 triggered on success.' : 'Ghost_Script 효과: 해킹 성공으로 EXP +10이 발동했습니다.'), 'hack');
+            log(getLang()==='en' ? 'Ghost_Script effect: EXP +10 triggered on success.' : 'Ghost_Script 효과: 해킹 성공으로 EXP +10이 발동했습니다.', 'hack');
             checkLevelUp();
             renderAll();
           }
@@ -2803,7 +2765,7 @@ function applyLanguageToUI(){
           if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
             state.energyTimerMs = ENERGY_INTERVAL_MS;
           }
-          log(getLang()==='ja' ? 'Overflow_Inject ペナルティ: エネルギーが追加で1消費されました。' : (getLang()==='en' ? 'Overflow_Inject penalty: consumed 1 additional energy.' : 'Overflow_Inject 페널티: 에너지가 추가로 1 소모되었습니다.'), 'hack');
+          log(getLang()==='en' ? 'Overflow_Inject penalty: consumed 1 additional energy.' : 'Overflow_Inject 페널티: 에너지가 추가로 1 소모되었습니다.', 'hack');
         }
 
         if (state.riskMode) {
@@ -2818,13 +2780,13 @@ function applyLanguageToUI(){
 
         if (def && def.id === 'auto_patch' && Math.random() < 0.2) {
           state.exp += 1;
-          log(getLang()==='ja' ? 'AutoPatch() 効果: ハック失敗補正で EXP +1。' : (getLang()==='en' ? 'AutoPatch() effect: EXP +1 from failure compensation.' : 'AutoPatch() 효과: 해킹 실패 보정으로 경험치 +1.'), 'hack');
+          log(getLang()==='en' ? 'AutoPatch() effect: EXP +1 from failure compensation.' : 'AutoPatch() 효과: 해킹 실패 보정으로 경험치 +1.', 'hack');
         }
 
         if (def && def.id === 'fallback_node' && Math.random() < 0.12) {
           state.energy = Math.min(state.energyMax, state.energy + 1);
           if (state.energy >= state.energyMax) state.energyTimerMs = 0;
-          log(getLang()==='ja' ? 'Fallback_Node 効果: エネルギーを1即時回復しました。' : (getLang()==='en' ? 'Fallback_Node effect: instantly recovered 1 energy.' : 'Fallback_Node 효과: 에너지 1을 즉시 회복했습니다.'), 'hack');
+          log(getLang()==='en' ? 'Fallback_Node effect: instantly recovered 1 energy.' : 'Fallback_Node 효과: 에너지 1을 즉시 회복했습니다.', 'hack');
         }
 
         updateStatsUI();
@@ -2838,7 +2800,7 @@ function applyLanguageToUI(){
       const rawCost = 500 * state.cpuTier;
       const cost = Math.round(rawCost * modifiers.cpuUpgradeDiscount);
       if (state.credits < cost) {
-        log(getLang()==='ja' ? `CPUアップグレード失敗: クレジットが不足しています。(必要: ${cost})` : (getLang()==='en' ? `CPU upgrade failed: not enough credits. (Need: ${cost})` : `CPU 업그레이드 실패: 크레딧이 부족합니다. (필요: ${cost})`), 'system');
+        log(getLang()==='en' ? `CPU upgrade failed: not enough credits. (Need: ${cost})` : `CPU 업그레이드 실패: 크레딧이 부족합니다. (필요: ${cost})`, 'system');
         return;
       }
       state.credits -= cost;
