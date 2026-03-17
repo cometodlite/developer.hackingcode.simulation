@@ -15,7 +15,8 @@
 // --- Layout vars sync (header/tabs/viewport). Fixes initial "pushed up" until a UI event happens. ---
 (function(){
   const root = document.documentElement;
-  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+  let rafId = null;
+  let timerId = null;
 
   function px(n){ return Math.max(0, Math.round(n)) + 'px'; }
 
@@ -28,6 +29,7 @@
   function setHeaderTabs(){
     const header = document.querySelector('header');
     const tabs = document.querySelector('.mobile-tabs');
+    const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
 
     if(header){
       root.style.setProperty('--headerH', px(header.getBoundingClientRect().height));
@@ -54,23 +56,36 @@
     try{ if(window.scrollY !== 0) window.scrollTo(0,0); }catch(e){}
   }
 
+  function scheduleKick(delay = 0){
+    if(delay > 0){
+      clearTimeout(timerId);
+      timerId = setTimeout(() => scheduleKick(0), delay);
+      return;
+    }
+    if(rafId) return;
+    rafId = requestAnimationFrame(() => {
+      rafId = null;
+      kick();
+    });
+  }
+
   // run ASAP
   kick();
-  document.addEventListener('DOMContentLoaded', kick);
-  window.addEventListener('load', kick);
+  document.addEventListener('DOMContentLoaded', () => scheduleKick());
+  window.addEventListener('load', () => scheduleKick());
 
   const vv = window.visualViewport;
   if(vv){
-    vv.addEventListener('resize', kick);
-    vv.addEventListener('scroll', kick);
+    vv.addEventListener('resize', () => scheduleKick());
+    vv.addEventListener('scroll', () => scheduleKick());
   }
-  window.addEventListener('resize', kick);
-  window.addEventListener('orientationchange', ()=>setTimeout(kick, 250));
-  window.addEventListener('pageshow', ()=>setTimeout(kick, 60));
+  window.addEventListener('resize', () => scheduleKick());
+  window.addEventListener('orientationchange', () => scheduleKick(250));
+  window.addEventListener('pageshow', () => scheduleKick(60));
 
   // ResizeObserver catches font-load/header wrap changes that happen AFTER first paint
   try{
-    const ro = new ResizeObserver(()=>kick());
+    const ro = new ResizeObserver(() => scheduleKick());
     const header = document.querySelector('header');
     if(header) ro.observe(header);
     const tabs = document.querySelector('.mobile-tabs');
@@ -78,9 +93,8 @@
   }catch(e){}
 
   // Last resort: re-kick a couple times shortly after first render
-  setTimeout(kick, 80);
-  setTimeout(kick, 220);
-  setTimeout(kick, 650);
+  scheduleKick(80);
+  scheduleKick(360);
 })();
 
 
@@ -350,23 +364,35 @@
   const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
   if(!isMobile) return;
 
+  let rafId = null;
+  let timerId = null;
   function setTabsHeightVar(){
     const tabs = document.querySelector('.mobile-tabs');
     if(!tabs) return;
     const h = Math.ceil(tabs.getBoundingClientRect().height);
     document.documentElement.style.setProperty('--mobileTabsH', h + 'px');
   }
+  function scheduleTabsHeight(delay = 0){
+    if(delay > 0){
+      clearTimeout(timerId);
+      timerId = setTimeout(() => scheduleTabsHeight(0), delay);
+      return;
+    }
+    if(rafId) return;
+    rafId = requestAnimationFrame(() => {
+      rafId = null;
+      setTabsHeightVar();
+    });
+  }
 
   // Run now and after layout settles
-  window.addEventListener('load', ()=>{ setTabsHeightVar(); setTimeout(setTabsHeightVar, 250); setTimeout(setTabsHeightVar, 800); });
-  window.addEventListener('resize', ()=>{ setTabsHeightVar(); });
-  window.addEventListener('orientationchange', ()=>{ setTimeout(setTabsHeightVar, 300); });
+  window.addEventListener('load', ()=>{ scheduleTabsHeight(); scheduleTabsHeight(250); });
+  window.addEventListener('resize', ()=>{ scheduleTabsHeight(); });
+  window.addEventListener('orientationchange', ()=>{ scheduleTabsHeight(300); });
 
   // iOS Safari sometimes changes viewport when address bar hides/shows while scrolling
   document.addEventListener('scroll', ()=>{
-    // light throttle
-    if(window.__tabsH_to) return;
-    window.__tabsH_to = setTimeout(()=>{ window.__tabsH_to = null; setTabsHeightVar(); }, 250);
+    scheduleTabsHeight(180);
   }, {passive:true});
 })();
 
@@ -463,6 +489,8 @@
   const vv = window.visualViewport;
   if(!vv) return;
 
+  let rafId = null;
+  let timerId = null;
   function update(){
     // keyboard offset roughly equals viewport "missing" height
     const kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
@@ -470,13 +498,24 @@
     if(kb > 40) document.body.classList.add('keyboard-open');
     else document.body.classList.remove('keyboard-open');
   }
+  function scheduleUpdate(delay = 0){
+    if(delay > 0){
+      clearTimeout(timerId);
+      timerId = setTimeout(() => scheduleUpdate(0), delay);
+      return;
+    }
+    if(rafId) return;
+    rafId = requestAnimationFrame(() => {
+      rafId = null;
+      update();
+    });
+  }
 
-  vv.addEventListener('resize', update);
-  vv.addEventListener('scroll', update);
-  window.addEventListener('resize', update);
-  window.addEventListener('orientationchange', ()=>setTimeout(update, 250));
-  setTimeout(update, 250);
-  setTimeout(update, 900);
+  vv.addEventListener('resize', () => scheduleUpdate());
+  vv.addEventListener('scroll', () => scheduleUpdate());
+  window.addEventListener('resize', () => scheduleUpdate());
+  window.addEventListener('orientationchange', ()=>scheduleUpdate(250));
+  scheduleUpdate(250);
 })();
 
 
