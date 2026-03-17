@@ -81,7 +81,7 @@
   }
   window.addEventListener('resize', () => scheduleKick());
   window.addEventListener('orientationchange', () => scheduleKick(250));
-  window.addEventListener('pageshow', () => scheduleKick(60));
+  window.addEventListener('pageshow', () => scheduleKick(40));
 
   // ResizeObserver catches font-load/header wrap changes that happen AFTER first paint
   try{
@@ -94,7 +94,6 @@
 
   // Last resort: re-kick a couple times shortly after first render
   scheduleKick(80);
-  scheduleKick(360);
 })();
 
 

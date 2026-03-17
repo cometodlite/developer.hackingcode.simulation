@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a1-opt';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a2-opt';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -3430,6 +3430,15 @@ function applyLanguageToUI(){
       updateStatsUI();
     }
 
+    let scheduledSilentSaveTimer = null;
+    function scheduleSilentSave(delay = 180) {
+      clearTimeout(scheduledSilentSaveTimer);
+      scheduledSilentSaveTimer = setTimeout(() => {
+        scheduledSilentSaveTimer = null;
+        saveGame(true);
+      }, delay);
+    }
+
     function loadGame(rawOverride = null) {
       let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
       // v1.5.x 저장 데이터 자동 마이그레이션
@@ -3640,20 +3649,8 @@ function applyLanguageToUI(){
     if (setLanguage) {
       setLanguage.addEventListener('change', () => {
         state.ui.lang = setLanguage.value || 'ko';
-        applyLanguageToUI();
-        updateStatsUI();
-        renderServers();
-        renderShop();
-        renderMissions();
-        renderAchievements();
-        renderCodex();
-        renderCodeList();
-        renderCodeDetail();
-        syncSettingsUI();
-        saveGame(true);
-        try {
-          window.dispatchEvent(new CustomEvent('hcsig:language-applied', { detail: { lang: getLang() } }));
-        } catch (e) {}
+        refreshUiAfterStateRestore();
+        scheduleSilentSave(60);
       });
     }
 
@@ -3662,7 +3659,7 @@ function applyLanguageToUI(){
         state.ui.fontScale = Number(setFontScale.value);
         setFontScaleLabel.textContent = `${setFontScale.value}%`;
         applySettings();
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
 
@@ -3673,33 +3670,33 @@ function applyLanguageToUI(){
         // indeterminate(자동) 해제
         setSnow.indeterminate = false;
         applySettings();
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
     if (setUiZoom) {
       setUiZoom.addEventListener('change', () => {
         state.ui.uiZoom = Number(setUiZoom.value);
         applySettings();
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
     if (setAnim) {
       setAnim.addEventListener('change', () => {
         state.ui.anim = !!setAnim.checked;
         applySettings();
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
     if (setToastMs) {
       setToastMs.addEventListener('change', () => {
         state.ui.toastDurationMs = Number(setToastMs.value);
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
     if (setAutoSaveToast) {
       setAutoSaveToast.addEventListener('change', () => {
         state.ui.autoSaveToast = !!setAutoSaveToast.checked;
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
 
@@ -3708,7 +3705,7 @@ function applyLanguageToUI(){
       logSearchInput.addEventListener('input', () => {
         state.ui.logSearch = logSearchInput.value || '';
         applyLogFilter();
-        saveGame(true);
+        scheduleSilentSave(240);
       });
     }
     if (logList) {
