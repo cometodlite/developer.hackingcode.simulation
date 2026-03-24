@@ -754,9 +754,21 @@
   `;
   body.appendChild(wrap);
 
-  function updateHeaderVar(){
+  let headerRaf = null;
+  let headerTimer = null;
+  function updateHeaderVarNow(){
+    headerRaf = null;
     const h = header ? Math.ceil(header.getBoundingClientRect().height) : 52;
     document.documentElement.style.setProperty('--header-h', h + 'px');
+  }
+  function updateHeaderVar(delay = 0){
+    if(delay > 0){
+      clearTimeout(headerTimer);
+      headerTimer = setTimeout(() => updateHeaderVar(0), delay);
+      return;
+    }
+    if(headerRaf) return;
+    headerRaf = requestAnimationFrame(updateHeaderVarNow);
   }
 
   function setSimpleTab(tab){
@@ -785,8 +797,8 @@
   });
 
   updateHeaderVar();
-  window.addEventListener('resize', updateHeaderVar);
-  window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
+  window.addEventListener('resize', () => updateHeaderVar());
+  window.addEventListener('orientationchange', () => updateHeaderVar(250));
   if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
   setSimpleTab('home');
 })();
@@ -794,7 +806,9 @@
 
 // === keep mobile tab labels in sync after language/state restore ===
 (function(){
-  function syncMobileTabLabels(){
+  let syncRaf = null;
+  function runSyncMobileTabLabels(){
+    syncRaf = null;
     try {
       if (typeof t !== 'function') return;
       document.querySelectorAll('.mobile-simple-tabs [data-mobile-tab="home"], .mobile-tabs [data-view="home"]').forEach(el => { el.textContent = t('mobileHome'); });
@@ -803,6 +817,10 @@
       document.querySelectorAll('.mobile-simple-tabs [data-mobile-tab="coming"], .mobile-tabs [data-view="soon"]').forEach(el => { el.textContent = t('mobileComing'); });
     } catch (e) {}
   }
+  function syncMobileTabLabels(){
+    if (syncRaf) return;
+    syncRaf = requestAnimationFrame(runSyncMobileTabLabels);
+  }
   window.addEventListener('hcsig:language-applied', syncMobileTabLabels);
-  window.addEventListener('load', () => setTimeout(syncMobileTabLabels, 0));
+  window.addEventListener('load', syncMobileTabLabels, { once:true });
 })();

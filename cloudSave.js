@@ -4,6 +4,9 @@
   let authUser = null;
   let bridgeReady = false;
   let pendingInitialSync = false;
+  let saveInFlight = null;
+  let queuedSaveReason = null;
+  let autosaveTimer = null;
 
   function bridge(){ return window.HCSIG_BRIDGE; }
   function auth(){ return window.HCSIG_AUTH; }
@@ -42,19 +45,37 @@
 
   async function saveCloud(reason){
     if (!canUseCloud()) return false;
+    if (saveInFlight) {
+      queuedSaveReason = reason || queuedSaveReason || 'autosave';
+      return saveInFlight;
+    }
     const payload = bridge().getCurrentSaveData();
-    await saveRef().set({
-      uid: authUser.uid,
-      email: authUser.email || '',
-      version: bridge().version,
-      reason: reason || 'manual',
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      saveData: payload
-    }, { merge: true });
-    await userRef().set(buildProfilePatch(payload), { merge:true });
-    if (auth().refreshProfile) await auth().refreshProfile();
-    auth().setCloudMeta('클라우드 저장됨: ' + new Date().toLocaleString());
-    return true;
+    saveInFlight = (async () => {
+      await saveRef().set({
+        uid: authUser.uid,
+        email: authUser.email || '',
+        version: bridge().version,
+        reason: reason || 'manual',
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        saveData: payload
+      }, { merge: true });
+      await userRef().set(buildProfilePatch(payload), { merge:true });
+      if (auth().refreshProfile) await auth().refreshProfile();
+      auth().setCloudMeta('클라우드 저장됨: ' + new Date().toLocaleString());
+      return true;
+    })();
+    try {
+      return await saveInFlight;
+    } finally {
+      saveInFlight = null;
+      if (queuedSaveReason && canUseCloud()) {
+        const nextReason = queuedSaveReason;
+        queuedSaveReason = null;
+        saveCloud(nextReason).catch(err => {
+          auth().setStatus('자동 클라우드 저장 실패: ' + (err.message || err));
+        });
+      }
+    }
   }
 
   async function loadCloud(){
@@ -164,10 +185,28 @@
     }
   });
 
+  function scheduleCloudAutosave(reason = 'autosave', delay = 900){
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(async () => {
+      autosaveTimer = null;
+      if (!canUseCloud()) return;
+      try {
+        await saveCloud(reason);
+      } catch (err) {
+        auth().setStatus('자동 클라우드 저장 실패: ' + (err.message || err));
+      }
+    }, delay);
+  }
+
   window.addEventListener('hcsig:save', async (event)=>{
     if (!canUseCloud()) return;
+    const silent = !!(event.detail && event.detail.silent);
+    if (silent) {
+      scheduleCloudAutosave('autosave');
+      return;
+    }
     try {
-      await saveCloud(event.detail && event.detail.silent ? 'autosave' : 'local-save');
+      await saveCloud('local-save');
     } catch (err) {
       auth().setStatus('자동 클라우드 저장 실패: ' + (err.message || err));
     }
