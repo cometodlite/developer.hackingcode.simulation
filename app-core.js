@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a2-opt';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a4-questfix';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -1253,7 +1253,7 @@ function applyLanguageToUI(){
         first_hack_success: ['처음으로 서버 해킹에 성공했습니다.', 'easy'],
         reach_level3: ['플레이어 레벨 9에 도달했습니다.', 'normal'],
         scan_10: ['코드 스캔을 30회 수행했습니다.', 'normal'],
-        shop_first_buy: ['상점에서 3회 구매했습니다.', 'normal'],
+        shop_first_buy: ['상점에서 처음으로 아이템을 구매했습니다.', 'easy'],
         energy_zero: ['에너지를 0까지 모두 소모했습니다.', 'easy'],
         collector_beginner: ['서로 다른 코드를 9개 이상 보유했습니다.', 'hard'],
         daily_mission_clear1: ['데일리 퀘스트를 3개 이상 완료했습니다.', 'normal'],
@@ -2470,7 +2470,7 @@ function applyLanguageToUI(){
           } else {
             showToast(`${itemName} ${t('buyDone')}`, 'shop');
           }
-          if (state.stats.shopPurchaseCount >= 3) unlockAchievement('shop_first_buy');
+          if (state.stats.shopPurchaseCount >= 1) unlockAchievement('shop_first_buy');
           updateStatsUI();
           renderShop();
         });
@@ -2863,6 +2863,7 @@ function applyLanguageToUI(){
         if (type === 'energySpent') return prog.energySpent;
         if (type === 'level') return prog.levelReached;
         if (type === 'riskHackSuccess') return state.stats.riskHackSuccessCount;
+        if (type === 'shopPurchases') return state.stats.shopPurchaseCount;
         return 0;
       }
 
