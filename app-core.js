@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a4-questfix';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a4b1-questfix';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -2464,6 +2464,10 @@ function applyLanguageToUI(){
           markShopPurchase(item.id);
 
           state.stats.shopPurchaseCount++;
+          checkMissions('daily');
+          checkMissions('weekly');
+          checkMissions('month');
+          checkMissions('general');
           log(t('shopLog', { msg: t('shopBought', { name: itemName, cost: item.cost }) }), 'shop');
           if (item.id === 'energy_pack') {
             showToast(t('energyPackToast', { v: state.items.energyPack }), 'shop');
