@@ -54,6 +54,7 @@
     setHeaderTabs();
     // remove tiny scroll offsets that look like the whole UI is shifted upward
     try{ if(window.scrollY !== 0) window.scrollTo(0,0); }catch(e){}
+    try{ window.dispatchEvent(new CustomEvent('hcsig:ui-kick')); }catch(e){}
   }
 
   function scheduleKick(delay = 0){
@@ -76,12 +77,12 @@
 
   const vv = window.visualViewport;
   if(vv){
-    vv.addEventListener('resize', () => scheduleKick());
-    vv.addEventListener('scroll', () => scheduleKick());
+    vv.addEventListener('resize', () => scheduleKick(), { passive:true });
+    vv.addEventListener('scroll', () => scheduleKick(60), { passive:true });
   }
-  window.addEventListener('resize', () => scheduleKick());
-  window.addEventListener('orientationchange', () => scheduleKick(250));
-  window.addEventListener('pageshow', () => scheduleKick(40));
+  window.addEventListener('resize', () => scheduleKick(), { passive:true });
+  window.addEventListener('orientationchange', () => scheduleKick(250), { passive:true });
+  window.addEventListener('pageshow', () => scheduleKick(40), { passive:true });
 
   // ResizeObserver catches font-load/header wrap changes that happen AFTER first paint
   try{
@@ -389,10 +390,7 @@
   window.addEventListener('resize', ()=>{ scheduleTabsHeight(); });
   window.addEventListener('orientationchange', ()=>{ scheduleTabsHeight(300); });
 
-  // iOS Safari sometimes changes viewport when address bar hides/shows while scrolling
-  document.addEventListener('scroll', ()=>{
-    scheduleTabsHeight(180);
-  }, {passive:true});
+  // Scroll-driven recalculation removed in optimize pass: load/resize/orientation already cover the stable cases.
 })();
 
 
@@ -797,8 +795,7 @@
   });
 
   updateHeaderVar();
-  window.addEventListener('resize', () => updateHeaderVar());
-  window.addEventListener('orientationchange', () => updateHeaderVar(250));
+  window.addEventListener('hcsig:ui-kick', () => updateHeaderVar());
   if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
   setSimpleTab('home');
 })();
