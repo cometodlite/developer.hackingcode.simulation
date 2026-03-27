@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a7-opt';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a8-opt';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -1609,6 +1609,21 @@ function applyLanguageToUI(){
       return;
     }
 
+    let secondaryPanelsRaf = null;
+    function flushSecondaryPanels() {
+      secondaryPanelsRaf = null;
+      renderCodeList();
+      renderCodeDetail();
+      renderMissions();
+      renderAchievements();
+      renderCodex();
+    }
+
+    function scheduleSecondaryPanelsRefresh() {
+      if (secondaryPanelsRaf) return;
+      secondaryPanelsRaf = requestAnimationFrame(flushSecondaryPanels);
+    }
+
     function updateStatsUI() {
       statLevel.textContent = state.level;
       statExp.textContent = state.exp + ' / ' + state.requiredExp;
@@ -1647,11 +1662,7 @@ function applyLanguageToUI(){
         }
       }
 
-      renderCodeList();
-      renderCodeDetail();
-      renderMissions();
-      renderAchievements();
-      renderCodex();
+      scheduleSecondaryPanelsRefresh();
     }
 
 
@@ -3389,6 +3400,7 @@ function applyLanguageToUI(){
       renderCodeDetail();
       renderUpdateLog();
       updateStatsUI();
+      flushSecondaryPanels();
       if (btnToggleLogs) {
         btnToggleLogs.textContent = logsHidden ? t('showLogs') : t('hideLogs');
       }

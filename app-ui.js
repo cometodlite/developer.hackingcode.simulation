@@ -76,12 +76,12 @@
 
   const vv = window.visualViewport;
   if(vv){
-    vv.addEventListener('resize', () => scheduleKick(), { passive:true });
-    vv.addEventListener('scroll', () => scheduleKick(60), { passive:true });
+    vv.addEventListener('resize', () => scheduleKick());
+    vv.addEventListener('scroll', () => scheduleKick());
   }
-  window.addEventListener('resize', () => scheduleKick(), { passive:true });
-  window.addEventListener('orientationchange', () => scheduleKick(250), { passive:true });
-  window.addEventListener('pageshow', () => scheduleKick(40), { passive:true });
+  window.addEventListener('resize', () => scheduleKick());
+  window.addEventListener('orientationchange', () => scheduleKick(250));
+  window.addEventListener('pageshow', () => scheduleKick(40));
 
   // ResizeObserver catches font-load/header wrap changes that happen AFTER first paint
   try{
@@ -124,10 +124,237 @@
 
 
 
-// === LEGACY MOBILE 3-TAB MODE REMOVED IN a7-opt1 ===
+// === MOBILE UI MODE: Tabbed panels ===
+(function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
+  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+  if(!isMobile) return;
+
+  // IMPORTANT: This build uses the newer 5-tab "MOBILE VIEWS" system.
+  // The legacy 3-tab (left/center/right) switcher can create an invisible overlay that blocks taps on iOS
+  // until a relayout event (like opening "More") happens. Disable it entirely.
+  return;
+
+  // (legacy code below intentionally unreachable)
+
+  if(!document.body.classList.contains('mobile-tab-left') &&
+     !document.body.classList.contains('mobile-tab-center') &&
+     !document.body.classList.contains('mobile-tab-right')){
+    document.body.classList.add('mobile-tab-center');
+  }
+
+  function setTab(tab){
+    document.body.classList.remove('mobile-tab-left','mobile-tab-center','mobile-tab-right');
+    document.body.classList.add('mobile-tab-'+tab);
+    document.querySelectorAll('.mobile-tabs button').forEach(b=>{
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+    const panelId = tab==='left'?'leftPanel':tab==='center'?'centerPanel':'rightPanel';
+    const p = document.getElementById(panelId);
+    if(p) p.scrollTop = 0;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'mobile-tabs';
+  wrap.innerHTML = `
+    <button type="button" data-tab="left" aria-label="Status">STATUS</button>
+    <button type="button" data-tab="center" aria-label="Action">ACTION</button>
+    <button type="button" data-tab="right" aria-label="Log">LOG</button>
+  `;
+  document.body.appendChild(wrap);
+
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>setTab(btn.dataset.tab));
+  });
+
+  const btnMore = document.getElementById('btnMore');
+  if(btnMore){
+    btnMore.addEventListener('click', ()=>setTab('right'));
+  }
+
+  const initial = document.body.classList.contains('mobile-tab-left')?'left':
+                  document.body.classList.contains('mobile-tab-right')?'right':'center';
+  setTab(initial);
+
+  window.addEventListener('resize', ()=>{
+    const stillMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+    if(!stillMobile){
+      const mt = document.querySelector('.mobile-tabs');
+      if(mt) mt.remove();
+      document.body.classList.remove('mobile-tab-left','mobile-tab-center','mobile-tab-right');
+    }
+  });
+})();
 
 
-// === LEGACY MOBILE 5-VIEW SPLIT REMOVED IN a7-opt1 ===
+
+// === MOBILE VIEWS: split PC layout into mobile tabs ===
+(function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
+  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+  if(!isMobile) return;
+  // legacy split-view disabled by k1 hotfix
+  return;
+
+  // helper
+  const byText = (root, sel, txt) => {
+    const els = Array.from(root.querySelectorAll(sel));
+    return els.find(e => (e.textContent||'').trim().toLowerCase() === txt.toLowerCase());
+  };
+
+  // Create mobile view containers
+  const views = [
+    ['Status','mobileViewStatus'],
+    ['Action','mobileViewAction'],
+    ['Codes','mobileViewCodes'],
+    ['Shop','mobileViewShop'],
+    ['Log','mobileViewLog'],
+  ];
+  const main = document.getElementById('main') || document.querySelector('#main') || document.body;
+
+  views.forEach(([_,id])=>{
+    if(document.getElementById(id)) return;
+    const v = document.createElement('div');
+    v.id = id;
+    v.className = 'mobile-view';
+    main.insertBefore(v, main.firstChild);
+  });
+
+  // Move leftPanel -> Status + Shop
+  const left = document.getElementById('leftPanel');
+  if(left){
+    const shopTitle = Array.from(left.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='Shop');
+    const statusView = document.getElementById('mobileViewStatus');
+    const shopView = document.getElementById('mobileViewShop');
+
+    if(shopTitle){
+      // nodes before Shop go to Status
+      let node = left.firstChild;
+      const toMoveStatus = [];
+      while(node && node !== shopTitle){
+        const next = node.nextSibling;
+        toMoveStatus.push(node);
+        node = next;
+      }
+      toMoveStatus.forEach(n=>statusView.appendChild(n));
+
+      // Shop title and everything after -> Shop
+      let node2 = shopTitle;
+      const toMoveShop = [];
+      while(node2){
+        const next = node2.nextSibling;
+        toMoveShop.push(node2);
+        node2 = next;
+      }
+      toMoveShop.forEach(n=>shopView.appendChild(n));
+    }else{
+      // fallback: whole left panel in Status
+      statusView.appendChild(left);
+    }
+  }
+
+  // Move centerPanel -> Action + Codes
+  const center = document.getElementById('centerPanel');
+  if(center){
+    const actionView = document.getElementById('mobileViewAction');
+    const codesView  = document.getElementById('mobileViewCodes');
+
+    const codeInvTitle = Array.from(center.querySelectorAll('.section-title')).find(t => (t.textContent||'').trim()==='코드 인벤토리');
+    let codeBlock = null;
+    if(codeInvTitle){
+      // typically inside a flex-row container
+      codeBlock = codeInvTitle.closest('.flex-row') || codeInvTitle.closest('.stat-box') || codeInvTitle.parentElement;
+    }
+
+    if(codeBlock){
+      // move nodes before codeBlock into Action
+      let node = center.firstChild;
+      const toMoveAction = [];
+      while(node && node !== codeBlock){
+        const next = node.nextSibling;
+        toMoveAction.push(node);
+        node = next;
+      }
+      toMoveAction.forEach(n=>actionView.appendChild(n));
+
+      // move codeBlock and after into Codes
+      let node2 = codeBlock;
+      const toMoveCodes = [];
+      while(node2){
+        const next = node2.nextSibling;
+        toMoveCodes.push(node2);
+        node2 = next;
+      }
+      toMoveCodes.forEach(n=>codesView.appendChild(n));
+    }else{
+      // fallback: whole center in Action
+      actionView.appendChild(center);
+    }
+  }
+
+  // LOG view: try to use existing logBox if present, else open "더보기" logs
+  const logView = document.getElementById('mobileViewLog');
+  const logBox = document.getElementById('logBox');
+  if(logBox){
+    logView.appendChild(logBox.closest('.stat-box') ? logBox.closest('.stat-box') : logBox);
+  } else {
+    const tip = document.createElement('div');
+    tip.className = 'stat-box';
+    tip.innerHTML = '<div class="section-title">Log</div><div class="small">LOG는 상단의 “더보기”에서 확인할 수 있습니다.</div>';
+    logView.appendChild(tip);
+  }
+
+  // Replace tab bar with 5 tabs
+  const oldTabs = document.querySelector('.mobile-tabs');
+  if(oldTabs) oldTabs.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = 'mobile-tabs';
+  wrap.innerHTML = `
+    <button type="button" data-view="status">STATUS</button>
+    <button type="button" data-view="action">ACTION</button>
+    <button type="button" data-view="codes">CODES</button>
+    <button type="button" data-view="shop">SHOP</button>
+    <button type="button" data-view="log">LOG</button>
+  `;
+  document.body.appendChild(wrap);
+
+  function setView(v){
+    document.body.classList.remove('mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log');
+    document.body.classList.add('mobile-view-'+v);
+    wrap.querySelectorAll('button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+    const id = 'mobileView' + v.charAt(0).toUpperCase() + v.slice(1);
+    const panel = document.getElementById(id);
+    if(panel) panel.scrollTop = 0;
+
+    // If LOG chosen and logs are in more modal, try open it
+    if(v==='log'){
+      const btnMore = document.getElementById('btnMore');
+      if(btnMore && !document.getElementById('logBox')) btnMore.click();
+    }
+  }
+
+  wrap.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>setView(btn.dataset.view));
+  });
+
+  // When a code is tapped, auto-scroll to detail inside codes view
+  const codeList = document.getElementById('codeList');
+  const codeDetail = document.getElementById('codeDetail');
+  if(codeList && codeDetail){
+    codeList.addEventListener('click', (e)=>{
+      const li = e.target.closest('li');
+      if(!li) return;
+      // ensure we're on Codes view
+      setView('codes');
+      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+    });
+  }
+
+  // default view
+  setView('status');
+})();
+
 
 
 // === SAFE-AREA / TABS HEIGHT CALIBRATION ===
@@ -158,16 +385,94 @@
   }
 
   // Run now and after layout settles
-  window.addEventListener('load', ()=>{ scheduleTabsHeight(); scheduleTabsHeight(250); }, { once:true });
-  window.addEventListener('resize', ()=>{ scheduleTabsHeight(); }, { passive:true });
-  window.addEventListener('orientationchange', ()=>{ scheduleTabsHeight(300); }, { passive:true });
+  window.addEventListener('load', ()=>{ scheduleTabsHeight(); scheduleTabsHeight(250); });
+  window.addEventListener('resize', ()=>{ scheduleTabsHeight(); });
+  window.addEventListener('orientationchange', ()=>{ scheduleTabsHeight(300); });
 
-  // Scroll-driven recalculation removed in a7-opt1; load/resize/orientation are the stable cases.
+  // iOS Safari sometimes changes viewport when address bar hides/shows while scrolling
+  document.addEventListener('scroll', ()=>{
+    scheduleTabsHeight(180);
+  }, {passive:true});
 })();
 
 
 
-// === LEGACY MOBILE AUTO-HIDE REMOVED IN a7-opt1 ===
+// === MOBILE TABS AUTO-HIDE on scroll ===
+(function(){
+  if(window.__HCSIG_SIMPLE_MOBILE__) return;
+  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+  if(!isMobile) return;
+  // disabled by k1 hotfix; old view IDs are no longer used
+  return;
+
+  function activeViewEl(){
+    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    for(const id of ids){
+      const el = document.getElementById(id);
+      if(!el) continue;
+      const st = window.getComputedStyle(el);
+      if(st.display !== 'none') return el;
+    }
+    return null;
+  }
+
+  let lastTop = 0;
+  let hidden = false;
+  let ticking = false;
+
+  function showTabs(){
+    if(!hidden) return;
+    hidden = false;
+    document.body.classList.remove('mobile-tabs-hidden');
+  }
+  function hideTabs(){
+    if(hidden) return;
+    hidden = true;
+    document.body.classList.add('mobile-tabs-hidden');
+  }
+
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(()=>{
+      const el = activeViewEl();
+      if(!el){ ticking=false; return; }
+      const top = el.scrollTop || 0;
+      const delta = top - lastTop;
+
+      if(top <= 4){ showTabs(); lastTop = top; ticking=false; return; }
+      if(Math.abs(delta) < 6){ ticking=false; return; }
+
+      if(delta > 0) hideTabs();
+      else showTabs();
+
+      lastTop = top;
+      ticking = false;
+    });
+  }
+
+  function attach(){
+    const ids = ['mobileViewStatus','mobileViewAction','mobileViewCodes','mobileViewShop','mobileViewLog'];
+    ids.forEach(id=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(el.__hcsigHideAttached) return;
+      el.__hcsigHideAttached = true;
+      el.addEventListener('scroll', onScroll, {passive:true});
+      el.addEventListener('touchstart', showTabs, {passive:true});
+    });
+  }
+
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.mobile-tabs button');
+    if(btn) showTabs();
+  });
+
+  window.addEventListener('load', attach);
+  window.addEventListener('resize', attach);
+  setTimeout(attach, 600);
+})();
+
 
 
 // === ANDROID: VisualViewport keyboard handling + UA class ===
@@ -290,18 +595,6 @@
     if(codeRow.parentElement) codeRow.parentElement.removeChild(codeRow);
   }
 
-  let navRaf = null;
-  function scheduleNavHeight(){
-    if(navRaf) return;
-    navRaf = requestAnimationFrame(() => {
-      navRaf = null;
-      try {
-        const tabsH = Math.ceil(nav.getBoundingClientRect().height);
-        document.documentElement.style.setProperty('--mobileTabsH', tabsH + 'px');
-      } catch(e) {}
-    });
-  }
-
   const nav = document.createElement('nav');
   nav.className = 'mobile-tabs mobile-simple-tabs';
   nav.innerHTML = `
@@ -325,7 +618,10 @@
     nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
     const target = view === 'home' ? homeView : view === 'codes' ? codesView : shopView;
     if(target) target.scrollTop = 0;
-    scheduleNavHeight();
+    try {
+      const tabsH = Math.ceil(nav.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--mobileTabsH', tabsH + 'px');
+    } catch(e) {}
   }
 
   nav.querySelectorAll('button').forEach(btn => {
@@ -346,8 +642,6 @@
   }
 
   setView('home');
-  window.addEventListener('resize', scheduleNavHeight, { passive:true });
-  window.addEventListener('orientationchange', () => setTimeout(scheduleNavHeight, 200), { passive:true });
 })();
 
 
@@ -491,11 +785,8 @@
   });
 
   updateHeaderVar();
-  if (!window.__hcsigSimpleHeaderKickBound) {
-    window.__hcsigSimpleHeaderKickBound = true;
-    window.addEventListener('resize', updateHeaderVar, { passive:true });
-    window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250), { passive:true });
-  }
+  window.addEventListener('resize', updateHeaderVar);
+  window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
   if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
   setSimpleTab('home');
 })();
@@ -513,5 +804,5 @@
     } catch (e) {}
   }
   window.addEventListener('hcsig:language-applied', syncMobileTabLabels);
-  window.addEventListener('load', () => requestAnimationFrame(syncMobileTabLabels), { once:true });
+  window.addEventListener('load', () => setTimeout(syncMobileTabLabels, 0));
 })();
