@@ -1609,7 +1609,7 @@ function applyLanguageToUI(){
       return;
     }
 
-    function updateStatsUI() {
+    function updateTopStatsUI() {
       statLevel.textContent = state.level;
       statExp.textContent = state.exp + ' / ' + state.requiredExp;
       statCredits.textContent = state.credits;
@@ -1646,7 +1646,11 @@ function applyLanguageToUI(){
           statLastSave.textContent = '-';
         }
       }
+    }
 
+    function updateStatsUI(refreshHeavy = true) {
+      updateTopStatsUI();
+      if (!refreshHeavy) return;
       renderCodeList();
       renderCodeDetail();
       renderMissions();
@@ -1846,7 +1850,7 @@ function applyLanguageToUI(){
       if (state.energy >= state.energyMax) {
         state.energy = state.energyMax;
         state.energyTimerMs = 0;
-        updateStatsUI();
+        updateTopStatsUI();
         return;
       }
       if (state.energyTimerMs > 0) {
@@ -1859,7 +1863,7 @@ function applyLanguageToUI(){
             state.energyTimerMs = 0;
           }
         }
-        updateStatsUI();
+        updateTopStatsUI();
       }
     }, 100);
 
@@ -2337,15 +2341,10 @@ function applyLanguageToUI(){
       const mode = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       const categoryMode = (state.ui && state.ui.shopCategory) ? state.ui.shopCategory : 'all';
       if (codeSortSelect) {
-      codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
-      codeSortSelect.addEventListener('change', () => {
-        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
-        state.ui.codeSortMode = codeSortSelect.value;
-        renderCodeList();
-      });
-    }
+        codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
+      }
 
-    if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
+      if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
         shopCategoryTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.category === categoryMode));
       }
       const items = shopItems.filter(item => categoryMode === 'all' ? true : item.category === categoryMode);
@@ -3408,14 +3407,21 @@ function applyLanguageToUI(){
         ownedCodes: ownedCodes,
         modifiers: modifiers
       };
-      localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+      const serialized = JSON.stringify(saveData);
+      if (silent && serialized === lastSavedSnapshot) {
+        updateTopStatsUI();
+        return false;
+      }
+      localStorage.setItem(SAVE_KEY, serialized);
       localStorage.setItem(LAST_SEEN_VERSION_KEY, CURRENT_VERSION);
+      lastSavedSnapshot = serialized;
 
       try {
         window.dispatchEvent(new CustomEvent('hcsig:save', {
           detail: {
             silent,
-            saveData: JSON.parse(JSON.stringify(saveData))
+            savedAt: state.lastSavedAt,
+            version: CURRENT_VERSION
           }
         }));
       } catch (e) {
@@ -3428,7 +3434,8 @@ function applyLanguageToUI(){
       } else if (state.ui && state.ui.autoSaveToast) {
         showToast(t('autosaveComplete'), 'save');
       }
-      updateStatsUI();
+      updateTopStatsUI();
+      return true;
     }
 
     let scheduledSilentSaveTimer = null;
@@ -3442,6 +3449,7 @@ function applyLanguageToUI(){
 
     function loadGame(rawOverride = null) {
       let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
+      lastSavedSnapshot = typeof raw === 'string' ? raw : '';
       // v1.5.x 저장 데이터 자동 마이그레이션
       if (!raw) {
         raw = localStorage.getItem(OLD_SAVE_KEY);
@@ -3585,6 +3593,15 @@ function applyLanguageToUI(){
         state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
         state.ui.shopSortMode = shopSortSelect.value;
         renderShop();
+      });
+    }
+
+    if (codeSortSelect) {
+      codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
+      codeSortSelect.addEventListener('change', () => {
+        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
+        state.ui.codeSortMode = codeSortSelect.value;
+        renderCodeList();
       });
     }
 
