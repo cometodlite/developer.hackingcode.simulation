@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a5-opt';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a6-opt';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -1253,7 +1253,7 @@ function applyLanguageToUI(){
         first_hack_success: ['처음으로 서버 해킹에 성공했습니다.', 'easy'],
         reach_level3: ['플레이어 레벨 9에 도달했습니다.', 'normal'],
         scan_10: ['코드 스캔을 30회 수행했습니다.', 'normal'],
-        shop_first_buy: ['상점에서 처음으로 아이템을 구매했습니다.', 'easy'],
+        shop_first_buy: ['상점에서 3회 구매했습니다.', 'normal'],
         energy_zero: ['에너지를 0까지 모두 소모했습니다.', 'easy'],
         collector_beginner: ['서로 다른 코드를 9개 이상 보유했습니다.', 'hard'],
         daily_mission_clear1: ['데일리 퀘스트를 3개 이상 완료했습니다.', 'normal'],
@@ -1609,7 +1609,7 @@ function applyLanguageToUI(){
       return;
     }
 
-    function updateTopStatsUI() {
+    function updateStatsUI() {
       statLevel.textContent = state.level;
       statExp.textContent = state.exp + ' / ' + state.requiredExp;
       statCredits.textContent = state.credits;
@@ -1646,11 +1646,7 @@ function applyLanguageToUI(){
           statLastSave.textContent = '-';
         }
       }
-    }
 
-    function updateStatsUI(refreshHeavy = true) {
-      updateTopStatsUI();
-      if (!refreshHeavy) return;
       renderCodeList();
       renderCodeDetail();
       renderMissions();
@@ -1850,7 +1846,7 @@ function applyLanguageToUI(){
       if (state.energy >= state.energyMax) {
         state.energy = state.energyMax;
         state.energyTimerMs = 0;
-        updateTopStatsUI();
+        updateStatsUI();
         return;
       }
       if (state.energyTimerMs > 0) {
@@ -1863,7 +1859,7 @@ function applyLanguageToUI(){
             state.energyTimerMs = 0;
           }
         }
-        updateTopStatsUI();
+        updateStatsUI();
       }
     }, 100);
 
@@ -2341,10 +2337,15 @@ function applyLanguageToUI(){
       const mode = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       const categoryMode = (state.ui && state.ui.shopCategory) ? state.ui.shopCategory : 'all';
       if (codeSortSelect) {
-        codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
-      }
+      codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
+      codeSortSelect.addEventListener('change', () => {
+        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
+        state.ui.codeSortMode = codeSortSelect.value;
+        renderCodeList();
+      });
+    }
 
-      if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
+    if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
         shopCategoryTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.category === categoryMode));
       }
       const items = shopItems.filter(item => categoryMode === 'all' ? true : item.category === categoryMode);
@@ -2469,7 +2470,7 @@ function applyLanguageToUI(){
           } else {
             showToast(`${itemName} ${t('buyDone')}`, 'shop');
           }
-          if (state.stats.shopPurchaseCount >= 1) unlockAchievement('shop_first_buy');
+          if (state.stats.shopPurchaseCount >= 3) unlockAchievement('shop_first_buy');
           updateStatsUI();
           renderShop();
         });
@@ -2862,7 +2863,6 @@ function applyLanguageToUI(){
         if (type === 'energySpent') return prog.energySpent;
         if (type === 'level') return prog.levelReached;
         if (type === 'riskHackSuccess') return state.stats.riskHackSuccessCount;
-        if (type === 'shopPurchases') return state.stats.shopPurchaseCount;
         return 0;
       }
 
@@ -3407,21 +3407,14 @@ function applyLanguageToUI(){
         ownedCodes: ownedCodes,
         modifiers: modifiers
       };
-      const serialized = JSON.stringify(saveData);
-      if (silent && serialized === lastSavedSnapshot) {
-        updateTopStatsUI();
-        return false;
-      }
-      localStorage.setItem(SAVE_KEY, serialized);
+      localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
       localStorage.setItem(LAST_SEEN_VERSION_KEY, CURRENT_VERSION);
-      lastSavedSnapshot = serialized;
 
       try {
         window.dispatchEvent(new CustomEvent('hcsig:save', {
           detail: {
             silent,
-            savedAt: state.lastSavedAt,
-            version: CURRENT_VERSION
+            saveData: JSON.parse(JSON.stringify(saveData))
           }
         }));
       } catch (e) {
@@ -3434,8 +3427,7 @@ function applyLanguageToUI(){
       } else if (state.ui && state.ui.autoSaveToast) {
         showToast(t('autosaveComplete'), 'save');
       }
-      updateTopStatsUI();
-      return true;
+      updateStatsUI();
     }
 
     let scheduledSilentSaveTimer = null;
@@ -3449,7 +3441,6 @@ function applyLanguageToUI(){
 
     function loadGame(rawOverride = null) {
       let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
-      lastSavedSnapshot = typeof raw === 'string' ? raw : '';
       // v1.5.x 저장 데이터 자동 마이그레이션
       if (!raw) {
         raw = localStorage.getItem(OLD_SAVE_KEY);
@@ -3593,15 +3584,6 @@ function applyLanguageToUI(){
         state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
         state.ui.shopSortMode = shopSortSelect.value;
         renderShop();
-      });
-    }
-
-    if (codeSortSelect) {
-      codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
-      codeSortSelect.addEventListener('change', () => {
-        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
-        state.ui.codeSortMode = codeSortSelect.value;
-        renderCodeList();
       });
     }
 
