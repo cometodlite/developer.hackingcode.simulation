@@ -347,7 +347,16 @@
       if(!li) return;
       // ensure we're on Codes view
       setView('codes');
-      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      setTimeout(() => {
+        try { window.scrollTo(0, 0); } catch(e) {}
+        try {
+          const panel = document.getElementById('mobileViewCodes');
+          const detailBox = codeDetail.closest('.stat-box') || codeDetail;
+          if (panel && detailBox) {
+            panel.scrollTop = Math.max(0, detailBox.offsetTop - 8);
+          }
+        } catch(e) {}
+      }, 50);
     });
   }
 
@@ -636,7 +645,22 @@
       if(!li) return;
       setView('codes');
       setTimeout(() => {
-        try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
+        try { window.scrollTo(0, 0); } catch(e) {}
+        try {
+          const detailBox = codeDetail.closest('.stat-box') || codeDetail;
+          const codesPanel = document.getElementById('centerPanel');
+          if (codesPanel && detailBox) {
+            codesPanel.scrollTop = Math.max(0, detailBox.offsetTop - 8);
+          }
+        } catch(e) {}
+        try {
+          const header = document.querySelector('header');
+          if (header) {
+            header.style.display = '';
+            header.style.visibility = 'visible';
+            header.style.opacity = '1';
+          }
+        } catch(e) {}
       }, 40);
     });
   }

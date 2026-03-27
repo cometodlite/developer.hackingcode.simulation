@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a8b2-opt';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a8b3-opt';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -2042,8 +2042,22 @@ function applyLanguageToUI(){
           onTutorialAction('selectCode');
           if (window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches) {
             setTimeout(() => {
-              const detailWrap = codeDetailEl && codeDetailEl.closest('.stat-box');
-              if (detailWrap && typeof detailWrap.scrollIntoView === 'function') detailWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              try { window.scrollTo(0, 0); } catch (e) {}
+              try {
+                const detailWrap = codeDetailEl && codeDetailEl.closest('.stat-box');
+                const centerPanel = document.getElementById('centerPanel');
+                if (centerPanel && detailWrap) {
+                  centerPanel.scrollTop = Math.max(0, detailWrap.offsetTop - 8);
+                }
+              } catch (e) {}
+              try {
+                const header = document.querySelector('header');
+                if (header) {
+                  header.style.display = '';
+                  header.style.visibility = 'visible';
+                  header.style.opacity = '1';
+                }
+              } catch (e) {}
             }, 20);
           }
         });
