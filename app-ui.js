@@ -347,16 +347,7 @@
       if(!li) return;
       // ensure we're on Codes view
       setView('codes');
-      setTimeout(() => {
-        try { window.scrollTo(0, 0); } catch(e) {}
-        try {
-          const panel = document.getElementById('mobileViewCodes');
-          const detailBox = codeDetail.closest('.stat-box') || codeDetail;
-          if (panel && detailBox) {
-            panel.scrollTop = Math.max(0, detailBox.offsetTop - 8);
-          }
-        } catch(e) {}
-      }, 50);
+      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
     });
   }
 
@@ -645,22 +636,7 @@
       if(!li) return;
       setView('codes');
       setTimeout(() => {
-        try { window.scrollTo(0, 0); } catch(e) {}
-        try {
-          const detailBox = codeDetail.closest('.stat-box') || codeDetail;
-          const codesPanel = document.getElementById('centerPanel');
-          if (codesPanel && detailBox) {
-            codesPanel.scrollTop = Math.max(0, detailBox.offsetTop - 8);
-          }
-        } catch(e) {}
-        try {
-          const header = document.querySelector('header');
-          if (header) {
-            header.style.display = '';
-            header.style.visibility = 'visible';
-            header.style.opacity = '1';
-          }
-        } catch(e) {}
+        try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
       }, 40);
     });
   }
@@ -778,43 +754,23 @@
   `;
   body.appendChild(wrap);
 
-  let currentSimpleTab = 'home';
-
   function updateHeaderVar(){
     const h = header ? Math.ceil(header.getBoundingClientRect().height) : 52;
     document.documentElement.style.setProperty('--header-h', h + 'px');
   }
 
-  function ensureTopBars(){
-    try {
-      if (header) {
-        header.style.display = '';
-        header.style.visibility = 'visible';
-        header.style.opacity = '1';
-      }
-      if (wrap) {
-        wrap.style.display = 'grid';
-        wrap.style.visibility = 'visible';
-        wrap.style.opacity = '1';
-      }
-      document.body.classList.remove('mobile-tabs-hidden');
-    } catch (e) {}
-  }
-
   function setSimpleTab(tab){
-    currentSimpleTab = ['home','codes','shop'].includes(tab) ? tab : 'home';
     body.classList.remove('simple-tab-home','simple-tab-codes','simple-tab-shop');
-    body.classList.add('simple-tab-' + currentSimpleTab);
+    body.classList.add('simple-tab-' + tab);
     wrap.querySelectorAll('button').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.mobileTab === currentSimpleTab);
+      btn.classList.toggle('active', btn.dataset.mobileTab === tab);
     });
-    if(currentSimpleTab === 'codes' && center) center.scrollTop = 0;
-    if(currentSimpleTab === 'shop' && left) left.scrollTop = 0;
-    if(currentSimpleTab === 'home') {
+    if(tab === 'codes' && center) center.scrollTop = 0;
+    if(tab === 'shop' && left) left.scrollTop = 0;
+    if(tab === 'home') {
       if(left) left.scrollTop = 0;
       if(center) center.scrollTop = 0;
     }
-    ensureTopBars();
   }
 
   wrap.addEventListener('click', (e) => {
@@ -828,16 +784,9 @@
     setSimpleTab(tab);
   });
 
-  function recoverSimpleMobileNav(){
-    updateHeaderVar();
-    ensureTopBars();
-    setSimpleTab(currentSimpleTab);
-  }
-
   updateHeaderVar();
-  window.addEventListener('resize', updateHeaderVar, { passive:true });
-  window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250), { passive:true });
-  window.addEventListener('hcsig:secondary-panels-rendered', recoverSimpleMobileNav);
+  window.addEventListener('resize', updateHeaderVar);
+  window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
   if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
   setSimpleTab('home');
 })();
