@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a8b5-opt';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a8c1-opt';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -2031,16 +2031,8 @@ function applyLanguageToUI(){
           onTutorialAction('selectCode');
           if (window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches) {
             setTimeout(() => {
-              try {
-                const centerPanel = document.getElementById('centerPanel');
-                const detailWrap = codeDetailEl && codeDetailEl.closest('.stat-box');
-                if (centerPanel && detailWrap) {
-                  const targetTop = Math.max(0, detailWrap.offsetTop - 8);
-                  centerPanel.scrollTo({ top: targetTop, behavior: 'smooth' });
-                }
-                window.scrollTo(0, 0);
-                try { window.dispatchEvent(new CustomEvent('hcsig:ui-kick')); } catch(e) {}
-              } catch (e) {}
+              const detailWrap = codeDetailEl && codeDetailEl.closest('.stat-box');
+              if (detailWrap && typeof detailWrap.scrollIntoView === 'function') detailWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 20);
           }
         });
