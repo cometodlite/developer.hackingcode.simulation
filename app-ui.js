@@ -76,12 +76,12 @@
 
   const vv = window.visualViewport;
   if(vv){
-    vv.addEventListener('resize', () => scheduleKick(), { passive:true });
-    vv.addEventListener('scroll', () => scheduleKick(60), { passive:true });
+    vv.addEventListener('resize', () => scheduleKick());
+    vv.addEventListener('scroll', () => scheduleKick());
   }
-  window.addEventListener('resize', () => scheduleKick(), { passive:true });
-  window.addEventListener('orientationchange', () => scheduleKick(250), { passive:true });
-  window.addEventListener('pageshow', () => scheduleKick(40), { passive:true });
+  window.addEventListener('resize', () => scheduleKick());
+  window.addEventListener('orientationchange', () => scheduleKick(250));
+  window.addEventListener('pageshow', () => scheduleKick(60));
 
   // ResizeObserver catches font-load/header wrap changes that happen AFTER first paint
   try{
@@ -94,6 +94,7 @@
 
   // Last resort: re-kick a couple times shortly after first render
   scheduleKick(80);
+  scheduleKick(360);
 })();
 
 
@@ -390,7 +391,9 @@
   window.addEventListener('orientationchange', ()=>{ scheduleTabsHeight(300); });
 
   // iOS Safari sometimes changes viewport when address bar hides/shows while scrolling
-  // scroll-driven recalculation removed in optimize pass
+  document.addEventListener('scroll', ()=>{
+    scheduleTabsHeight(180);
+  }, {passive:true});
 })();
 
 
@@ -752,21 +755,9 @@
   `;
   body.appendChild(wrap);
 
-  let headerRaf = null;
-  let headerTimer = null;
-  function updateHeaderVarNow(){
-    headerRaf = null;
+  function updateHeaderVar(){
     const h = header ? Math.ceil(header.getBoundingClientRect().height) : 52;
     document.documentElement.style.setProperty('--header-h', h + 'px');
-  }
-  function updateHeaderVar(delay = 0){
-    if (delay > 0) {
-      clearTimeout(headerTimer);
-      headerTimer = setTimeout(() => updateHeaderVar(0), delay);
-      return;
-    }
-    if (headerRaf) return;
-    headerRaf = requestAnimationFrame(updateHeaderVarNow);
   }
 
   function setSimpleTab(tab){
@@ -795,8 +786,8 @@
   });
 
   updateHeaderVar();
-  window.addEventListener('resize', () => updateHeaderVar(), { passive:true });
-  window.addEventListener('orientationchange', () => updateHeaderVar(250), { passive:true });
+  window.addEventListener('resize', updateHeaderVar);
+  window.addEventListener('orientationchange', () => setTimeout(updateHeaderVar, 250));
   if(scanOverlay) scanOverlay.classList.add('mobile-scan-overlay');
   setSimpleTab('home');
 })();
@@ -804,9 +795,7 @@
 
 // === keep mobile tab labels in sync after language/state restore ===
 (function(){
-  let syncMobileTabsRaf = null;
-  function runSyncMobileTabLabels(){
-    syncMobileTabsRaf = null;
+  function syncMobileTabLabels(){
     try {
       if (typeof t !== 'function') return;
       document.querySelectorAll('.mobile-simple-tabs [data-mobile-tab="home"], .mobile-tabs [data-view="home"]').forEach(el => { el.textContent = t('mobileHome'); });
@@ -815,10 +804,6 @@
       document.querySelectorAll('.mobile-simple-tabs [data-mobile-tab="coming"], .mobile-tabs [data-view="soon"]').forEach(el => { el.textContent = t('mobileComing'); });
     } catch (e) {}
   }
-  function syncMobileTabLabels(){
-    if (syncMobileTabsRaf) return;
-    syncMobileTabsRaf = requestAnimationFrame(runSyncMobileTabLabels);
-  }
   window.addEventListener('hcsig:language-applied', syncMobileTabLabels);
-  window.addEventListener('load', syncMobileTabLabels, { once:true });
+  window.addEventListener('load', () => setTimeout(syncMobileTabLabels, 0));
 })();
