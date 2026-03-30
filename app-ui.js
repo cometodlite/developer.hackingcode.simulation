@@ -347,7 +347,19 @@
       if(!li) return;
       // ensure we're on Codes view
       setView('codes');
-      setTimeout(()=>codeDetail.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+      setTimeout(()=>{
+        try {
+          const panel = document.getElementById('centerPanel') || document.getElementById('mobileViewCodes');
+          const detailWrap = codeDetail.closest('.stat-box') || codeDetail;
+          if (panel && detailWrap) {
+            const targetTop = Math.max(0, detailWrap.offsetTop - 8);
+            if (typeof panel.scrollTo === 'function') panel.scrollTo({ top: targetTop, behavior: 'smooth' });
+            else panel.scrollTop = targetTop;
+          }
+          window.scrollTo(0,0);
+          try { window.dispatchEvent(new CustomEvent('hcsig:ui-kick')); } catch(e) {}
+        } catch (e) {}
+      }, 50);
     });
   }
 
@@ -636,7 +648,17 @@
       if(!li) return;
       setView('codes');
       setTimeout(() => {
-        try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
+        try {
+          const panel = document.getElementById('centerPanel') || document.getElementById('mobileSimpleCodes');
+          const detailWrap = codeDetail.closest('.stat-box') || codeDetail;
+          if (panel && detailWrap) {
+            const targetTop = Math.max(0, detailWrap.offsetTop - 8);
+            if (typeof panel.scrollTo === 'function') panel.scrollTo({ top: targetTop, behavior: 'smooth' });
+            else panel.scrollTop = targetTop;
+          }
+          window.scrollTo(0,0);
+          try { window.dispatchEvent(new CustomEvent('hcsig:ui-kick')); } catch(e) {}
+        } catch(e) {}
       }, 40);
     });
   }
