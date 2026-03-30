@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a1-opt';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a2b1-dailyfix';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -604,6 +604,8 @@ function applyLanguageToUI(){
           scans: 0,
           actions: 0,
           hackSuccess: 0,
+          riskHackSuccess: 0,
+          shopPurchases: 0,
           energySpent: 0,
           lastResetDay: null,
           completed: {}
@@ -611,6 +613,8 @@ function applyLanguageToUI(){
         weekly: {
           scans: 0,
           hackSuccess: 0,
+          riskHackSuccess: 0,
+          shopPurchases: 0,
           energySpent: 0,
           levelReached: 1,
           lastResetWeek: null,
@@ -619,6 +623,8 @@ function applyLanguageToUI(){
         month: {
           scans: 0,
           hackSuccess: 0,
+          riskHackSuccess: 0,
+          shopPurchases: 0,
           energySpent: 0,
           levelReached: 1,
           lastResetMonth: null,
@@ -1253,7 +1259,7 @@ function applyLanguageToUI(){
         first_hack_success: ['처음으로 서버 해킹에 성공했습니다.', 'easy'],
         reach_level3: ['플레이어 레벨 9에 도달했습니다.', 'normal'],
         scan_10: ['코드 스캔을 30회 수행했습니다.', 'normal'],
-        shop_first_buy: ['상점에서 3회 구매했습니다.', 'normal'],
+        shop_first_buy: ['상점에서 처음으로 아이템을 구매했습니다.', 'easy'],
         energy_zero: ['에너지를 0까지 모두 소모했습니다.', 'easy'],
         collector_beginner: ['서로 다른 코드를 9개 이상 보유했습니다.', 'hard'],
         daily_mission_clear1: ['데일리 퀘스트를 3개 이상 완료했습니다.', 'normal'],
@@ -2464,13 +2470,20 @@ function applyLanguageToUI(){
           markShopPurchase(item.id);
 
           state.stats.shopPurchaseCount++;
+          state.missionProgress.daily.shopPurchases = (state.missionProgress.daily.shopPurchases || 0) + 1;
+          state.missionProgress.weekly.shopPurchases = (state.missionProgress.weekly.shopPurchases || 0) + 1;
+          state.missionProgress.month.shopPurchases = (state.missionProgress.month.shopPurchases || 0) + 1;
+          checkMissions('daily');
+          checkMissions('weekly');
+          checkMissions('month');
+          checkMissions('general');
           log(t('shopLog', { msg: t('shopBought', { name: itemName, cost: item.cost }) }), 'shop');
           if (item.id === 'energy_pack') {
             showToast(t('energyPackToast', { v: state.items.energyPack }), 'shop');
           } else {
             showToast(`${itemName} ${t('buyDone')}`, 'shop');
           }
-          if (state.stats.shopPurchaseCount >= 3) unlockAchievement('shop_first_buy');
+          if (state.stats.shopPurchaseCount >= 1) unlockAchievement('shop_first_buy');
           updateStatsUI();
           renderShop();
         });
@@ -2728,6 +2741,9 @@ function applyLanguageToUI(){
         state.missionProgress.month.hackSuccess++;
         if (state.riskMode) {
           state.stats.riskHackSuccessCount++;
+          state.missionProgress.daily.riskHackSuccess = (state.missionProgress.daily.riskHackSuccess || 0) + 1;
+          state.missionProgress.weekly.riskHackSuccess = (state.missionProgress.weekly.riskHackSuccess || 0) + 1;
+          state.missionProgress.month.riskHackSuccess = (state.missionProgress.month.riskHackSuccess || 0) + 1;
         }
 
         checkMissions('daily');
@@ -2823,6 +2839,8 @@ function applyLanguageToUI(){
         state.missionProgress.daily.scans = 0;
         state.missionProgress.daily.actions = 0;
         state.missionProgress.daily.hackSuccess = 0;
+        state.missionProgress.daily.riskHackSuccess = 0;
+        state.missionProgress.daily.shopPurchases = 0;
         state.missionProgress.daily.energySpent = 0;
         state.missionProgress.daily.completed = {};
       }
@@ -2831,6 +2849,8 @@ function applyLanguageToUI(){
         state.missionProgress.weekly.lastResetWeek = weekKey;
         state.missionProgress.weekly.scans = 0;
         state.missionProgress.weekly.hackSuccess = 0;
+        state.missionProgress.weekly.riskHackSuccess = 0;
+        state.missionProgress.weekly.shopPurchases = 0;
         state.missionProgress.weekly.energySpent = 0;
         state.missionProgress.weekly.levelReached = state.level;
         state.missionProgress.weekly.completed = {};
@@ -2840,6 +2860,8 @@ function applyLanguageToUI(){
         state.missionProgress.month.lastResetMonth = monthKey;
         state.missionProgress.month.scans = 0;
         state.missionProgress.month.hackSuccess = 0;
+        state.missionProgress.month.riskHackSuccess = 0;
+        state.missionProgress.month.shopPurchases = 0;
         state.missionProgress.month.energySpent = 0;
         state.missionProgress.month.levelReached = state.level;
         state.missionProgress.month.completed = {};
@@ -2862,7 +2884,8 @@ function applyLanguageToUI(){
         if (type === 'hackSuccess') return prog.hackSuccess;
         if (type === 'energySpent') return prog.energySpent;
         if (type === 'level') return prog.levelReached;
-        if (type === 'riskHackSuccess') return state.stats.riskHackSuccessCount;
+        if (type === 'riskHackSuccess') return prog.riskHackSuccess || 0;
+        if (type === 'shopPurchases') return prog.shopPurchases || 0;
         return 0;
       }
 
@@ -3430,6 +3453,15 @@ function applyLanguageToUI(){
       updateStatsUI();
     }
 
+    let scheduledSilentSaveTimer = null;
+    function scheduleSilentSave(delay = 180) {
+      clearTimeout(scheduledSilentSaveTimer);
+      scheduledSilentSaveTimer = setTimeout(() => {
+        scheduledSilentSaveTimer = null;
+        saveGame(true);
+      }, delay);
+    }
+
     function loadGame(rawOverride = null) {
       let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
       // v1.5.x 저장 데이터 자동 마이그레이션
@@ -3467,6 +3499,15 @@ function applyLanguageToUI(){
         state.stats.missionsCompletedTotal ||= 0;
         state.stats.riskHackSuccessCount ||= 0;
         state.stats.codeShardsTotal ||= 0;
+        state.missionProgress.daily = state.missionProgress.daily || {};
+        state.missionProgress.weekly = state.missionProgress.weekly || {};
+        state.missionProgress.month = state.missionProgress.month || {};
+        state.missionProgress.daily.riskHackSuccess ||= 0;
+        state.missionProgress.daily.shopPurchases ||= 0;
+        state.missionProgress.weekly.riskHackSuccess ||= 0;
+        state.missionProgress.weekly.shopPurchases ||= 0;
+        state.missionProgress.month.riskHackSuccess ||= 0;
+        state.missionProgress.month.shopPurchases ||= 0;
         state.missionProgress.general = state.missionProgress.general || { completed: {} };
         state.missionProgress.general.completed = state.missionProgress.general.completed || {};
 
@@ -3640,20 +3681,8 @@ function applyLanguageToUI(){
     if (setLanguage) {
       setLanguage.addEventListener('change', () => {
         state.ui.lang = setLanguage.value || 'ko';
-        applyLanguageToUI();
-        updateStatsUI();
-        renderServers();
-        renderShop();
-        renderMissions();
-        renderAchievements();
-        renderCodex();
-        renderCodeList();
-        renderCodeDetail();
-        syncSettingsUI();
-        saveGame(true);
-        try {
-          window.dispatchEvent(new CustomEvent('hcsig:language-applied', { detail: { lang: getLang() } }));
-        } catch (e) {}
+        refreshUiAfterStateRestore();
+        scheduleSilentSave(60);
       });
     }
 
@@ -3662,7 +3691,7 @@ function applyLanguageToUI(){
         state.ui.fontScale = Number(setFontScale.value);
         setFontScaleLabel.textContent = `${setFontScale.value}%`;
         applySettings();
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
 
@@ -3673,33 +3702,33 @@ function applyLanguageToUI(){
         // indeterminate(자동) 해제
         setSnow.indeterminate = false;
         applySettings();
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
     if (setUiZoom) {
       setUiZoom.addEventListener('change', () => {
         state.ui.uiZoom = Number(setUiZoom.value);
         applySettings();
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
     if (setAnim) {
       setAnim.addEventListener('change', () => {
         state.ui.anim = !!setAnim.checked;
         applySettings();
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
     if (setToastMs) {
       setToastMs.addEventListener('change', () => {
         state.ui.toastDurationMs = Number(setToastMs.value);
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
     if (setAutoSaveToast) {
       setAutoSaveToast.addEventListener('change', () => {
         state.ui.autoSaveToast = !!setAutoSaveToast.checked;
-        saveGame(true);
+        scheduleSilentSave();
       });
     }
 
@@ -3708,7 +3737,7 @@ function applyLanguageToUI(){
       logSearchInput.addEventListener('input', () => {
         state.ui.logSearch = logSearchInput.value || '';
         applyLogFilter();
-        saveGame(true);
+        scheduleSilentSave(240);
       });
     }
     if (logList) {
