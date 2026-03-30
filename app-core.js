@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a8c1b1-opt';
+const CURRENT_VERSION = 'v1.6.15-k6d0-a8c1b2-opt';
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -605,6 +605,8 @@ function applyLanguageToUI(){
           actions: 0,
           hackSuccess: 0,
           energySpent: 0,
+          shopPurchases: 0,
+          riskHackSuccess: 0,
           lastResetDay: null,
           completed: {}
         },
@@ -612,6 +614,8 @@ function applyLanguageToUI(){
           scans: 0,
           hackSuccess: 0,
           energySpent: 0,
+          shopPurchases: 0,
+          riskHackSuccess: 0,
           levelReached: 1,
           lastResetWeek: null,
           completed: {}
@@ -620,6 +624,8 @@ function applyLanguageToUI(){
           scans: 0,
           hackSuccess: 0,
           energySpent: 0,
+          shopPurchases: 0,
+          riskHackSuccess: 0,
           levelReached: 1,
           lastResetMonth: null,
           completed: {}
@@ -2732,6 +2738,9 @@ function applyLanguageToUI(){
         state.missionProgress.month.hackSuccess++;
         if (state.riskMode) {
           state.stats.riskHackSuccessCount++;
+          state.missionProgress.daily.riskHackSuccess = (state.missionProgress.daily.riskHackSuccess || 0) + 1;
+          state.missionProgress.weekly.riskHackSuccess = (state.missionProgress.weekly.riskHackSuccess || 0) + 1;
+          state.missionProgress.month.riskHackSuccess = (state.missionProgress.month.riskHackSuccess || 0) + 1;
         }
 
         checkMissions('daily');
@@ -2828,6 +2837,8 @@ function applyLanguageToUI(){
         state.missionProgress.daily.actions = 0;
         state.missionProgress.daily.hackSuccess = 0;
         state.missionProgress.daily.energySpent = 0;
+        state.missionProgress.daily.shopPurchases = 0;
+        state.missionProgress.daily.riskHackSuccess = 0;
         state.missionProgress.daily.completed = {};
       }
 
@@ -2836,6 +2847,8 @@ function applyLanguageToUI(){
         state.missionProgress.weekly.scans = 0;
         state.missionProgress.weekly.hackSuccess = 0;
         state.missionProgress.weekly.energySpent = 0;
+        state.missionProgress.weekly.shopPurchases = 0;
+        state.missionProgress.weekly.riskHackSuccess = 0;
         state.missionProgress.weekly.levelReached = state.level;
         state.missionProgress.weekly.completed = {};
       }
@@ -2845,6 +2858,8 @@ function applyLanguageToUI(){
         state.missionProgress.month.scans = 0;
         state.missionProgress.month.hackSuccess = 0;
         state.missionProgress.month.energySpent = 0;
+        state.missionProgress.month.shopPurchases = 0;
+        state.missionProgress.month.riskHackSuccess = 0;
         state.missionProgress.month.levelReached = state.level;
         state.missionProgress.month.completed = {};
       }
@@ -2866,8 +2881,8 @@ function applyLanguageToUI(){
         if (type === 'hackSuccess') return prog.hackSuccess;
         if (type === 'energySpent') return prog.energySpent;
         if (type === 'level') return prog.levelReached;
-        if (type === 'riskHackSuccess') return state.stats.riskHackSuccessCount;
-        if (type === 'shopPurchases') return state.stats.shopPurchaseCount;
+        if (type === 'riskHackSuccess') return prog.riskHackSuccess || 0;
+        if (type === 'shopPurchases') return prog.shopPurchases || 0;
         return 0;
       }
 
@@ -3488,6 +3503,12 @@ function applyLanguageToUI(){
         state.items = state.items || { energyPack: 0 };
         state.items.energyPack = state.items.energyPack || 0;
         state.missionProgress.daily.actions = state.missionProgress.daily.actions || 0;
+        state.missionProgress.daily.shopPurchases = state.missionProgress.daily.shopPurchases || 0;
+        state.missionProgress.daily.riskHackSuccess = state.missionProgress.daily.riskHackSuccess || 0;
+        state.missionProgress.weekly.shopPurchases = state.missionProgress.weekly.shopPurchases || 0;
+        state.missionProgress.weekly.riskHackSuccess = state.missionProgress.weekly.riskHackSuccess || 0;
+        state.missionProgress.month.shopPurchases = state.missionProgress.month.shopPurchases || 0;
+        state.missionProgress.month.riskHackSuccess = state.missionProgress.month.riskHackSuccess || 0;
 
         // v1.6.1 UI 설정 보정
         state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
