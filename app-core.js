@@ -1329,21 +1329,26 @@ function applyLanguageToUI(){
         achievement_total_: '업적 {v}개를 달성했습니다.'
       };
 
+      function getThresholdRetune(defId) {
+        for (const [prefix, values] of Object.entries(thresholdGroups)) {
+          if (!defId.startsWith(prefix)) continue;
+          const matchingDefs = extraAchievementDefs.filter(x => x.id.startsWith(prefix));
+          const pos = matchingDefs.findIndex(x => x.id === defId);
+          if (pos < 0) return null;
+          return { prefix, value: values[pos] };
+        }
+        return null;
+      }
+
       achievementDefs.forEach(def => {
         if (overrides[def.id]) {
           def.desc = overrides[def.id][0];
           def.difficulty = overrides[def.id][1];
           return;
         }
-        for (const [prefix, values] of Object.entries(thresholdGroups)) {
-          const idx = values.findIndex((_, i) => def.id === `${prefix}${def.id.slice(prefix.length)}`);
-          if (def.id.startsWith(prefix)) {
-            const suffix = def.id.slice(prefix.length);
-            const pos = (thresholdGroups[prefix] || []).findIndex((_, i) => String(extraAchievementDefs.filter(x => x.id.startsWith(prefix))[i]?.id.slice(prefix.length) || '') === suffix);
-            const newValue = pos >= 0 ? thresholdGroups[prefix][pos] : null;
-            if (newValue != null && labelMap[prefix]) def.desc = labelMap[prefix].replace('{v}', newValue);
-            break;
-          }
+        const retune = getThresholdRetune(def.id);
+        if (retune && retune.value != null && labelMap[retune.prefix]) {
+          def.desc = labelMap[retune.prefix].replace('{v}', retune.value);
         }
       });
       const codexAll = achievementDefs.find(def => def.id === 'codex_total_6');
@@ -1469,6 +1474,24 @@ function applyLanguageToUI(){
     const importSaveText = document.getElementById('importSaveText');
     const btnImportSaveText = document.getElementById('btnImportSaveText');
 
+    function bind(el, type, handler, options) {
+      if (el && typeof el.addEventListener === 'function') {
+        el.addEventListener(type, handler, options);
+      }
+    }
+
+    function setNodeText(el, value) {
+      if (el) el.textContent = value;
+    }
+
+    function setNodeDisabled(el, disabled) {
+      if (el) el.disabled = !!disabled;
+    }
+
+    function setNodeDisplay(el, value) {
+      if (el) el.style.display = value;
+    }
+
     // 상태
     let missionScopeActive = 'daily';
     let logsHidden = false;
@@ -1543,19 +1566,19 @@ function applyLanguageToUI(){
       ensureTutorialDefaults();
       const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
       const step = tutorialSteps[idx];
-      tutorialStepLabel.textContent = `STEP ${idx + 1} / ${tutorialSteps.length}`;
-      tutorialStepTitle.textContent = step.title;
-      tutorialStepText.textContent = step.text;
-      tutorialStepHint.textContent = step.hint || '';
-      tutorialStepHint.style.display = step.hint ? '' : 'none';
+      setNodeText(tutorialStepLabel, `STEP ${idx + 1} / ${tutorialSteps.length}`);
+      setNodeText(tutorialStepTitle, step.title);
+      setNodeText(tutorialStepText, step.text);
+      setNodeText(tutorialStepHint, step.hint || '');
+      setNodeDisplay(tutorialStepHint, step.hint ? '' : 'none');
       const interactive = !!step.waitAction;
       tutorialBackdrop.classList.toggle('interactive', interactive);
       document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
-      btnTutorialPrev.disabled = idx <= 0;
+      setNodeDisabled(btnTutorialPrev, idx <= 0);
       const waiting = interactive;
-      btnTutorialNext.style.display = idx === tutorialSteps.length - 1 ? 'none' : '';
-      btnTutorialNext.disabled = waiting;
-      btnTutorialFinish.style.display = idx === tutorialSteps.length - 1 ? '' : 'none';
+      setNodeDisplay(btnTutorialNext, idx === tutorialSteps.length - 1 ? 'none' : '');
+      setNodeDisabled(btnTutorialNext, waiting);
+      setNodeDisplay(btnTutorialFinish, idx === tutorialSteps.length - 1 ? '' : 'none');
     }
 
     function openTutorial(forceRestart = false) {
@@ -1616,29 +1639,29 @@ function applyLanguageToUI(){
     }
 
     function updateStatsUI() {
-      statLevel.textContent = state.level;
-      statExp.textContent = state.exp + ' / ' + state.requiredExp;
-      statCredits.textContent = state.credits;
-      statCpuTier.textContent = state.cpuTier;
-      statEnergyValue.textContent = `${state.energy} / ${state.energyMax}`;
+      setNodeText(statLevel, state.level);
+      setNodeText(statExp, state.exp + ' / ' + state.requiredExp);
+      setNodeText(statCredits, state.credits);
+      setNodeText(statCpuTier, state.cpuTier);
+      setNodeText(statEnergyValue, `${state.energy} / ${state.energyMax}`);
 
       if (state.energy >= state.energyMax) {
-        statEnergyTimer.textContent = t('full');
+        setNodeText(statEnergyTimer, t('full'));
       } else {
         const sec = state.energyTimerMs / 1000;
-        statEnergyTimer.textContent = sec.toFixed(1) + ' ' + t('seconds');
+        setNodeText(statEnergyTimer, sec.toFixed(1) + ' ' + t('seconds'));
       }
 
       const ratio = state.energy / state.energyMax;
-      energyBarInner.style.width = (ratio * 100) + '%';
+      if (energyBarInner) energyBarInner.style.width = (ratio * 100) + '%';
 
-      chkRiskMode.checked = state.riskMode;
+      if (chkRiskMode) chkRiskMode.checked = state.riskMode;
 
       // 에너지 팩 UI
       const packCount = state.items && typeof state.items.energyPack === 'number' ? state.items.energyPack : 0;
-      statEnergyPack.textContent = packCount;
+      setNodeText(statEnergyPack, packCount);
       const canUsePack = packCount > 0 && state.energy < state.energyMax;
-      btnUseEnergyPack.disabled = !canUsePack;
+      setNodeDisabled(btnUseEnergyPack, !canUsePack);
 
       // 마지막 저장 시각 UI
       if (statLastSave) {
@@ -2005,6 +2028,7 @@ function applyLanguageToUI(){
     }
 
     function renderCodeList() {
+      if (!codeListEl) return;
       codeListEl.innerHTML = '';
       if (ownedCodes.length === 0) {
         const li = document.createElement('li');
@@ -2048,6 +2072,7 @@ function applyLanguageToUI(){
     }
 
     function renderCodeDetail() {
+      if (!codeDetailEl) return;
       const code = getActiveCodeInstance();
       if (!code) {
         codeDetailEl.innerHTML = `<div class="small">${t('selectCode')}</div>`;
@@ -2200,6 +2225,7 @@ function applyLanguageToUI(){
     }
 
     function renderServers() {
+      if (!serverSelect) return;
       serverSelect.innerHTML = '';
       servers.forEach(s => {
         const option = document.createElement('option');
@@ -2320,6 +2346,7 @@ function applyLanguageToUI(){
 
 
     function renderShop() {
+      if (!shopList) return;
       shopList.innerHTML = '';
 
       const categoryLabel = {
@@ -2343,15 +2370,18 @@ function applyLanguageToUI(){
       const mode = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       const categoryMode = (state.ui && state.ui.shopCategory) ? state.ui.shopCategory : 'all';
       if (codeSortSelect) {
-      codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
-      codeSortSelect.addEventListener('change', () => {
-        state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
-        state.ui.codeSortMode = codeSortSelect.value;
-        renderCodeList();
-      });
-    }
+        codeSortSelect.value = (state.ui && state.ui.codeSortMode) ? state.ui.codeSortMode : 'recent';
+        if (!codeSortSelect.__hcsigSortBound) {
+          codeSortSelect.__hcsigSortBound = true;
+          codeSortSelect.addEventListener('change', () => {
+            state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
+            state.ui.codeSortMode = codeSortSelect.value;
+            renderCodeList();
+          });
+        }
+      }
 
-    if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
+      if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
         shopCategoryTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.category === categoryMode));
       }
       const items = shopItems.filter(item => categoryMode === 'all' ? true : item.category === categoryMode);
@@ -2980,6 +3010,7 @@ function applyLanguageToUI(){
     }
 
     function renderMissions() {
+      if (!missionListEl) return;
       missionListEl.innerHTML = '';
       const scope = missionScopeActive;
       const titleMap = {
@@ -3051,7 +3082,6 @@ function applyLanguageToUI(){
       if (state.stats.creditsEarnedTotal >= 60000) unlockAchievement('credits_20000');
       if (state.stats.missionsCompletedTotal >= 30) unlockAchievement('mission_10');
 
-      const completedAchievements = Object.keys(state.achievements).length;
       const discoveredCodes = getCodexDiscoveredCount();
       const highestPower = getHighestCodePower();
       const highestLevel = getHighestCodeLevel();
@@ -3066,44 +3096,115 @@ function applyLanguageToUI(){
       const packsUsed = state.stats.energyPacksUsed || 0;
 
       const thresholds = {
-        scan: [225, 360, 600, 1050, 1500, 2400, 3600, 6000],
-        hack: [30, 180, 360, 750, 1200, 2100],
-        level: [15, 45, 60, 75, 90, 120, 150],
-        credits: [3000, 30000, 150000, 300000, 750000],
-        missions: [75, 150, 300, 480],
-        purchases: [30, 75, 150, 240, 360],
-        energySpent: [300, 1500, 3000, 7500, 12000],
-        risk: [15, 75, 150, 300, 540],
-        codex: [4, 8, 12, 18],
-        power: [90, 150, 240, 360],
-        codeLevel: [9, 15, 30, 45],
-        upgrades: [3, 15, 45, 90],
-        sync: [3, 9, 24, 45],
-        syncLevel: [3, 9, 15],
-        evolves: [3, 9, 18],
-        shards: [30, 90, 180, 360],
-        packs: [3, 15],
-        achievement: [15, 30, 45, 60, 75]
+        scan: [
+          ['scan_total_75', 225],
+          ['scan_total_120', 360],
+          ['scan_total_200', 600],
+          ['scan_total_350', 1050],
+          ['scan_total_500', 1500]
+        ],
+        hack: [
+          ['hack_total_10', 30],
+          ['hack_total_60', 180],
+          ['hack_total_120', 360],
+          ['hack_total_250', 750]
+        ],
+        level: [
+          ['level_total_5', 15],
+          ['level_total_15', 45],
+          ['level_total_20', 60],
+          ['level_total_25', 75]
+        ],
+        credits: [
+          ['credits_total_1000', 3000],
+          ['credits_total_10000', 30000],
+          ['credits_total_50000', 150000]
+        ],
+        missions: [
+          ['missions_total_25', 75],
+          ['missions_total_50', 150],
+          ['missions_total_100', 300]
+        ],
+        purchases: [
+          ['shop_total_10', 30],
+          ['shop_total_25', 75],
+          ['shop_total_50', 150]
+        ],
+        energySpent: [
+          ['energy_spent_100', 300],
+          ['energy_spent_500', 1500],
+          ['energy_spent_1000', 3000]
+        ],
+        risk: [
+          ['risk_total_5', 15],
+          ['risk_total_25', 75]
+        ],
+        codex: [
+          ['codex_total_1', 4],
+          ['codex_total_3', 8],
+          ['codex_total_5', 12],
+          ['codex_total_6', 18]
+        ],
+        power: [
+          ['code_power_30', 90],
+          ['code_power_50', 150],
+          ['code_power_80', 240]
+        ],
+        codeLevel: [
+          ['code_level_3', 9],
+          ['code_level_5', 15],
+          ['code_level_10', 30]
+        ],
+        upgrades: [
+          ['code_upgrade_1', 3],
+          ['code_upgrade_5', 15],
+          ['code_upgrade_15', 45]
+        ],
+        sync: [
+          ['code_sync_1', 3],
+          ['code_sync_3', 9],
+          ['code_sync_8', 24]
+        ],
+        syncLevel: [
+          ['sync_level_1', 3],
+          ['sync_level_3', 9]
+        ],
+        evolves: [
+          ['code_evolve_1', 3],
+          ['code_evolve_3', 9]
+        ],
+        shards: [
+          ['shards_total_10', 30],
+          ['shards_total_30', 90]
+        ],
+        packs: [
+          ['energy_pack_1', 3]
+        ]
       };
 
-      thresholds.scan.forEach(v => { if (state.stats.scanCount >= v) unlockAchievement(`scan_total_${Math.round(v / 3)}`); });
-      thresholds.hack.forEach(v => { if (state.stats.hackSuccessCount >= v) unlockAchievement(`hack_total_${Math.round(v / 3)}`); });
-      thresholds.level.forEach(v => { if (state.level >= v) unlockAchievement(`level_total_${Math.round(v / 3)}`); });
-      thresholds.credits.forEach(v => { if (state.stats.creditsEarnedTotal >= v) unlockAchievement(`credits_total_${Math.round(v / 3)}`); });
-      thresholds.missions.forEach(v => { if (state.stats.missionsCompletedTotal >= v) unlockAchievement(`missions_total_${Math.round(v / 3)}`); });
-      thresholds.purchases.forEach(v => { if (state.stats.shopPurchaseCount >= v) unlockAchievement(`shop_total_${Math.round(v / 3)}`); });
-      thresholds.energySpent.forEach(v => { if (state.stats.energySpentTotal >= v) unlockAchievement(`energy_spent_${Math.round(v / 3)}`); });
-      thresholds.risk.forEach(v => { if (state.stats.riskHackSuccessCount >= v) unlockAchievement(`risk_total_${Math.round(v / 3)}`); });
-      thresholds.codex.forEach(v => { if (discoveredCodes >= v) unlockAchievement(`codex_total_${Math.round(v / 3)}`); });
-      thresholds.power.forEach(v => { if (highestPower >= v) unlockAchievement(`code_power_${Math.round(v / 3)}`); });
-      thresholds.codeLevel.forEach(v => { if (highestLevel >= v) unlockAchievement(`code_level_${Math.round(v / 3)}`); });
-      thresholds.upgrades.forEach(v => { if (upgrades >= v) unlockAchievement(`code_upgrade_${Math.round(v / 3)}`); });
-      thresholds.sync.forEach(v => { if (syncs >= v) unlockAchievement(`code_sync_${Math.round(v / 3)}`); });
-      thresholds.syncLevel.forEach(v => { if (highestSync >= v) unlockAchievement(`sync_level_${Math.round(v / 3)}`); });
-      thresholds.evolves.forEach(v => { if (evolves >= v) unlockAchievement(`code_evolve_${Math.round(v / 3)}`); });
-      thresholds.shards.forEach(v => { if (totalShards >= v) unlockAchievement(`shards_total_${Math.round(v / 3)}`); });
-      thresholds.packs.forEach(v => { if (packsUsed >= v) unlockAchievement(`energy_pack_${Math.round(v / 3)}`); });
-      thresholds.achievement.forEach(v => { if (completedAchievements >= v) unlockAchievement(`achievement_total_${Math.round(v / 3)}`); });
+      function unlockByThreshold(list, value) {
+        list.forEach(([id, threshold]) => {
+          if (value >= threshold) unlockAchievement(id);
+        });
+      }
+
+      unlockByThreshold(thresholds.scan, state.stats.scanCount);
+      unlockByThreshold(thresholds.hack, state.stats.hackSuccessCount);
+      unlockByThreshold(thresholds.level, state.level);
+      unlockByThreshold(thresholds.credits, state.stats.creditsEarnedTotal);
+      unlockByThreshold(thresholds.missions, state.stats.missionsCompletedTotal);
+      unlockByThreshold(thresholds.purchases, state.stats.shopPurchaseCount);
+      unlockByThreshold(thresholds.energySpent, state.stats.energySpentTotal);
+      unlockByThreshold(thresholds.risk, state.stats.riskHackSuccessCount);
+      unlockByThreshold(thresholds.codex, discoveredCodes);
+      unlockByThreshold(thresholds.power, highestPower);
+      unlockByThreshold(thresholds.codeLevel, highestLevel);
+      unlockByThreshold(thresholds.upgrades, upgrades);
+      unlockByThreshold(thresholds.sync, syncs);
+      unlockByThreshold(thresholds.syncLevel, highestSync);
+      unlockByThreshold(thresholds.evolves, evolves);
+      unlockByThreshold(thresholds.shards, totalShards);
+      unlockByThreshold(thresholds.packs, packsUsed);
 
       if (countCodesByRarity('COMMON') >= 6) unlockAchievement('rarity_common_2');
       if (countCodesByRarity('RARE') >= 6) unlockAchievement('rarity_rare_2');
@@ -3118,6 +3219,7 @@ function applyLanguageToUI(){
     }
 
     function renderAchievements() {
+      if (!achievementListEl) return;
       achievementListEl.innerHTML = '';
 
       const diffLabel = {
@@ -3212,11 +3314,13 @@ function applyLanguageToUI(){
       e.preventDefault();
     }
     function onMouseMove(e) {
-      if (!isResizing) return;
+      if (!isResizing || !main) return;
       const rect = main.getBoundingClientRect();
       const totalWidth = rect.width;
+      if (!totalWidth) return;
 
       if (currentResizer === 'left') {
+        if (!leftPanel) return;
         let newLeftWidth = ((e.clientX - rect.left) / totalWidth) * 100;
         newLeftWidth = Math.max(10, Math.min(40, newLeftWidth));
         leftPanel.style.flex = `0 0 ${newLeftWidth}%`;
@@ -3233,10 +3337,10 @@ function applyLanguageToUI(){
       currentResizer = null;
     }
 
-    resizerLeft.addEventListener('mousedown', onMouseDownResizerLeft);
-    if (resizerRight && rightPanel) resizerRight.addEventListener('mousedown', onMouseDownResizerRight);
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+    bind(resizerLeft, 'mousedown', onMouseDownResizerLeft);
+    if (rightPanel) bind(resizerRight, 'mousedown', onMouseDownResizerRight);
+    bind(window, 'mousemove', onMouseMove);
+    bind(window, 'mouseup', onMouseUp);
 
     // 더보기 모달 / 탭
     function setActiveTab(tabName) {
@@ -3258,7 +3362,7 @@ function applyLanguageToUI(){
     }
 
     moreTabButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
+      bind(btn, 'click', () => {
         const tab = btn.dataset.tab;
         setActiveTab(tab);
       });
@@ -3278,17 +3382,18 @@ function applyLanguageToUI(){
       updateIndexLabel.textContent = `${activeUpdateIndex + 1} / ${updateLogs.length}`;
     }
 
-    if (btnUpdatePrev) btnUpdatePrev.addEventListener('click', () => {
+    bind(btnUpdatePrev, 'click', () => {
       activeUpdateIndex = (activeUpdateIndex - 1 + updateLogs.length) % updateLogs.length;
       renderUpdateLog();
     });
-    if (btnUpdateNext) btnUpdateNext.addEventListener('click', () => {
+    bind(btnUpdateNext, 'click', () => {
       activeUpdateIndex = (activeUpdateIndex + 1) % updateLogs.length;
       renderUpdateLog();
     });
 
-        function openMoreModal(defaultTab = 'mission', showDontShowButton = false) {
+    function openMoreModal(defaultTab = 'mission', showDontShowButton = false) {
       try {
+        if (!moreModalBackdrop) return;
         moreModalBackdrop.classList.add('active');
         setActiveTab(defaultTab);
         renderUpdateLog();
@@ -3301,18 +3406,19 @@ function applyLanguageToUI(){
 
 
     function closeMoreModal() {
+      if (!moreModalBackdrop) return;
       moreModalBackdrop.classList.remove('active');
     }
 
-        // v1.6.2: 더보기 버튼 클릭 이슈 방지 (가드 + 이벤트 위임)
-    if (btnMore) btnMore.addEventListener('click', () => openMoreModal('mission', false));
-    document.addEventListener('click', (e) => {
+    // v1.6.2: 더보기 버튼 클릭 이슈 방지 (가드 + 이벤트 위임)
+    bind(btnMore, 'click', () => openMoreModal('mission', false));
+    bind(document, 'click', (e) => {
       const t = e.target.closest && e.target.closest('#btnMore');
       if (t) openMoreModal('mission', false);
     });
-    if (btnMoreClose) btnMoreClose.addEventListener('click', closeMoreModal);
-        if (btnMoreClose2) btnMoreClose2.addEventListener('click', closeMoreModal);
-    moreModalBackdrop.addEventListener('click', (e) => {
+    bind(btnMoreClose, 'click', closeMoreModal);
+    bind(btnMoreClose2, 'click', closeMoreModal);
+    bind(moreModalBackdrop, 'click', (e) => {
       if (e.target === moreModalBackdrop) closeMoreModal();
     });
 
@@ -3320,7 +3426,7 @@ function applyLanguageToUI(){
       return;
     }
 
-    if (btnUpdateDontShow) btnUpdateDontShow.addEventListener('click', () => {
+    bind(btnUpdateDontShow, 'click', () => {
       localStorage.setItem(LAST_SEEN_VERSION_KEY, CURRENT_VERSION);
       closeMoreModal();
     });
@@ -3549,23 +3655,23 @@ function applyLanguageToUI(){
       log(t('saveDeleted'), 'system');
     }
 
-    btnSaveGame.addEventListener('click', saveGame);
-    btnLoadGame.addEventListener('click', loadGame);
-    btnClearSave.addEventListener('click', clearSave);
+    bind(btnSaveGame, 'click', saveGame);
+    bind(btnLoadGame, 'click', loadGame);
+    bind(btnClearSave, 'click', clearSave);
 
-    if (btnTutorialPrev) btnTutorialPrev.addEventListener('click', prevTutorialStep);
-    if (btnTutorialNext) btnTutorialNext.addEventListener('click', nextTutorialStep);
-    if (btnTutorialFinish) btnTutorialFinish.addEventListener('click', () => closeTutorial(true));
-    if (btnTutorialSkip) btnTutorialSkip.addEventListener('click', () => closeTutorial(true));
-    if (btnOpenTutorial) btnOpenTutorial.addEventListener('click', () => openTutorial(true));
+    bind(btnTutorialPrev, 'click', prevTutorialStep);
+    bind(btnTutorialNext, 'click', nextTutorialStep);
+    bind(btnTutorialFinish, 'click', () => closeTutorial(true));
+    bind(btnTutorialSkip, 'click', () => closeTutorial(true));
+    bind(btnOpenTutorial, 'click', () => openTutorial(true));
 
-    document.addEventListener('visibilitychange', () => {
+    bind(document, 'visibilitychange', () => {
       if (document.visibilityState === 'hidden') persistLastSeenAt(Date.now());
     });
-    window.addEventListener('pagehide', () => {
+    bind(window, 'pagehide', () => {
       persistLastSeenAt(Date.now());
     });
-    window.addEventListener('beforeunload', () => {
+    bind(window, 'beforeunload', () => {
       persistLastSeenAt(Date.now());
     });
 
@@ -3575,7 +3681,7 @@ function applyLanguageToUI(){
 
     // 로그 필터
     function bindLogFilterCheckbox(checkbox, key) {
-      checkbox.addEventListener('change', () => {
+      bind(checkbox, 'change', () => {
         state.logFilter[key] = checkbox.checked;
         applyLogFilter();
       });
@@ -3587,19 +3693,19 @@ function applyLanguageToUI(){
     bindLogFilterCheckbox(filterLevel, 'level');
 
     // 로그 초기화 / 숨기기
-    btnClearLogs.addEventListener('click', () => {
-      logList.innerHTML = '';
+    bind(btnClearLogs, 'click', () => {
+      if (logList) logList.innerHTML = '';
     });
 
-    btnToggleLogs.addEventListener('click', () => {
+    bind(btnToggleLogs, 'click', () => {
       logsHidden = !logsHidden;
-      logPanelBody.style.display = logsHidden ? 'none' : '';
-      btnToggleLogs.textContent = logsHidden ? t('showLogs') : t('hideLogs');
+      setNodeDisplay(logPanelBody, logsHidden ? 'none' : '');
+      setNodeText(btnToggleLogs, logsHidden ? t('showLogs') : t('hideLogs'));
     });
 
     // 미션 스코프 버튼
     missionScopeButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
+      bind(btn, 'click', () => {
         missionScopeButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         missionScopeActive = btn.dataset.scope;
@@ -3662,17 +3768,17 @@ function applyLanguageToUI(){
       if (!setFontScale) return;
       const ui = state.ui || {};
       setFontScale.value = ui.fontScale || 100;
-      setFontScaleLabel.textContent = `${setFontScale.value}%`;
+      setNodeText(setFontScaleLabel, `${setFontScale.value}%`);
       if (setSnow) {
         const snowOn = (typeof ui.snowEnabled === 'boolean') ? ui.snowEnabled : isChristmasSeason();
         setSnow.checked = !!snowOn;
         // 자동 모드(null)일 땐 체크박스에 미세한 힌트(회색 표시)
         setSnow.indeterminate = (typeof ui.snowEnabled !== 'boolean');
       }
-      setUiZoom.value = String(ui.uiZoom || 1);
-      setAnim.checked = ui.anim !== false;
-      setToastMs.value = String(ui.toastDurationMs || 3000);
-      setAutoSaveToast.checked = !!ui.autoSaveToast;
+      if (setUiZoom) setUiZoom.value = String(ui.uiZoom || 1);
+      if (setAnim) setAnim.checked = ui.anim !== false;
+      if (setToastMs) setToastMs.value = String(ui.toastDurationMs || 3000);
+      if (setAutoSaveToast) setAutoSaveToast.checked = !!ui.autoSaveToast;
       if (setLanguage) setLanguage.value = ui.lang || 'ko';
       if (logSearchInput) logSearchInput.value = ui.logSearch || '';
     }
@@ -3689,7 +3795,7 @@ function applyLanguageToUI(){
     if (setFontScale) {
       setFontScale.addEventListener('input', () => {
         state.ui.fontScale = Number(setFontScale.value);
-        setFontScaleLabel.textContent = `${setFontScale.value}%`;
+        setNodeText(setFontScaleLabel, `${setFontScale.value}%`);
         applySettings();
         scheduleSilentSave();
       });
@@ -3787,11 +3893,11 @@ function applyLanguageToUI(){
       }
     }
 
-    if (btnExportSave) btnExportSave.addEventListener('click', exportSaveFile);
+    bind(btnExportSave, 'click', exportSaveFile);
 
     if (btnImportSaveFile && fileImportSave) {
-      btnImportSaveFile.addEventListener('click', () => fileImportSave.click());
-      fileImportSave.addEventListener('change', async () => {
+      bind(btnImportSaveFile, 'click', () => fileImportSave.click());
+      bind(fileImportSave, 'change', async () => {
         const f = fileImportSave.files && fileImportSave.files[0];
         if (!f) return;
         const text = await f.text();
@@ -3801,7 +3907,7 @@ function applyLanguageToUI(){
     }
 
     if (btnImportSaveText && importSaveText) {
-      btnImportSaveText.addEventListener('click', () => {
+      bind(btnImportSaveText, 'click', () => {
         const text = (importSaveText.value || '').trim();
         if (!text) {
           showToast(t('emptyText'), 'warn');
@@ -3811,22 +3917,22 @@ function applyLanguageToUI(){
       });
     }
 
-    btnScan.addEventListener('click', scanForCode);
-    btnHack.addEventListener('click', doHack);
-    btnUpgradeCpu.addEventListener('click', upgradeCpu);
-    btnUpgradeCode.addEventListener('click', upgradeSelectedCode);
-    if (btnSyncCode) btnSyncCode.addEventListener('click', syncSelectedCode);
-    btnEvolveCode.addEventListener('click', evolveSelectedCode);
+    bind(btnScan, 'click', scanForCode);
+    bind(btnHack, 'click', doHack);
+    bind(btnUpgradeCpu, 'click', upgradeCpu);
+    bind(btnUpgradeCode, 'click', upgradeSelectedCode);
+    bind(btnSyncCode, 'click', syncSelectedCode);
+    bind(btnEvolveCode, 'click', evolveSelectedCode);
 
-    btnUseEnergyPack.addEventListener('click', useEnergyPack);
+    bind(btnUseEnergyPack, 'click', useEnergyPack);
 
-    chkRiskMode.addEventListener('change', () => {
+    bind(chkRiskMode, 'change', () => {
       state.riskMode = chkRiskMode.checked;
       log(t('riskModeLog', { state: state.riskMode ? t('on') : t('off') }), 'system');
     });
 
-    btnSaveLoadout.addEventListener('click', saveCurrentLoadout);
-    btnLoadLoadout.addEventListener('click', loadLoadout);
+    bind(btnSaveLoadout, 'click', saveCurrentLoadout);
+    bind(btnLoadLoadout, 'click', loadLoadout);
 
     function init() {
       addCodeInstanceFromTemplate('basic');
