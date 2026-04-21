@@ -294,14 +294,33 @@
         <button type="button" data-lab-tab="coming">COMING SOON</button>
       </div>
       <section class="lab-panel active" data-lab-panel="stage">
-        <span class="badge">STAGE</span>
-        <h3>1-100 도전 구간 준비 중</h3>
-        <p>챕터, 첫 클리어 보상, 반복 보상, 추천 레벨과 추천 코드 정보를 담을 자리입니다.</p>
-        <div class="lab-preview-grid">
-          <div><strong>01-20</strong><span>기초 침투 훈련</span></div>
-          <div><strong>21-50</strong><span>보안망 적응</span></div>
-          <div><strong>51-80</strong><span>고위험 서버전</span></div>
-          <div><strong>81-100</strong><span>코어 챌린지</span></div>
+        <div class="stage-head">
+          <div>
+            <span class="badge">STAGE</span>
+            <h3>Stage 1-100</h3>
+            <p>활성 코드와 CPU 티어로 챕터형 도전 구간을 돌파합니다. 첫 클리어 보상과 반복 보상은 분리됩니다.</p>
+          </div>
+          <div class="stage-summary" id="stageSummary">
+            <div><span>HIGHEST</span><strong>0 / 100</strong></div>
+            <div><span>CLEARED</span><strong>0 / 100</strong></div>
+            <div><span>ATTEMPTS</span><strong>0</strong></div>
+          </div>
+        </div>
+        <div class="stage-toolbar" aria-label="Stage chapter filter">
+          <button type="button" class="active" data-stage-chapter="all">ALL</button>
+          <button type="button" data-stage-chapter="1">CH.1</button>
+          <button type="button" data-stage-chapter="2">CH.2</button>
+          <button type="button" data-stage-chapter="3">CH.3</button>
+          <button type="button" data-stage-chapter="4">CH.4</button>
+          <button type="button" data-stage-chapter="5">CH.5</button>
+        </div>
+        <div class="stage-layout">
+          <div class="stage-list" id="stageList" aria-label="Stage list"></div>
+          <div class="stage-detail" id="stageDetail">
+            <span class="badge">READY</span>
+            <h4>스테이지 데이터를 준비 중입니다</h4>
+            <p>LAB이 초기화되면 추천 레벨, 추천 파워, 성공률, 보상이 표시됩니다.</p>
+          </div>
         </div>
       </section>
       <section class="lab-panel" data-lab-panel="coming">
@@ -312,6 +331,7 @@
     `;
   }
   buildLab();
+  try { document.dispatchEvent(new CustomEvent('hcsig:lab-ready')); } catch(e) {}
 
   const nav = document.createElement('nav');
   nav.id = 'appMainNav';

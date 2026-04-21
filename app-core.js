@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.7.0-priority1-lab';
+const CURRENT_VERSION = 'v1.8.0-stage-100';
 const TUTORIAL_VERSION = 2;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -592,6 +592,15 @@ function applyLanguageToUI(){
           'MORE를 메인 패널로 승격하고, 튜토리얼 다시 보기를 MORE에서 실행할 수 있게 했습니다.',
           '새 온보딩 튜토리얼 v2와 부드러운 패널 전환 스타일을 적용했습니다.'
         ]
+      },
+      {
+        version: 'v1.8.0-stage-100',
+        lines: [
+          'LAB > STAGE에 1~100 도전 구간을 정식 추가했습니다.',
+          '5개 챕터, 추천 레벨/파워/코드, 첫 클리어 보상과 반복 보상을 분리했습니다.',
+          '스테이지 클리어 기록과 최고 도달 구간을 기존 저장 데이터와 호환되도록 추가했습니다.',
+          '활성 코드, CPU 티어, 코드 동기화 보정이 STAGE 성공률에 반영됩니다.'
+        ]
       }
 
     ];
@@ -611,6 +620,7 @@ function applyLanguageToUI(){
       lastSavedAt: null,
       lastSeenAt: null,
       tutorial: { completed: false, step: 0, seen: false, version: TUTORIAL_VERSION },
+      stage: { selectedId: 'stage_001', chapterFilter: 'all', highestCleared: 0, cleared: {} },
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -674,7 +684,9 @@ function applyLanguageToUI(){
         codeUpgradeCount: 0,
         codeSyncCount: 0,
         codeEvolutionCount: 0,
-        energyPacksUsed: 0
+        energyPacksUsed: 0,
+        stageAttemptCount: 0,
+        stageClearCount: 0
       }
     };
 
@@ -1520,7 +1532,7 @@ function applyLanguageToUI(){
           { title: 'CODES', text: 'CODES holds your inventory, selected code detail, upgrades, sync, and evolution actions.', hint: 'After scanning, choose a code here to make it active.' },
           { title: 'SHOP', text: 'SHOP stays focused on growth support: energy, economy, system, and utility items.', hint: 'Sort and category filters are unchanged.' },
           { title: 'MORE', text: 'MORE now lives as a main panel with missions, achievements, codex, logs, settings, and save tools.', hint: 'You can replay this tutorial from MORE.' },
-          { title: 'LAB', text: 'LAB is the expansion hub. STAGE and COMING SOON live there so experiments no longer crowd the main tabs.', hint: 'STAGE is a preview shell in this release.' },
+          { title: 'LAB', text: 'LAB is the expansion hub. STAGE now opens the 1-100 challenge route, while COMING SOON keeps future experiments separate.', hint: 'STAGE uses your active code, CPU tier, energy, and code sync bonuses.' },
           { title: 'Ready', text: 'Start with a scan, pick a code, then hack a server. NORMAL is stable; RISK pays more but can punish failures.', hint: 'Press Start to enter the simulation.' }
         ];
       }
@@ -1530,7 +1542,7 @@ function applyLanguageToUI(){
         { title: 'CODES', text: 'CODES에서는 코드 인벤토리, 선택 코드 상세, 강화, 동기화, 진화를 관리합니다.', hint: '스캔 후 얻은 코드를 여기서 선택하면 활성 코드가 됩니다.' },
         { title: 'SHOP', text: 'SHOP은 성장 보조 공간입니다. 에너지, 경제, 시스템, 유틸 아이템을 정렬과 분류로 확인합니다.', hint: '상점 밸런스와 구매 규칙은 기존 그대로 유지됩니다.' },
         { title: 'MORE', text: 'MORE는 이제 메인 패널입니다. 미션, 업적, 도감, 로그, 설정, 저장 도구를 여기서 다룹니다.', hint: 'MORE에서 이 튜토리얼을 다시 볼 수 있습니다.' },
-        { title: 'LAB', text: 'LAB은 확장 콘텐츠 허브입니다. STAGE와 COMING SOON을 LAB 안으로 모아 실험 공간을 분리했습니다.', hint: '이번 릴리스의 STAGE는 정식 1~100 콘텐츠 전 프리뷰 셸입니다.' },
+        { title: 'LAB', text: 'LAB은 확장 콘텐츠 허브입니다. STAGE는 이제 1~100 도전 구간으로 열리고, COMING SOON은 향후 실험 콘텐츠를 따로 예고합니다.', hint: 'STAGE는 활성 코드, CPU 티어, 에너지, 코드 동기화 보정을 사용합니다.' },
         { title: '시작 준비 완료', text: '먼저 코드를 스캔하고, 코드를 선택한 뒤 서버를 해킹하세요. NORMAL은 안정적이고 RISK는 더 큰 보상과 실패 부담을 가집니다.', hint: '시작하기를 누르면 시뮬레이션으로 들어갑니다.' }
       ];
     }
@@ -1840,6 +1852,23 @@ function applyLanguageToUI(){
       updateStatsUI();
     }
 
+    function checkLevelUp() {
+      let leveledUp = false;
+      while (state.exp >= state.requiredExp) {
+        state.exp -= state.requiredExp;
+        levelUp();
+        leveledUp = true;
+      }
+      if (!leveledUp) updateStatsUI();
+    }
+
+    function renderAll() {
+      renderServers();
+      renderShop();
+      updateStatsUI();
+      renderStagePanel();
+    }
+
     function consumeEnergy(amount) {
       ensureMissionResets();
       if (state.energy < amount) return false;
@@ -1889,6 +1918,7 @@ function applyLanguageToUI(){
 
       log(t('usedEnergyPack'), 'system');
       updateStatsUI();
+      renderStagePanel();
       saveGame();
     }
 
@@ -1903,6 +1933,7 @@ function applyLanguageToUI(){
         state.energyTimerMs = Math.max(0, state.energyTimerMs - 100);
         if (state.energyTimerMs <= 0) {
           state.energy++;
+          renderStagePanel();
           if (state.energy < state.energyMax) {
             state.energyTimerMs = ENERGY_INTERVAL_MS;
           } else {
@@ -2166,6 +2197,287 @@ function applyLanguageToUI(){
       return Math.min(0.12, syncLevel * 0.02);
     }
 
+    const stageChapters = [
+      { index: 1, from: 1, to: 20, title: '기초 침투 훈련', titleEn: 'Entry Intrusion', theme: 'SCAN', hint: 'Basic_Probe / Port_Scanner' },
+      { index: 2, from: 21, to: 40, title: '보안망 적응', titleEn: 'Security Mesh', theme: 'ADAPT', hint: 'Shield_Bypass / Stack_Tracer' },
+      { index: 3, from: 41, to: 60, title: '추적 회피전', titleEn: 'Trace Evasion', theme: 'EVADE', hint: 'Trace_Scrambler / Data_Phantom' },
+      { index: 4, from: 61, to: 80, title: '고위험 서버전', titleEn: 'Risk Serverline', theme: 'RISK', hint: 'Fortress_Breaker / Quantum_Splice' },
+      { index: 5, from: 81, to: 100, title: '코어 챌린지', titleEn: 'Core Challenge', theme: 'CORE', hint: 'Ghost_Script / Singularity_Root' }
+    ];
+
+    function stageCopy(ko, en) {
+      return getLang() === 'en' ? en : ko;
+    }
+
+    function getStageChapter(stageNumber) {
+      return stageChapters.find(ch => stageNumber >= ch.from && stageNumber <= ch.to) || stageChapters[0];
+    }
+
+    function buildStageDefs() {
+      return Array.from({ length: 100 }, (_, idx) => {
+        const number = idx + 1;
+        const chapter = getStageChapter(number);
+        const boss = number % 10 === 0;
+        const security = 18 + number * 3 + (chapter.index - 1) * 10 + (boss ? 22 : 0);
+        const firstCredits = 45 + number * 8 + chapter.index * 20 + (boss ? 75 : 0);
+        const firstExp = 3 + Math.ceil(number / 12) + (boss ? 3 : 0);
+        return {
+          id: `stage_${String(number).padStart(3, '0')}`,
+          number,
+          chapter,
+          boss,
+          name: `STAGE ${String(number).padStart(3, '0')}`,
+          security,
+          recommendedLevel: Math.max(1, Math.ceil(number / 4)),
+          recommendedPower: Math.max(18, Math.round(security * 0.78)),
+          energyCost: boss ? 3 : 2,
+          firstReward: {
+            credits: firstCredits,
+            exp: firstExp,
+            energyPack: boss ? 1 : 0
+          },
+          repeatReward: {
+            credits: Math.max(12, Math.round(firstCredits * 0.38)),
+            exp: Math.max(2, Math.round(firstExp * 0.5)),
+            energyPack: 0
+          }
+        };
+      });
+    }
+
+    const stageDefs = buildStageDefs();
+
+    function ensureStageDefaults() {
+      state.stage = state.stage || {};
+      state.stage.selectedId = state.stage.selectedId || 'stage_001';
+      state.stage.chapterFilter = state.stage.chapterFilter || 'all';
+      state.stage.highestCleared = Number(state.stage.highestCleared || 0) || 0;
+      state.stage.cleared = (state.stage.cleared && typeof state.stage.cleared === 'object') ? state.stage.cleared : {};
+      if (!stageDefs.some(stage => stage.id === state.stage.selectedId)) state.stage.selectedId = 'stage_001';
+      state.stats = state.stats || {};
+      state.stats.stageAttemptCount = state.stats.stageAttemptCount || 0;
+      state.stats.stageClearCount = state.stats.stageClearCount || 0;
+    }
+
+    function getStageById(id) {
+      return stageDefs.find(stage => stage.id === id) || stageDefs[0];
+    }
+
+    function getStageClearInfo(stage) {
+      ensureStageDefaults();
+      return state.stage.cleared[stage.id] || null;
+    }
+
+    function getStageAdjustedSecurity(stage, def) {
+      let security = stage.security;
+      if (def) {
+        if (def.id === 'port_scanner') security = Math.floor(security * 0.92);
+        if (def.id === 'shield_bypass') security = Math.floor(security * 0.88);
+        if (def.id === 'fortress_breaker') security = Math.floor(security * 0.80);
+      }
+      return Math.max(8, security);
+    }
+
+    function getStageSuccessInfo(stage, code) {
+      if (!stage || !code) return { chance: 0, effectivePower: 0, security: stage ? stage.security : 0, bonus: 0 };
+      const def = codeDefs[code.id];
+      const adjustedSecurity = getStageAdjustedSecurity(stage, def);
+      let successChanceBonus = getSyncSuccessBonus(code.syncLevel || 0);
+      if (def) {
+        if (def.id === 'pulse_ping') successChanceBonus += 0.03;
+        if (def.id === 'stack_tracer') successChanceBonus += 0.05;
+        if (def.id === 'data_phantom') successChanceBonus += 0.1;
+        if (def.id === 'quantum_splice') successChanceBonus += 0.12;
+        if (def.id === 'singularity_root') successChanceBonus += 0.1;
+        if (def.id === 'trace_scrambler' && stage.chapter.index >= 3) successChanceBonus += 0.04;
+      }
+      const effectivePower = code.power * (1 + 0.08 * (state.cpuTier - 1));
+      let chance = effectivePower / (effectivePower + adjustedSecurity);
+      chance += successChanceBonus;
+      chance = Math.max(0.08, Math.min(0.95, chance));
+      return { chance, effectivePower, security: adjustedSecurity, bonus: successChanceBonus };
+    }
+
+    function getStageRewardText(reward) {
+      const parts = [`${t('credits')} +${reward.credits}`, `EXP +${reward.exp}`];
+      if (reward.energyPack) parts.push(`${t('energyPack')} +${reward.energyPack}`);
+      return parts.join(' / ');
+    }
+
+    function renderStagePanel() {
+      ensureStageDefaults();
+      const summaryEl = document.getElementById('stageSummary');
+      const listEl = document.getElementById('stageList');
+      const detailEl = document.getElementById('stageDetail');
+      if (!summaryEl || !listEl || !detailEl) return;
+
+      const selectedStage = getStageById(state.stage.selectedId);
+      const filter = state.stage.chapterFilter || 'all';
+      const shownStages = stageDefs.filter(stage => filter === 'all' || String(stage.chapter.index) === String(filter));
+      const completedCount = Object.keys(state.stage.cleared || {}).length;
+
+      summaryEl.innerHTML = `
+        <div><span>HIGHEST</span><strong>${state.stage.highestCleared || 0} / 100</strong></div>
+        <div><span>CLEARED</span><strong>${completedCount} / 100</strong></div>
+        <div><span>ATTEMPTS</span><strong>${state.stats.stageAttemptCount || 0}</strong></div>
+      `;
+
+      document.querySelectorAll('[data-stage-chapter]').forEach(btn => {
+        btn.classList.toggle('active', String(btn.dataset.stageChapter) === String(filter));
+        if (!btn.__hcsigStageFilterBound) {
+          btn.__hcsigStageFilterBound = true;
+          btn.addEventListener('click', () => {
+            state.stage.chapterFilter = btn.dataset.stageChapter || 'all';
+            renderStagePanel();
+            scheduleSilentSave();
+          });
+        }
+      });
+
+      listEl.innerHTML = shownStages.map(stage => {
+        const cleared = !!getStageClearInfo(stage);
+        const active = stage.id === selectedStage.id;
+        const status = cleared ? stageCopy('CLEAR', 'CLEAR') : stageCopy('READY', 'READY');
+        return `
+          <button type="button" class="stage-card ${active ? 'active' : ''} ${cleared ? 'is-cleared' : ''} ${stage.boss ? 'is-boss' : ''}" data-stage-id="${stage.id}">
+            <span class="stage-card-top"><strong>${stage.name}</strong><em>${stage.chapter.theme}</em></span>
+            <span>${getLang() === 'en' ? stage.chapter.titleEn : stage.chapter.title}</span>
+            <span class="stage-card-meta">Lv.${stage.recommendedLevel} · PWR ${stage.recommendedPower}</span>
+            <span class="stage-card-status">${status}${stage.boss ? ' · BOSS' : ''}</span>
+          </button>
+        `;
+      }).join('');
+
+      listEl.querySelectorAll('[data-stage-id]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.stage.selectedId = btn.dataset.stageId;
+          renderStagePanel();
+          scheduleSilentSave();
+        });
+      });
+
+      const clearInfo = getStageClearInfo(selectedStage);
+      const activeCode = getActiveCodeInstance();
+      const successInfo = getStageSuccessInfo(selectedStage, activeCode);
+      const chancePct = Math.round(successInfo.chance * 100);
+      const enoughEnergy = state.energy >= selectedStage.energyCost;
+      const canAttempt = !!activeCode && enoughEnergy;
+      const reward = clearInfo ? selectedStage.repeatReward : selectedStage.firstReward;
+      const statusText = clearInfo
+        ? stageCopy(`클리어 ${clearInfo.clears || 1}회`, `Cleared ${clearInfo.clears || 1} time(s)`)
+        : stageCopy('첫 클리어 대기', 'First clear pending');
+      const buttonText = clearInfo ? stageCopy('반복 도전', 'Repeat Stage') : stageCopy('첫 클리어 도전', 'Attempt First Clear');
+      const disabledHint = !activeCode
+        ? t('noOwnedCodes')
+        : (!enoughEnergy ? stageCopy(`에너지 ${selectedStage.energyCost} 필요`, `Need ${selectedStage.energyCost} energy`) : stageCopy('도전 준비 완료', 'Ready to attempt'));
+
+      detailEl.innerHTML = `
+        <div class="stage-detail-head">
+          <div>
+            <span class="badge">${selectedStage.boss ? 'BOSS' : 'STAGE'}</span>
+            <h4>${selectedStage.name}</h4>
+            <p>${getLang() === 'en' ? selectedStage.chapter.titleEn : selectedStage.chapter.title} · ${selectedStage.chapter.from}-${selectedStage.chapter.to}</p>
+          </div>
+          <div class="stage-status-pill">${statusText}</div>
+        </div>
+        <div class="stage-meta-grid">
+          <div><span>${stageCopy('추천 레벨', 'Recommended Level')}</span><strong>Lv.${selectedStage.recommendedLevel}</strong></div>
+          <div><span>${stageCopy('추천 파워', 'Recommended Power')}</span><strong>${selectedStage.recommendedPower}</strong></div>
+          <div><span>${stageCopy('보안값', 'Security')}</span><strong>${successInfo.security}</strong></div>
+          <div><span>${stageCopy('에너지', 'Energy')}</span><strong>${selectedStage.energyCost}</strong></div>
+          <div><span>${stageCopy('추천 코드', 'Suggested Code')}</span><strong>${selectedStage.chapter.hint}</strong></div>
+          <div><span>${stageCopy('예상 성공률', 'Estimated Chance')}</span><strong>${activeCode ? `${chancePct}%` : '-'}</strong></div>
+        </div>
+        <div class="stage-reward-grid">
+          <div>
+            <span>${stageCopy('첫 클리어 보상', 'First Clear Reward')}</span>
+            <strong>${getStageRewardText(selectedStage.firstReward)}</strong>
+          </div>
+          <div>
+            <span>${stageCopy('반복 보상', 'Repeat Reward')}</span>
+            <strong>${getStageRewardText(selectedStage.repeatReward)}</strong>
+          </div>
+        </div>
+        <div class="stage-action-row">
+          <button type="button" id="btnAttemptStage" ${canAttempt ? '' : 'disabled'}>${buttonText}</button>
+          <span class="small">${disabledHint}${activeCode ? ` · ${activeCode.name} PWR ${Math.round(successInfo.effectivePower)}` : ''}</span>
+        </div>
+        <p class="stage-note">${stageCopy('STAGE는 별도 도전 콘텐츠입니다. NORMAL/RISK 해킹 카운트와 분리되지만, 크레딧/EXP/에너지 흐름은 기존 성장 시스템과 연결됩니다.', 'STAGE is a separate challenge loop. It does not count as NORMAL/RISK hacks, but credits, EXP, and energy still feed the existing progression.')}</p>
+      `;
+
+      const btnAttemptStage = document.getElementById('btnAttemptStage');
+      bind(btnAttemptStage, 'click', attemptStage);
+    }
+
+    function attemptStage() {
+      ensureStageDefaults();
+      const stage = getStageById(state.stage.selectedId);
+      const code = getActiveCodeInstance();
+      if (!code) {
+        log(t('noOwnedCodes'), 'hack');
+        showToast(t('noOwnedCodes'), 'warn');
+        renderStagePanel();
+        return;
+      }
+      if (!consumeEnergy(stage.energyCost)) {
+        const msg = stageCopy('에너지가 부족해 STAGE를 시작할 수 없습니다.', 'Not enough energy to start STAGE.');
+        log(msg, 'hack');
+        showToast(msg, 'warn');
+        renderStagePanel();
+        return;
+      }
+
+      state.stats.stageAttemptCount = (state.stats.stageAttemptCount || 0) + 1;
+      const successInfo = getStageSuccessInfo(stage, code);
+      const success = Math.random() < successInfo.chance;
+      code.usage = (code.usage || 0) + 1;
+
+      if (success) {
+        const previous = getStageClearInfo(stage);
+        const firstClear = !previous;
+        const reward = firstClear ? stage.firstReward : stage.repeatReward;
+        const now = Date.now();
+        state.credits += reward.credits;
+        state.stats.creditsEarnedTotal += reward.credits;
+        if (reward.energyPack) {
+          state.items = state.items || { energyPack: 0 };
+          state.items.energyPack = (state.items.energyPack || 0) + reward.energyPack;
+        }
+        addExp(reward.exp);
+
+        state.stage.cleared[stage.id] = {
+          firstAt: previous && previous.firstAt ? previous.firstAt : now,
+          lastAt: now,
+          clears: (previous && previous.clears ? previous.clears : 0) + 1,
+          bestChance: Math.max(previous && previous.bestChance ? previous.bestChance : 0, successInfo.chance),
+          bestCodeId: code.id
+        };
+        state.stage.highestCleared = Math.max(state.stage.highestCleared || 0, stage.number);
+        state.stats.stageClearCount = (state.stats.stageClearCount || 0) + 1;
+
+        const rewardText = getStageRewardText(reward);
+        const msg = stageCopy(
+          `${stage.name} 클리어! 성공률 ${Math.round(successInfo.chance * 100)}%. ${rewardText}`,
+          `${stage.name} cleared! Chance ${Math.round(successInfo.chance * 100)}%. ${rewardText}`
+        );
+        log(msg, 'hack');
+        showToast(firstClear ? stageCopy(`${stage.name} 첫 클리어`, `${stage.name} first clear`) : stageCopy(`${stage.name} 반복 클리어`, `${stage.name} repeat clear`), 'achievement');
+        checkMissions('general');
+        checkAchievements('stage');
+      } else {
+        const msg = stageCopy(
+          `${stage.name} 실패. 예상 성공률 ${Math.round(successInfo.chance * 100)}%였습니다.`,
+          `${stage.name} failed. Estimated chance was ${Math.round(successInfo.chance * 100)}%.`
+        );
+        log(msg, 'hack');
+        showToast(stageCopy('STAGE 실패', 'STAGE failed'), 'warn');
+      }
+
+      updateStatsUI();
+      renderStagePanel();
+      saveGame(true);
+    }
+
     function syncSelectedCode() {
       const code = getActiveCodeInstance();
       if (!code) {
@@ -2191,6 +2503,7 @@ function applyLanguageToUI(){
       log(t('syncDone', { name: code.name, lv: code.syncLevel, pwr: powerBonus, rate: Math.round(getSyncSuccessBonus(code.syncLevel) * 100) }), 'system');
       showToast(t('syncToast', { name: code.name, lv: code.syncLevel }), 'system');
       updateStatsUI();
+      renderStagePanel();
     }
 
     function upgradeSelectedCode() {
@@ -2210,6 +2523,7 @@ function applyLanguageToUI(){
       state.stats.codeUpgradeCount = (state.stats.codeUpgradeCount || 0) + 1;
       log(t('upgradeDone', { name: code.name, lv: code.level, pwr: code.power, cost }), 'system');
       updateStatsUI();
+      renderStagePanel();
       checkMissions('general');
     }
 
@@ -2242,6 +2556,7 @@ function applyLanguageToUI(){
         unlockAchievement('get_epic_code');
       }
       updateStatsUI();
+      renderStagePanel();
       checkMissions('general');
     }
 
@@ -2694,6 +3009,7 @@ function applyLanguageToUI(){
         btnScan.disabled = false;
         btnHack.disabled = false;
         btnUpgradeCpu.disabled = false;
+        renderStagePanel();
       });
     }
 
@@ -2877,6 +3193,7 @@ function applyLanguageToUI(){
         unlockAchievement('cpu_tier_5');
       }
       updateStatsUI();
+      renderStagePanel();
       checkMissions('general');
     }
 
@@ -3533,6 +3850,7 @@ function applyLanguageToUI(){
 
 
     function refreshUiAfterStateRestore() {
+      ensureStageDefaults();
       applySettings();
       syncSettingsUI();
       applyLanguageToUI();
@@ -3544,6 +3862,7 @@ function applyLanguageToUI(){
       renderCodeList();
       renderCodeDetail();
       renderUpdateLog();
+      renderStagePanel();
       updateStatsUI();
       if (btnToggleLogs) {
         btnToggleLogs.textContent = logsHidden ? t('showLogs') : t('hideLogs');
@@ -3627,11 +3946,14 @@ function applyLanguageToUI(){
           Object.assign(modifiers, data.modifiers);
         }
         // 새 필드 기본값 보정
+        state.stats = state.stats || {};
         state.stats.energySpentTotal ||= 0;
         state.stats.creditsEarnedTotal ||= 0;
         state.stats.missionsCompletedTotal ||= 0;
         state.stats.riskHackSuccessCount ||= 0;
         state.stats.codeShardsTotal ||= 0;
+        state.stats.stageAttemptCount ||= 0;
+        state.stats.stageClearCount ||= 0;
         state.missionProgress.daily = state.missionProgress.daily || {};
         state.missionProgress.weekly = state.missionProgress.weekly || {};
         state.missionProgress.month = state.missionProgress.month || {};
@@ -3665,6 +3987,7 @@ function applyLanguageToUI(){
         state.ui.logSearch = state.ui.logSearch || '';
 
         ensureTutorialDefaults();
+        ensureStageDefaults();
         state.lastSeenAt = Number(state.lastSeenAt || data.savedAt || 0) || null;
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
@@ -3952,6 +4275,8 @@ function applyLanguageToUI(){
     bind(btnEvolveCode, 'click', evolveSelectedCode);
 
     bind(btnUseEnergyPack, 'click', useEnergyPack);
+    bind(document, 'hcsig:lab-ready', renderStagePanel);
+    bind(window, 'hcsig:language-applied', renderStagePanel);
 
     bind(chkRiskMode, 'change', () => {
       state.riskMode = chkRiskMode.checked;
@@ -3964,6 +4289,7 @@ function applyLanguageToUI(){
     function init() {
       addCodeInstanceFromTemplate('basic');
       state.requiredExp = requiredExp(state.level);
+      ensureStageDefaults();
       ensureMissionResets();
 
       if (localStorage.getItem(SAVE_KEY)) {

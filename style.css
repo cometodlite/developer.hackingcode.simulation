@@ -1624,13 +1624,224 @@ body.app-shell-ui .more-tab-button{
   border-radius:8px;
   background:rgba(12,18,16,.72);
 }
-.lab-preview-grid span{
-  color:#cbd5d8;
-  font-size:12px;
-}
-body.app-shell-ui #tutorialBackdrop.show{
-  display:flex !important;
-}
+	.lab-preview-grid span{
+	  color:#cbd5d8;
+	  font-size:12px;
+	}
+	.stage-head{
+	  display:flex;
+	  justify-content:space-between;
+	  align-items:flex-start;
+	  gap:16px;
+	  margin-bottom:14px;
+	}
+	.stage-head h3{
+	  margin:8px 0 6px;
+	}
+	.stage-summary{
+	  flex:0 0 auto;
+	  display:grid;
+	  grid-template-columns:repeat(3,minmax(82px,1fr));
+	  gap:8px;
+	  min-width:min(100%, 340px);
+	}
+	.stage-summary div,
+	.stage-meta-grid div,
+	.stage-reward-grid div{
+	  border:1px solid rgba(94,234,212,.16);
+	  border-radius:8px;
+	  background:rgba(6,12,11,.68);
+	  padding:10px;
+	}
+	.stage-summary span,
+	.stage-meta-grid span,
+	.stage-reward-grid span{
+	  display:block;
+	  color:#9fb7b5;
+	  font-size:11px;
+	  line-height:1.25;
+	  margin-bottom:5px;
+	}
+	.stage-summary strong,
+	.stage-meta-grid strong,
+	.stage-reward-grid strong{
+	  color:#f4fff8;
+	  font-size:14px;
+	  line-height:1.35;
+	}
+	.stage-toolbar{
+	  display:flex;
+	  flex-wrap:wrap;
+	  gap:8px;
+	  margin:0 0 12px;
+	}
+	.stage-toolbar button{
+	  flex:0 1 92px;
+	  min-height:38px;
+	  background:rgba(12,18,16,.82);
+	  border:1px solid rgba(148,163,184,.20);
+	  color:#d7efe3;
+	}
+	.stage-toolbar button.active{
+	  color:#ffffff;
+	  border-color:rgba(251,191,36,.55);
+	  background:linear-gradient(135deg, rgba(15,118,110,.76), rgba(87,54,21,.64));
+	  box-shadow:0 0 0 2px rgba(251,191,36,.10) inset;
+	}
+	.stage-layout{
+	  display:grid;
+	  grid-template-columns:minmax(280px,1.05fr) minmax(300px,.95fr);
+	  gap:12px;
+	  align-items:start;
+	}
+	.stage-list{
+	  display:grid;
+	  grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+	  gap:8px;
+	  max-height:calc(100vh - 330px);
+	  min-height:260px;
+	  overflow:auto;
+	  padding:2px 4px 2px 2px;
+	}
+	.stage-card{
+	  display:flex;
+	  flex-direction:column;
+	  align-items:stretch;
+	  text-align:left;
+	  gap:5px;
+	  min-height:116px;
+	  padding:10px;
+	  border-radius:8px;
+	  border:1px solid rgba(94,234,212,.14);
+	  background:linear-gradient(180deg, rgba(14,20,18,.92), rgba(8,12,11,.92));
+	  color:#dff7ec;
+	}
+	.stage-card:hover{
+	  transform:translateY(-1px);
+	  box-shadow:0 12px 26px rgba(0,0,0,.24);
+	}
+	.stage-card.active{
+	  border-color:rgba(45,212,191,.72);
+	  box-shadow:0 0 0 2px rgba(45,212,191,.12), 0 12px 28px rgba(0,0,0,.28);
+	}
+	.stage-card.is-cleared{
+	  border-color:rgba(132,204,22,.42);
+	  background:linear-gradient(180deg, rgba(24,40,24,.94), rgba(9,14,12,.92));
+	}
+	.stage-card.is-boss{
+	  border-color:rgba(251,113,133,.36);
+	}
+	.stage-card-top{
+	  display:flex;
+	  justify-content:space-between;
+	  gap:8px;
+	  align-items:center;
+	}
+	.stage-card-top strong{
+	  font-size:13px;
+	}
+	.stage-card-top em{
+	  font-style:normal;
+	  font-size:10px;
+	  color:#fef3c7;
+	  padding:3px 6px;
+	  border:1px solid rgba(251,191,36,.22);
+	  border-radius:8px;
+	  background:rgba(113,63,18,.24);
+	}
+	.stage-card span{
+	  overflow-wrap:anywhere;
+	}
+	.stage-card-meta{
+	  color:#a7f3d0;
+	  font-size:11px;
+	}
+	.stage-card-status{
+	  margin-top:auto;
+	  color:#cbd5e1;
+	  font-size:11px;
+	}
+	.stage-card.is-cleared .stage-card-status{
+	  color:#bef264;
+	}
+	.stage-detail{
+	  position:sticky;
+	  top:8px;
+	  border:1px solid rgba(94,234,212,.18);
+	  border-radius:8px;
+	  background:
+	    linear-gradient(180deg, rgba(13,20,18,.96), rgba(6,10,9,.95)),
+	    radial-gradient(circle at 100% 0%, rgba(251,113,133,.12), transparent 36%);
+	  box-shadow:0 14px 36px rgba(0,0,0,.24);
+	  padding:14px;
+	}
+	.stage-detail h4{
+	  margin:8px 0 4px;
+	  font-size:22px;
+	}
+	.stage-detail p{
+	  margin:0;
+	}
+	.stage-detail-head{
+	  display:flex;
+	  justify-content:space-between;
+	  align-items:flex-start;
+	  gap:12px;
+	  margin-bottom:12px;
+	}
+	.stage-status-pill{
+	  flex:0 0 auto;
+	  border:1px solid rgba(251,191,36,.26);
+	  border-radius:8px;
+	  background:rgba(113,63,18,.20);
+	  color:#fde68a;
+	  padding:6px 9px;
+	  font-size:11px;
+	  font-weight:800;
+	}
+	.stage-meta-grid{
+	  display:grid;
+	  grid-template-columns:repeat(2,minmax(0,1fr));
+	  gap:8px;
+	  margin:12px 0;
+	}
+	.stage-reward-grid{
+	  display:grid;
+	  grid-template-columns:1fr;
+	  gap:8px;
+	  margin-bottom:12px;
+	}
+	.stage-reward-grid strong{
+	  overflow-wrap:anywhere;
+	}
+	.stage-action-row{
+	  display:flex;
+	  align-items:center;
+	  gap:10px;
+	  margin:10px 0 12px;
+	}
+	.stage-action-row button{
+	  flex:0 0 auto;
+	  min-height:42px;
+	  padding:0 16px;
+	  border-color:rgba(45,212,191,.50);
+	  background:linear-gradient(135deg, rgba(20,184,166,.80), rgba(21,128,61,.82));
+	  color:#fff;
+	  font-weight:800;
+	}
+	.stage-action-row button:disabled{
+	  opacity:.48;
+	  cursor:not-allowed;
+	}
+	.stage-note{
+	  border-top:1px solid rgba(148,163,184,.14);
+	  padding-top:10px;
+	  color:#bcd8d1 !important;
+	  font-size:12px;
+	}
+	body.app-shell-ui #tutorialBackdrop.show{
+	  display:flex !important;
+	}
 body.app-shell-ui #tutorialModal{
   border-radius:8px;
   border-color:rgba(94,234,212,.24);
@@ -1676,12 +1887,37 @@ body.app-shell-ui #tutorialStepHint{
   .app-main-view{
     padding:10px 10px calc(var(--mobileTabsH, 82px) + 28px + env(safe-area-inset-bottom));
   }
-  .app-view-home.active,
-  .app-codes-layout,
-  .lab-preview-grid{
-    display:grid;
-    grid-template-columns:1fr;
-  }
+	  .app-view-home.active,
+	  .app-codes-layout,
+	  .lab-preview-grid,
+	  .stage-head,
+	  .stage-layout{
+	    display:grid;
+	    grid-template-columns:1fr;
+	  }
+	  .stage-summary,
+	  .stage-meta-grid{
+	    grid-template-columns:1fr;
+	    min-width:0;
+	  }
+	  .stage-list{
+	    max-height:none;
+	    min-height:0;
+	    grid-template-columns:repeat(2,minmax(0,1fr));
+	  }
+	  .stage-card{
+	    min-height:112px;
+	  }
+	  .stage-detail{
+	    position:static;
+	  }
+	  .stage-action-row{
+	    flex-direction:column;
+	    align-items:stretch;
+	  }
+	  .stage-action-row button{
+	    width:100%;
+	  }
   .app-view-home .flex-row{
     flex-direction:column;
   }
