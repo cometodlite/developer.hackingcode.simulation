@@ -1369,7 +1369,7 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   .cloud-profile-modal-card{padding:12px;max-height:84vh;}
 }
 
-/* === v1.7.0 priority-1 shell: HOME / CODES / SHOP / MORE / LAB === */
+/* === v1.8.1 shell: HOME / CODES / SHOP / LAB / COMING SOON === */
 body.app-shell-ui{
   min-height:100vh;
   overflow:hidden;
@@ -1391,8 +1391,7 @@ body.app-shell-ui header{
 body.app-shell-ui .header-version{color:#bdf7d1;opacity:.85;}
 body.app-shell-ui #leftPanel,
 body.app-shell-ui #centerPanel,
-body.app-shell-ui .resizer,
-body.app-shell-ui #moreModalBackdrop{
+body.app-shell-ui .resizer{
   display:none !important;
 }
 body.app-shell-ui #main{
@@ -1505,26 +1504,6 @@ body.app-shell-ui button:active{
 .app-codes-layout > .stat-box{
   min-width:0;
 }
-body.app-shell-ui #moreModal{
-  width:100%;
-  max-width:none;
-  max-height:none;
-  min-height:100%;
-  border:0;
-  border-radius:0;
-  background:transparent;
-  box-shadow:none;
-}
-body.app-shell-ui #moreModalHeader,
-body.app-shell-ui #moreModalFooter,
-body.app-shell-ui #btnMoreClose{
-  display:none !important;
-}
-body.app-shell-ui #moreModalBody{
-  padding:0;
-  overflow:visible;
-  gap:12px;
-}
 .more-quick-actions{
   display:flex;
   justify-content:flex-end;
@@ -1607,6 +1586,22 @@ body.app-shell-ui .more-tab-button{
 .lab-panel h3{
   margin:10px 0 8px;
   font-size:20px;
+}
+.coming-panel{
+  margin-top:14px;
+  padding:16px;
+  border:1px solid rgba(148,163,184,.18);
+  border-radius:8px;
+  background:rgba(9,12,11,.84);
+  animation:hcsigPanelIn .18s ease both;
+}
+.coming-panel h3{
+  margin:10px 0 8px;
+  font-size:20px;
+}
+.coming-panel p{
+  line-height:1.65;
+  color:#d7efe3;
 }
 .lab-preview-grid{
   display:grid;

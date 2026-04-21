@@ -1,4 +1,4 @@
-const CURRENT_VERSION = 'v1.8.0-stage-100';
+const CURRENT_VERSION = 'v1.8.1-lab-coming';
 const TUTORIAL_VERSION = 2;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -381,10 +381,8 @@ function refreshMobileTabTexts(){
     ['[data-view="home"], [data-main-view="home"], [data-mobile-tab="home"]', t('mobileHome')],
     ['[data-view="codes"], [data-main-view="codes"], [data-mobile-tab="codes"]', t('mobileCodes')],
     ['[data-view="shop"], [data-main-view="shop"], [data-mobile-tab="shop"]', t('mobileShop')],
-    ['[data-main-view="more"]', t('mobileMore')],
     ['[data-main-view="lab"]', t('mobileLab')],
-    ['[data-lab-tab="stage"]', t('mobileStage')],
-    ['[data-lab-tab="coming"]', t('mobileComing')]
+    ['[data-main-view="coming"]', t('mobileComing')]
   ];
   selectors.forEach(([sel, label]) => {
     document.querySelectorAll(sel).forEach(el => { el.textContent = label; });
@@ -600,6 +598,15 @@ function applyLanguageToUI(){
           '5개 챕터, 추천 레벨/파워/코드, 첫 클리어 보상과 반복 보상을 분리했습니다.',
           '스테이지 클리어 기록과 최고 도달 구간을 기존 저장 데이터와 호환되도록 추가했습니다.',
           '활성 코드, CPU 티어, 코드 동기화 보정이 STAGE 성공률에 반영됩니다.'
+        ]
+      },
+      {
+        version: 'v1.8.1-lab-coming',
+        lines: [
+          '중복되던 MORE 메인 패널을 제거하고 헤더 더보기 모달 전용으로 되돌렸습니다.',
+          '메인 탭 순서를 HOME / CODES / SHOP / LAB / COMING SOON으로 정리했습니다.',
+          'COMING SOON을 LAB 내부 하위 메뉴에서 독립 메인 패널로 이동했습니다.',
+          'LAB은 STAGE 1~100 도전 콘텐츠 중심으로 더 명확하게 정리했습니다.'
         ]
       }
 
@@ -1531,8 +1538,8 @@ function applyLanguageToUI(){
           { title: 'HOME', text: 'HOME keeps status, energy, server hacking, CPU upgrades, and the NORMAL/RISK hacking toggle in one place.', hint: 'EXTREME is planned as a later advanced option, not active in this release.' },
           { title: 'CODES', text: 'CODES holds your inventory, selected code detail, upgrades, sync, and evolution actions.', hint: 'After scanning, choose a code here to make it active.' },
           { title: 'SHOP', text: 'SHOP stays focused on growth support: energy, economy, system, and utility items.', hint: 'Sort and category filters are unchanged.' },
-          { title: 'MORE', text: 'MORE now lives as a main panel with missions, achievements, codex, logs, settings, and save tools.', hint: 'You can replay this tutorial from MORE.' },
-          { title: 'LAB', text: 'LAB is the expansion hub. STAGE now opens the 1-100 challenge route, while COMING SOON keeps future experiments separate.', hint: 'STAGE uses your active code, CPU tier, energy, and code sync bonuses.' },
+          { title: 'LAB', text: 'LAB is the challenge hub. STAGE opens the 1-100 route and uses your active code, CPU tier, energy, and code sync bonuses.', hint: 'COMING SOON moved out as its own main panel.' },
+          { title: 'COMING SOON', text: 'COMING SOON is the roadmap space for EXTREME, CPU/GPU, presets, and variant server rules.', hint: 'Use the top-right More button for missions, achievements, codex, logs, settings, and save tools.' },
           { title: 'Ready', text: 'Start with a scan, pick a code, then hack a server. NORMAL is stable; RISK pays more but can punish failures.', hint: 'Press Start to enter the simulation.' }
         ];
       }
@@ -1541,8 +1548,8 @@ function applyLanguageToUI(){
         { title: 'HOME', text: 'HOME은 상태, 에너지, 서버 해킹, CPU 업그레이드, NORMAL/RISK 해킹 선택을 한곳에 모았습니다.', hint: 'EXTREME은 이번 릴리스에서는 열지 않고, 다음 고급 옵션으로 준비합니다.' },
         { title: 'CODES', text: 'CODES에서는 코드 인벤토리, 선택 코드 상세, 강화, 동기화, 진화를 관리합니다.', hint: '스캔 후 얻은 코드를 여기서 선택하면 활성 코드가 됩니다.' },
         { title: 'SHOP', text: 'SHOP은 성장 보조 공간입니다. 에너지, 경제, 시스템, 유틸 아이템을 정렬과 분류로 확인합니다.', hint: '상점 밸런스와 구매 규칙은 기존 그대로 유지됩니다.' },
-        { title: 'MORE', text: 'MORE는 이제 메인 패널입니다. 미션, 업적, 도감, 로그, 설정, 저장 도구를 여기서 다룹니다.', hint: 'MORE에서 이 튜토리얼을 다시 볼 수 있습니다.' },
-        { title: 'LAB', text: 'LAB은 확장 콘텐츠 허브입니다. STAGE는 이제 1~100 도전 구간으로 열리고, COMING SOON은 향후 실험 콘텐츠를 따로 예고합니다.', hint: 'STAGE는 활성 코드, CPU 티어, 에너지, 코드 동기화 보정을 사용합니다.' },
+        { title: 'LAB', text: 'LAB은 도전 콘텐츠 허브입니다. STAGE는 1~100 도전 구간으로 열리고, 활성 코드, CPU 티어, 에너지, 코드 동기화 보정을 사용합니다.', hint: 'COMING SOON은 별도 메인 패널로 이동했습니다.' },
+        { title: 'COMING SOON', text: 'COMING SOON은 EXTREME, CPU/GPU, 프리셋, 변칙 서버 룰 같은 다음 실험 후보를 모아 둔 공간입니다.', hint: '미션, 업적, 도감, 로그, 설정, 저장 도구는 우측 상단 더보기 버튼에서 확인합니다.' },
         { title: '시작 준비 완료', text: '먼저 코드를 스캔하고, 코드를 선택한 뒤 서버를 해킹하세요. NORMAL은 안정적이고 RISK는 더 큰 보상과 실패 부담을 가집니다.', hint: '시작하기를 누르면 시뮬레이션으로 들어갑니다.' }
       ];
     }
@@ -3734,12 +3741,6 @@ function applyLanguageToUI(){
         setActiveTab(defaultTab);
         renderUpdateLog();
         if (btnUpdateDontShow) btnUpdateDontShow.style.display = showDontShowButton ? 'inline-block' : 'none';
-        if (document.body.classList.contains('app-shell-ui')) {
-          document.dispatchEvent(new CustomEvent('hcsig:navigate-main', {
-            detail: { view: 'more' }
-          }));
-          return;
-        }
         if (!moreModalBackdrop) return;
         moreModalBackdrop.classList.add('active');
       } catch (err) {

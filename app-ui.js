@@ -208,7 +208,7 @@
 
 
 
-// === APP SHELL NAV (HOME / CODES / SHOP / MORE / LAB) ===
+// === APP SHELL NAV (HOME / CODES / SHOP / LAB / COMING SOON) ===
 (function(){
   const main = document.getElementById('main');
   const left = document.getElementById('leftPanel');
@@ -248,8 +248,8 @@
     home: ensureView('appViewHome', 'home'),
     codes: ensureView('appViewCodes', 'codes'),
     shop: ensureView('appViewShop', 'shop'),
-    more: ensureView('appViewMore', 'more'),
-    lab: ensureView('appViewLab', 'lab')
+    lab: ensureView('appViewLab', 'lab'),
+    coming: ensureView('appViewComing', 'coming')
   };
 
   const centerInner = center.querySelector('.center-inner') || center;
@@ -261,7 +261,10 @@
   const actionBox = document.getElementById('titleActions') ? document.getElementById('titleActions').closest('.stat-box') : centerInner.querySelector('.stat-box');
   const codeRow = center.querySelector('.flex-row.flex-grow');
   const scanOverlay = document.getElementById('scanOverlay');
+  const moreModalBackdrop = document.getElementById('moreModalBackdrop');
   const moreModal = document.getElementById('moreModal');
+  const staleMoreView = document.getElementById('appViewMore');
+  if(staleMoreView) staleMoreView.remove();
 
   [statusTitle, statusBox, actionBox, scanOverlay].forEach(el => {
     if(el && el.parentElement !== views.home) views.home.appendChild(el);
@@ -273,10 +276,10 @@
     codeRow.classList.add('app-codes-layout');
     if(codeRow.parentElement !== views.codes) views.codes.appendChild(codeRow);
   }
-  if(moreModal && moreModal.parentElement !== views.more){
-    moreModal.classList.add('app-more-panel');
-    views.more.appendChild(moreModal);
+  if(moreModal && moreModalBackdrop && moreModal.parentElement !== moreModalBackdrop){
+    moreModalBackdrop.appendChild(moreModal);
   }
+  if(moreModal) moreModal.classList.remove('app-more-panel');
 
   function buildLab(){
     if(document.getElementById('labContent')) return;
@@ -287,11 +290,7 @@
           <h2>실험실 진입 준비</h2>
           <p>정식 도전 콘텐츠와 향후 실험 콘텐츠가 이곳에서 확장됩니다.</p>
         </div>
-        <div class="lab-mode-chip">NORMAL / RISK / EXTREME 준비</div>
-      </div>
-      <div class="lab-subtabs" role="tablist" aria-label="LAB">
-        <button type="button" class="active" data-lab-tab="stage">STAGE</button>
-        <button type="button" data-lab-tab="coming">COMING SOON</button>
+        <div class="lab-mode-chip">STAGE 1-100</div>
       </div>
       <section class="lab-panel active" data-lab-panel="stage">
         <div class="stage-head">
@@ -323,15 +322,36 @@
           </div>
         </div>
       </section>
-      <section class="lab-panel" data-lab-panel="coming">
-        <span class="badge">COMING SOON</span>
-        <h3>확장 실험 대기열</h3>
-        <p>EXTREME 고급 옵션, CPU/GPU 공존, 코드 프리셋, 변칙 서버 룰이 이 영역에서 차례로 실험됩니다.</p>
-      </section>
     `;
   }
   buildLab();
   try { document.dispatchEvent(new CustomEvent('hcsig:lab-ready')); } catch(e) {}
+
+  function buildComing(){
+    if(document.getElementById('comingContent')) return;
+    views.coming.innerHTML = `
+      <div class="lab-hero coming-hero" id="comingContent">
+        <div>
+          <div class="section-title">COMING SOON</div>
+          <h2>확장 실험 대기열</h2>
+          <p>다음 업데이트 후보를 한곳에 모아 둡니다. 정식 기능으로 확정되면 LAB 또는 ACTIONS로 이동합니다.</p>
+        </div>
+        <div class="lab-mode-chip">NEXT PATCH</div>
+      </div>
+      <section class="coming-panel">
+        <span class="badge">ROADMAP</span>
+        <h3>다음 실험 후보</h3>
+        <p>EXTREME 고급 옵션, CPU/GPU 공존, 코드 프리셋, 변칙 서버 룰, LAB 확장 요소를 순차적으로 검토합니다.</p>
+        <div class="lab-preview-grid coming-preview-grid">
+          <div><strong>EXTREME</strong><span>위험 해킹의 상위 옵션</span></div>
+          <div><strong>CPU / GPU</strong><span>안정 빌드와 공격 빌드 분리</span></div>
+          <div><strong>PRESETS</strong><span>코드 조합 저장과 전환</span></div>
+          <div><strong>SERVER RULES</strong><span>변칙 서버와 실험 보상</span></div>
+        </div>
+      </section>
+    `;
+  }
+  buildComing();
 
   const nav = document.createElement('nav');
   nav.id = 'appMainNav';
@@ -340,8 +360,8 @@
     <button type="button" data-main-view="home">${label('mobileHome', 'HOME')}</button>
     <button type="button" data-main-view="codes">${label('mobileCodes', 'CODES')}</button>
     <button type="button" data-main-view="shop">${label('mobileShop', 'SHOP')}</button>
-    <button type="button" data-main-view="more">${label('mobileMore', 'MORE')}</button>
     <button type="button" data-main-view="lab">${label('mobileLab', 'LAB')}</button>
+    <button type="button" data-main-view="coming">${label('mobileComing', 'COMING SOON')}</button>
   `;
   const header = document.querySelector('header');
   if(header && header.nextSibling) header.parentNode.insertBefore(nav, header.nextSibling);
@@ -362,7 +382,7 @@
     Object.entries(views).forEach(([name, el]) => {
       el.classList.toggle('active', name === view);
     });
-    document.body.classList.remove('app-view-home','app-view-codes','app-view-shop','app-view-more','app-view-lab');
+    document.body.classList.remove('app-view-home','app-view-codes','app-view-shop','app-view-lab','app-view-coming');
     document.body.classList.add('app-view-' + view);
     nav.querySelectorAll('[data-main-view]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mainView === view);
@@ -373,14 +393,6 @@
 
   nav.querySelectorAll('[data-main-view]').forEach(btn => {
     btn.addEventListener('click', () => setView(btn.dataset.mainView));
-  });
-
-  views.lab.addEventListener('click', (event) => {
-    const btn = event.target.closest('[data-lab-tab]');
-    if(!btn) return;
-    const tab = btn.dataset.labTab;
-    views.lab.querySelectorAll('[data-lab-tab]').forEach(el => el.classList.toggle('active', el.dataset.labTab === tab));
-    views.lab.querySelectorAll('[data-lab-panel]').forEach(el => el.classList.toggle('active', el.dataset.labPanel === tab));
   });
 
   const codeList = document.getElementById('codeList');
@@ -405,10 +417,8 @@
     nav.querySelector('[data-main-view="home"]').textContent = label('mobileHome', 'HOME');
     nav.querySelector('[data-main-view="codes"]').textContent = label('mobileCodes', 'CODES');
     nav.querySelector('[data-main-view="shop"]').textContent = label('mobileShop', 'SHOP');
-    nav.querySelector('[data-main-view="more"]').textContent = label('mobileMore', 'MORE');
     nav.querySelector('[data-main-view="lab"]').textContent = label('mobileLab', 'LAB');
-    views.lab.querySelector('[data-lab-tab="stage"]').textContent = label('mobileStage', 'STAGE');
-    views.lab.querySelector('[data-lab-tab="coming"]').textContent = label('mobileComing', 'COMING SOON');
+    nav.querySelector('[data-main-view="coming"]').textContent = label('mobileComing', 'COMING SOON');
   }
   window.addEventListener('hcsig:language-applied', syncLabels);
   window.addEventListener('resize', syncTabsHeight, {passive:true});
@@ -491,10 +501,8 @@
       document.querySelectorAll('[data-main-view="home"]').forEach(el => { el.textContent = t('mobileHome'); });
       document.querySelectorAll('[data-main-view="codes"]').forEach(el => { el.textContent = t('mobileCodes'); });
       document.querySelectorAll('[data-main-view="shop"]').forEach(el => { el.textContent = t('mobileShop'); });
-      document.querySelectorAll('[data-main-view="more"]').forEach(el => { el.textContent = t('mobileMore'); });
       document.querySelectorAll('[data-main-view="lab"]').forEach(el => { el.textContent = t('mobileLab'); });
-      document.querySelectorAll('[data-lab-tab="stage"]').forEach(el => { el.textContent = t('mobileStage'); });
-      document.querySelectorAll('[data-lab-tab="coming"]').forEach(el => { el.textContent = t('mobileComing'); });
+      document.querySelectorAll('[data-main-view="coming"]').forEach(el => { el.textContent = t('mobileComing'); });
     } catch (e) {}
   }
   window.addEventListener('hcsig:language-applied', syncMobileTabLabels);
