@@ -208,113 +208,159 @@
 
 
 
-// === MOBILE SIMPLE NAV (k1 hotfix) ===
+// === APP SHELL NAV (HOME / CODES / SHOP / MORE / LAB) ===
 (function(){
-  const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
-  if(!isMobile) return;
-
   const main = document.getElementById('main');
   const left = document.getElementById('leftPanel');
   const center = document.getElementById('centerPanel');
-  const toast = (msg, kind='info') => {
-    try { if (typeof showToast === 'function') showToast(msg, kind); } catch(e){}
-  };
   if(!main || !left || !center) return;
 
-  document.body.classList.add('mobile-simple-ui');
+  document.body.classList.add('app-shell-ui');
   document.body.classList.remove(
     'mobile-view-status','mobile-view-action','mobile-view-codes','mobile-view-shop','mobile-view-log',
     'mobile-tab-left','mobile-tab-center','mobile-tab-right'
   );
 
-  const oldTabs = document.querySelector('.mobile-tabs');
-  if(oldTabs) oldTabs.remove();
+  document.querySelectorAll('.mobile-tabs').forEach(el => {
+    if(el.id !== 'appMainNav') el.remove();
+  });
 
-  function ensureView(id){
+  function label(key, fallback){
+    try {
+      if(typeof t === 'function') return t(key);
+    } catch(e) {}
+    return fallback;
+  }
+
+  function ensureView(id, viewName){
     let el = document.getElementById(id);
     if(!el){
       el = document.createElement('section');
       el.id = id;
-      el.className = 'mobile-simple-view';
       main.insertBefore(el, main.firstChild);
     }
+    el.className = `app-main-view app-view-${viewName}`;
+    el.dataset.appView = viewName;
     return el;
   }
 
-  const homeView = ensureView('mobileSimpleHome');
-  const codesView = ensureView('mobileSimpleCodes');
-  const shopView = ensureView('mobileSimpleShop');
+  const views = {
+    home: ensureView('appViewHome', 'home'),
+    codes: ensureView('appViewCodes', 'codes'),
+    shop: ensureView('appViewShop', 'shop'),
+    more: ensureView('appViewMore', 'more'),
+    lab: ensureView('appViewLab', 'lab')
+  };
 
-  const leftChildren = Array.from(left.children);
   const centerInner = center.querySelector('.center-inner') || center;
-  const centerChildren = Array.from(centerInner.children);
-
-  const statusTitle = leftChildren[0] || null;
-  const statusBox = leftChildren[1] || null;
-  const shopTitle = left.querySelector('.section-title:nth-of-type(2)') || leftChildren.find(el => el.classList && el.classList.contains('section-title') && /shop/i.test(el.textContent||''));
+  const statusTitle = document.getElementById('titleStatus');
+  const statusBox = statusTitle ? statusTitle.nextElementSibling : left.querySelector('.stat-box');
+  const shopTitle = document.getElementById('titleShop');
   const shopSortRow = left.querySelector('.shop-sort-row');
   const shopList = document.getElementById('shopList');
-  const actionBox = centerChildren.find(el => el.classList && el.classList.contains('stat-box')) || null;
+  const actionBox = document.getElementById('titleActions') ? document.getElementById('titleActions').closest('.stat-box') : centerInner.querySelector('.stat-box');
   const codeRow = center.querySelector('.flex-row.flex-grow');
+  const scanOverlay = document.getElementById('scanOverlay');
+  const moreModal = document.getElementById('moreModal');
 
-  if(statusTitle && statusTitle.parentElement !== homeView) homeView.appendChild(statusTitle);
-  if(statusBox && statusBox.parentElement !== homeView) homeView.appendChild(statusBox);
-  if(actionBox && actionBox.parentElement !== homeView) homeView.appendChild(actionBox);
-
-  if(shopTitle && shopTitle.parentElement !== shopView) shopView.appendChild(shopTitle);
-  if(shopSortRow && shopSortRow.parentElement !== shopView) shopView.appendChild(shopSortRow);
-  if(shopList && shopList.parentElement !== shopView) shopView.appendChild(shopList);
-
+  [statusTitle, statusBox, actionBox, scanOverlay].forEach(el => {
+    if(el && el.parentElement !== views.home) views.home.appendChild(el);
+  });
+  [shopTitle, shopSortRow, shopList].forEach(el => {
+    if(el && el.parentElement !== views.shop) views.shop.appendChild(el);
+  });
   if(codeRow){
-    let merged = document.getElementById('mobileCodesMerged');
-    if(!merged){
-      merged = document.createElement('div');
-      merged.id = 'mobileCodesMerged';
-      merged.className = 'stat-box codes-merged';
-      const title = document.createElement('div');
-      title.className = 'section-title';
-      title.textContent = 'Codes';
-      merged.appendChild(title);
-      codesView.appendChild(merged);
-    }
-    const codeBoxes = Array.from(codeRow.children).filter(el => el.classList && el.classList.contains('stat-box'));
-    codeBoxes.forEach(box => {
-      if(box.parentElement !== merged) merged.appendChild(box);
-    });
-    if(codeRow.parentElement) codeRow.parentElement.removeChild(codeRow);
+    codeRow.classList.add('app-codes-layout');
+    if(codeRow.parentElement !== views.codes) views.codes.appendChild(codeRow);
+  }
+  if(moreModal && moreModal.parentElement !== views.more){
+    moreModal.classList.add('app-more-panel');
+    views.more.appendChild(moreModal);
   }
 
-  const nav = document.createElement('nav');
-  nav.className = 'mobile-tabs mobile-simple-tabs';
-  nav.innerHTML = `
-    <button type="button" data-view="home">${t('mobileHome')}</button>
-    <button type="button" data-view="codes">${t('mobileCodes')}</button>
-    <button type="button" data-view="shop">${t('mobileShop')}</button>
-    <button type="button" data-view="soon">${t('mobileComing')}</button>
-  `;
-  document.body.appendChild(nav);
+  function buildLab(){
+    if(document.getElementById('labContent')) return;
+    views.lab.innerHTML = `
+      <div class="lab-hero" id="labContent">
+        <div>
+          <div class="section-title">LAB</div>
+          <h2>실험실 진입 준비</h2>
+          <p>정식 도전 콘텐츠와 향후 실험 콘텐츠가 이곳에서 확장됩니다.</p>
+        </div>
+        <div class="lab-mode-chip">NORMAL / RISK / EXTREME 준비</div>
+      </div>
+      <div class="lab-subtabs" role="tablist" aria-label="LAB">
+        <button type="button" class="active" data-lab-tab="stage">STAGE</button>
+        <button type="button" data-lab-tab="coming">COMING SOON</button>
+      </div>
+      <section class="lab-panel active" data-lab-panel="stage">
+        <span class="badge">STAGE</span>
+        <h3>1-100 도전 구간 준비 중</h3>
+        <p>챕터, 첫 클리어 보상, 반복 보상, 추천 레벨과 추천 코드 정보를 담을 자리입니다.</p>
+        <div class="lab-preview-grid">
+          <div><strong>01-20</strong><span>기초 침투 훈련</span></div>
+          <div><strong>21-50</strong><span>보안망 적응</span></div>
+          <div><strong>51-80</strong><span>고위험 서버전</span></div>
+          <div><strong>81-100</strong><span>코어 챌린지</span></div>
+        </div>
+      </section>
+      <section class="lab-panel" data-lab-panel="coming">
+        <span class="badge">COMING SOON</span>
+        <h3>확장 실험 대기열</h3>
+        <p>EXTREME 고급 옵션, CPU/GPU 공존, 코드 프리셋, 변칙 서버 룰이 이 영역에서 차례로 실험됩니다.</p>
+      </section>
+    `;
+  }
+  buildLab();
 
-  let currentView = 'home';
-  function setView(view){
-    if(view === 'soon'){
-      toast(t('comingSoonToast'), 'system');
-      nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === currentView));
-      return;
-    }
-    currentView = view;
-    document.body.classList.remove('mobile-simple-view-home','mobile-simple-view-codes','mobile-simple-view-shop');
-    document.body.classList.add('mobile-simple-view-' + view);
-    nav.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === view));
-    const target = view === 'home' ? homeView : view === 'codes' ? codesView : shopView;
-    if(target) target.scrollTop = 0;
+  const nav = document.createElement('nav');
+  nav.id = 'appMainNav';
+  nav.className = 'mobile-tabs app-main-tabs';
+  nav.innerHTML = `
+    <button type="button" data-main-view="home">${label('mobileHome', 'HOME')}</button>
+    <button type="button" data-main-view="codes">${label('mobileCodes', 'CODES')}</button>
+    <button type="button" data-main-view="shop">${label('mobileShop', 'SHOP')}</button>
+    <button type="button" data-main-view="more">${label('mobileMore', 'MORE')}</button>
+    <button type="button" data-main-view="lab">${label('mobileLab', 'LAB')}</button>
+  `;
+  const header = document.querySelector('header');
+  if(header && header.nextSibling) header.parentNode.insertBefore(nav, header.nextSibling);
+  else document.body.insertBefore(nav, main);
+
+  function syncTabsHeight(){
     try {
-      const tabsH = Math.ceil(nav.getBoundingClientRect().height);
-      document.documentElement.style.setProperty('--mobileTabsH', tabsH + 'px');
+      const h = Math.ceil(nav.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--mobileTabsH', h + 'px');
+      document.documentElement.style.setProperty('--tabsH', h + 'px');
     } catch(e) {}
   }
 
-  nav.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => setView(btn.dataset.view));
+  let currentView = 'home';
+  function setView(view){
+    if(!views[view]) view = 'home';
+    currentView = view;
+    Object.entries(views).forEach(([name, el]) => {
+      el.classList.toggle('active', name === view);
+    });
+    document.body.classList.remove('app-view-home','app-view-codes','app-view-shop','app-view-more','app-view-lab');
+    document.body.classList.add('app-view-' + view);
+    nav.querySelectorAll('[data-main-view]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.mainView === view);
+    });
+    if(views[view]) views[view].scrollTop = 0;
+    syncTabsHeight();
+  }
+
+  nav.querySelectorAll('[data-main-view]').forEach(btn => {
+    btn.addEventListener('click', () => setView(btn.dataset.mainView));
+  });
+
+  views.lab.addEventListener('click', (event) => {
+    const btn = event.target.closest('[data-lab-tab]');
+    if(!btn) return;
+    const tab = btn.dataset.labTab;
+    views.lab.querySelectorAll('[data-lab-tab]').forEach(el => el.classList.toggle('active', el.dataset.labTab === tab));
+    views.lab.querySelectorAll('[data-lab-panel]').forEach(el => el.classList.toggle('active', el.dataset.labPanel === tab));
   });
 
   const codeList = document.getElementById('codeList');
@@ -330,6 +376,25 @@
     });
   }
 
+  document.addEventListener('hcsig:navigate-main', (event) => {
+    const view = event.detail && event.detail.view;
+    setView(view);
+  });
+
+  function syncLabels(){
+    nav.querySelector('[data-main-view="home"]').textContent = label('mobileHome', 'HOME');
+    nav.querySelector('[data-main-view="codes"]').textContent = label('mobileCodes', 'CODES');
+    nav.querySelector('[data-main-view="shop"]').textContent = label('mobileShop', 'SHOP');
+    nav.querySelector('[data-main-view="more"]').textContent = label('mobileMore', 'MORE');
+    nav.querySelector('[data-main-view="lab"]').textContent = label('mobileLab', 'LAB');
+    views.lab.querySelector('[data-lab-tab="stage"]').textContent = label('mobileStage', 'STAGE');
+    views.lab.querySelector('[data-lab-tab="coming"]').textContent = label('mobileComing', 'COMING SOON');
+  }
+  window.addEventListener('hcsig:language-applied', syncLabels);
+  window.addEventListener('resize', syncTabsHeight, {passive:true});
+  window.addEventListener('orientationchange', () => setTimeout(syncTabsHeight, 250));
+
+  syncLabels();
   setView('home');
 })();
 
@@ -403,10 +468,13 @@
   function syncMobileTabLabels(){
     try {
       if (typeof t !== 'function') return;
-      document.querySelectorAll('.mobile-simple-tabs [data-mobile-tab="home"], .mobile-tabs [data-view="home"]').forEach(el => { el.textContent = t('mobileHome'); });
-      document.querySelectorAll('.mobile-simple-tabs [data-mobile-tab="codes"], .mobile-tabs [data-view="codes"]').forEach(el => { el.textContent = t('mobileCodes'); });
-      document.querySelectorAll('.mobile-simple-tabs [data-mobile-tab="shop"], .mobile-tabs [data-view="shop"]').forEach(el => { el.textContent = t('mobileShop'); });
-      document.querySelectorAll('.mobile-simple-tabs [data-mobile-tab="coming"], .mobile-tabs [data-view="soon"]').forEach(el => { el.textContent = t('mobileComing'); });
+      document.querySelectorAll('[data-main-view="home"]').forEach(el => { el.textContent = t('mobileHome'); });
+      document.querySelectorAll('[data-main-view="codes"]').forEach(el => { el.textContent = t('mobileCodes'); });
+      document.querySelectorAll('[data-main-view="shop"]').forEach(el => { el.textContent = t('mobileShop'); });
+      document.querySelectorAll('[data-main-view="more"]').forEach(el => { el.textContent = t('mobileMore'); });
+      document.querySelectorAll('[data-main-view="lab"]').forEach(el => { el.textContent = t('mobileLab'); });
+      document.querySelectorAll('[data-lab-tab="stage"]').forEach(el => { el.textContent = t('mobileStage'); });
+      document.querySelectorAll('[data-lab-tab="coming"]').forEach(el => { el.textContent = t('mobileComing'); });
     } catch (e) {}
   }
   window.addEventListener('hcsig:language-applied', syncMobileTabLabels);

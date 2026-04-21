@@ -1,4 +1,5 @@
-const CURRENT_VERSION = 'v1.6.15-k6d0-a2b1-dailyfix';
+const CURRENT_VERSION = 'v1.7.0-priority1-lab';
+const TUTORIAL_VERSION = 2;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -20,7 +21,7 @@ const I18N = {
     saveStateSaved:'게임 상태가 저장되었습니다.', saveComplete:'저장 완료', autosaveComplete:'✅ 자동 저장 완료', noSavedData:'저장된 데이터가 없습니다.', saveLoaded:'저장된 데이터를 불러왔습니다.', saveLoadError:'저장 데이터를 불러오는 중 오류가 발생했습니다.', saveDeleted:'저장 데이터가 삭제되었습니다.', exportFail:'내보내기 실패 (콘솔 확인)', riskModeLog:'위험 해킹 모드: {state}', riskPenaltyLog:'위험 해킹 모드 페널티: 실패로 인해 에너지가 추가로 1 소모되었습니다.', loadoutSaved:'로드아웃 슬롯 {slot}에 현재 설정을 저장했습니다.', loadoutEmpty:'로드아웃 슬롯 {slot}에 저장된 설정이 없습니다.', loadoutLoaded:'로드아웃 슬롯 {slot}을 불러왔습니다.',
     toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +50 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
     noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.',
-    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
+    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'STAGE', mobileComing:'COMING SOON', tutorialReplay:'튜토리얼 다시 보기', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
   },
   en: {
     appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
@@ -41,6 +42,7 @@ const I18N = {
     toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +50.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
     noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.',
     noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
+    ,mobileMore:'MORE', mobileLab:'LAB', mobileStage:'STAGE', tutorialReplay:'Replay Tutorial'
   }
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
@@ -376,10 +378,13 @@ function localizeAchievementDesc(def){
 }
 function refreshMobileTabTexts(){
   const selectors = [
-    ['[data-view="home"], [data-mobile-tab="home"]', t('mobileHome')],
-    ['[data-view="codes"], [data-mobile-tab="codes"]', t('mobileCodes')],
-    ['[data-view="shop"], [data-mobile-tab="shop"]', t('mobileShop')],
-    ['[data-view="soon"], [data-mobile-tab="coming"]', t('mobileComing')]
+    ['[data-view="home"], [data-main-view="home"], [data-mobile-tab="home"]', t('mobileHome')],
+    ['[data-view="codes"], [data-main-view="codes"], [data-mobile-tab="codes"]', t('mobileCodes')],
+    ['[data-view="shop"], [data-main-view="shop"], [data-mobile-tab="shop"]', t('mobileShop')],
+    ['[data-main-view="more"]', t('mobileMore')],
+    ['[data-main-view="lab"]', t('mobileLab')],
+    ['[data-lab-tab="stage"]', t('mobileStage')],
+    ['[data-lab-tab="coming"]', t('mobileComing')]
   ];
   selectors.forEach(([sel, label]) => {
     document.querySelectorAll(sel).forEach(el => { el.textContent = label; });
@@ -387,7 +392,7 @@ function refreshMobileTabTexts(){
 }
 function applyLanguageToUI(){
   try{ document.documentElement.lang = getLang(); document.title = t('appTitle'); }catch(e){}
-  setText('subtitleText', t('subtitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle'));
+  setText('subtitleText', t('subtitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle')); setText('btnOpenTutorial', t('tutorialReplay'));
   setText('titleStatus', t('status')); setText('titleShop', t('shop')); setText('titleActions', t('actions')); setText('titleCodeInventory', t('codeInventory')); setText('titleCodeDetail', t('codeDetail'));
   setText('labelLevel', t('level')); setText('labelExp', t('exp')); setText('labelCredits', t('credits')); setText('labelCpuTier', t('cpuTier')); setText('labelEnergy', t('energy')); setText('labelEnergyTimer', t('nextRecovery')); setText('labelEnergyPack', t('energyPack')); setText('labelLastSave', t('lastSave')); setText('btnUseEnergyPack', t('use'));
   setText('shopSortLabel', t('sort')); setText('shopCategoryLabel', t('category')); setText('shopCatAll', t('all')); setText('shopCatEnergy', t('energy')); setText('shopCatSystem', t('system')); setText('shopCatEconomy', t('economy')); setText('shopCatUtility', t('utility'));
@@ -578,6 +583,15 @@ function applyLanguageToUI(){
           '특정 행동을 수행하면 다음 단계로 자동 진행되며, 건너뛰기 및 다시 보기를 지원합니다.',
           '튜토리얼 완료 여부와 진행 단계는 저장 데이터에 함께 보관됩니다.'
         ]
+      },
+      {
+        version: 'v1.7.0-priority1-lab',
+        lines: [
+          '메인 구조를 HOME / CODES / SHOP / MORE / LAB 5패널로 재구성했습니다.',
+          'COMING SOON을 LAB 내부 하위 패널로 이동하고 STAGE 프리뷰 셸을 추가했습니다.',
+          'MORE를 메인 패널로 승격하고, 튜토리얼 다시 보기를 MORE에서 실행할 수 있게 했습니다.',
+          '새 온보딩 튜토리얼 v2와 부드러운 패널 전환 스타일을 적용했습니다.'
+        ]
       }
 
     ];
@@ -596,7 +610,7 @@ function applyLanguageToUI(){
       items: { energyPack: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
-      tutorial: { completed: true, step: 0, seen: true },
+      tutorial: { completed: false, step: 0, seen: false, version: TUTORIAL_VERSION },
       activeCodeId: null,
       riskMode: false,
       missionProgress: {
@@ -1498,44 +1512,28 @@ function applyLanguageToUI(){
     let scanRunning = false;
     let tutorialOpenedOnce = false;
 
-    const tutorialSteps = [
-      {
-        title: '환영합니다',
-        text: 'HCSiG에 오신 것을 환영합니다. 이 튜토리얼은 첫 플레이에서 필요한 핵심 루프만 짧게 안내합니다.',
-        hint: '다음 버튼을 눌러 진행하세요.',
-        waitAction: false
-      },
-      {
-        title: 'HOME 확인',
-        text: '여기서는 레벨, 경험치, 크레딧, 에너지, CPU 상태를 확인하고 주요 행동을 실행할 수 있습니다.',
-        hint: '상태를 확인했다면 다음 단계로 이동하세요.',
-        waitAction: false
-      },
-      {
-        title: '코드 스캔 실행',
-        text: '먼저 코드 스캔을 1회 실행해 보세요. 스캔은 새로운 코드를 찾거나 기존 코드를 강화하는 출발점입니다.',
-        hint: 'HOME의 [코드 스캔] 버튼을 눌러 주세요. 완료되면 자동으로 다음 단계로 넘어갑니다.',
-        waitAction: true
-      },
-      {
-        title: '코드 선택',
-        text: '획득한 코드는 코드 인벤토리에서 확인할 수 있습니다. 코드를 눌러 활성 코드로 바꾸고 상세 정보를 확인해 보세요.',
-        hint: '코드 인벤토리의 항목을 한 번 클릭하면 자동으로 다음 단계로 넘어갑니다.',
-        waitAction: true
-      },
-      {
-        title: '서버 해킹',
-        text: '선택한 코드와 CPU 성능을 바탕으로 서버 해킹을 시도할 수 있습니다. 해킹은 크레딧과 성장의 핵심 루프입니다.',
-        hint: 'HOME의 [서버 해킹] 버튼을 눌러 1회 시도해 보세요. 성공 여부와 관계없이 다음 단계로 진행됩니다.',
-        waitAction: true
-      },
-      {
-        title: '성장과 상점',
-        text: '크레딧을 모아 CPU를 업그레이드하고, 상점을 활용해 성장 속도를 조절할 수 있습니다. 이제 기본 흐름을 모두 익혔습니다.',
-        hint: '시작하기를 누르면 튜토리얼이 종료되고 자유 플레이로 전환됩니다.',
-        waitAction: false
+    function getTutorialSteps() {
+      if (getLang() === 'en') {
+        return [
+          { title: 'Welcome', text: 'A quick pass through the new HCSiG shell. The game still starts from the same scan, code, and hack loop.', hint: 'Use Next when you are ready.' },
+          { title: 'HOME', text: 'HOME keeps status, energy, server hacking, CPU upgrades, and the NORMAL/RISK hacking toggle in one place.', hint: 'EXTREME is planned as a later advanced option, not active in this release.' },
+          { title: 'CODES', text: 'CODES holds your inventory, selected code detail, upgrades, sync, and evolution actions.', hint: 'After scanning, choose a code here to make it active.' },
+          { title: 'SHOP', text: 'SHOP stays focused on growth support: energy, economy, system, and utility items.', hint: 'Sort and category filters are unchanged.' },
+          { title: 'MORE', text: 'MORE now lives as a main panel with missions, achievements, codex, logs, settings, and save tools.', hint: 'You can replay this tutorial from MORE.' },
+          { title: 'LAB', text: 'LAB is the expansion hub. STAGE and COMING SOON live there so experiments no longer crowd the main tabs.', hint: 'STAGE is a preview shell in this release.' },
+          { title: 'Ready', text: 'Start with a scan, pick a code, then hack a server. NORMAL is stable; RISK pays more but can punish failures.', hint: 'Press Start to enter the simulation.' }
+        ];
       }
-    ];
+      return [
+        { title: '환영합니다', text: '새 HCSiG 셸의 핵심만 짧게 안내합니다. 기본 루프는 코드 스캔, 코드 선택, 서버 해킹 그대로 이어집니다.', hint: '준비되면 다음을 눌러 주세요.' },
+        { title: 'HOME', text: 'HOME은 상태, 에너지, 서버 해킹, CPU 업그레이드, NORMAL/RISK 해킹 선택을 한곳에 모았습니다.', hint: 'EXTREME은 이번 릴리스에서는 열지 않고, 다음 고급 옵션으로 준비합니다.' },
+        { title: 'CODES', text: 'CODES에서는 코드 인벤토리, 선택 코드 상세, 강화, 동기화, 진화를 관리합니다.', hint: '스캔 후 얻은 코드를 여기서 선택하면 활성 코드가 됩니다.' },
+        { title: 'SHOP', text: 'SHOP은 성장 보조 공간입니다. 에너지, 경제, 시스템, 유틸 아이템을 정렬과 분류로 확인합니다.', hint: '상점 밸런스와 구매 규칙은 기존 그대로 유지됩니다.' },
+        { title: 'MORE', text: 'MORE는 이제 메인 패널입니다. 미션, 업적, 도감, 로그, 설정, 저장 도구를 여기서 다룹니다.', hint: 'MORE에서 이 튜토리얼을 다시 볼 수 있습니다.' },
+        { title: 'LAB', text: 'LAB은 확장 콘텐츠 허브입니다. STAGE와 COMING SOON을 LAB 안으로 모아 실험 공간을 분리했습니다.', hint: '이번 릴리스의 STAGE는 정식 1~100 콘텐츠 전 프리뷰 셸입니다.' },
+        { title: '시작 준비 완료', text: '먼저 코드를 스캔하고, 코드를 선택한 뒤 서버를 해킹하세요. NORMAL은 안정적이고 RISK는 더 큰 보상과 실패 부담을 가집니다.', hint: '시작하기를 누르면 시뮬레이션으로 들어갑니다.' }
+      ];
+    }
 
     function getDayKey() {
       return new Date().toISOString().slice(0, 10);
@@ -1550,11 +1548,18 @@ function applyLanguageToUI(){
 
     function ensureTutorialDefaults() {
       state.tutorial = state.tutorial || {};
-      if (typeof state.tutorial.completed !== 'boolean') state.tutorial.completed = true;
+      if (state.tutorial.version !== TUTORIAL_VERSION) {
+        state.tutorial.version = TUTORIAL_VERSION;
+        state.tutorial.completed = false;
+        state.tutorial.seen = false;
+        state.tutorial.step = 0;
+      }
+      if (typeof state.tutorial.completed !== 'boolean') state.tutorial.completed = false;
       if (!Number.isInteger(state.tutorial.step)) state.tutorial.step = 0;
       if (state.tutorial.step < 0) state.tutorial.step = 0;
+      const tutorialSteps = getTutorialSteps();
       if (state.tutorial.step >= tutorialSteps.length) state.tutorial.step = tutorialSteps.length - 1;
-      if (typeof state.tutorial.seen !== 'boolean') state.tutorial.seen = true;
+      if (typeof state.tutorial.seen !== 'boolean') state.tutorial.seen = false;
     }
 
     function isTutorialOpen() {
@@ -1564,12 +1569,17 @@ function applyLanguageToUI(){
     function renderTutorial() {
       if (!tutorialBackdrop) return;
       ensureTutorialDefaults();
+      const tutorialSteps = getTutorialSteps();
       const idx = Math.min(Math.max(0, state.tutorial.step || 0), tutorialSteps.length - 1);
       const step = tutorialSteps[idx];
       setNodeText(tutorialStepLabel, `STEP ${idx + 1} / ${tutorialSteps.length}`);
       setNodeText(tutorialStepTitle, step.title);
       setNodeText(tutorialStepText, step.text);
       setNodeText(tutorialStepHint, step.hint || '');
+      setNodeText(btnTutorialPrev, getLang() === 'en' ? 'Back' : '이전');
+      setNodeText(btnTutorialNext, getLang() === 'en' ? 'Next' : '다음');
+      setNodeText(btnTutorialFinish, getLang() === 'en' ? 'Start' : '시작하기');
+      setNodeText(btnTutorialSkip, getLang() === 'en' ? 'Skip' : '건너뛰기');
       setNodeDisplay(tutorialStepHint, step.hint ? '' : 'none');
       const interactive = !!step.waitAction;
       tutorialBackdrop.classList.toggle('interactive', interactive);
@@ -1583,22 +1593,31 @@ function applyLanguageToUI(){
 
     function openTutorial(forceRestart = false) {
       state.tutorial = state.tutorial || {};
-      state.tutorial.completed = true;
+      ensureTutorialDefaults();
+      if (forceRestart) {
+        state.tutorial.step = 0;
+        state.tutorial.completed = false;
+      }
       state.tutorial.seen = true;
       if (tutorialBackdrop) {
-        tutorialBackdrop.classList.remove('show');
+        tutorialBackdrop.classList.add('show');
         tutorialBackdrop.classList.remove('interactive');
-        tutorialBackdrop.setAttribute('aria-hidden', 'true');
+        tutorialBackdrop.setAttribute('aria-hidden', 'false');
       }
-      document.body.classList.remove('tutorial-open');
+      document.body.classList.add('tutorial-open');
       document.body.classList.remove('tutorial-interactive');
+      tutorialOpenedOnce = true;
+      renderTutorial();
+      saveGame(true);
     }
 
     function closeTutorial(markCompleted = false) {
       if (!tutorialBackdrop) return;
       if (markCompleted) {
         state.tutorial.completed = true;
-        state.tutorial.step = tutorialSteps.length - 1;
+        state.tutorial.seen = true;
+        state.tutorial.version = TUTORIAL_VERSION;
+        state.tutorial.step = getTutorialSteps().length - 1;
       }
       tutorialBackdrop.classList.remove('show');
       tutorialBackdrop.classList.remove('interactive');
@@ -1610,6 +1629,7 @@ function applyLanguageToUI(){
 
     function nextTutorialStep() {
       ensureTutorialDefaults();
+      const tutorialSteps = getTutorialSteps();
       if (state.tutorial.step < tutorialSteps.length - 1) {
         state.tutorial.step += 1;
         renderTutorial();
@@ -1626,16 +1646,17 @@ function applyLanguageToUI(){
     }
 
     function onTutorialAction(action) {
-      state.tutorial = state.tutorial || {};
-      state.tutorial.completed = true;
-      return;
+      if (!isTutorialOpen()) return;
+      ensureTutorialDefaults();
+      const step = getTutorialSteps()[state.tutorial.step || 0];
+      if (step && step.waitAction === action) nextTutorialStep();
     }
 
     function maybeStartTutorial() {
-      state.tutorial = state.tutorial || {};
-      state.tutorial.completed = true;
-      state.tutorial.seen = true;
-      return;
+      ensureTutorialDefaults();
+      if (!tutorialOpenedOnce && !state.tutorial.completed && !state.tutorial.seen) {
+        openTutorial(false);
+      }
     }
 
     function updateStatsUI() {
@@ -3393,11 +3414,17 @@ function applyLanguageToUI(){
 
     function openMoreModal(defaultTab = 'mission', showDontShowButton = false) {
       try {
-        if (!moreModalBackdrop) return;
-        moreModalBackdrop.classList.add('active');
         setActiveTab(defaultTab);
         renderUpdateLog();
         if (btnUpdateDontShow) btnUpdateDontShow.style.display = showDontShowButton ? 'inline-block' : 'none';
+        if (document.body.classList.contains('app-shell-ui')) {
+          document.dispatchEvent(new CustomEvent('hcsig:navigate-main', {
+            detail: { view: 'more' }
+          }));
+          return;
+        }
+        if (!moreModalBackdrop) return;
+        moreModalBackdrop.classList.add('active');
       } catch (err) {
         console.error('[MoreModal] open failed:', err);
         try { showToast('더보기를 여는 중 오류가 발생했습니다. (콘솔 확인)', 'warn'); } catch(e) {}

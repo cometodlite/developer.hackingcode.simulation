@@ -1063,113 +1063,6 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   }
 }
 
-/* === k1 hotfix: simple mobile nav (HOME / CODES / SHOP / COMING SOON) === */
-@media (max-width: 900px), (hover: none) and (pointer: coarse) {
-  body.mobile-simple-ui {
-    overflow: hidden;
-    padding-bottom: calc(var(--mobileTabsH, 86px) + 18px + env(safe-area-inset-bottom)) !important;
-  }
-
-  body.mobile-simple-ui #leftPanel,
-  body.mobile-simple-ui #centerPanel,
-  body.mobile-simple-ui .resizer {
-    display: none !important;
-  }
-
-  body.mobile-simple-ui #main {
-    position: relative;
-    display: block !important;
-    height: calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
-    max-height: calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-  }
-
-  body.mobile-simple-ui .mobile-simple-tabs {
-    position: fixed;
-    left: 10px;
-    right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom));
-    display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 20px;
-    background: rgba(8, 12, 24, 0.96);
-    border: 1px solid rgba(71, 85, 105, 0.5);
-    backdrop-filter: blur(8px);
-    z-index: 10000;
-  }
-
-  body.mobile-simple-ui .mobile-simple-tabs button {
-    min-height: 48px !important;
-    font-size: 12px !important;
-    font-weight: 800;
-    border-radius: 14px;
-  }
-
-  body.mobile-simple-ui .mobile-simple-tabs button.active {
-    outline: 2px solid rgba(96, 165, 250, 0.75);
-    background: #1b2540;
-    border-color: #5b87ff;
-  }
-
-  body.mobile-simple-ui .mobile-simple-view {
-    display: none !important;
-    position: absolute;
-    inset: 0;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 10px 10px calc(var(--mobileTabsH, 86px) + 26px + env(safe-area-inset-bottom)) 10px;
-    background: #060812;
-  }
-
-  body.mobile-simple-ui.mobile-simple-view-home #mobileSimpleHome,
-  body.mobile-simple-ui.mobile-simple-view-codes #mobileSimpleCodes,
-  body.mobile-simple-ui.mobile-simple-view-shop #mobileSimpleShop {
-    display: block !important;
-  }
-
-  body.mobile-simple-ui #mobileSimpleHome > .stat-box,
-  body.mobile-simple-ui #mobileSimpleCodes > .stat-box,
-  body.mobile-simple-ui #mobileSimpleShop > .stat-box,
-  body.mobile-simple-ui #mobileSimpleShop > .shop-sort-row,
-  body.mobile-simple-ui #mobileSimpleHome > .section-title,
-  body.mobile-simple-ui #mobileSimpleShop > .section-title {
-    width: 100%;
-    margin-bottom: 10px;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes .codes-merged {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes .codes-merged > .stat-box {
-    width: 100% !important;
-    flex: none !important;
-    resize: none !important;
-    margin-bottom: 0;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes #codeList,
-  body.mobile-simple-ui #mobileSimpleShop #shopList {
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes .button-row {
-    flex-wrap: wrap;
-  }
-
-  body.mobile-simple-ui #mobileSimpleCodes #btnUpgradeCode,
-  body.mobile-simple-ui #mobileSimpleCodes #btnEvolveCode {
-    width: 100% !important;
-  }
-}
-
-
 /* v1.6.12(k2) shop category + mobile code actions */
 #shopCategoryFilter{ min-width: 110px; }
 .code-next-meta{ opacity: 0.92; }
@@ -1199,9 +1092,6 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   .code-action-row button{
     min-height: 46px;
     font-size: 15px;
-  }
-  body.mobile-simple-ui #mobileSimpleCodes .codes-merged > .stat-box:last-child{
-    padding-bottom: calc(120px + var(--safe-bottom, 0px));
   }
 }
 
@@ -1477,4 +1367,360 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   .cloud-profile-row .cloud-profile-inline,.cloud-profile-row .cloud-avatar-actions{justify-content:flex-start;}
   .cloud-profile-modal{padding:10px;}
   .cloud-profile-modal-card{padding:12px;max-height:84vh;}
+}
+
+/* === v1.7.0 priority-1 shell: HOME / CODES / SHOP / MORE / LAB === */
+body.app-shell-ui{
+  min-height:100vh;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(34,197,94,.14), transparent 28%),
+    radial-gradient(circle at 88% 18%, rgba(244,63,94,.10), transparent 30%),
+    linear-gradient(135deg, #050606 0%, #0b0f0d 48%, #070707 100%);
+  color:#f0f7f4;
+}
+html{
+  background:#050606;
+}
+body.app-shell-ui header{
+  background:rgba(7,9,8,.86);
+  border-bottom:1px solid rgba(52,211,153,.20);
+  box-shadow:0 12px 30px rgba(0,0,0,.24);
+  backdrop-filter:blur(14px);
+}
+body.app-shell-ui .header-version{color:#bdf7d1;opacity:.85;}
+body.app-shell-ui #leftPanel,
+body.app-shell-ui #centerPanel,
+body.app-shell-ui .resizer,
+body.app-shell-ui #moreModalBackdrop{
+  display:none !important;
+}
+body.app-shell-ui #main{
+  display:block;
+  width:100vw;
+  height:calc(100vh - var(--headerH, 48px) - var(--tabsH, 58px));
+  overflow:hidden;
+  padding:0;
+  background:transparent;
+}
+.app-main-tabs{
+  position:relative;
+  z-index:58;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  padding:10px 16px;
+  background:rgba(6,8,7,.78);
+  border-bottom:1px solid rgba(52,211,153,.16);
+  backdrop-filter:blur(14px);
+}
+.app-main-tabs button{
+  min-width:0;
+  min-height:38px;
+  border-radius:8px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(14,18,16,.86);
+  color:#d9fbe7;
+  font-weight:800;
+  letter-spacing:0;
+  transition:background .18s ease, border-color .18s ease, transform .12s ease, box-shadow .18s ease;
+}
+.app-main-tabs button:hover{
+  background:rgba(20,32,27,.94);
+  border-color:rgba(45,212,191,.52);
+  box-shadow:0 0 0 2px rgba(45,212,191,.10), 0 10px 24px rgba(0,0,0,.20);
+}
+.app-main-tabs button.active{
+  background:linear-gradient(135deg, rgba(21,128,61,.94), rgba(13,148,136,.82));
+  border-color:rgba(190,242,100,.62);
+  color:#ffffff;
+  box-shadow:0 0 24px rgba(45,212,191,.18);
+}
+.app-main-view{
+  display:none;
+  height:100%;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:16px;
+  position:relative;
+}
+.app-main-view.active{
+  display:block;
+  animation:hcsigPanelIn .22s ease both;
+}
+@keyframes hcsigPanelIn{
+  from{opacity:0;transform:translateY(8px);}
+  to{opacity:1;transform:translateY(0);}
+}
+body.app-shell-ui .stat-box,
+body.app-shell-ui .cloud-section,
+body.app-shell-ui .cloud-profile-entry,
+body.app-shell-ui .cloud-user-card{
+  border-radius:8px;
+  border-color:rgba(94,234,212,.18);
+  background:linear-gradient(180deg, rgba(14,18,16,.92), rgba(8,12,11,.94));
+  box-shadow:0 14px 36px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03);
+}
+body.app-shell-ui .section-title{
+  color:#6ee7b7;
+  letter-spacing:.08em;
+}
+body.app-shell-ui button{
+  border-radius:8px;
+}
+body.app-shell-ui button:focus-visible,
+body.app-shell-ui select:focus-visible,
+body.app-shell-ui input:focus-visible,
+body.app-shell-ui textarea:focus-visible{
+  outline:2px solid rgba(52,211,153,.72);
+  outline-offset:2px;
+}
+body.app-shell-ui button:hover{
+  border-color:rgba(45,212,191,.52);
+}
+body.app-shell-ui button:active{
+  transform:translateY(1px) scale(.99);
+}
+.app-view-home.active{
+  display:grid;
+  grid-template-columns:minmax(260px,.72fr) minmax(320px,1.28fr);
+  align-content:start;
+  gap:14px;
+}
+.app-view-home #titleStatus{
+  grid-column:1 / -1;
+  margin-bottom:-6px;
+}
+.app-view-home #scanOverlay{
+  inset:16px;
+}
+.app-view-shop #shopList,
+.app-view-codes #codeList{
+  max-height:none;
+}
+.app-codes-layout{
+  align-items:stretch;
+  min-height:100%;
+}
+.app-codes-layout > .stat-box{
+  min-width:0;
+}
+body.app-shell-ui #moreModal{
+  width:100%;
+  max-width:none;
+  max-height:none;
+  min-height:100%;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+body.app-shell-ui #moreModalHeader,
+body.app-shell-ui #moreModalFooter,
+body.app-shell-ui #btnMoreClose{
+  display:none !important;
+}
+body.app-shell-ui #moreModalBody{
+  padding:0;
+  overflow:visible;
+  gap:12px;
+}
+.more-quick-actions{
+  display:flex;
+  justify-content:flex-end;
+}
+#btnOpenTutorial{
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:center;
+}
+body.app-shell-ui .more-tabs{
+  position:sticky;
+  top:0;
+  z-index:5;
+  padding:8px;
+  border:1px solid rgba(94,234,212,.16);
+  border-radius:8px;
+  background:rgba(7,10,9,.88);
+  backdrop-filter:blur(12px);
+}
+body.app-shell-ui .more-tab-button{
+  border-radius:8px;
+}
+.lab-hero{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  padding:18px;
+  border:1px solid rgba(94,234,212,.20);
+  border-radius:8px;
+  background:
+    linear-gradient(135deg, rgba(20,83,45,.55), rgba(10,12,11,.94)),
+    radial-gradient(circle at 88% 16%, rgba(244,63,94,.18), transparent 36%);
+  box-shadow:0 16px 42px rgba(0,0,0,.28);
+}
+.lab-hero h2{
+  margin:2px 0 8px;
+  font-size:24px;
+}
+.lab-hero p,
+.lab-panel p{
+  line-height:1.65;
+  color:#d7efe3;
+}
+.lab-mode-chip{
+  flex:0 0 auto;
+  padding:8px 10px;
+  border:1px solid rgba(190,242,100,.28);
+  border-radius:8px;
+  color:#ecfccb;
+  background:rgba(20,83,45,.32);
+  font-size:12px;
+  font-weight:800;
+}
+.lab-subtabs{
+  display:flex;
+  gap:8px;
+  margin:14px 0;
+}
+.lab-subtabs button{
+  min-height:40px;
+  flex:0 1 180px;
+}
+.lab-subtabs button.active{
+  background:rgba(20,184,166,.26);
+  border-color:rgba(94,234,212,.48);
+  color:#f8fff9;
+}
+.lab-panel{
+  display:none;
+  padding:16px;
+  border:1px solid rgba(148,163,184,.18);
+  border-radius:8px;
+  background:rgba(9,12,11,.84);
+}
+.lab-panel.active{
+  display:block;
+  animation:hcsigPanelIn .18s ease both;
+}
+.lab-panel h3{
+  margin:10px 0 8px;
+  font-size:20px;
+}
+.lab-preview-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+.lab-preview-grid div{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:12px;
+  min-height:76px;
+  border:1px solid rgba(94,234,212,.15);
+  border-radius:8px;
+  background:rgba(12,18,16,.72);
+}
+.lab-preview-grid span{
+  color:#cbd5d8;
+  font-size:12px;
+}
+body.app-shell-ui #tutorialBackdrop.show{
+  display:flex !important;
+}
+body.app-shell-ui #tutorialModal{
+  border-radius:8px;
+  border-color:rgba(94,234,212,.24);
+  background:linear-gradient(180deg, rgba(15,22,18,.98), rgba(7,10,9,.98));
+}
+body.app-shell-ui #tutorialStepHint{
+  border-radius:8px;
+  background:rgba(20,184,166,.14);
+  border-color:rgba(94,234,212,.20);
+  color:#ccfbf1;
+}
+@media (max-width: 900px), (hover: none) and (pointer: coarse){
+  body.app-shell-ui{
+    padding-bottom:calc(var(--mobileTabsH, 82px) + 18px + env(safe-area-inset-bottom)) !important;
+  }
+  body.app-shell-ui #main{
+    height:calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
+    max-height:calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
+  }
+  .app-main-tabs{
+    position:fixed;
+    left:8px !important;
+    right:auto !important;
+    width:min(calc(100vw - 16px), 374px);
+    bottom:calc(8px + env(safe-area-inset-bottom));
+    display:flex !important;
+    gap:5px;
+    padding:8px !important;
+    border:1px solid rgba(94,234,212,.18);
+    border-radius:8px;
+    box-shadow:0 18px 44px rgba(0,0,0,.40);
+  }
+  .app-main-tabs button{
+    flex:1 1 0;
+    min-height:46px;
+    min-width:0 !important;
+    padding:6px 2px;
+    font-size:10px;
+    line-height:1.1;
+    white-space:normal;
+    overflow:hidden;
+  }
+  .app-main-view{
+    padding:10px 10px calc(var(--mobileTabsH, 82px) + 28px + env(safe-area-inset-bottom));
+  }
+  .app-view-home.active,
+  .app-codes-layout,
+  .lab-preview-grid{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .app-view-home .flex-row{
+    flex-direction:column;
+  }
+  .app-view-home .flex-row > div,
+  .app-view-home select{
+    width:100%;
+    max-width:100%;
+  }
+  .app-view-home .button-row{
+    gap:6px;
+  }
+  .app-view-home label.small{
+    align-items:flex-start !important;
+    white-space:normal;
+    line-height:1.45;
+  }
+  #riskModeText{
+    white-space:normal;
+    overflow-wrap:anywhere;
+  }
+  .lab-hero{
+    flex-direction:column;
+  }
+  .lab-mode-chip{
+    width:100%;
+    text-align:center;
+  }
+  .lab-subtabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce){
+  .app-main-view.active,
+  .lab-panel.active{
+    animation:none;
+  }
+  .app-main-tabs button,
+  body.app-shell-ui button{
+    transition:none;
+  }
 }
