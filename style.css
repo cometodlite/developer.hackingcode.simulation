@@ -1926,6 +1926,15 @@ body.app-shell-ui #tutorialStepHint{
   gap:6px;
   margin-left:auto;
 }
+.sfx-volume-row input[type="range"]{
+  accent-color:#2dd4bf;
+}
+#setSfxVolumeLabel{
+  min-width:42px;
+  color:#ccfbf1;
+  font-weight:700;
+  text-align:right;
+}
 .stage-chapter-list{
   display:flex;
   flex-direction:column;

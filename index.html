@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=2.0.0" rel="stylesheet"/>
+<link href="style.css?v=2.0.1" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">2.0.0 (Web)</span>
+<span class="header-version">2.0.1 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -324,6 +324,21 @@
 </span>
 </div>
 <div class="stat-row" style="align-items:center;">
+<span class="label" id="labelSfx">효과음</span>
+<span class="value">
+<label class="log-filter-label" style="display:inline-flex; align-items:center; gap:6px;">
+<input checked="" id="setSfx" type="checkbox"/> 사용
+                </label>
+</span>
+</div>
+<div class="stat-row sfx-volume-row" style="align-items:center;">
+<span class="label" id="labelSfxVolume">효과음 볼륨</span>
+<span class="value" style="display:flex; align-items:center; gap:10px;">
+<input id="setSfxVolume" max="100" min="0" step="5" style="width:180px;" type="range"/>
+<span id="setSfxVolumeLabel">35%</span>
+</span>
+</div>
+<div class="stat-row" style="align-items:center;">
 <span class="label" id="labelToastMs">토스트 시간</span>
 <span class="value">
 <select id="setToastMs" title="Set toast duration">
@@ -511,9 +526,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=2.0.0"></script>
-<script src="auth.js?v=2.0.0"></script>
-<script src="cloudSave.js?v=2.0.0"></script>
-<script src="app-core.js?v=2.0.0"></script>
-<script src="app-ui.js?v=2.0.0"></script></body>
+<script src="firebase-config.js?v=2.0.1"></script>
+<script src="auth.js?v=2.0.1"></script>
+<script src="cloudSave.js?v=2.0.1"></script>
+<script src="app-core.js?v=2.0.1"></script>
+<script src="app-ui.js?v=2.0.1"></script></body>
 </html>

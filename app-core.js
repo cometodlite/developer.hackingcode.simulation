@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.0.0';
+const CURRENT_VERSION = '2.0.1';
 const TUTORIAL_VERSION = 3;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -11,7 +11,7 @@ const I18N = {
     codeUpgrade:'코드 강화', codeSync:'코드 동기화', codeEvolve:'코드 진화', codeDesc1:'· 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).', codeDesc2:'· 동기화: 중복 조각을 모아 성공률 보정과 파워를 함께 강화합니다.', codeDesc3:'· 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).',
     mission:'미션', achievement:'업적', codex:'코드 도감', logs:'로그', settings:'설정', data:'클라우드 계정', quest:'퀘스트', records:'기록', envSettings:'환경 설정', dataManage:'클라우드 계정', close:'닫기',
     logSearchHelp:'로그 검색 (로그 항목 클릭 → 핀/해제)', searchPlaceholder:'검색어 입력...', clearLogs:'로그 초기화', hideLogs:'로그 숨기기', showLogs:'로그 보이기', logFilter:'로그 필터',
-    language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.',
+    language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', sfx:'효과음', sfxVolume:'효과음 볼륨', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.',
     saveNow:'저장하기', loadNow:'불러오기', clearSave:'저장 데이터 삭제', exportSave:'내보내기', importFile:'파일 불러오기', importText:'텍스트로 불러오기', importTextPlaceholder:'여기에 JSON을 붙여넣고 불러오기를 누르세요.', importTextBtn:'텍스트 불러오기', saveHelp:'· 저장 위치: 클라우드 계정<br/>· 브라우저 내부 저장은 자동 캐시와 기존 세이브 이전에만 사용됩니다.',
     shopSortUpdate:'업데이트순', shopSortNew:'신규 우선', shopSortRarity:'희귀도순', shopSortPrice:'가격순', shopSortName:'이름순', codeSortRecent:'최신', codeSortRarity:'희귀도', codeSortPower:'파워', codeSortLevel:'레벨', codeSortName:'이름',
     codexSummary:'발견 {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'기본 파워', ownedLvPwr:'보유 Lv.{lv} / PWR {pwr}', undiscoveredCode:'미발견 코드', undiscoveredDesc:'아직 발견하지 못한 코드입니다. 코드 스캔으로 해제하세요.', noCodes:'보유 코드 없음. [코드 스캔]으로 코드를 얻으세요.', selectCode:'보유 중인 코드를 선택하면 상세 정보가 표시됩니다.',
@@ -31,7 +31,7 @@ const I18N = {
     codeUpgrade:'Upgrade Code', codeSync:'Sync Code', codeEvolve:'Evolve Code', codeDesc1:'· Upgrade: costs credits based on code level and raises power (no destruction).', codeDesc2:'· Sync: spend duplicate shards to raise success bonus and power together.', codeDesc3:'· Evolve: rank up at a required level (COMMON → UNCOMMON → … → LEGENDARY).',
     mission:'Mission', achievement:'Achievements', codex:'Code Codex', logs:'Logs', settings:'Settings', data:'Cloud Account', quest:'Quests', records:'Records', envSettings:'Settings', dataManage:'Cloud Account', close:'Close',
     logSearchHelp:'Search logs (click a log entry to pin/unpin)', searchPlaceholder:'Type to search...', clearLogs:'Clear Logs', hideLogs:'Hide Logs', showLogs:'Show Logs', logFilter:'Log Filter',
-    language:'Language', fontScale:'Font Size', snow:'Snow Effect', uiScale:'UI Scale', animation:'Animation', toastTime:'Toast Duration', autosaveToast:'Autosave Toast', enabled:'Enabled', settingsHelp:'· Settings are stored with save data and remain after refresh.',
+    language:'Language', fontScale:'Font Size', snow:'Snow Effect', uiScale:'UI Scale', animation:'Animation', sfx:'Sound Effects', sfxVolume:'SFX Volume', toastTime:'Toast Duration', autosaveToast:'Autosave Toast', enabled:'Enabled', settingsHelp:'· Settings are stored with save data and remain after refresh.',
     saveNow:'Save', loadNow:'Load', clearSave:'Delete Save Data', exportSave:'Export', importFile:'Import File', importText:'Import from Text', importTextPlaceholder:'Paste JSON here and press import.', importTextBtn:'Import Text', saveHelp:'· Save location: cloud account<br/>· Browser storage is used only for automatic cache and migration.',
     shopSortUpdate:'By Update', shopSortNew:'Newest First', shopSortRarity:'By Rarity', shopSortPrice:'By Price', shopSortName:'By Name', codeSortRecent:'Recent', codeSortRarity:'Rarity', codeSortPower:'Power', codeSortLevel:'Level', codeSortName:'Name',
     codexSummary:'Discovered {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'Base Power', ownedLvPwr:'Owned Lv.{lv} / PWR {pwr}', undiscoveredCode:'Undiscovered Code', undiscoveredDesc:'You have not discovered this code yet. Unlock it by scanning codes.', noCodes:'No codes owned. Use [Scan Code] to get one.', selectCode:'Select an owned code to view details.',
@@ -404,14 +404,14 @@ function applyLanguageToUI(){
   document.querySelectorAll('[data-achievement-filter="incomplete"]').forEach(el => { el.textContent = t('achievementIncomplete'); });
   document.querySelectorAll('[data-achievement-filter="complete"]').forEach(el => { el.textContent = t('achievementComplete'); });
   const showHiddenEl=document.getElementById('chkShowHiddenAchievements'); if(showHiddenEl && showHiddenEl.parentElement){ showHiddenEl.parentElement.lastChild.textContent = ' ' + t('achievementShowHidden'); }
-  setText('labelLanguage', t('language')); setText('labelFontScale', t('fontScale')); setText('labelSnow', t('snow')); setText('labelUiScale', t('uiScale')); setText('labelAnim', t('animation')); setText('labelToastMs', t('toastTime')); setText('labelAutoSaveToast', t('autosaveToast')); setHtml('settingsHelp', t('settingsHelp'));
+  setText('labelLanguage', t('language')); setText('labelFontScale', t('fontScale')); setText('labelSnow', t('snow')); setText('labelUiScale', t('uiScale')); setText('labelAnim', t('animation')); setText('labelSfx', t('sfx')); setText('labelSfxVolume', t('sfxVolume')); setText('labelToastMs', t('toastTime')); setText('labelAutoSaveToast', t('autosaveToast')); setHtml('settingsHelp', t('settingsHelp'));
   setText('btnSaveGame', t('saveNow')); setText('btnLoadGame', t('loadNow')); setText('btnClearSave', t('clearSave')); setText('btnExportSave', t('exportSave')); setText('btnImportSaveFile', t('importFile')); setText('importTextTitle', t('importText')); const ist=document.getElementById('importSaveText'); if(ist) ist.placeholder=t('importTextPlaceholder'); setText('btnImportSaveText', t('importTextBtn')); setHtml('saveHelp', t('saveHelp'));
   const shopSort=document.getElementById('shopSortSelect'); if(shopSort){ const map=['shopSortUpdate','shopSortNew','shopSortRarity','shopSortPrice','shopSortName']; [...shopSort.options].forEach((opt,i)=>opt.text=t(map[i])); shopSort.title=t('shopSortTitle'); }
   const codeSort=document.getElementById('codeSortSelect'); if(codeSort){ const map=['codeSortRecent','codeSortRarity','codeSortPower','codeSortLevel','codeSortName']; [...codeSort.options].forEach((opt,i)=>opt.text=t(map[i])); codeSort.title=t('codeSortTitle'); }
   const setLangEl=document.getElementById('setLanguage'); if(setLangEl){ setLangEl.title=t('languageTitle'); [...setLangEl.options].forEach(opt=>{ if(opt.value==='ko') opt.textContent = getLang()==='en' ? 'Korean' : '한국어'; if(opt.value==='en') opt.textContent = 'English'; }); }
   const setUiZoomEl=document.getElementById('setUiZoom'); if(setUiZoomEl) setUiZoomEl.title=t('uiScaleTitle');
   const setToastMsEl=document.getElementById('setToastMs'); if(setToastMsEl){ setToastMsEl.title=t('toastTitle'); [...setToastMsEl.options].forEach(opt=>{ const secs=Math.round(Number(opt.value||0)/1000); opt.textContent = `${secs}${getLang()==='en' ? ' sec' : '초'}`; }); }
-  ['setSnow','setAnim'].forEach(id=>{ const input=document.getElementById(id); if(input && input.parentElement){ input.parentElement.lastChild.textContent = ' ' + t('enabled'); } });
+  ['setSnow','setAnim','setSfx'].forEach(id=>{ const input=document.getElementById(id); if(input && input.parentElement){ input.parentElement.lastChild.textContent = ' ' + t('enabled'); } });
   const ast=document.getElementById('setAutoSaveToast'); if(ast && ast.parentElement){ ast.parentElement.lastChild.textContent = ' ' + t('visible'); }
   const btnSaveGameEl=document.getElementById('btnSaveGame'); if(btnSaveGameEl) btnSaveGameEl.title=t('saveToLocal');
   const btnLoadGameEl=document.getElementById('btnLoadGame'); if(btnLoadGameEl) btnLoadGameEl.title=t('loadFromLocal');
@@ -622,6 +622,15 @@ function applyLanguageToUI(){
           'STAGE 1~100을 10챕터 아코디언 구조로 재배치하고 첫 클리어, 반복, 챕터 보상을 분리했습니다.',
           '신규 코드 30종과 신규 업적 100종, 업적 필터, Cloud-only 데이터 UI를 추가했습니다.'
         ]
+      },
+      {
+        version: '2.0.1',
+        lines: [
+          'Dev 표기 없이 2.0.0 라인의 공식 패치로 효과음 시스템을 추가했습니다.',
+          '버튼, 스캔, 해킹 성공/실패, 업그레이드, STAGE, 업적, 레벨업에 짧은 Web Audio 효과음을 연결했습니다.',
+          '설정 탭에서 효과음 ON/OFF와 볼륨을 저장할 수 있게 했습니다.',
+          '외부 음원 파일 없이 브라우저 내 합성음으로 처리해 GitHub Pages 로딩 부담을 줄였습니다.'
+        ]
       }
 
     ];
@@ -694,7 +703,7 @@ function applyLanguageToUI(){
         shop: true,
         level: true
       },
-      ui: { lang: 'ko', shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, autoSaveToast: false, logSearch: '', snowEnabled: null, achievementFilter: 'incomplete', showHiddenAchievements: false },
+      ui: { lang: 'ko', shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, sfxEnabled: true, sfxVolume: 35, autoSaveToast: false, logSearch: '', snowEnabled: null, achievementFilter: 'incomplete', showHiddenAchievements: false },
       stats: {
         scanCount: 0,
         hackSuccessCount: 0,
@@ -1867,6 +1876,9 @@ function applyLanguageToUI(){
     const setSnow = document.getElementById('setSnow');
     const setUiZoom = document.getElementById('setUiZoom');
     const setAnim = document.getElementById('setAnim');
+    const setSfx = document.getElementById('setSfx');
+    const setSfxVolume = document.getElementById('setSfxVolume');
+    const setSfxVolumeLabel = document.getElementById('setSfxVolumeLabel');
     const setToastMs = document.getElementById('setToastMs');
     const setAutoSaveToast = document.getElementById('setAutoSaveToast');
 
@@ -2258,6 +2270,138 @@ function applyLanguageToUI(){
       }
     }
 
+    const sfxState = {
+      ctx: null,
+      unlocked: false,
+      lastTapAt: 0
+    };
+
+    function getSfxVolume() {
+      const raw = state.ui && Number.isFinite(Number(state.ui.sfxVolume)) ? Number(state.ui.sfxVolume) : 35;
+      return Math.max(0, Math.min(1, raw / 100));
+    }
+
+    function isSfxEnabled() {
+      return !!(state.ui && state.ui.sfxEnabled !== false && getSfxVolume() > 0);
+    }
+
+    function getAudioContext() {
+      if (sfxState.ctx) return sfxState.ctx;
+      const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextCtor) return null;
+      try {
+        sfxState.ctx = new AudioContextCtor();
+      } catch (e) {
+        sfxState.ctx = null;
+      }
+      return sfxState.ctx;
+    }
+
+    function unlockSfx() {
+      if (!isSfxEnabled()) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      sfxState.unlocked = true;
+    }
+
+    function playTone(ctx, start, freq, duration, type, gainValue, endFreq = null) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, start);
+      if (endFreq) {
+        osc.frequency.exponentialRampToValueAtTime(Math.max(20, endFreq), start + duration);
+      }
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, gainValue), start + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + duration + 0.02);
+    }
+
+    function playNoise(ctx, start, duration, gainValue, filterFreq = 1200) {
+      const sampleRate = ctx.sampleRate || 44100;
+      const buffer = ctx.createBuffer(1, Math.max(1, Math.floor(sampleRate * duration)), sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+      const source = ctx.createBufferSource();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(filterFreq, start);
+      filter.Q.setValueAtTime(1.4, start);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, gainValue), start + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      source.buffer = buffer;
+      source.connect(filter).connect(gain).connect(ctx.destination);
+      source.start(start);
+      source.stop(start + duration + 0.02);
+    }
+
+    function playSfx(name) {
+      if (!isSfxEnabled()) return;
+      const ctx = getAudioContext();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      const now = ctx.currentTime + 0.005;
+      const v = getSfxVolume();
+
+      switch (name) {
+        case 'tap':
+          if (Date.now() - sfxState.lastTapAt < 55) return;
+          sfxState.lastTapAt = Date.now();
+          playTone(ctx, now, 520, 0.045, 'triangle', 0.035 * v, 760);
+          break;
+        case 'scanStart':
+          playNoise(ctx, now, 0.11, 0.028 * v, 1800);
+          playTone(ctx, now + 0.04, 440, 0.08, 'sawtooth', 0.018 * v, 880);
+          break;
+        case 'scanComplete':
+          playTone(ctx, now, 660, 0.07, 'sine', 0.04 * v, 990);
+          playTone(ctx, now + 0.065, 990, 0.08, 'sine', 0.032 * v, 1320);
+          break;
+        case 'success':
+          playTone(ctx, now, 523.25, 0.08, 'triangle', 0.045 * v, 659.25);
+          playTone(ctx, now + 0.07, 783.99, 0.11, 'triangle', 0.04 * v, 1046.5);
+          break;
+        case 'fail':
+          playTone(ctx, now, 260, 0.12, 'sawtooth', 0.04 * v, 140);
+          playNoise(ctx, now + 0.03, 0.10, 0.016 * v, 360);
+          break;
+        case 'upgrade':
+          playTone(ctx, now, 392, 0.07, 'square', 0.026 * v, 587);
+          playTone(ctx, now + 0.065, 784, 0.10, 'triangle', 0.042 * v, 1175);
+          break;
+        case 'achievement':
+          playTone(ctx, now, 660, 0.08, 'sine', 0.038 * v, 880);
+          playTone(ctx, now + 0.07, 990, 0.09, 'sine', 0.036 * v, 1320);
+          playTone(ctx, now + 0.15, 1320, 0.12, 'triangle', 0.03 * v, 1760);
+          break;
+        case 'level':
+          playTone(ctx, now, 392, 0.10, 'triangle', 0.035 * v, 523);
+          playTone(ctx, now + 0.09, 659, 0.11, 'triangle', 0.04 * v, 880);
+          playTone(ctx, now + 0.19, 1046, 0.13, 'sine', 0.032 * v, 1318);
+          break;
+        case 'mode':
+          playTone(ctx, now, 330, 0.06, 'triangle', 0.028 * v, 660);
+          playTone(ctx, now + 0.05, 440, 0.07, 'square', 0.018 * v, 880);
+          break;
+        case 'stage':
+          playNoise(ctx, now, 0.08, 0.018 * v, 900);
+          playTone(ctx, now + 0.035, 220, 0.09, 'sawtooth', 0.026 * v, 440);
+          break;
+        default:
+          playTone(ctx, now, 600, 0.06, 'sine', 0.025 * v, 720);
+      }
+    }
+
 
     function requiredExp(level) {
       const base = 20 + (level - 1) * 10;
@@ -2286,6 +2430,7 @@ function applyLanguageToUI(){
       state.requiredExp = requiredExp(state.level);
       state.credits += 50;
       state.stats.creditsEarnedTotal += 50;
+      playSfx('level');
       log(t('levelUpLog', { lv: state.level }), 'level');
 
       state.missionProgress.weekly.levelReached = Math.max(
@@ -2833,6 +2978,7 @@ function applyLanguageToUI(){
         state.items = state.items || { energyPack: 0 };
         state.items.energyPack = (state.items.energyPack || 0) + reward.energyPack;
       }
+      playSfx('achievement');
       log(stageCopy(`CH.${chapter.index} 클리어 보상 지급: ${getStageChapterRewardText(chapter.index)}`, `CH.${chapter.index} reward claimed: ${getStageChapterRewardText(chapter.index)}`), 'system');
       showToast(stageCopy(`CH.${chapter.index} 보상 지급`, `CH.${chapter.index} reward claimed`), 'achievement');
     }
@@ -3018,6 +3164,7 @@ function applyLanguageToUI(){
         applyStageChapterReward(stage.chapter);
 
         const rewardText = getStageRewardText(reward);
+        playSfx('stage');
         const msg = stageCopy(
           `${stage.name} 클리어! 성공률 ${Math.round(successInfo.chance * 100)}%. ${rewardText}`,
           `${stage.name} cleared! Chance ${Math.round(successInfo.chance * 100)}%. ${rewardText}`
@@ -3027,6 +3174,7 @@ function applyLanguageToUI(){
         checkMissions('general');
         checkAchievements('stage');
       } else {
+        playSfx('fail');
         const msg = stageCopy(
           `${stage.name} 실패. 예상 성공률 ${Math.round(successInfo.chance * 100)}%였습니다.`,
           `${stage.name} failed. Estimated chance was ${Math.round(successInfo.chance * 100)}%.`
@@ -3062,6 +3210,7 @@ function applyLanguageToUI(){
       code.power += powerBonus;
       state.stats.codeSyncCount = (state.stats.codeSyncCount || 0) + 1;
 
+      playSfx('upgrade');
       log(t('syncDone', { name: code.name, lv: code.syncLevel, pwr: powerBonus, rate: Math.round(getSyncSuccessBonus(code.syncLevel) * 100) }), 'system');
       showToast(t('syncToast', { name: code.name, lv: code.syncLevel }), 'system');
       updateStatsUI();
@@ -3083,6 +3232,7 @@ function applyLanguageToUI(){
       code.level++;
       code.power += 5;
       state.stats.codeUpgradeCount = (state.stats.codeUpgradeCount || 0) + 1;
+      playSfx('upgrade');
       log(t('upgradeDone', { name: code.name, lv: code.level, pwr: code.power, cost }), 'system');
       updateStatsUI();
       renderStagePanel();
@@ -3112,6 +3262,7 @@ function applyLanguageToUI(){
       code.rarity = nextRarity;
       code.power += 10;
       state.stats.codeEvolutionCount = (state.stats.codeEvolutionCount || 0) + 1;
+      playSfx('upgrade');
       log(t('evolveDone', { name: code.name, rarity: nextRarity, pwr: code.power }), 'system');
 
       if (nextRarity === 'EPIC' || nextRarity === 'LEGENDARY') {
@@ -3537,12 +3688,14 @@ function applyLanguageToUI(){
       const rarity = rollRarity(activeEffect);
       const duration = getScanDurationForRarity(rarity, activeEffect);
 
+      playSfx('scanStart');
       setNodeDisabled(btnScan, true);
       setNodeDisabled(btnHack, true);
       setNodeDisabled(btnUpgradeCpu, true);
       setNodeDisabled(btnUpgradeGpu, true);
 
       runScanAnimation(duration, () => {
+        playSfx('scanComplete');
         const templates = Object.values(codeDefs).filter(d => d.rarity === rarity);
         let chosen = null;
 
@@ -3688,6 +3841,7 @@ function applyLanguageToUI(){
       code.usage = (code.usage || 0) + 1;
 
       if (success) {
+        playSfx('success');
         const rawReward =
           server.minReward + Math.random() * (server.maxReward - server.minReward);
         const economyNerf = modeInfo.id === 'normal' ? 0.65 : 0.8;
@@ -3746,6 +3900,7 @@ function applyLanguageToUI(){
           }
         }
       } else {
+        playSfx('fail');
         log(
           t('hackFailLog', { server: localizeServerName(server), chance: Math.round(successChance * 100) }),
           'hack'
@@ -3797,6 +3952,7 @@ function applyLanguageToUI(){
       }
       state.credits -= cost;
       state.cpuTier += 1;
+      playSfx('upgrade');
       log(`CPU 업그레이드 완료! 현재 티어: ${state.cpuTier} (소모 크레딧 ${cost})`, 'system');
       if (state.cpuTier >= 15) {
         unlockAchievement('cpu_tier_5');
@@ -3817,6 +3973,7 @@ function applyLanguageToUI(){
       state.credits -= cost;
       state.gpuTier = tier + 1;
       state.stats.gpuUpgradeCount = (state.stats.gpuUpgradeCount || 0) + 1;
+      playSfx('upgrade');
       log(t('gpuUpgradeLog', { tier: state.gpuTier, cost }), 'system');
       showToast(t('gpuUpgradeLog', { tier: state.gpuTier, cost }), 'system');
       updateStatsUI();
@@ -4040,6 +4197,7 @@ function applyLanguageToUI(){
       if (!def) return;
       state.achievements[id] = true;
       const achName = localizeAchievementName(def);
+      playSfx('achievement');
       log(t('achievementLog', { name: achName }), 'system');
       showToast(t('toastAchievement', { name: achName }), 'achievement');
       renderAchievements();
@@ -4681,6 +4839,8 @@ function applyLanguageToUI(){
         state.ui.fontScale = state.ui.fontScale || 100;
         state.ui.snowEnabled = (typeof state.ui.snowEnabled === 'boolean') ? state.ui.snowEnabled : null;
         state.ui.anim = (typeof state.ui.anim === 'boolean') ? state.ui.anim : true;
+        state.ui.sfxEnabled = (typeof state.ui.sfxEnabled === 'boolean') ? state.ui.sfxEnabled : true;
+        state.ui.sfxVolume = Number.isFinite(Number(state.ui.sfxVolume)) ? Math.max(0, Math.min(100, Number(state.ui.sfxVolume))) : 35;
         state.ui.autoSaveToast = !!state.ui.autoSaveToast;
         state.ui.logSearch = state.ui.logSearch || '';
         state.ui.achievementFilter = ['all', 'incomplete', 'complete'].includes(state.ui.achievementFilter) ? state.ui.achievementFilter : 'incomplete';
@@ -4731,6 +4891,12 @@ function applyLanguageToUI(){
     });
     bind(window, 'beforeunload', () => {
       persistLastSeenAt(Date.now());
+    });
+    bind(document, 'pointerdown', unlockSfx, { passive: true });
+    bind(document, 'keydown', unlockSfx);
+    bind(document, 'click', (e) => {
+      const target = e.target && e.target.closest ? e.target.closest('button,[role="button"],select') : null;
+      if (target && !target.disabled) playSfx('tap');
     });
 
     setInterval(() => {
@@ -4835,6 +5001,9 @@ function applyLanguageToUI(){
       }
       if (setUiZoom) setUiZoom.value = String(ui.uiZoom || 1);
       if (setAnim) setAnim.checked = ui.anim !== false;
+      if (setSfx) setSfx.checked = ui.sfxEnabled !== false;
+      if (setSfxVolume) setSfxVolume.value = String(Number.isFinite(Number(ui.sfxVolume)) ? Number(ui.sfxVolume) : 35);
+      if (setSfxVolumeLabel) setNodeText(setSfxVolumeLabel, `${setSfxVolume ? setSfxVolume.value : 35}%`);
       if (setToastMs) setToastMs.value = String(ui.toastDurationMs || 3000);
       if (setAutoSaveToast) setAutoSaveToast.checked = !!ui.autoSaveToast;
       if (setLanguage) setLanguage.value = ui.lang || 'ko';
@@ -4880,6 +5049,28 @@ function applyLanguageToUI(){
       setAnim.addEventListener('change', () => {
         state.ui.anim = !!setAnim.checked;
         applySettings();
+        scheduleSilentSave();
+      });
+    }
+    if (setSfx) {
+      setSfx.addEventListener('change', () => {
+        state.ui.sfxEnabled = !!setSfx.checked;
+        if (state.ui.sfxEnabled) {
+          unlockSfx();
+          playSfx('success');
+        }
+        scheduleSilentSave();
+      });
+    }
+    if (setSfxVolume) {
+      setSfxVolume.addEventListener('input', () => {
+        state.ui.sfxVolume = Number(setSfxVolume.value);
+        setNodeText(setSfxVolumeLabel, `${setSfxVolume.value}%`);
+      });
+      setSfxVolume.addEventListener('change', () => {
+        state.ui.sfxVolume = Number(setSfxVolume.value);
+        unlockSfx();
+        playSfx('tap');
         scheduleSilentSave();
       });
     }
@@ -4997,6 +5188,7 @@ function applyLanguageToUI(){
         }
         state.hackMode = mode;
         state.riskMode = mode === 'risk';
+        playSfx('mode');
         log(t('hackModeLog', { mode: getHackModeInfo(mode).label }), 'system');
         renderHackModeUI();
         scheduleSilentSave();
