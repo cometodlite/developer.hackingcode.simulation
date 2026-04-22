@@ -11,6 +11,25 @@
 })();
 
 
+// --- Touch/zoom guard (mobile double-tap/pinch accidental zoom) ---
+(function(){
+  let lastTouchEnd = 0;
+  function isEditable(target){
+    return !!(target && target.closest && target.closest('input, textarea, select, [contenteditable="true"]'));
+  }
+  document.addEventListener('gesturestart', ev => {
+    ev.preventDefault();
+  }, { passive:false });
+  document.addEventListener('touchend', ev => {
+    const now = Date.now();
+    if (!isEditable(ev.target) && now - lastTouchEnd <= 320) {
+      ev.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive:false });
+})();
+
+
 
 // --- Layout vars sync (header/tabs/viewport). Fixes initial "pushed up" until a UI event happens. ---
 (function(){
@@ -284,23 +303,23 @@
   function buildLab(){
     if(document.getElementById('labContent')) return;
     views.lab.innerHTML = `
-      <div class="lab-hero" id="labContent">
-        <div>
-          <div class="section-title">LAB</div>
-          <h2>LAB</h2>
-          <p>스테이지와 다음 실험을 여기서 관리합니다.</p>
-        </div>
-        <div class="lab-mode-chip">LAB ONLINE</div>
-      </div>
+	      <div class="lab-hero" id="labContent">
+	        <div>
+	          <div class="section-title">LAB</div>
+	          <h2>LAB</h2>
+	          <p>데이터 타워와 다음 실험을 여기서 관리합니다.</p>
+	        </div>
+	        <div class="lab-mode-chip">LAB ONLINE</div>
+	      </div>
       <div class="lab-subtabs" id="labSubtabs">
-        <button type="button" class="active" data-lab-tab="stage">STAGE</button>
+        <button type="button" class="active" data-lab-tab="stage">데이터 타워</button>
         <button type="button" data-lab-tab="coming">COMING SOON</button>
       </div>
       <section class="lab-panel active" data-lab-panel="stage">
         <div class="stage-head">
           <div>
-            <span class="badge">STAGE</span>
-            <h3>Stage 1-100</h3>
+            <span class="badge">DATA TOWER</span>
+            <h3>데이터 타워 1-100</h3>
             <p>챕터를 열어 바로 도전하세요. 보상은 첫 클리어, 반복, 챕터로 나뉩니다.</p>
           </div>
           <div class="stage-summary" id="stageSummary">
@@ -308,14 +327,14 @@
             <div><span>CLEARED</span><strong>0 / 100</strong></div>
             <div><span>ATTEMPTS</span><strong>0</strong></div>
           </div>
-        </div>
-        <div class="stage-detail" id="stageDetail">
-          <span class="badge">READY</span>
-          <h4>스테이지 선택 대기</h4>
-          <p>챕터를 선택하면 추천값과 보상이 표시됩니다.</p>
-        </div>
-        <div class="stage-chapter-list" id="stageChapterList" aria-label="Stage chapters"></div>
-      </section>
+	        </div>
+	        <div class="stage-detail" id="stageDetail">
+	          <span class="badge">READY</span>
+	          <h4>데이터 타워 선택 대기</h4>
+	          <p>챕터를 선택하면 추천값과 보상이 표시됩니다.</p>
+	        </div>
+	        <div class="stage-chapter-list" id="stageChapterList" aria-label="Data Tower chapters"></div>
+	      </section>
       <section class="lab-panel" data-lab-panel="coming">
         <span class="badge">NEXT</span>
         <h3>준비 중</h3>

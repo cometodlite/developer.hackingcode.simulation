@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.1.0';
+const CURRENT_VERSION = '2.1.1';
 const TUTORIAL_VERSION = 3;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -21,7 +21,7 @@ const I18N = {
     saveStateSaved:'게임 상태가 클라우드 캐시에 저장되었습니다.', saveComplete:'클라우드 캐시 저장 완료', autosaveComplete:'✅ 자동 캐시 저장 완료', noSavedData:'저장된 데이터가 없습니다.', saveLoaded:'저장된 데이터를 불러왔습니다.', saveLoadError:'저장 데이터를 불러오는 중 오류가 발생했습니다.', saveDeleted:'저장 데이터가 삭제되었습니다.', exportFail:'내보내기 실패 (콘솔 확인)', hackModeLog:'해킹 모드: {mode}', riskPenaltyLog:'RISK 실패 페널티: 에너지가 추가로 1 소모되었습니다.', extremePenaltyLog:'EXTREME 실패 페널티: 에너지가 추가로 2 소모되었습니다.', gpuUpgradeLog:'GPU 업그레이드 완료! 현재 티어: {tier} (소모 크레딧 {cost})', gpuUpgradeFail:'GPU 업그레이드 실패: 크레딧이 부족합니다. (필요: {cost})', loadoutSaved:'로드아웃 슬롯 {slot}에 현재 설정을 저장했습니다.', loadoutEmpty:'로드아웃 슬롯 {slot}에 저장된 설정이 없습니다.', loadoutLoaded:'로드아웃 슬롯 {slot}을 불러왔습니다.',
     toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +50 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
     noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.',
-    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'STAGE', mobileComing:'COMING SOON', tutorialReplay:'튜토리얼 다시 보기', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
+    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'데이터 타워', mobileComing:'COMING SOON', tutorialReplay:'튜토리얼 다시 보기', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
   },
   en: {
     appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
@@ -42,7 +42,7 @@ const I18N = {
     toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +50.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
     noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.',
     noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
-    ,mobileMore:'MORE', mobileLab:'LAB', mobileStage:'STAGE', tutorialReplay:'Replay Tutorial'
+    ,mobileMore:'MORE', mobileLab:'LAB', mobileStage:'DATA TOWER', tutorialReplay:'Replay Tutorial'
   }
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
@@ -592,7 +592,7 @@ function applyLanguageToUI(){
         version: 'v1.7.0-priority1-lab',
         lines: [
           '메인 구조를 HOME / CODES / SHOP / MORE / LAB 5패널로 재구성했습니다.',
-          'COMING SOON을 LAB 내부 하위 패널로 이동하고 STAGE 프리뷰 셸을 추가했습니다.',
+          'COMING SOON을 LAB 내부 하위 패널로 이동하고 데이터 타워 프리뷰 셸을 추가했습니다.',
           'MORE를 메인 패널로 승격하고, 튜토리얼 다시 보기를 MORE에서 실행할 수 있게 했습니다.',
           '새 온보딩 튜토리얼 v2와 부드러운 패널 전환 스타일을 적용했습니다.'
         ]
@@ -600,10 +600,10 @@ function applyLanguageToUI(){
       {
         version: 'v1.8.0-stage-100',
         lines: [
-          'LAB > STAGE에 1~100 도전 구간을 정식 추가했습니다.',
+          'LAB > 데이터 타워에 1~100 도전 구간을 정식 추가했습니다.',
           '5개 챕터, 추천 레벨/파워/코드, 첫 클리어 보상과 반복 보상을 분리했습니다.',
           '스테이지 클리어 기록과 최고 도달 구간을 기존 저장 데이터와 호환되도록 추가했습니다.',
-          '활성 코드, CPU 티어, 코드 동기화 보정이 STAGE 성공률에 반영됩니다.'
+          '활성 코드, CPU 티어, 코드 동기화 보정이 데이터 타워 성공률에 반영됩니다.'
         ]
       },
       {
@@ -612,7 +612,7 @@ function applyLanguageToUI(){
           '중복되던 MORE 메인 패널을 제거하고 헤더 더보기 모달 전용으로 되돌렸습니다.',
           '메인 탭 순서를 HOME / CODES / SHOP / LAB / COMING SOON으로 정리했습니다.',
           'COMING SOON을 LAB 내부 하위 메뉴에서 독립 메인 패널로 이동했습니다.',
-          'LAB은 STAGE 1~100 도전 콘텐츠 중심으로 더 명확하게 정리했습니다.'
+          'LAB은 데이터 타워 1~100 도전 콘텐츠 중심으로 더 명확하게 정리했습니다.'
         ]
       },
       {
@@ -620,7 +620,7 @@ function applyLanguageToUI(){
         lines: [
           '숫자 버전 체계로 전환하고 HOME / CODES / SHOP / LAB / COMING SOON 구조를 2.0.0 기준으로 정리했습니다.',
           'NORMAL / RISK / EXTREME 해킹 모드와 GPU 티어 업그레이드를 정식 추가했습니다.',
-          'STAGE 1~100을 10챕터 아코디언 구조로 재배치하고 첫 클리어, 반복, 챕터 보상을 분리했습니다.',
+          '데이터 타워 1~100을 10챕터 아코디언 구조로 재배치하고 첫 클리어, 반복, 챕터 보상을 분리했습니다.',
           '신규 코드 30종과 신규 업적 100종, 업적 필터, Cloud-only 데이터 UI를 추가했습니다.'
         ]
       },
@@ -628,7 +628,7 @@ function applyLanguageToUI(){
         version: '2.0.1',
         lines: [
           'Dev 표기 없이 2.0.0 라인의 공식 패치로 효과음 시스템을 추가했습니다.',
-          '버튼, 스캔, 해킹 성공/실패, 업그레이드, STAGE, 업적, 레벨업에 짧은 Web Audio 효과음을 연결했습니다.',
+          '버튼, 스캔, 해킹 성공/실패, 업그레이드, 데이터 타워, 업적, 레벨업에 짧은 Web Audio 효과음을 연결했습니다.',
           '설정 탭에서 효과음 ON/OFF와 볼륨을 저장할 수 있게 했습니다.',
           '외부 음원 파일 없이 브라우저 내 합성음으로 처리해 GitHub Pages 로딩 부담을 줄였습니다.'
         ]
@@ -649,6 +649,15 @@ function applyLanguageToUI(){
           'Firebase 실시간 운영 문서로 공지, 노드 상태, 전역 피드, 소프트 랭킹을 표시합니다.',
           '로그인 사용자의 presence heartbeat와 닉네임/Callsign 표시 모드를 추가했습니다.',
           'Firebase 또는 로그인 상태가 준비되지 않으면 LOCAL MIRROR 모드로 안전하게 표시합니다.'
+        ]
+      },
+      {
+        version: '2.1.1',
+        lines: [
+          'HOME에서 ACTIONS와 Network Pulse가 겹치지 않도록 배치를 정리했습니다.',
+          'LIVE NET 기본 상태와 Firestore 권한 대기 안내를 더 명확하게 표시합니다.',
+          '모바일 터치/줌 방지 처리를 한 단계 더 보강했습니다.',
+          '데이터 타워 표시명을 정리했습니다.'
         ]
       }
 
@@ -1064,10 +1073,10 @@ function applyLanguageToUI(){
       },
       stage_marker: {
         id: 'stage_marker',
-        name: 'Stage_Marker',
+        name: 'Tower_Marker',
         rarity: 'COMMON',
         basePower: 18,
-        description: 'STAGE 성공률 +2%p.',
+        description: '데이터 타워 성공률 +2%p.',
         effect: { stageChance: 0.02 }
       },
       chapter_key: {
@@ -1075,7 +1084,7 @@ function applyLanguageToUI(){
         name: 'Chapter_Key',
         rarity: 'UNCOMMON',
         basePower: 21,
-        description: 'STAGE 반복 보상 크레딧 +10%.',
+        description: '데이터 타워 반복 보상 크레딧 +10%.',
         effect: { stageRepeatCreditBonus: 0.1 }
       },
       trial_compass: {
@@ -1083,7 +1092,7 @@ function applyLanguageToUI(){
         name: 'Trial_Compass',
         rarity: 'UNCOMMON',
         basePower: 20,
-        description: 'STAGE 성공률 +4%p.',
+        description: '데이터 타워 성공률 +4%p.',
         effect: { stageChance: 0.04 }
       },
       boss_keygen: {
@@ -1091,7 +1100,7 @@ function applyLanguageToUI(){
         name: 'Boss_Keygen',
         rarity: 'RARE',
         basePower: 25,
-        description: '보스 STAGE 성공률 +8%p.',
+        description: '보스 데이터 타워 성공률 +8%p.',
         effect: { bossStageChance: 0.08 }
       },
       repeat_engine: {
@@ -1099,15 +1108,15 @@ function applyLanguageToUI(){
         name: 'Repeat_Engine',
         rarity: 'EPIC',
         basePower: 30,
-        description: 'STAGE 반복 보상 크레딧 +20%, EXP +12%.',
+        description: '데이터 타워 반복 보상 크레딧 +20%, EXP +12%.',
         effect: { stageRepeatCreditBonus: 0.2, stageRepeatExpBonus: 0.12 }
       },
       stage_sovereign: {
         id: 'stage_sovereign',
-        name: 'Stage_Sovereign',
+        name: 'Tower_Sovereign',
         rarity: 'LEGENDARY',
         basePower: 37,
-        description: 'STAGE 성공률과 반복 보상을 크게 강화합니다.',
+        description: '데이터 타워 성공률과 반복 보상을 크게 강화합니다.',
         effect: { stageChance: 0.08, bossStageChance: 0.08, stageRepeatCreditBonus: 0.3, stageRepeatExpBonus: 0.18 }
       }
     };
@@ -1484,9 +1493,9 @@ function applyLanguageToUI(){
       { id: 'gen_hybrid_10', name: '하이브리드 머신', type: 'hybridTier', target: 10, rewardCredits: 1400, desc: 'CPU와 GPU를 모두 티어 10 이상 달성' },
       { id: 'gen_extreme_10', name: '익스트림 입문', type: 'extremeHackSuccess', target: 10, rewardCredits: 500, desc: 'EXTREME 해킹 성공 10회' },
       { id: 'gen_extreme_25', name: '익스트림 러너', type: 'extremeHackSuccess', target: 25, rewardCredits: 850, desc: 'EXTREME 해킹 성공 25회' },
-      { id: 'gen_stage_25', name: '스테이지 러너', type: 'stageHighest', target: 25, rewardCredits: 650, desc: 'STAGE 25까지 클리어' },
-      { id: 'gen_stage_50', name: '챕터 브레이커', type: 'stageHighest', target: 50, rewardCredits: 1100, desc: 'STAGE 50까지 클리어' },
-      { id: 'gen_stage_100', name: '스테이지 정복자', type: 'stageHighest', target: 100, rewardCredits: 2200, desc: 'STAGE 100까지 클리어' }
+      { id: 'gen_stage_25', name: '타워 러너', type: 'stageHighest', target: 25, rewardCredits: 650, desc: '데이터 타워 25까지 클리어' },
+      { id: 'gen_stage_50', name: '챕터 브레이커', type: 'stageHighest', target: 50, rewardCredits: 1100, desc: '데이터 타워 50까지 클리어' },
+      { id: 'gen_stage_100', name: '데이터 타워 정복자', type: 'stageHighest', target: 100, rewardCredits: 2200, desc: '데이터 타워 100까지 클리어' }
     );
 
     // 경제/성장 너프 2차: 미션/업적 연계 보상 축소
@@ -1657,13 +1666,13 @@ function applyLanguageToUI(){
         ['듀얼 파이프라인 I', '듀얼 파이프라인 II', '하이브리드 머신', '하이브리드 코어'],
         'CPU와 GPU를 모두 티어 {v} 이상으로 올렸습니다.', 3),
 
-      // STAGE 16
+      // Data Tower 16
       ...createAchievementSeries('v200_stage', 'stageHighest', [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-        ['챕터 1 클리어', '챕터 2 클리어', '챕터 3 클리어', '챕터 4 클리어', '챕터 5 클리어', '챕터 6 클리어', '챕터 7 클리어', '챕터 8 클리어', '챕터 9 클리어', 'STAGE 100 클리어'],
-        'STAGE {v}까지 클리어했습니다.', 8),
+        ['챕터 1 클리어', '챕터 2 클리어', '챕터 3 클리어', '챕터 4 클리어', '챕터 5 클리어', '챕터 6 클리어', '챕터 7 클리어', '챕터 8 클리어', '챕터 9 클리어', '데이터 타워 100 클리어'],
+        '데이터 타워 {v}까지 클리어했습니다.', 8),
       ...createAchievementSeries('v200_stage_repeat', 'stageClearCount', [25, 50, 100, 200],
-        ['스테이지 반복 I', '스테이지 반복 II', '스테이지 반복 III', '스테이지 반복 IV'],
-        'STAGE를 누적 {v}회 클리어했습니다.', 3),
+        ['타워 반복 I', '타워 반복 II', '타워 반복 III', '타워 반복 IV'],
+        '데이터 타워를 누적 {v}회 클리어했습니다.', 3),
       ...createAchievementSeries('v200_chapter_reward', 'chapterRewardCount', [5, 10],
         ['챕터 보상 수집가', '챕터 보상 완성'],
         '챕터 클리어 보상을 {v}개 수령했습니다.', 1),
@@ -1680,7 +1689,7 @@ function applyLanguageToUI(){
       ...createAchievementSeries('v200_hidden_codex', 'codexCount', [Object.keys(codeDefs).length],
         ['완전한 도감'], '현재 코드 도감 전체를 발견했습니다.', 0),
       ...createAchievementSeries('v200_hidden_stage_repeat', 'stageClearCount', [500],
-        ['반복의 미학'], 'STAGE를 누적 {v}회 클리어했습니다.', 0),
+        ['반복의 미학'], '데이터 타워를 누적 {v}회 클리어했습니다.', 0),
       ...createAchievementSeries('v200_hidden_extreme', 'extremeHackSuccess', [500],
         ['극한의 끝'], 'EXTREME 해킹 성공 {v}회를 달성했습니다.', 0),
       ...createAchievementSeries('v200_hidden_mission', 'missionsCompleted', [200],
@@ -1947,21 +1956,21 @@ function applyLanguageToUI(){
     function getTutorialSteps() {
       if (getLang() === 'en') {
         return [
-          { title: 'Start', text: 'Scan a code, pick it, then hack. STAGE starts from LAB.', hint: 'Tap Next.' },
+          { title: 'Start', text: 'Scan a code, pick it, then hack. Data Tower starts from LAB.', hint: 'Tap Next.' },
           { title: 'HOME', text: 'Check energy, choose a server, set NORMAL/RISK/EXTREME, and upgrade CPU or GPU.', hint: 'CPU helps control. GPU boosts repeat rewards.' },
-          { title: 'CODES', text: 'Manage code upgrades, sync, evolution, and the active code.', hint: 'The active code drives hacking and STAGE.' },
+          { title: 'CODES', text: 'Manage code upgrades, sync, evolution, and the active code.', hint: 'The active code drives hacking and Data Tower.' },
           { title: 'SHOP', text: 'Buy energy, system, economy, and utility items.', hint: 'Use filters when the list gets long.' },
-          { title: 'LAB', text: 'Open STAGE 1-100 here. Each chapter can be folded.', hint: 'First clear, repeat clear, and chapter rewards are separate.' },
+          { title: 'LAB', text: 'Open Data Tower 1-100 here. Each chapter can be folded.', hint: 'First clear, repeat clear, and chapter rewards are separate.' },
           { title: 'COMING SOON', text: 'Future modes and season content will land here.', hint: 'Cloud account tools are in More.' },
           { title: 'Ready', text: 'NORMAL is steady. RISK pays more. EXTREME opens at Lv.5.', hint: 'Tap Start.' }
         ];
       }
       return [
-        { title: '시작', text: '코드를 스캔하고, 하나를 고른 뒤 서버를 해킹합니다. STAGE는 LAB에서 시작합니다.', hint: '다음을 누르세요.' },
+        { title: '시작', text: '코드를 스캔하고, 하나를 고른 뒤 서버를 해킹합니다. 데이터 타워는 LAB에서 시작합니다.', hint: '다음을 누르세요.' },
         { title: 'HOME', text: '에너지, 서버, 해킹 난이도, CPU/GPU 업그레이드를 관리합니다.', hint: 'CPU는 제어, GPU는 반복 보상입니다.' },
-        { title: 'CODES', text: '코드 강화, 동기화, 진화, 활성 코드를 관리합니다.', hint: '활성 코드가 해킹과 STAGE에 쓰입니다.' },
+        { title: 'CODES', text: '코드 강화, 동기화, 진화, 활성 코드를 관리합니다.', hint: '활성 코드가 해킹과 데이터 타워에 쓰입니다.' },
         { title: 'SHOP', text: '에너지, 시스템, 경제, 유틸 아이템을 구매합니다.', hint: '목록이 길면 분류를 쓰세요.' },
-        { title: 'LAB', text: 'STAGE 1~100을 진행합니다. 챕터는 접고 펼칠 수 있습니다.', hint: '첫 클리어, 반복, 챕터 보상은 따로 계산됩니다.' },
+        { title: 'LAB', text: '데이터 타워 1~100을 진행합니다. 챕터는 접고 펼칠 수 있습니다.', hint: '첫 클리어, 반복, 챕터 보상은 따로 계산됩니다.' },
         { title: 'COMING SOON', text: '다음 모드와 시즌 콘텐츠가 이곳에 들어옵니다.', hint: '클라우드 계정은 더보기에서 관리합니다.' },
         { title: '준비 완료', text: 'NORMAL은 안정적입니다. RISK는 보상이 큽니다. EXTREME은 Lv.5부터 열립니다.', hint: '시작하기를 누르세요.' }
       ];
@@ -2853,8 +2862,8 @@ function applyLanguageToUI(){
       { index: 6, from: 51, to: 60, title: '보상 증폭 테스트', titleEn: 'Reward Amplifier', theme: 'REWARD', hint: 'Vault_Siphon / Reward_Kernel' },
       { index: 7, from: 61, to: 70, title: '고위험 서버전', titleEn: 'Risk Serverline', theme: 'RISK', hint: 'Overclock_Guard / Quantum_Splice' },
       { index: 8, from: 71, to: 80, title: '익스트림 프리즘', titleEn: 'Extreme Prism', theme: 'EXTREME', hint: 'Abyss_Contract / Singular_Gambit' },
-      { index: 9, from: 81, to: 90, title: '스테이지 코어', titleEn: 'Stage Core', theme: 'STAGE', hint: 'Repeat_Engine / Boss_Keygen' },
-      { index: 10, from: 91, to: 100, title: '최종 코어 챌린지', titleEn: 'Final Core Challenge', theme: 'CORE', hint: 'Stage_Sovereign / Singularity_Root' }
+      { index: 9, from: 81, to: 90, title: '데이터 타워 코어', titleEn: 'Data Tower Core', theme: 'TOWER', hint: 'Repeat_Engine / Boss_Keygen' },
+      { index: 10, from: 91, to: 100, title: '최종 코어 챌린지', titleEn: 'Final Core Challenge', theme: 'CORE', hint: 'Tower_Sovereign / Singularity_Root' }
     ];
 
     function stageCopy(ko, en) {
@@ -2878,7 +2887,7 @@ function applyLanguageToUI(){
           number,
           chapter,
           boss,
-          name: `STAGE ${String(number).padStart(3, '0')}`,
+          name: `데이터 타워 ${String(number).padStart(3, '0')}`,
           security,
           recommendedLevel: Math.max(1, Math.ceil(number / 4)),
           recommendedPower: Math.max(18, Math.round(security * 0.78)),
@@ -3044,7 +3053,7 @@ function applyLanguageToUI(){
       const statusText = clearInfo
         ? stageCopy(`클리어 ${clearInfo.clears || 1}회`, `Cleared ${clearInfo.clears || 1} time(s)`)
         : stageCopy('첫 클리어 대기', 'First clear pending');
-      const buttonText = clearInfo ? stageCopy('반복 도전', 'Repeat Stage') : stageCopy('첫 클리어 도전', 'Attempt First Clear');
+      const buttonText = clearInfo ? stageCopy('반복 도전', 'Repeat Data Tower') : stageCopy('첫 클리어 도전', 'Attempt First Clear');
       const disabledHint = !activeCode
         ? t('noOwnedCodes')
         : (!enoughEnergy ? stageCopy(`에너지 ${selectedStage.energyCost} 필요`, `Need ${selectedStage.energyCost} energy`) : stageCopy('도전 준비 완료', 'Ready to attempt'));
@@ -3052,7 +3061,7 @@ function applyLanguageToUI(){
       detailEl.innerHTML = `
         <div class="stage-detail-head">
           <div>
-            <span class="badge">${selectedStage.boss ? 'BOSS' : 'STAGE'}</span>
+            <span class="badge">${selectedStage.boss ? 'BOSS' : 'DATA TOWER'}</span>
             <h4>${selectedStage.name}</h4>
             <p>${getLang() === 'en' ? selectedStage.chapter.titleEn : selectedStage.chapter.title} · ${selectedStage.chapter.from}-${selectedStage.chapter.to}</p>
           </div>
@@ -3080,7 +3089,7 @@ function applyLanguageToUI(){
           <button type="button" id="btnAttemptStage" ${canAttempt ? '' : 'disabled'}>${buttonText}</button>
           <span class="small">${disabledHint}${activeCode ? ` · ${activeCode.name} PWR ${Math.round(successInfo.effectivePower)}` : ''}</span>
         </div>
-        <p class="stage-note">${clearInfo ? stageCopy('반복 보상에는 GPU 보너스가 적용됩니다. 첫 클리어와 챕터 보상은 고정 보상입니다.', 'GPU bonuses apply to repeat rewards. First-clear and chapter rewards are fixed.') : stageCopy('첫 클리어 보상은 고정 보상입니다. 같은 STAGE를 반복 클리어하면 GPU 보너스가 적용됩니다.', 'First-clear rewards are fixed. Repeat clears apply GPU bonuses.')}</p>
+        <p class="stage-note">${clearInfo ? stageCopy('반복 보상에는 GPU 보너스가 적용됩니다. 첫 클리어와 챕터 보상은 고정 보상입니다.', 'GPU bonuses apply to repeat rewards. First-clear and chapter rewards are fixed.') : stageCopy('첫 클리어 보상은 고정 보상입니다. 같은 데이터 타워를 반복 클리어하면 GPU 보너스가 적용됩니다.', 'First-clear rewards are fixed. Repeat Data Tower clears apply GPU bonuses.')}</p>
       `;
 
       const btnAttemptStage = document.getElementById('btnAttemptStage');
@@ -3150,7 +3159,7 @@ function applyLanguageToUI(){
         return;
       }
       if (!consumeEnergy(stage.energyCost)) {
-        const msg = stageCopy('에너지가 부족해 STAGE를 시작할 수 없습니다.', 'Not enough energy to start STAGE.');
+        const msg = stageCopy('에너지가 부족해 데이터 타워를 시작할 수 없습니다.', 'Not enough energy to start Data Tower.');
         log(msg, 'hack');
         showToast(msg, 'warn');
         renderStagePanel();
@@ -3215,7 +3224,7 @@ function applyLanguageToUI(){
           `${stage.name} failed. Estimated chance was ${Math.round(successInfo.chance * 100)}%.`
         );
         log(msg, 'hack');
-        showToast(stageCopy('STAGE 실패', 'STAGE failed'), 'warn');
+        showToast(stageCopy('데이터 타워 실패', 'Data Tower failed'), 'warn');
       }
 
       updateStatsUI();

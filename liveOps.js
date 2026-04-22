@@ -1,5 +1,5 @@
 (function(){
-  const VERSION = '2.1.0';
+  const VERSION = '2.1.1';
   const HEARTBEAT_MS = 45000;
   const ACTIVE_WINDOW_MS = 120000;
   const RANK_WRITE_MS = 60000;
@@ -7,7 +7,7 @@
   const ALLOWED_ACTIVITY = ['hack_success', 'extreme_success', 'stage_clear', 'epic_code_found', 'gpu_tier_up', 'cpu_tier_up'];
   const BOARDS = [
     { id: 'hack', label: 'HACK', metric: 'hackSuccessCount' },
-    { id: 'stage', label: 'STAGE', metric: 'stageClearCount' },
+    { id: 'stage', label: 'TOWER', metric: 'stageClearCount' },
     { id: 'extreme', label: 'EXTREME', metric: 'extremeHackSuccessCount' },
     { id: 'credits', label: 'CREDITS', metric: 'creditsEarnedTotal' },
     { id: 'power', label: 'POWER', metric: 'collectionPower' }
@@ -106,8 +106,8 @@
 
   function defaultConfig(){
     return {
-      status: 'LOCAL MIRROR',
-      motd: 'LOCAL MIRROR active. Cloud login opens LIVE NET.',
+      status: 'ONLINE',
+      motd: 'NODE ROUTE OPEN. Watch the trace feed.',
       eventTitle: 'LIVE NETWORK',
       maintenanceText: '',
       liveEnabled: true,
@@ -213,11 +213,11 @@
         <p class="live-motd" id="livePulseMotd">LOCAL MIRROR active.</p>
         <div class="live-node-row" id="livePulseNodes"></div>
         <div class="live-mini-feed" id="livePulseFeed"></div>
-      `;
-      const actionBox = document.getElementById('titleActions') ? document.getElementById('titleActions').closest('.stat-box') : null;
-      if (actionBox && actionBox.parentElement === home) home.insertBefore(card, actionBox);
-      else home.appendChild(card);
-    }
+	      `;
+	      const actionBox = document.getElementById('titleActions') ? document.getElementById('titleActions').closest('.stat-box') : null;
+	      if (actionBox && actionBox.parentElement === home) actionBox.insertAdjacentElement('afterend', card);
+	      else home.appendChild(card);
+	    }
 
     buildBroadcastHub();
 
@@ -421,8 +421,8 @@
     switch (item.type) {
       case 'extreme_success':
         return { title: `${name} broke EXTREME`, meta: value ? `reward ${value.toLocaleString()} credits` : 'high-risk route cleared' };
-      case 'stage_clear':
-        return { title: `${name} cleared STAGE ${String(value || '').padStart(3, '0')}`, meta: ref || 'stage route updated' };
+	      case 'stage_clear':
+	        return { title: `${name} cleared DATA TOWER ${String(value || '').padStart(3, '0')}`, meta: ref || 'data tower route updated' };
       case 'epic_code_found':
         return { title: `${name} found rare code`, meta: ref || 'EPIC+ signature acquired' };
       case 'gpu_tier_up':
@@ -709,12 +709,31 @@
   function handleLiveError(err){
     const code = err && (err.code || err.message) ? (err.code || err.message) : String(err || '');
     state.syncMs = '--';
-    if (/permission|PERMISSION|Missing or insufficient permissions/.test(code)) {
-      state.config = Object.assign(defaultConfig(), {
-        status: 'LOCAL MIRROR',
-        motd: text('Firestore rules 적용 대기 중입니다. LOCAL MIRROR로 계속 진행합니다.', 'Waiting for Firestore rules. LOCAL MIRROR continues.')
-      });
-    }
+	    if (/permission|PERMISSION|Missing or insufficient permissions/.test(code)) {
+	      state.config = Object.assign(defaultConfig(), {
+	        status: 'LOCAL MIRROR',
+	        motd: text('Firestore rules 적용 대기 중입니다. LOCAL MIRROR로 계속 진행합니다.', 'Waiting for Firestore rules. LOCAL MIRROR continues.')
+	      });
+	      state.announcements = [{
+	        id: 'rules-locked',
+	        title: 'RULES LOCKED',
+	        body: text('Firestore rules 배포 후 LIVE NET 신호가 열립니다.', 'LIVE NET opens after Firestore rules are deployed.'),
+	        createdAt: now(),
+	        level: 'LOCKED'
+	      }];
+	      state.nodes = fallbackNodes();
+	      state.feed = [{
+	        id: 'rules-feed',
+	        type: 'hack_success',
+	        displayName: 'LOCAL MIRROR',
+	        displayMode: 'callsign',
+	        value: 0,
+	        refId: 'rules pending',
+	        createdAt: now()
+	      }];
+	      state.rankEntries = [];
+	      state.agents = '--';
+	    }
     renderAll();
     if (state.lastErrorCode !== code && !/permission|PERMISSION|Missing or insufficient permissions/.test(code)) {
       state.lastErrorCode = code;
