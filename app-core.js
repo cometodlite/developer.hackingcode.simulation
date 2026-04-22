@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.1.1';
+const CURRENT_VERSION = '2.1.2';
 const TUTORIAL_VERSION = 3;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -658,6 +658,13 @@ function applyLanguageToUI(){
           'LIVE NET 기본 상태와 Firestore 권한 대기 안내를 더 명확하게 표시합니다.',
           '모바일 터치/줌 방지 처리를 한 단계 더 보강했습니다.',
           '데이터 타워 표시명을 정리했습니다.'
+        ]
+      },
+      {
+        version: '2.1.2',
+        lines: [
+          'Network Broadcast의 빈 공지 fallback이 ONLINE 상태와 충돌하지 않도록 정리했습니다.',
+          'LIVE NET이 온라인일 때는 LOCAL MIRROR 안내 대신 Broadcast Standby 상태를 표시합니다.'
         ]
       }
 

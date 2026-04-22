@@ -1,5 +1,5 @@
 (function(){
-  const VERSION = '2.1.1';
+  const VERSION = '2.1.2';
   const HEARTBEAT_MS = 45000;
   const ACTIVE_WINDOW_MS = 120000;
   const RANK_WRITE_MS = 60000;
@@ -18,7 +18,7 @@
     authUser: null,
     activeView: document.body.classList.contains('app-view-coming') ? 'coming' : 'home',
     config: defaultConfig(),
-    announcements: fallbackAnnouncements(),
+    announcements: [],
     nodes: fallbackNodes(),
     feed: fallbackFeed(),
     rankEntries: [],
@@ -123,9 +123,49 @@
     ];
   }
 
-  function fallbackAnnouncements(){
+  function fallbackAnnouncements(status){
+    const liveStatus = normalizeStatus(status || 'LOCAL MIRROR');
+    if (liveStatus === 'ONLINE') {
+      return [
+        {
+          id:'online-brief',
+          title:'Broadcast Standby',
+          body:text('LIVE NET은 온라인입니다. 등록된 운영 공지가 아직 없습니다.', 'LIVE NET is online. No operator notice is posted yet.'),
+          createdAt: now(),
+          level:'ONLINE'
+        }
+      ];
+    }
+    if (liveStatus === 'DEGRADED') {
+      return [
+        {
+          id:'degraded-brief',
+          title:'Route Degraded',
+          body:text('일부 네트워크 신호가 지연 중입니다. 게임 진행은 계속됩니다.', 'Some network signals are delayed. Game progress continues.'),
+          createdAt: now(),
+          level:'DEGRADED'
+        }
+      ];
+    }
+    if (liveStatus === 'MAINTENANCE') {
+      return [
+        {
+          id:'maintenance-brief',
+          title:'Maintenance Window',
+          body:text('LIVE NET 점검 안내를 기다리는 중입니다.', 'Waiting for LIVE NET maintenance notice.'),
+          createdAt: now(),
+          level:'MAINT'
+        }
+      ];
+    }
     return [
-      { id:'local-brief', title:'LOCAL MIRROR', body:'클라우드 로그인 후 LIVE NET 신호를 받을 수 있습니다.', createdAt: now(), level:'INFO' }
+      {
+        id:'local-brief',
+        title:'LOCAL MIRROR',
+        body:text('클라우드 로그인 또는 Firebase 신호를 기다리는 중입니다.', 'Waiting for cloud login or Firebase signal.'),
+        createdAt: now(),
+        level:'INFO'
+      }
     ];
   }
 
@@ -338,7 +378,8 @@
     if (el.liveRankSeason) el.liveRankSeason.textContent = (state.config && state.config.rankSeasonLabel) || 'SEASON 2.1';
 
     if (el.liveBroadcastAnnouncements) {
-      el.liveBroadcastAnnouncements.innerHTML = state.announcements.slice(0, 8).map(item => `
+      const announcements = getAnnouncementItems(status);
+      el.liveBroadcastAnnouncements.innerHTML = announcements.slice(0, 8).map(item => `
         <article class="live-announcement">
           <span>${escapeHtml(item.level || 'INFO')} · ${escapeHtml(shortTime(item.createdAt))}</span>
           <strong>${escapeHtml(item.title || 'Broadcast')}</strong>
@@ -369,6 +410,11 @@
         `;
       }).join('');
     }
+  }
+
+  function getAnnouncementItems(status){
+    const items = (state.announcements || []).filter(item => item && item.active !== false);
+    return items.length ? items : fallbackAnnouncements(status || getLiveStatus());
   }
 
   function renderRankTabs(){
@@ -476,7 +522,6 @@
     if (!canUseFirebase() || state.homeUnsubs.length || state.activeView === 'coming') return;
     state.homeUnsubs.push(db().collection('liveAnnouncements').orderBy('createdAt', 'desc').limit(2).onSnapshot(snap => {
       state.announcements = mapDocs(snap).filter(item => item.active !== false);
-      if (!state.announcements.length) state.announcements = fallbackAnnouncements();
       renderAll();
     }, err => handleLiveError(err)));
     state.homeUnsubs.push(db().collection('liveServerNodes').orderBy('priority', 'asc').limit(3).onSnapshot(snap => {
@@ -495,7 +540,6 @@
     if (!canUseFirebase() || state.detailUnsubs.length || state.activeView !== 'coming') return;
     state.detailUnsubs.push(db().collection('liveAnnouncements').orderBy('createdAt', 'desc').limit(8).onSnapshot(snap => {
       state.announcements = mapDocs(snap).filter(item => item.active !== false);
-      if (!state.announcements.length) state.announcements = fallbackAnnouncements();
       renderAll();
     }, err => handleLiveError(err)));
     state.detailUnsubs.push(db().collection('liveServerNodes').orderBy('priority', 'asc').limit(12).onSnapshot(snap => {
