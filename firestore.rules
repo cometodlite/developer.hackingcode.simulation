@@ -1,8 +1,161 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isShortText(value, maxLen) {
+      return value is string && value.size() > 0 && value.size() <= maxLen;
+    }
+
+    function isMode(value) {
+      return value in ['nickname', 'callsign'];
+    }
+
+    function isActivityType(value) {
+      return value in [
+        'hack_success',
+        'extreme_success',
+        'stage_clear',
+        'epic_code_found',
+        'gpu_tier_up',
+        'cpu_tier_up'
+      ];
+    }
+
+    function isBoard(boardId) {
+      return boardId in ['hack', 'stage', 'extreme', 'credits', 'power'];
+    }
+
+    function isScore(value) {
+      return (value is int || value is float) && value >= 0 && value <= 999999999;
+    }
+
+    function isClientMs(value) {
+      return (value is int || value is float) && value >= 0 && value <= 4102444800000;
+    }
+
     match /saves/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /liveConfig/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /liveAnnouncements/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /liveServerNodes/{serverId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /livePresence/{userId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId)
+        && request.resource.data.keys().hasOnly([
+          'uid',
+          'displayName',
+          'displayMode',
+          'avatarId',
+          'status',
+          'version',
+          'lastSeenAt',
+          'lastSeenMs'
+        ])
+        && request.resource.data.keys().hasAll([
+          'uid',
+          'displayName',
+          'displayMode',
+          'avatarId',
+          'status',
+          'version',
+          'lastSeenAt',
+          'lastSeenMs'
+        ])
+        && request.resource.data.uid == userId
+        && isShortText(request.resource.data.displayName, 24)
+        && isMode(request.resource.data.displayMode)
+        && isShortText(request.resource.data.avatarId, 32)
+        && request.resource.data.status == 'active'
+        && isShortText(request.resource.data.version, 16)
+        && request.resource.data.lastSeenAt == request.time
+        && isClientMs(request.resource.data.lastSeenMs);
+      allow delete: if isOwner(userId);
+    }
+
+    match /liveFeed/{eventId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'type',
+          'uid',
+          'displayName',
+          'displayMode',
+          'value',
+          'refId',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'type',
+          'uid',
+          'displayName',
+          'displayMode',
+          'value',
+          'refId',
+          'createdAt'
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && isActivityType(request.resource.data.type)
+        && isShortText(request.resource.data.displayName, 24)
+        && isMode(request.resource.data.displayMode)
+        && isScore(request.resource.data.value)
+        && request.resource.data.refId is string
+        && request.resource.data.refId.size() <= 64
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /leaderboards/{boardId}/entries/{userId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId)
+        && isBoard(boardId)
+        && request.resource.data.keys().hasOnly([
+          'displayName',
+          'displayMode',
+          'score',
+          'subtitle',
+          'avatarId',
+          'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'displayName',
+          'displayMode',
+          'score',
+          'subtitle',
+          'avatarId',
+          'updatedAt'
+        ])
+        && isShortText(request.resource.data.displayName, 24)
+        && isMode(request.resource.data.displayMode)
+        && isScore(request.resource.data.score)
+        && isShortText(request.resource.data.subtitle, 48)
+        && isShortText(request.resource.data.avatarId, 32)
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
     }
   }
 }

@@ -35,3 +35,44 @@ After setup, HCSIG cloud features will work:
 - Cloud load
 - Logout
 - Cross-browser account sync
+
+Live Network 2.1.0
+------------------
+Rules now also support the LIVE NET layer:
+- liveConfig/main
+- liveAnnouncements
+- liveServerNodes
+- livePresence
+- liveFeed
+- leaderboards
+
+Recommended starter documents:
+
+liveConfig/main
+  status: ONLINE
+  motd: NODE ROUTE OPEN. Watch the trace feed.
+  eventTitle: LIVE NETWORK
+  maintenanceText:
+  liveEnabled: true
+  rankSeasonLabel: SEASON 2.1
+
+liveServerNodes/gate-01
+  name: GATE-01
+  status: ONLINE
+  tag: ENTRY NODE
+  load: 42
+  priority: 1
+
+liveServerNodes/trace-02
+  name: TRACE-02
+  status: HIGH_LOAD
+  tag: TRACE ROUTE
+  load: 76
+  priority: 2
+
+liveServerNodes/vault-07
+  name: VAULT-07
+  status: UNSTABLE
+  tag: DEEP CACHE
+  load: 64
+  priority: 3

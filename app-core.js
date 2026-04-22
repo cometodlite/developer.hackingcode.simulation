@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.0.2';
+const CURRENT_VERSION = '2.1.0';
 const TUTORIAL_VERSION = 3;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -11,7 +11,7 @@ const I18N = {
     codeUpgrade:'코드 강화', codeSync:'코드 동기화', codeEvolve:'코드 진화', codeDesc1:'· 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).', codeDesc2:'· 동기화: 중복 조각을 모아 성공률 보정과 파워를 함께 강화합니다.', codeDesc3:'· 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).',
     mission:'미션', achievement:'업적', codex:'코드 도감', logs:'로그', settings:'설정', data:'클라우드 계정', quest:'퀘스트', records:'기록', envSettings:'환경 설정', dataManage:'클라우드 계정', close:'닫기',
     logSearchHelp:'로그 검색 (로그 항목 클릭 → 핀/해제)', searchPlaceholder:'검색어 입력...', clearLogs:'로그 초기화', hideLogs:'로그 숨기기', showLogs:'로그 보이기', logFilter:'로그 필터',
-    language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', sfx:'효과음', sfxVolume:'효과음 볼륨', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.',
+    language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', sfx:'효과음', sfxVolume:'효과음 볼륨', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', liveNetwork:'LIVE NET', liveNicknameMode:'네트워크 표시명', nickname:'닉네임', callsign:'Callsign', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.',
     saveNow:'저장하기', loadNow:'불러오기', clearSave:'저장 데이터 삭제', exportSave:'내보내기', importFile:'파일 불러오기', importText:'텍스트로 불러오기', importTextPlaceholder:'여기에 JSON을 붙여넣고 불러오기를 누르세요.', importTextBtn:'텍스트 불러오기', saveHelp:'· 저장 위치: 클라우드 계정<br/>· 브라우저 내부 저장은 자동 캐시와 기존 세이브 이전에만 사용됩니다.',
     shopSortUpdate:'업데이트순', shopSortNew:'신규 우선', shopSortRarity:'희귀도순', shopSortPrice:'가격순', shopSortName:'이름순', codeSortRecent:'최신', codeSortRarity:'희귀도', codeSortPower:'파워', codeSortLevel:'레벨', codeSortName:'이름',
     codexSummary:'발견 {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'기본 파워', ownedLvPwr:'보유 Lv.{lv} / PWR {pwr}', undiscoveredCode:'미발견 코드', undiscoveredDesc:'아직 발견하지 못한 코드입니다. 코드 스캔으로 해제하세요.', noCodes:'보유 코드 없음. [코드 스캔]으로 코드를 얻으세요.', selectCode:'보유 중인 코드를 선택하면 상세 정보가 표시됩니다.',
@@ -31,7 +31,7 @@ const I18N = {
     codeUpgrade:'Upgrade Code', codeSync:'Sync Code', codeEvolve:'Evolve Code', codeDesc1:'· Upgrade: costs credits based on code level and raises power (no destruction).', codeDesc2:'· Sync: spend duplicate shards to raise success bonus and power together.', codeDesc3:'· Evolve: rank up at a required level (COMMON → UNCOMMON → … → LEGENDARY).',
     mission:'Mission', achievement:'Achievements', codex:'Code Codex', logs:'Logs', settings:'Settings', data:'Cloud Account', quest:'Quests', records:'Records', envSettings:'Settings', dataManage:'Cloud Account', close:'Close',
     logSearchHelp:'Search logs (click a log entry to pin/unpin)', searchPlaceholder:'Type to search...', clearLogs:'Clear Logs', hideLogs:'Hide Logs', showLogs:'Show Logs', logFilter:'Log Filter',
-    language:'Language', fontScale:'Font Size', snow:'Snow Effect', uiScale:'UI Scale', animation:'Animation', sfx:'Sound Effects', sfxVolume:'SFX Volume', toastTime:'Toast Duration', autosaveToast:'Autosave Toast', enabled:'Enabled', settingsHelp:'· Settings are stored with save data and remain after refresh.',
+    language:'Language', fontScale:'Font Size', snow:'Snow Effect', uiScale:'UI Scale', animation:'Animation', sfx:'Sound Effects', sfxVolume:'SFX Volume', toastTime:'Toast Duration', autosaveToast:'Autosave Toast', liveNetwork:'LIVE NET', liveNicknameMode:'Network Name', nickname:'Nickname', callsign:'Callsign', enabled:'Enabled', settingsHelp:'· Settings are stored with save data and remain after refresh.',
     saveNow:'Save', loadNow:'Load', clearSave:'Delete Save Data', exportSave:'Export', importFile:'Import File', importText:'Import from Text', importTextPlaceholder:'Paste JSON here and press import.', importTextBtn:'Import Text', saveHelp:'· Save location: cloud account<br/>· Browser storage is used only for automatic cache and migration.',
     shopSortUpdate:'By Update', shopSortNew:'Newest First', shopSortRarity:'By Rarity', shopSortPrice:'By Price', shopSortName:'By Name', codeSortRecent:'Recent', codeSortRarity:'Rarity', codeSortPower:'Power', codeSortLevel:'Level', codeSortName:'Name',
     codexSummary:'Discovered {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'Base Power', ownedLvPwr:'Owned Lv.{lv} / PWR {pwr}', undiscoveredCode:'Undiscovered Code', undiscoveredDesc:'You have not discovered this code yet. Unlock it by scanning codes.', noCodes:'No codes owned. Use [Scan Code] to get one.', selectCode:'Select an owned code to view details.',
@@ -404,15 +404,16 @@ function applyLanguageToUI(){
   document.querySelectorAll('[data-achievement-filter="incomplete"]').forEach(el => { el.textContent = t('achievementIncomplete'); });
   document.querySelectorAll('[data-achievement-filter="complete"]').forEach(el => { el.textContent = t('achievementComplete'); });
   const showHiddenEl=document.getElementById('chkShowHiddenAchievements'); if(showHiddenEl && showHiddenEl.parentElement){ showHiddenEl.parentElement.lastChild.textContent = ' ' + t('achievementShowHidden'); }
-  setText('labelLanguage', t('language')); setText('labelFontScale', t('fontScale')); setText('labelSnow', t('snow')); setText('labelUiScale', t('uiScale')); setText('labelAnim', t('animation')); setText('labelSfx', t('sfx')); setText('labelSfxVolume', t('sfxVolume')); setText('labelToastMs', t('toastTime')); setText('labelAutoSaveToast', t('autosaveToast')); setHtml('settingsHelp', t('settingsHelp'));
+  setText('labelLanguage', t('language')); setText('labelFontScale', t('fontScale')); setText('labelSnow', t('snow')); setText('labelUiScale', t('uiScale')); setText('labelAnim', t('animation')); setText('labelSfx', t('sfx')); setText('labelSfxVolume', t('sfxVolume')); setText('labelToastMs', t('toastTime')); setText('labelAutoSaveToast', t('autosaveToast')); setText('labelLiveNetwork', t('liveNetwork')); setText('labelLiveNicknameMode', t('liveNicknameMode')); setHtml('settingsHelp', t('settingsHelp'));
   setText('btnSaveGame', t('saveNow')); setText('btnLoadGame', t('loadNow')); setText('btnClearSave', t('clearSave')); setText('btnExportSave', t('exportSave')); setText('btnImportSaveFile', t('importFile')); setText('importTextTitle', t('importText')); const ist=document.getElementById('importSaveText'); if(ist) ist.placeholder=t('importTextPlaceholder'); setText('btnImportSaveText', t('importTextBtn')); setHtml('saveHelp', t('saveHelp'));
   const shopSort=document.getElementById('shopSortSelect'); if(shopSort){ const map=['shopSortUpdate','shopSortNew','shopSortRarity','shopSortPrice','shopSortName']; [...shopSort.options].forEach((opt,i)=>opt.text=t(map[i])); shopSort.title=t('shopSortTitle'); }
   const codeSort=document.getElementById('codeSortSelect'); if(codeSort){ const map=['codeSortRecent','codeSortRarity','codeSortPower','codeSortLevel','codeSortName']; [...codeSort.options].forEach((opt,i)=>opt.text=t(map[i])); codeSort.title=t('codeSortTitle'); }
   const setLangEl=document.getElementById('setLanguage'); if(setLangEl){ setLangEl.title=t('languageTitle'); [...setLangEl.options].forEach(opt=>{ if(opt.value==='ko') opt.textContent = getLang()==='en' ? 'Korean' : '한국어'; if(opt.value==='en') opt.textContent = 'English'; }); }
   const setUiZoomEl=document.getElementById('setUiZoom'); if(setUiZoomEl) setUiZoomEl.title=t('uiScaleTitle');
   const setToastMsEl=document.getElementById('setToastMs'); if(setToastMsEl){ setToastMsEl.title=t('toastTitle'); [...setToastMsEl.options].forEach(opt=>{ const secs=Math.round(Number(opt.value||0)/1000); opt.textContent = `${secs}${getLang()==='en' ? ' sec' : '초'}`; }); }
-  ['setSnow','setAnim','setSfx'].forEach(id=>{ const input=document.getElementById(id); if(input && input.parentElement){ input.parentElement.lastChild.textContent = ' ' + t('enabled'); } });
+  ['setSnow','setAnim','setSfx','setLiveNetwork'].forEach(id=>{ const input=document.getElementById(id); if(input && input.parentElement){ input.parentElement.lastChild.textContent = ' ' + t('enabled'); } });
   const ast=document.getElementById('setAutoSaveToast'); if(ast && ast.parentElement){ ast.parentElement.lastChild.textContent = ' ' + t('visible'); }
+  const liveNameModeEl=document.getElementById('setLiveNicknameMode'); if(liveNameModeEl){ [...liveNameModeEl.options].forEach(opt=>{ if(opt.value==='nickname') opt.textContent=t('nickname'); if(opt.value==='callsign') opt.textContent=t('callsign'); }); }
   const btnSaveGameEl=document.getElementById('btnSaveGame'); if(btnSaveGameEl) btnSaveGameEl.title=t('saveToLocal');
   const btnLoadGameEl=document.getElementById('btnLoadGame'); if(btnLoadGameEl) btnLoadGameEl.title=t('loadFromLocal');
   const btnClearSaveEl=document.getElementById('btnClearSave'); if(btnClearSaveEl) btnClearSaveEl.title=t('deleteSave');
@@ -640,6 +641,15 @@ function applyLanguageToUI(){
           'LAB, COMING SOON, 튜토리얼 문구를 더 짧고 게임 안쪽 말투로 다듬었습니다.',
           '모바일 버튼 누름 연출을 완화해 조작 중 레이아웃 흔들림을 줄였습니다.'
         ]
+      },
+      {
+        version: '2.1.0',
+        lines: [
+          'LIVE NET 헤더, Network Pulse, Network Broadcast 허브를 추가했습니다.',
+          'Firebase 실시간 운영 문서로 공지, 노드 상태, 전역 피드, 소프트 랭킹을 표시합니다.',
+          '로그인 사용자의 presence heartbeat와 닉네임/Callsign 표시 모드를 추가했습니다.',
+          'Firebase 또는 로그인 상태가 준비되지 않으면 LOCAL MIRROR 모드로 안전하게 표시합니다.'
+        ]
       }
 
     ];
@@ -712,7 +722,7 @@ function applyLanguageToUI(){
         shop: true,
         level: true
       },
-      ui: { lang: 'ko', shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, sfxEnabled: true, sfxVolume: 35, autoSaveToast: false, logSearch: '', snowEnabled: null, achievementFilter: 'incomplete', showHiddenAchievements: false },
+      ui: { lang: 'ko', shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, sfxEnabled: true, sfxVolume: 35, autoSaveToast: false, logSearch: '', snowEnabled: null, achievementFilter: 'incomplete', showHiddenAchievements: false, liveNetworkEnabled: true, liveNicknameMode: 'nickname' },
       stats: {
         scanCount: 0,
         hackSuccessCount: 0,
@@ -1890,6 +1900,8 @@ function applyLanguageToUI(){
     const setSfxVolumeLabel = document.getElementById('setSfxVolumeLabel');
     const setToastMs = document.getElementById('setToastMs');
     const setAutoSaveToast = document.getElementById('setAutoSaveToast');
+    const setLiveNetwork = document.getElementById('setLiveNetwork');
+    const setLiveNicknameMode = document.getElementById('setLiveNicknameMode');
 
     const tutorialBackdrop = document.getElementById('tutorialBackdrop');
     const tutorialStepLabel = document.getElementById('tutorialStepLabel');
@@ -2242,6 +2254,14 @@ function applyLanguageToUI(){
       logList.prepend(entry);
       trimLogs();
       applyLogFilter();
+    }
+
+    function emitActivity(type, detail = {}) {
+      try {
+        window.dispatchEvent(new CustomEvent('hcsig:activity', {
+          detail: Object.assign({ type, createdAt: Date.now() }, detail || {})
+        }));
+      } catch (e) {}
     }
 
     function applyLogFilter() {
@@ -3171,6 +3191,12 @@ function applyLanguageToUI(){
         state.stage.highestCleared = Math.max(state.stage.highestCleared || 0, stage.number);
         state.stats.stageClearCount = (state.stats.stageClearCount || 0) + 1;
         applyStageChapterReward(stage.chapter);
+        emitActivity('stage_clear', {
+          stageId: stage.id,
+          refId: stage.id,
+          value: stage.number,
+          codeId: code.id
+        });
 
         const rewardText = getStageRewardText(reward);
         playSfx('stage');
@@ -3724,6 +3750,12 @@ function applyLanguageToUI(){
           log(t('scanFound', { name: chosen.name, rarity: chosen.rarity }), 'scan');
           const def = codeDefs[chosen.id];
           if (def && (def.rarity === 'EPIC' || def.rarity === 'LEGENDARY')) {
+            emitActivity('epic_code_found', {
+              codeId: chosen.id,
+              refId: chosen.id,
+              rarity: def.rarity,
+              value: def.rarity === 'LEGENDARY' ? 2 : 1
+            });
             unlockAchievement('get_epic_code');
           }
         } else {
@@ -3884,6 +3916,13 @@ function applyLanguageToUI(){
           state.missionProgress.weekly.extremeHackSuccess = (state.missionProgress.weekly.extremeHackSuccess || 0) + 1;
           state.missionProgress.month.extremeHackSuccess = (state.missionProgress.month.extremeHackSuccess || 0) + 1;
         }
+        emitActivity(modeInfo.id === 'extreme' ? 'extreme_success' : 'hack_success', {
+          mode: modeInfo.id,
+          serverId: server.id,
+          refId: server.id,
+          codeId: code.id,
+          value: rewardCredits
+        });
 
         checkMissions('daily');
         checkMissions('weekly');
@@ -3963,6 +4002,7 @@ function applyLanguageToUI(){
       state.cpuTier += 1;
       playSfx('upgrade');
       log(`CPU 업그레이드 완료! 현재 티어: ${state.cpuTier} (소모 크레딧 ${cost})`, 'system');
+      emitActivity('cpu_tier_up', { value: state.cpuTier, refId: 'cpu' });
       if (state.cpuTier >= 15) {
         unlockAchievement('cpu_tier_5');
       }
@@ -3985,6 +4025,7 @@ function applyLanguageToUI(){
       playSfx('upgrade');
       log(t('gpuUpgradeLog', { tier: state.gpuTier, cost }), 'system');
       showToast(t('gpuUpgradeLog', { tier: state.gpuTier, cost }), 'system');
+      emitActivity('gpu_tier_up', { value: state.gpuTier, refId: 'gpu' });
       updateStatsUI();
       renderStagePanel();
       checkMissions('general');
@@ -4854,6 +4895,8 @@ function applyLanguageToUI(){
         state.ui.logSearch = state.ui.logSearch || '';
         state.ui.achievementFilter = ['all', 'incomplete', 'complete'].includes(state.ui.achievementFilter) ? state.ui.achievementFilter : 'incomplete';
         state.ui.showHiddenAchievements = !!state.ui.showHiddenAchievements;
+        state.ui.liveNetworkEnabled = state.ui.liveNetworkEnabled !== false;
+        state.ui.liveNicknameMode = state.ui.liveNicknameMode === 'callsign' ? 'callsign' : 'nickname';
 
         state.loadouts = state.loadouts || {};
         ['1', '2', '3'].forEach(slot => {
@@ -5015,6 +5058,8 @@ function applyLanguageToUI(){
       if (setSfxVolumeLabel) setNodeText(setSfxVolumeLabel, `${setSfxVolume ? setSfxVolume.value : 35}%`);
       if (setToastMs) setToastMs.value = String(ui.toastDurationMs || 3000);
       if (setAutoSaveToast) setAutoSaveToast.checked = !!ui.autoSaveToast;
+      if (setLiveNetwork) setLiveNetwork.checked = ui.liveNetworkEnabled !== false;
+      if (setLiveNicknameMode) setLiveNicknameMode.value = ui.liveNicknameMode === 'callsign' ? 'callsign' : 'nickname';
       if (setLanguage) setLanguage.value = ui.lang || 'ko';
       if (logSearchInput) logSearchInput.value = ui.logSearch || '';
     }
@@ -5093,6 +5138,18 @@ function applyLanguageToUI(){
       setAutoSaveToast.addEventListener('change', () => {
         state.ui.autoSaveToast = !!setAutoSaveToast.checked;
         scheduleSilentSave();
+      });
+    }
+    if (setLiveNetwork) {
+      setLiveNetwork.addEventListener('change', () => {
+        state.ui.liveNetworkEnabled = !!setLiveNetwork.checked;
+        scheduleSilentSave(80);
+      });
+    }
+    if (setLiveNicknameMode) {
+      setLiveNicknameMode.addEventListener('change', () => {
+        state.ui.liveNicknameMode = setLiveNicknameMode.value === 'callsign' ? 'callsign' : 'nickname';
+        scheduleSilentSave(80);
       });
     }
 

@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=2.0.2" rel="stylesheet"/>
+<link href="style.css?v=2.1.0" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">2.0.2 (Web)</span>
+<span class="header-version">2.1.0 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -356,6 +356,23 @@
                 </label>
 </span>
 </div>
+<div class="stat-row" style="align-items:center;">
+<span class="label" id="labelLiveNetwork">LIVE NET</span>
+<span class="value">
+<label class="log-filter-label" style="display:inline-flex; align-items:center; gap:6px;">
+<input checked="" id="setLiveNetwork" type="checkbox"/> 사용
+                </label>
+</span>
+</div>
+<div class="stat-row" style="align-items:center;">
+<span class="label" id="labelLiveNicknameMode">네트워크 표시명</span>
+<span class="value">
+<select id="setLiveNicknameMode" title="Live network display name">
+<option value="nickname">닉네임</option>
+<option value="callsign">Callsign</option>
+</select>
+</span>
+</div>
 <div class="small" style="margin-top:6px;" id="settingsHelp">
               · 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.
             </div>
@@ -526,9 +543,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=2.0.2"></script>
-<script src="auth.js?v=2.0.2"></script>
-<script src="cloudSave.js?v=2.0.2"></script>
-<script src="app-core.js?v=2.0.2"></script>
-<script src="app-ui.js?v=2.0.2"></script></body>
+<script src="firebase-config.js?v=2.1.0"></script>
+<script src="auth.js?v=2.1.0"></script>
+<script src="cloudSave.js?v=2.1.0"></script>
+<script src="app-core.js?v=2.1.0"></script>
+<script src="app-ui.js?v=2.1.0"></script>
+<script src="liveOps.js?v=2.1.0"></script></body>
 </html>

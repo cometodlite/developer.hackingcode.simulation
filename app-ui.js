@@ -403,6 +403,7 @@
     });
     if(views[view]) views[view].scrollTop = 0;
     syncTabsHeight();
+    try { document.dispatchEvent(new CustomEvent('hcsig:main-view', { detail: { view } })); } catch(e) {}
   }
 
   nav.querySelectorAll('[data-main-view]').forEach(btn => {
