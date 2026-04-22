@@ -287,17 +287,21 @@
       <div class="lab-hero" id="labContent">
         <div>
           <div class="section-title">LAB</div>
-          <h2>실험실 진입 준비</h2>
-          <p>정식 도전 콘텐츠와 향후 실험 콘텐츠가 이곳에서 확장됩니다.</p>
+          <h2>도전과 실험의 허브</h2>
+          <p>STAGE는 정식 도전 루트, COMING SOON은 실험 콘텐츠 예고 공간입니다.</p>
         </div>
-        <div class="lab-mode-chip">STAGE 1-100</div>
+        <div class="lab-mode-chip">2.0.0 LAB</div>
+      </div>
+      <div class="lab-subtabs" id="labSubtabs">
+        <button type="button" class="active" data-lab-tab="stage">STAGE</button>
+        <button type="button" data-lab-tab="coming">COMING SOON</button>
       </div>
       <section class="lab-panel active" data-lab-panel="stage">
         <div class="stage-head">
           <div>
             <span class="badge">STAGE</span>
             <h3>Stage 1-100</h3>
-            <p>활성 코드와 CPU 티어로 챕터형 도전 구간을 돌파합니다. 첫 클리어 보상과 반복 보상은 분리됩니다.</p>
+            <p>10개 챕터를 접고 펼치며 도전합니다. 첫 클리어, 반복 클리어, 챕터 클리어 보상은 분리됩니다.</p>
           </div>
           <div class="stage-summary" id="stageSummary">
             <div><span>HIGHEST</span><strong>0 / 100</strong></div>
@@ -305,24 +309,34 @@
             <div><span>ATTEMPTS</span><strong>0</strong></div>
           </div>
         </div>
-        <div class="stage-toolbar" aria-label="Stage chapter filter">
-          <button type="button" class="active" data-stage-chapter="all">ALL</button>
-          <button type="button" data-stage-chapter="1">CH.1</button>
-          <button type="button" data-stage-chapter="2">CH.2</button>
-          <button type="button" data-stage-chapter="3">CH.3</button>
-          <button type="button" data-stage-chapter="4">CH.4</button>
-          <button type="button" data-stage-chapter="5">CH.5</button>
+        <div class="stage-detail" id="stageDetail">
+          <span class="badge">READY</span>
+          <h4>스테이지 데이터를 준비 중입니다</h4>
+          <p>LAB이 초기화되면 추천 레벨, 추천 파워, 성공률, 보상이 표시됩니다.</p>
         </div>
-        <div class="stage-layout">
-          <div class="stage-list" id="stageList" aria-label="Stage list"></div>
-          <div class="stage-detail" id="stageDetail">
-            <span class="badge">READY</span>
-            <h4>스테이지 데이터를 준비 중입니다</h4>
-            <p>LAB이 초기화되면 추천 레벨, 추천 파워, 성공률, 보상이 표시됩니다.</p>
-          </div>
+        <div class="stage-chapter-list" id="stageChapterList" aria-label="Stage chapters"></div>
+      </section>
+      <section class="lab-panel" data-lab-panel="coming">
+        <span class="badge">LAB ROADMAP</span>
+        <h3>실험 콘텐츠 예고</h3>
+        <p>보스 러시, 주간 도전, 특수 서버 이벤트, 코드 시뮬레이터, CPU/GPU 챌린지를 LAB 확장 후보로 관리합니다.</p>
+        <div class="lab-preview-grid">
+          <div><strong>BOSS RUSH</strong><span>연속 보스형 STAGE 변형</span></div>
+          <div><strong>WEEKLY RUN</strong><span>주간 조건부 도전</span></div>
+          <div><strong>SERVER EVENT</strong><span>변칙 서버와 제한 룰</span></div>
+          <div><strong>HYBRID TEST</strong><span>CPU/GPU 빌드 실험</span></div>
         </div>
       </section>
     `;
+    const labTabs = views.lab.querySelectorAll('[data-lab-tab]');
+    const labPanels = views.lab.querySelectorAll('[data-lab-panel]');
+    labTabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.labTab || 'stage';
+        labTabs.forEach(item => item.classList.toggle('active', item === btn));
+        labPanels.forEach(panel => panel.classList.toggle('active', panel.dataset.labPanel === tab));
+      });
+    });
   }
   buildLab();
   try { document.dispatchEvent(new CustomEvent('hcsig:lab-ready')); } catch(e) {}
@@ -333,20 +347,20 @@
       <div class="lab-hero coming-hero" id="comingContent">
         <div>
           <div class="section-title">COMING SOON</div>
-          <h2>확장 실험 대기열</h2>
-          <p>다음 업데이트 후보를 한곳에 모아 둡니다. 정식 기능으로 확정되면 LAB 또는 ACTIONS로 이동합니다.</p>
+          <h2>다음 시즌 예고 허브</h2>
+          <p>2.0.0 이후의 시즌형 확장, 신규 코드 팩, 보스 콘텐츠, 랭킹형 도전을 이곳에 모읍니다.</p>
         </div>
-        <div class="lab-mode-chip">NEXT PATCH</div>
+        <div class="lab-mode-chip">SEASON HUB</div>
       </div>
       <section class="coming-panel">
         <span class="badge">ROADMAP</span>
-        <h3>다음 실험 후보</h3>
-        <p>EXTREME 고급 옵션, CPU/GPU 공존, 코드 프리셋, 변칙 서버 룰, LAB 확장 요소를 순차적으로 검토합니다.</p>
+        <h3>다음 시즌 후보</h3>
+        <p>보스 러시, 주간 도전, 코드 프리셋, 특수 서버 이벤트, 시즌 업적을 다음 확장 후보로 관리합니다.</p>
         <div class="lab-preview-grid coming-preview-grid">
-          <div><strong>EXTREME</strong><span>위험 해킹의 상위 옵션</span></div>
-          <div><strong>CPU / GPU</strong><span>안정 빌드와 공격 빌드 분리</span></div>
+          <div><strong>BOSS RUSH</strong><span>고난도 연속 도전</span></div>
+          <div><strong>WEEKLY RUN</strong><span>주간 조건과 보상</span></div>
           <div><strong>PRESETS</strong><span>코드 조합 저장과 전환</span></div>
-          <div><strong>SERVER RULES</strong><span>변칙 서버와 실험 보상</span></div>
+          <div><strong>SEASON CODE</strong><span>기간 한정 코드/업적</span></div>
         </div>
       </section>
     `;

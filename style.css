@@ -1155,14 +1155,14 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
 
 
 /* === v1.6.15-k1 cloud account panel === */
-.cloud-account-box{margin-top:10px;padding:12px;border:1px solid #243145;border-radius:14px;background:rgba(8,14,24,.88);display:flex;flex-direction:column;gap:8px;}
+.cloud-account-box{margin-top:10px;padding:12px;border:1px solid #243145;border-radius:8px;background:rgba(8,14,24,.88);display:flex;flex-direction:column;gap:8px;}
 .cloud-account-header{display:flex;justify-content:space-between;align-items:center;gap:10px;}
 .cloud-account-eyebrow{opacity:.72;letter-spacing:.12em;}
 .cloud-account-title{font-weight:700;font-size:14px;}
 .cloud-badge{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;border:1px solid #35506d;background:#122033;font-size:11px;font-weight:700;}
 .cloud-badge.is-ready{border-color:#2e6f54;background:#113326;color:#bdf6d4;}
 .cloud-badge.is-error{border-color:#7a3641;background:#31131b;color:#ffc8cf;}
-.cloud-account-status,.cloud-user-card{padding:10px 12px;border-radius:12px;background:#0b1220;border:1px solid #1f2b3d;}
+.cloud-account-status,.cloud-user-card{padding:10px 12px;border-radius:8px;background:#0b1220;border:1px solid #1f2b3d;}
 .cloud-user-card{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;}
 .cloud-user-name{font-weight:700;}
 .cloud-user-email,.cloud-user-meta{font-size:12px;opacity:.82;}
@@ -1848,6 +1848,137 @@ body.app-shell-ui #tutorialStepHint{
   border-color:rgba(94,234,212,.20);
   color:#ccfbf1;
 }
+.hack-mode-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  width:100%;
+}
+.hack-mode-segment{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  padding:5px;
+  border:1px solid rgba(94,234,212,.16);
+  border-radius:8px;
+  background:rgba(5,10,12,.72);
+}
+.hack-mode-segment button{
+  min-width:0;
+  min-height:38px;
+  border-radius:8px;
+  border:1px solid rgba(148,163,184,.18);
+  background:rgba(13,21,22,.78);
+  color:#cbd5e1;
+  font-weight:800;
+  transition:transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease;
+}
+.hack-mode-segment button:hover:not(:disabled),
+.achievement-toolbar button:hover:not(:disabled),
+.stage-chapter-head:hover,
+.stage-card:hover{
+  transform:translateY(-1px);
+}
+.hack-mode-segment button:active:not(:disabled),
+.achievement-toolbar button:active:not(:disabled),
+.stage-chapter-head:active,
+.stage-card:active{
+  transform:translateY(0) scale(.99);
+}
+.hack-mode-segment button.active{
+  color:#fff;
+  border-color:rgba(45,212,191,.72);
+  background:linear-gradient(135deg, rgba(20,184,166,.78), rgba(22,101,52,.70));
+  box-shadow:0 0 0 2px rgba(45,212,191,.12) inset, 0 10px 24px rgba(0,0,0,.24);
+}
+.hack-mode-segment button[data-hack-mode="extreme"].active{
+  border-color:rgba(251,113,133,.76);
+  background:linear-gradient(135deg, rgba(190,18,60,.76), rgba(126,34,206,.45));
+}
+.hack-mode-segment button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.achievement-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  margin:0 0 10px;
+}
+.achievement-toolbar button{
+  min-height:34px;
+  border-radius:8px;
+  border:1px solid rgba(148,163,184,.18);
+  background:rgba(11,18,22,.76);
+  color:#cbd5e1;
+  font-weight:700;
+  transition:transform .16s ease, border-color .16s ease, background .16s ease;
+}
+.achievement-toolbar button.active{
+  color:#fff;
+  border-color:rgba(45,212,191,.68);
+  background:rgba(20,184,166,.28);
+}
+.achievement-hidden-toggle{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-left:auto;
+}
+.stage-chapter-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:12px;
+}
+.stage-chapter{
+  border:1px solid rgba(94,234,212,.14);
+  border-radius:8px;
+  background:rgba(7,13,13,.72);
+  overflow:hidden;
+}
+.stage-chapter.is-complete{
+  border-color:rgba(132,204,22,.32);
+}
+.stage-chapter-head{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  min-height:54px;
+  padding:10px 12px;
+  border:0;
+  border-radius:0;
+  background:rgba(13,20,18,.86);
+  color:#e5f7ef;
+  text-align:left;
+}
+.stage-chapter-head span,
+.stage-chapter-head em{
+  min-width:0;
+}
+.stage-chapter-head strong{
+  color:#5eead4;
+  margin-right:6px;
+}
+.stage-chapter-head em{
+  color:#b7c9c6;
+  font-size:11px;
+  font-style:normal;
+  text-align:right;
+  overflow-wrap:anywhere;
+}
+.stage-chapter.open .stage-chapter-head{
+  background:linear-gradient(135deg, rgba(20,184,166,.23), rgba(15,23,20,.92));
+}
+.stage-chapter .stage-list{
+  max-height:420px;
+  min-height:0;
+  padding:10px;
+  border-top:1px solid rgba(148,163,184,.12);
+}
 @media (max-width: 900px), (hover: none) and (pointer: coarse){
   body.app-shell-ui{
     padding-bottom:calc(var(--mobileTabsH, 82px) + 18px + env(safe-area-inset-bottom)) !important;
@@ -1929,10 +2060,12 @@ body.app-shell-ui #tutorialStepHint{
     white-space:normal;
     line-height:1.45;
   }
-  #riskModeText{
-    white-space:normal;
-    overflow-wrap:anywhere;
-  }
+  .hack-mode-segment{grid-template-columns:1fr 1fr 1fr;}
+  .achievement-toolbar{align-items:stretch;}
+  .achievement-toolbar button{flex:1 1 30%;}
+  .achievement-hidden-toggle{width:100%;margin-left:0;}
+  .stage-chapter-head{flex-direction:column;align-items:flex-start;}
+  .stage-chapter-head em{text-align:left;}
   .lab-hero{
     flex-direction:column;
   }
@@ -1951,7 +2084,10 @@ body.app-shell-ui #tutorialStepHint{
     animation:none;
   }
   .app-main-tabs button,
-  body.app-shell-ui button{
+  body.app-shell-ui button,
+  .hack-mode-segment button,
+  .achievement-toolbar button,
+  .stage-card{
     transition:none;
   }
 }

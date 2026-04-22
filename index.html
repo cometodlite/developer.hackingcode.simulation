@@ -9,18 +9,18 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=lab-coming-main-20260422" rel="stylesheet"/>
+<link href="style.css?v=2.0.0" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">v1.8.1-lab-coming (Web)</span>
+<span class="header-version">2.0.0 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
-<button id="btnMore" title="업데이트 로그, 미션, 업적, 저장/불러오기">더보기 ▾</button>
+<button id="btnMore" title="업데이트 로그, 미션, 업적, 클라우드 계정">더보기 ▾</button>
 </div>
 </header>
 <div id="main">
@@ -43,6 +43,10 @@
 <div class="stat-row">
 <span class="label" id="labelCpuTier">CPU 티어</span>
 <span class="value" id="statCpuTier">1</span>
+</div>
+<div class="stat-row">
+<span class="label" id="labelGpuTier">GPU 티어</span>
+<span class="value" id="statGpuTier">1</span>
 </div>
 <div class="stat-row">
 <span class="label" id="labelEnergy">에너지</span>
@@ -99,6 +103,7 @@
 <button id="btnScan" title="에너지 1 소모. 코드 희귀도 가챠 + 경험치 획득.">코드 스캔</button>
 <button id="btnHack" title="에너지 2 소모. 선택한 코드와 서버 정보로 해킹을 시도.">서버 해킹</button>
 <button id="btnUpgradeCpu" title="CPU 티어 업그레이드. 티어 × 500 크레딧(할인 적용) 소모, 해킹 성공률 증가.">CPU 업그레이드</button>
+<button id="btnUpgradeGpu" title="GPU 티어 업그레이드. 티어 × 650 크레딧 소모, 반복/도전 보상 증가.">GPU 업그레이드</button>
 </div>
 <div class="flex-col">
 <div class="flex-row">
@@ -119,10 +124,15 @@
 </div>
 </div>
 </div>
-<label class="small" style="margin-top:4px; display:flex; align-items:center; gap:4px;">
-<input id="chkRiskMode" type="checkbox"/>
-              <span id="riskModeText">위험 해킹 모드 (성공 확률 -15%p + 보정, 보상 크레딧 ×2, 실패 시 에너지 추가 -1)</span>
-            </label>
+<div class="hack-mode-wrap" aria-label="해킹 모드">
+<div class="small" id="labelHackMode">해킹 모드</div>
+<div class="hack-mode-segment" id="hackModeSegment">
+<button class="active" data-hack-mode="normal" type="button">NORMAL</button>
+<button data-hack-mode="risk" type="button">RISK</button>
+<button data-hack-mode="extreme" type="button">EXTREME</button>
+</div>
+<div class="small" id="hackModeHint">NORMAL: 안정적인 기본 해킹 모드</div>
+</div>
 <div class="small" style="margin-top:4px;">
               <span id="actionsDesc1">· 에너지 1칸 = 120초, 0.1초 단위로 카운트다운 표시</span><br/>
               <span id="actionsDesc2">· 코드 스캔: 에너지 1, 스캔 EXP 소량 (희귀도별 스캔 시간 차등)</span><br/>
@@ -194,7 +204,7 @@
 <button class="more-tab-button" data-tab="codex" id="tabBtnCodex">코드 도감</button>
 <button class="more-tab-button" data-tab="logs" id="tabBtnLogs">로그</button>
 <button class="more-tab-button" data-tab="settings" id="tabBtnSettings">설정</button>
-<button class="more-tab-button" data-tab="save" id="tabBtnSave">데이터</button>
+<button class="more-tab-button" data-tab="save" id="tabBtnSave">클라우드 계정</button>
 </div>
 <div class="more-quick-actions">
 <button id="btnOpenTutorial" type="button">튜토리얼 다시 보기</button>
@@ -218,6 +228,12 @@
 <div>
 <span class="badge">ACHIEVEMENT</span>
 <span id="achievementTabTitle">업적</span>
+</div>
+<div class="achievement-toolbar" id="achievementToolbar" aria-label="업적 필터">
+<button class="active" data-achievement-filter="incomplete" type="button">미완료</button>
+<button data-achievement-filter="all" type="button">전체</button>
+<button data-achievement-filter="complete" type="button">완료</button>
+<label class="log-filter-label achievement-hidden-toggle"><input id="chkShowHiddenAchievements" type="checkbox"/> 숨김 포함</label>
 </div>
 <div class="stat-box" id="achievementList"></div>
 </div>
@@ -338,33 +354,18 @@
 <div class="more-tab-panel" id="tabSave">
 <div>
 <span class="badge">SAVE</span>
-<span id="saveTabTitle">데이터 관리</span>
+<span id="saveTabTitle">클라우드 계정</span>
 </div>
 <div class="stat-box" style="font-size:12px;">
-<div class="button-row">
-<button id="btnSaveGame" title="현재 상태를 브라우저 LocalStorage에 저장합니다.">저장하기</button>
-<button id="btnLoadGame" title="LocalStorage에서 저장된 데이터를 불러옵니다.">불러오기</button>
-<button id="btnClearSave" title="저장 데이터를 삭제합니다.">저장 데이터 삭제</button>
-</div>
-<div class="button-row" style="margin-top:6px;">
-<button id="btnExportSave" title="현재 저장 데이터를 JSON 파일로 내보냅니다.">내보내기</button>
-<button id="btnImportSaveFile" title="JSON 저장 파일을 불러옵니다.">파일 불러오기</button>
-<input accept="application/json" id="fileImportSave" style="display:none;" type="file"/>
-</div>
-<div class="small" style="margin-top:8px; opacity:0.95;" id="importTextTitle">텍스트로 불러오기</div>
-<textarea id="importSaveText" placeholder="여기에 JSON을 붙여넣고 불러오기를 누르세요." style="width:100%; height:90px; margin-top:6px; background:#0b1220; border:1px solid #243145; color:#e5e7eb; border-radius:10px; padding:10px; font-size:12px;"></textarea>
-<div class="button-row" style="margin-top:6px;">
-<button id="btnImportSaveText" title="텍스트(JSON)로 저장 데이터를 불러옵니다.">텍스트 불러오기</button>
-</div>
 <div class="cloud-account-box" id="cloudAccountBox">
 <div class="cloud-account-header">
 <div>
 <div class="small cloud-account-eyebrow">ACCOUNT</div>
 <div class="cloud-account-title" id="cloudAccountTitle">클라우드 계정 연동</div>
 </div>
-<span class="cloud-badge" id="cloudStatusBadge">LOCAL ONLY</span>
+<span class="cloud-badge" id="cloudStatusBadge">CLOUD SETUP</span>
 </div>
-<div class="small" id="cloudAccountDesc">Firebase를 연결하면 Safari / Chrome / Edge 등 다른 브라우저에서도 같은 계정으로 세이브를 이어갈 수 있습니다.</div>
+<div class="small" id="cloudAccountDesc">클라우드 계정으로 Safari / Chrome / Edge 등 다른 브라우저에서도 같은 세이브를 이어갑니다.</div>
 <div class="cloud-account-status" id="cloudAccountStatus">설정 대기 중</div>
 <div class="cloud-account-layout">
 <div class="cloud-section cloud-section-account">
@@ -383,7 +384,7 @@
 <button id="btnCloudPull" type="button">클라우드 불러오기</button>
 <button id="btnCloudLogout" type="button">로그아웃</button>
 </div>
-<div class="small" id="cloudAccountHelp">※ firebase-config.js에 프로젝트 키를 넣기 전까지는 로컬 저장만 동작합니다.</div>
+<div class="small" id="cloudAccountHelp">※ 클라우드 저장을 사용하려면 Firebase 설정과 계정 로그인이 필요합니다.</div>
 <div class="cloud-user-card" id="cloudUserCard" hidden>
 <div class="cloud-user-header-row">
 <div class="cloud-avatar-box">
@@ -466,8 +467,8 @@
 </div>
 </div>
 <div class="small" id="saveHelp">
-              · 저장 위치: 브라우저 LocalStorage (이 브라우저, 이 기기 한정)<br/>
-              · 자동 저장: 약 60초마다 한 번씩 백그라운드 저장
+              · 저장 위치: 클라우드 계정<br/>
+              · 브라우저 내부 저장은 자동 캐시와 기존 세이브 이전에만 사용됩니다.
             </div>
 </div>
 </div>
@@ -510,9 +511,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=lab-coming-main-20260422"></script>
-<script src="auth.js?v=lab-coming-main-20260422"></script>
-<script src="cloudSave.js?v=lab-coming-main-20260422"></script>
-<script src="app-core.js?v=lab-coming-main-20260422"></script>
-<script src="app-ui.js?v=lab-coming-main-20260422"></script></body>
+<script src="firebase-config.js?v=2.0.0"></script>
+<script src="auth.js?v=2.0.0"></script>
+<script src="cloudSave.js?v=2.0.0"></script>
+<script src="app-core.js?v=2.0.0"></script>
+<script src="app-ui.js?v=2.0.0"></script></body>
 </html>

@@ -367,8 +367,8 @@
 
   function startAuthObserver(){
     if (!window.HCSIG_FIREBASE_READY || !window.HCSIG_FB) {
-      setBadge('LOCAL ONLY');
-      setStatus('Firebase 미설정: 현재는 LocalStorage 저장만 동작합니다.');
+      setBadge('CLOUD SETUP');
+      setStatus('Firebase 설정 필요: 클라우드 계정 저장을 사용할 수 없습니다.');
       setLoggedInView(null);
       return;
     }
