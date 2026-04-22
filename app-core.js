@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.0.1';
+const CURRENT_VERSION = '2.0.2';
 const TUTORIAL_VERSION = 3;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -630,6 +630,15 @@ function applyLanguageToUI(){
           '버튼, 스캔, 해킹 성공/실패, 업그레이드, STAGE, 업적, 레벨업에 짧은 Web Audio 효과음을 연결했습니다.',
           '설정 탭에서 효과음 ON/OFF와 볼륨을 저장할 수 있게 했습니다.',
           '외부 음원 파일 없이 브라우저 내 합성음으로 처리해 GitHub Pages 로딩 부담을 줄였습니다.'
+        ]
+      },
+      {
+        version: '2.0.2',
+        lines: [
+          '모바일 화면 자동 확대를 줄이고 입력/선택 UI의 터치 안정성을 보강했습니다.',
+          '하단 메인 탭과 주요 버튼의 터치 판정을 정리해 클릭 씹힘을 줄였습니다.',
+          'LAB, COMING SOON, 튜토리얼 문구를 더 짧고 게임 안쪽 말투로 다듬었습니다.',
+          '모바일 버튼 누름 연출을 완화해 조작 중 레이아웃 흔들림을 줄였습니다.'
         ]
       }
 
@@ -1926,23 +1935,23 @@ function applyLanguageToUI(){
     function getTutorialSteps() {
       if (getLang() === 'en') {
         return [
-          { title: 'Welcome', text: 'A quick pass through HCSiG 2.0.0. The core loop is still scan, select a code, then hack or clear STAGE routes.', hint: 'Use Next when you are ready.' },
-          { title: 'HOME', text: 'HOME keeps status, energy, server hacking, CPU/GPU upgrades, and NORMAL/RISK/EXTREME mode selection in one place.', hint: 'CPU steadies the run. GPU amplifies repeat and challenge rewards.' },
-          { title: 'CODES', text: 'CODES holds your inventory, selected code detail, upgrades, sync, and evolution actions.', hint: 'After scanning, choose a code here to make it active.' },
-          { title: 'SHOP', text: 'SHOP stays focused on growth support: energy, economy, system, and utility items.', hint: 'Sort and category filters are unchanged.' },
-          { title: 'LAB', text: 'LAB is the challenge hub. STAGE opens the 1-100 route and uses your active code, CPU tier, GPU tier, energy, and sync bonuses.', hint: 'LAB COMING SOON keeps experimental challenge ideas separate.' },
-          { title: 'COMING SOON', text: 'COMING SOON is the season and version roadmap space for future content packs and events.', hint: 'Cloud account data lives in More. Local save tools are no longer the main path.' },
-          { title: 'Ready', text: 'Start with a scan, pick a code, then hack a server. NORMAL is stable, RISK pays more, EXTREME unlocks at Lv.5.', hint: 'Press Start to enter the simulation.' }
+          { title: 'Start', text: 'Scan a code, pick it, then hack. STAGE starts from LAB.', hint: 'Tap Next.' },
+          { title: 'HOME', text: 'Check energy, choose a server, set NORMAL/RISK/EXTREME, and upgrade CPU or GPU.', hint: 'CPU helps control. GPU boosts repeat rewards.' },
+          { title: 'CODES', text: 'Manage code upgrades, sync, evolution, and the active code.', hint: 'The active code drives hacking and STAGE.' },
+          { title: 'SHOP', text: 'Buy energy, system, economy, and utility items.', hint: 'Use filters when the list gets long.' },
+          { title: 'LAB', text: 'Open STAGE 1-100 here. Each chapter can be folded.', hint: 'First clear, repeat clear, and chapter rewards are separate.' },
+          { title: 'COMING SOON', text: 'Future modes and season content will land here.', hint: 'Cloud account tools are in More.' },
+          { title: 'Ready', text: 'NORMAL is steady. RISK pays more. EXTREME opens at Lv.5.', hint: 'Tap Start.' }
         ];
       }
       return [
-        { title: '환영합니다', text: 'HCSiG 2.0.0의 핵심만 짧게 안내합니다. 기본 루프는 코드 스캔, 코드 선택, 서버 해킹과 STAGE 도전으로 이어집니다.', hint: '준비되면 다음을 눌러 주세요.' },
-        { title: 'HOME', text: 'HOME은 상태, 에너지, 서버 해킹, CPU/GPU 업그레이드, NORMAL/RISK/EXTREME 해킹 선택을 한곳에 모았습니다.', hint: 'CPU는 안정성, GPU는 반복/도전 보상 증폭을 담당합니다.' },
-        { title: 'CODES', text: 'CODES에서는 코드 인벤토리, 선택 코드 상세, 강화, 동기화, 진화를 관리합니다.', hint: '스캔 후 얻은 코드를 여기서 선택하면 활성 코드가 됩니다.' },
-        { title: 'SHOP', text: 'SHOP은 성장 보조 공간입니다. 에너지, 경제, 시스템, 유틸 아이템을 정렬과 분류로 확인합니다.', hint: '상점 밸런스와 구매 규칙은 기존 그대로 유지됩니다.' },
-        { title: 'LAB', text: 'LAB은 도전 콘텐츠 허브입니다. STAGE는 1~100 도전 구간이며 활성 코드, CPU 티어, GPU 티어, 에너지, 동기화 보정을 사용합니다.', hint: 'LAB 안의 COMING SOON은 실험 콘텐츠 예고 공간입니다.' },
-        { title: 'COMING SOON', text: 'COMING SOON은 시즌/버전 예고 허브입니다. 향후 코드 팩, 이벤트, 보스형 콘텐츠를 이곳에 모읍니다.', hint: '클라우드 계정 데이터는 더보기 안에서 관리합니다. 로컬 저장 도구는 중심 기능에서 빠졌습니다.' },
-        { title: '시작 준비 완료', text: '먼저 코드를 스캔하고, 코드를 선택한 뒤 서버를 해킹하세요. NORMAL은 안정적이고 RISK는 더 큰 보상, EXTREME은 Lv.5 이후 고위험 보상을 제공합니다.', hint: '시작하기를 누르면 시뮬레이션으로 들어갑니다.' }
+        { title: '시작', text: '코드를 스캔하고, 하나를 고른 뒤 서버를 해킹합니다. STAGE는 LAB에서 시작합니다.', hint: '다음을 누르세요.' },
+        { title: 'HOME', text: '에너지, 서버, 해킹 난이도, CPU/GPU 업그레이드를 관리합니다.', hint: 'CPU는 제어, GPU는 반복 보상입니다.' },
+        { title: 'CODES', text: '코드 강화, 동기화, 진화, 활성 코드를 관리합니다.', hint: '활성 코드가 해킹과 STAGE에 쓰입니다.' },
+        { title: 'SHOP', text: '에너지, 시스템, 경제, 유틸 아이템을 구매합니다.', hint: '목록이 길면 분류를 쓰세요.' },
+        { title: 'LAB', text: 'STAGE 1~100을 진행합니다. 챕터는 접고 펼칠 수 있습니다.', hint: '첫 클리어, 반복, 챕터 보상은 따로 계산됩니다.' },
+        { title: 'COMING SOON', text: '다음 모드와 시즌 콘텐츠가 이곳에 들어옵니다.', hint: '클라우드 계정은 더보기에서 관리합니다.' },
+        { title: '준비 완료', text: 'NORMAL은 안정적입니다. RISK는 보상이 큽니다. EXTREME은 Lv.5부터 열립니다.', hint: '시작하기를 누르세요.' }
       ];
     }
 

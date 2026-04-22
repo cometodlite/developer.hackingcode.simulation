@@ -287,10 +287,10 @@
       <div class="lab-hero" id="labContent">
         <div>
           <div class="section-title">LAB</div>
-          <h2>도전과 실험의 허브</h2>
-          <p>STAGE는 정식 도전 루트, COMING SOON은 실험 콘텐츠 예고 공간입니다.</p>
+          <h2>LAB</h2>
+          <p>스테이지와 다음 실험을 여기서 관리합니다.</p>
         </div>
-        <div class="lab-mode-chip">2.0.0 LAB</div>
+        <div class="lab-mode-chip">LAB ONLINE</div>
       </div>
       <div class="lab-subtabs" id="labSubtabs">
         <button type="button" class="active" data-lab-tab="stage">STAGE</button>
@@ -301,7 +301,7 @@
           <div>
             <span class="badge">STAGE</span>
             <h3>Stage 1-100</h3>
-            <p>10개 챕터를 접고 펼치며 도전합니다. 첫 클리어, 반복 클리어, 챕터 클리어 보상은 분리됩니다.</p>
+            <p>챕터를 열어 바로 도전하세요. 보상은 첫 클리어, 반복, 챕터로 나뉩니다.</p>
           </div>
           <div class="stage-summary" id="stageSummary">
             <div><span>HIGHEST</span><strong>0 / 100</strong></div>
@@ -311,20 +311,20 @@
         </div>
         <div class="stage-detail" id="stageDetail">
           <span class="badge">READY</span>
-          <h4>스테이지 데이터를 준비 중입니다</h4>
-          <p>LAB이 초기화되면 추천 레벨, 추천 파워, 성공률, 보상이 표시됩니다.</p>
+          <h4>스테이지 선택 대기</h4>
+          <p>챕터를 선택하면 추천값과 보상이 표시됩니다.</p>
         </div>
         <div class="stage-chapter-list" id="stageChapterList" aria-label="Stage chapters"></div>
       </section>
       <section class="lab-panel" data-lab-panel="coming">
-        <span class="badge">LAB ROADMAP</span>
-        <h3>실험 콘텐츠 예고</h3>
-        <p>보스 러시, 주간 도전, 특수 서버 이벤트, 코드 시뮬레이터, CPU/GPU 챌린지를 LAB 확장 후보로 관리합니다.</p>
+        <span class="badge">NEXT</span>
+        <h3>준비 중</h3>
+        <p>아직 열리지 않은 실험 모드입니다.</p>
         <div class="lab-preview-grid">
-          <div><strong>BOSS RUSH</strong><span>연속 보스형 STAGE 변형</span></div>
-          <div><strong>WEEKLY RUN</strong><span>주간 조건부 도전</span></div>
-          <div><strong>SERVER EVENT</strong><span>변칙 서버와 제한 룰</span></div>
-          <div><strong>HYBRID TEST</strong><span>CPU/GPU 빌드 실험</span></div>
+          <div><strong>BOSS RUSH</strong><span>연속 보스전</span></div>
+          <div><strong>WEEKLY RUN</strong><span>주간 조건 도전</span></div>
+          <div><strong>SERVER EVENT</strong><span>변칙 서버</span></div>
+          <div><strong>HYBRID TEST</strong><span>CPU/GPU 빌드</span></div>
         </div>
       </section>
     `;
@@ -347,20 +347,20 @@
       <div class="lab-hero coming-hero" id="comingContent">
         <div>
           <div class="section-title">COMING SOON</div>
-          <h2>다음 시즌 예고 허브</h2>
-          <p>2.0.0 이후의 시즌형 확장, 신규 코드 팩, 보스 콘텐츠, 랭킹형 도전을 이곳에 모읍니다.</p>
+          <h2>준비 중</h2>
+          <p>다음 업데이트에서 열릴 콘텐츠를 모아둡니다.</p>
         </div>
-        <div class="lab-mode-chip">SEASON HUB</div>
+        <div class="lab-mode-chip">NEXT</div>
       </div>
       <section class="coming-panel">
-        <span class="badge">ROADMAP</span>
-        <h3>다음 시즌 후보</h3>
-        <p>보스 러시, 주간 도전, 코드 프리셋, 특수 서버 이벤트, 시즌 업적을 다음 확장 후보로 관리합니다.</p>
+        <span class="badge">QUEUE</span>
+        <h3>예정 콘텐츠</h3>
+        <p>보스 러시, 주간 도전, 코드 프리셋, 특수 서버 이벤트를 준비합니다.</p>
         <div class="lab-preview-grid coming-preview-grid">
-          <div><strong>BOSS RUSH</strong><span>고난도 연속 도전</span></div>
-          <div><strong>WEEKLY RUN</strong><span>주간 조건과 보상</span></div>
-          <div><strong>PRESETS</strong><span>코드 조합 저장과 전환</span></div>
-          <div><strong>SEASON CODE</strong><span>기간 한정 코드/업적</span></div>
+          <div><strong>BOSS RUSH</strong><span>연속 도전</span></div>
+          <div><strong>WEEKLY RUN</strong><span>주간 보상</span></div>
+          <div><strong>PRESETS</strong><span>코드 조합 저장</span></div>
+          <div><strong>SEASON CODE</strong><span>한정 코드</span></div>
         </div>
       </section>
     `;
