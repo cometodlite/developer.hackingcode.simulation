@@ -1,16 +1,17 @@
 (function(){
-  const VERSION = '2.1.2';
+  const VERSION = '2.2.0';
   const HEARTBEAT_MS = 45000;
   const ACTIVE_WINDOW_MS = 120000;
   const RANK_WRITE_MS = 60000;
   const ALLOWED_STATUS = ['ONLINE', 'DEGRADED', 'MAINTENANCE', 'LOCAL MIRROR'];
-  const ALLOWED_ACTIVITY = ['hack_success', 'extreme_success', 'stage_clear', 'epic_code_found', 'gpu_tier_up', 'cpu_tier_up'];
+  const ALLOWED_ACTIVITY = ['hack_success', 'extreme_success', 'stage_clear', 'epic_code_found', 'gpu_tier_up', 'cpu_tier_up', 'weekly_goal_claimed', 'weekly_all_clear'];
   const BOARDS = [
     { id: 'hack', label: 'HACK', metric: 'hackSuccessCount' },
     { id: 'stage', label: 'TOWER', metric: 'stageClearCount' },
     { id: 'extreme', label: 'EXTREME', metric: 'extremeHackSuccessCount' },
-    { id: 'credits', label: 'CREDITS', metric: 'creditsEarnedTotal' },
-    { id: 'power', label: 'POWER', metric: 'collectionPower' }
+	    { id: 'credits', label: 'CREDITS', metric: 'creditsEarnedTotal' },
+	    { id: 'power', label: 'POWER', metric: 'collectionPower' },
+	    { id: 'weekly', label: 'WEEKLY', metric: 'weeklyScore' }
   ];
 
   const state = {
@@ -111,7 +112,7 @@
       eventTitle: 'LIVE NETWORK',
       maintenanceText: '',
       liveEnabled: true,
-      rankSeasonLabel: 'SEASON 2.1'
+	      rankSeasonLabel: 'SEASON 2.2'
     };
   }
 
@@ -129,8 +130,8 @@
       return [
         {
           id:'online-brief',
-          title:'Broadcast Standby',
-          body:text('LIVE NET은 온라인입니다. 등록된 운영 공지가 아직 없습니다.', 'LIVE NET is online. No operator notice is posted yet.'),
+	          title:'WEEKLY OPS ACTIVE',
+	          body:text('NEW CHALLENGE DEPLOYED · BONUS NODE 신호를 확인하세요.', 'NEW CHALLENGE DEPLOYED · Check the BONUS NODE signal.'),
           createdAt: now(),
           level:'ONLINE'
         }
@@ -375,7 +376,7 @@
     const titleEl = document.getElementById('liveBroadcastTitle');
     if (titleEl) titleEl.textContent = title;
     if (el.liveBroadcastMotd) el.liveBroadcastMotd.textContent = getMotd();
-    if (el.liveRankSeason) el.liveRankSeason.textContent = (state.config && state.config.rankSeasonLabel) || 'SEASON 2.1';
+        if (el.liveRankSeason) el.liveRankSeason.textContent = (state.config && state.config.rankSeasonLabel) || 'SEASON 2.2';
 
     if (el.liveBroadcastAnnouncements) {
       const announcements = getAnnouncementItems(status);
@@ -473,8 +474,12 @@
         return { title: `${name} found rare code`, meta: ref || 'EPIC+ signature acquired' };
       case 'gpu_tier_up':
         return { title: `${name} boosted GPU T${value}`, meta: 'render pipeline upgraded' };
-      case 'cpu_tier_up':
-        return { title: `${name} tuned CPU T${value}`, meta: 'control pipeline upgraded' };
+	      case 'cpu_tier_up':
+	        return { title: `${name} tuned CPU T${value}`, meta: 'control pipeline upgraded' };
+	      case 'weekly_goal_claimed':
+	        return { title: `${name} claimed WEEKLY OPS`, meta: value ? `weekly score +${value}` : 'weekly objective claimed' };
+	      case 'weekly_all_clear':
+	        return { title: `${name} completed WEEKLY OPS`, meta: 'weekly badge transmitted' };
       case 'hack_success':
       default:
         return { title: `${name} hacked a node`, meta: value ? `reward ${value.toLocaleString()} credits` : 'server access confirmed' };
@@ -707,8 +712,9 @@
       stage: Number(stats.stageClearCount || 0),
       extreme: Number(stats.extremeHackSuccessCount || 0),
       credits: Number(stats.creditsEarnedTotal || 0),
-      power: collectionPower,
-      level: Number(gameState.level || 1),
+	      power: collectionPower,
+	      weekly: Number((gameState.weeklyChallenge && gameState.weeklyChallenge.score) || 0),
+	      level: Number(gameState.level || 1),
       codeCount: ownedCodes.length
     };
   }

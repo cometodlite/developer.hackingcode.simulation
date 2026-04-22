@@ -9,18 +9,19 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=2.1.2" rel="stylesheet"/>
+<link href="style.css?v=2.2.0" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">2.1.2 (Web)</span>
+<span class="header-version">2.2.0 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
-<button id="btnMore" title="업데이트 로그, 미션, 업적, 클라우드 계정">더보기 ▾</button>
+<button id="btnList" title="미션과 업적 리스트">LIST</button>
+<button id="btnMore" title="코드 도감, 로그, 설정, 클라우드 계정">더보기 ▾</button>
 </div>
 </header>
 <div id="main">
@@ -190,27 +191,20 @@
 </div>
 
 
-<!-- 더보기 모달 -->
-<div id="moreModalBackdrop">
-<div id="moreModal">
-<div id="moreModalHeader">
-<h2 id="moreTitle">더보기</h2>
-<button id="btnMoreClose">✕</button>
+<!-- 리스트 모달 -->
+<div id="listModalBackdrop">
+<div id="listModal">
+<div id="listModalHeader">
+<h2 id="listTitle">LIST</h2>
+<button id="btnListClose">✕</button>
 </div>
-<div id="moreModalBody">
-<div class="more-tabs">
-<button class="more-tab-button active" data-tab="mission" id="tabBtnMission">미션</button>
-<button class="more-tab-button" data-tab="achievement" id="tabBtnAchievement">업적</button>
-<button class="more-tab-button" data-tab="codex" id="tabBtnCodex">코드 도감</button>
-<button class="more-tab-button" data-tab="logs" id="tabBtnLogs">로그</button>
-<button class="more-tab-button" data-tab="settings" id="tabBtnSettings">설정</button>
-<button class="more-tab-button" data-tab="save" id="tabBtnSave">클라우드 계정</button>
-</div>
-<div class="more-quick-actions">
-<button id="btnOpenTutorial" type="button">튜토리얼 다시 보기</button>
+<div id="listModalBody">
+<div class="list-tabs">
+<button class="list-tab-button active" data-list-tab="mission" id="listTabBtnMission">미션</button>
+<button class="list-tab-button" data-list-tab="achievement" id="listTabBtnAchievement">업적</button>
 </div>
 <!-- 미션 탭 -->
-<div class="more-tab-panel" id="tabMission">
+<div class="list-tab-panel active" id="tabMission">
 <div>
 <span class="badge">MISSION</span>
 <span id="missionTabTitle">퀘스트</span>
@@ -224,7 +218,7 @@
 <div class="stat-box" id="missionList"></div>
 </div>
 <!-- 업적 탭 -->
-<div class="more-tab-panel" id="tabAchievement">
+<div class="list-tab-panel" id="tabAchievement">
 <div>
 <span class="badge">ACHIEVEMENT</span>
 <span id="achievementTabTitle">업적</span>
@@ -237,7 +231,31 @@
 </div>
 <div class="stat-box" id="achievementList"></div>
 </div>
-<div class="more-tab-panel" id="tabCodex">
+</div>
+<div id="listModalFooter">
+<button id="btnListClose2">닫기</button>
+</div>
+</div>
+</div>
+
+<!-- 더보기 모달 -->
+<div id="moreModalBackdrop">
+<div id="moreModal">
+<div id="moreModalHeader">
+<h2 id="moreTitle">더보기</h2>
+<button id="btnMoreClose">✕</button>
+</div>
+<div id="moreModalBody">
+<div class="more-tabs">
+<button class="more-tab-button active" data-tab="codex" id="tabBtnCodex">코드 도감</button>
+<button class="more-tab-button" data-tab="logs" id="tabBtnLogs">로그</button>
+<button class="more-tab-button" data-tab="settings" id="tabBtnSettings">설정</button>
+<button class="more-tab-button" data-tab="save" id="tabBtnSave">클라우드 계정</button>
+</div>
+<div class="more-quick-actions">
+<button id="btnOpenTutorial" type="button">튜토리얼 다시 보기</button>
+</div>
+<div class="more-tab-panel active" id="tabCodex">
 <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
 <div><span class="badge">CODEX</span><span id="codexTabTitle">코드 도감</span></div>
 <div class="small" id="codexSummary">발견 0 / 0</div>
@@ -543,10 +561,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=2.1.2"></script>
-<script src="auth.js?v=2.1.2"></script>
-<script src="cloudSave.js?v=2.1.2"></script>
-<script src="app-core.js?v=2.1.2"></script>
-<script src="app-ui.js?v=2.1.2"></script>
-<script src="liveOps.js?v=2.1.2"></script></body>
+<script src="firebase-config.js?v=2.2.0"></script>
+<script src="auth.js?v=2.2.0"></script>
+<script src="cloudSave.js?v=2.2.0"></script>
+<script src="app-core.js?v=2.2.0"></script>
+<script src="app-ui.js?v=2.2.0"></script>
+<script src="liveOps.js?v=2.2.0"></script></body>
 </html>

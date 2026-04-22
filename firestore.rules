@@ -22,15 +22,17 @@ service cloud.firestore {
         'hack_success',
         'extreme_success',
         'stage_clear',
-        'epic_code_found',
-        'gpu_tier_up',
-        'cpu_tier_up'
-      ];
-    }
+	        'epic_code_found',
+	        'gpu_tier_up',
+	        'cpu_tier_up',
+	        'weekly_goal_claimed',
+	        'weekly_all_clear'
+	      ];
+	    }
 
-    function isBoard(boardId) {
-      return boardId in ['hack', 'stage', 'extreme', 'credits', 'power'];
-    }
+	    function isBoard(boardId) {
+	      return boardId in ['hack', 'stage', 'extreme', 'credits', 'power', 'weekly'];
+	    }
 
     function isScore(value) {
       return (value is int || value is float) && value >= 0 && value <= 999999999;

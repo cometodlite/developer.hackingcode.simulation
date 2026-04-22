@@ -53,12 +53,19 @@
       opacity: 0.7;
     }
 
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-    }
+	    .header-right {
+	      display: flex;
+	      align-items: center;
+	      justify-content:flex-end;
+	      flex-wrap:wrap;
+	      gap: 8px;
+	      font-size: 13px;
+	    }
+
+	    #btnList{
+	      min-width:64px;
+	      font-weight:900;
+	    }
 
     header span.subtitle {
       font-size: 13px;
@@ -522,7 +529,8 @@ button:hover {
 
     /* 더보기 모달 + 탭 */
 
-    #moreModalBackdrop {
+    #moreModalBackdrop,
+    #listModalBackdrop {
       display: none;
       position: fixed;
       inset: 0;
@@ -533,11 +541,13 @@ button:hover {
       justify-content: center;
     }
 
-    #moreModalBackdrop.active {
+    #moreModalBackdrop.active,
+    #listModalBackdrop.active {
       display: flex;
     }
 
-    #moreModal {
+    #moreModal,
+    #listModal {
       width: 780px;
       max-width: 95vw;
       max-height: 85vh;
@@ -549,7 +559,8 @@ button:hover {
       flex-direction: column;
     }
 
-    #moreModalHeader {
+    #moreModalHeader,
+    #listModalHeader {
       padding: 10px 12px;
       border-bottom: 1px solid #111827;
       display: flex;
@@ -558,11 +569,13 @@ button:hover {
       gap: 8px;
     }
 
-    #moreModalHeader h2 {
+    #moreModalHeader h2,
+    #listModalHeader h2 {
       font-size: 14px;
     }
 
-    #moreModalBody {
+    #moreModalBody,
+    #listModalBody {
       padding: 8px 12px 10px;
       overflow: auto;
       font-size: 12px;
@@ -571,7 +584,8 @@ button:hover {
       gap: 8px;
     }
 
-    #moreModalFooter {
+    #moreModalFooter,
+    #listModalFooter {
       padding: 8px 12px;
       border-top: 1px solid #111827;
       display: flex;
@@ -645,7 +659,8 @@ button:hover {
       opacity: 0.9;
     }
 
-    .more-tabs {
+    .more-tabs,
+    .list-tabs {
       display: flex;
       gap: 6px;
       margin-bottom: 6px;
@@ -653,7 +668,8 @@ button:hover {
       padding-bottom: 4px;
     }
 
-    .more-tab-button {
+    .more-tab-button,
+    .list-tab-button {
       font-size: 12px;
       padding: 4px 8px;
       border-radius: 6px 6px 0 0;
@@ -664,18 +680,21 @@ button:hover {
       opacity: 0.75;
     }
 
-    .more-tab-button.active {
+    .more-tab-button.active,
+    .list-tab-button.active {
       background: #020617;
       border-color: #1f2937;
       border-bottom-color: #020617;
       opacity: 1;
     }
 
-    .more-tab-panel {
+    .more-tab-panel,
+    .list-tab-panel {
       display: none;
     }
 
-    .more-tab-panel.active {
+    .more-tab-panel.active,
+    .list-tab-panel.active {
       display: block;
     }
 
@@ -856,7 +875,7 @@ button:hover {
     html{
       font-size: calc(16px * var(--font-scale));
     }
-    #main, #moreModal{
+    #main, #moreModal, #listModal{
       zoom: var(--ui-zoom);
     }
 
@@ -1571,7 +1590,8 @@ body.app-shell-ui button:active{
   align-items:center;
   justify-content:center;
 }
-body.app-shell-ui .more-tabs{
+body.app-shell-ui .more-tabs,
+body.app-shell-ui .list-tabs{
   position:sticky;
   top:0;
   z-index:5;
@@ -1581,7 +1601,8 @@ body.app-shell-ui .more-tabs{
   background:rgba(7,10,9,.88);
   backdrop-filter:blur(12px);
 }
-body.app-shell-ui .more-tab-button{
+body.app-shell-ui .more-tab-button,
+body.app-shell-ui .list-tab-button{
   border-radius:8px;
 }
 .lab-hero{
@@ -1644,6 +1665,159 @@ body.app-shell-ui .more-tab-button{
 .lab-panel h3{
   margin:10px 0 8px;
   font-size:20px;
+}
+.weekly-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:12px;
+}
+.weekly-head h3{
+  margin:8px 0 6px;
+}
+.weekly-summary{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(110px,1fr));
+  gap:8px;
+  min-width:min(420px, 100%);
+}
+.weekly-summary div{
+  padding:10px;
+  border:1px solid rgba(94,234,212,.16);
+  border-radius:8px;
+  background:rgba(7,13,13,.70);
+}
+.weekly-summary span,
+.weekly-goal-meta{
+  display:block;
+  color:#9ad7c9;
+  font-size:11px;
+  font-weight:700;
+}
+.weekly-summary strong{
+  display:block;
+  margin-top:4px;
+  color:#f8fff9;
+  font-size:16px;
+}
+.weekly-event-node{
+  margin:10px 0 12px;
+  padding:10px 12px;
+  border:1px solid rgba(190,242,100,.22);
+  border-radius:8px;
+  background:linear-gradient(135deg, rgba(20,83,45,.42), rgba(7,13,13,.82));
+  color:#ecfccb;
+  font-weight:800;
+  overflow-wrap:anywhere;
+}
+.weekly-filter{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:0 0 12px;
+}
+.weekly-filter button{
+  min-height:36px;
+  border:1px solid rgba(148,163,184,.18);
+  border-radius:8px;
+  background:rgba(11,18,22,.76);
+  color:#cbd5e1;
+  font-weight:800;
+}
+.weekly-filter button.active{
+  border-color:rgba(45,212,191,.68);
+  background:rgba(20,184,166,.28);
+  color:#fff;
+}
+.weekly-goal-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.weekly-goal-card,
+.weekly-bonus-card,
+.weekly-empty{
+  border:1px solid rgba(94,234,212,.14);
+  border-radius:8px;
+  background:rgba(7,13,13,.74);
+}
+.weekly-goal-card{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:stretch;
+  padding:12px;
+}
+.weekly-goal-card.is-complete{
+  border-color:rgba(190,242,100,.30);
+}
+.weekly-goal-card.is-claimed{
+  opacity:.76;
+}
+.weekly-goal-main{
+  min-width:0;
+  flex:1 1 auto;
+}
+.weekly-goal-top{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.weekly-goal-top strong{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.weekly-goal-card p,
+.weekly-bonus-card p{
+  margin:8px 0;
+  color:#d7efe3;
+  line-height:1.55;
+}
+.weekly-progress-line{
+  height:6px;
+  overflow:hidden;
+  border-radius:8px;
+  background:rgba(30,41,59,.72);
+  margin:8px 0;
+}
+.weekly-progress-line span{
+  display:block;
+  height:100%;
+  border-radius:8px;
+  background:linear-gradient(90deg, #2dd4bf, #84cc16);
+}
+.weekly-goal-card button,
+.weekly-bonus-card button{
+  flex:0 0 auto;
+  align-self:center;
+  min-height:42px;
+  min-width:96px;
+  border-color:rgba(45,212,191,.45);
+  background:linear-gradient(135deg, rgba(20,184,166,.78), rgba(21,128,61,.78));
+  color:#fff;
+  font-weight:900;
+}
+.weekly-goal-card button:disabled,
+.weekly-bonus-card button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.weekly-bonus-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  padding:14px;
+  margin-top:12px;
+  background:
+    linear-gradient(135deg, rgba(22,101,52,.42), rgba(7,13,13,.86)),
+    radial-gradient(circle at 100% 0%, rgba(250,204,21,.12), transparent 34%);
+}
+.weekly-empty{
+  grid-column:1 / -1;
+  padding:16px;
+  color:#b7c9c6;
 }
 .coming-panel{
   margin-top:14px;
@@ -2204,12 +2378,18 @@ body.app-shell-ui #tutorialStepHint{
 }
 .hack-mode-segment button:hover:not(:disabled),
 .achievement-toolbar button:hover:not(:disabled),
+.weekly-filter button:hover:not(:disabled),
+.weekly-goal-card button:hover:not(:disabled),
+.weekly-bonus-card button:hover:not(:disabled),
 .stage-chapter-head:hover,
 .stage-card:hover{
   transform:translateY(-1px);
 }
 .hack-mode-segment button:active:not(:disabled),
 .achievement-toolbar button:active:not(:disabled),
+.weekly-filter button:active:not(:disabled),
+.weekly-goal-card button:active:not(:disabled),
+.weekly-bonus-card button:active:not(:disabled),
 .stage-chapter-head:active,
 .stage-card:active{
   transform:translateY(0) scale(.99);
@@ -2358,9 +2538,12 @@ body.app-shell-ui #tutorialStepHint{
   }
   button:active,
   body.app-shell-ui button:active,
-  .hack-mode-segment button:active:not(:disabled),
-  .achievement-toolbar button:active:not(:disabled),
-  .stage-chapter-head:active,
+	  .hack-mode-segment button:active:not(:disabled),
+	  .achievement-toolbar button:active:not(:disabled),
+	  .weekly-filter button:active:not(:disabled),
+	  .weekly-goal-card button:active:not(:disabled),
+	  .weekly-bonus-card button:active:not(:disabled),
+	  .stage-chapter-head:active,
   .stage-card:active,
   .app-main-tabs button:active{
     transform:none !important;
@@ -2368,18 +2551,21 @@ body.app-shell-ui #tutorialStepHint{
   .app-main-view{
     padding:10px 10px calc(var(--mobileTabsH, 82px) + 28px + env(safe-area-inset-bottom));
   }
-	  .app-view-home.active,
-	  .app-codes-layout,
-	  .lab-preview-grid,
-	  .stage-head,
-	  .stage-layout{
-	    display:grid;
-	    grid-template-columns:1fr;
-	  }
-	  .stage-summary,
-	  .stage-meta-grid{
-	    grid-template-columns:1fr;
-	    min-width:0;
+		  .app-view-home.active,
+		  .app-codes-layout,
+		  .lab-preview-grid,
+		  .weekly-head,
+		  .weekly-goal-list,
+		  .stage-head,
+		  .stage-layout{
+		    display:grid;
+		    grid-template-columns:1fr;
+		  }
+		  .stage-summary,
+		  .weekly-summary,
+		  .stage-meta-grid{
+		    grid-template-columns:1fr;
+		    min-width:0;
 	  }
 	  .stage-list{
 	    max-height:none;
@@ -2428,10 +2614,25 @@ body.app-shell-ui #tutorialStepHint{
     width:100%;
     text-align:center;
   }
-  .lab-subtabs{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-  }
+	  .lab-subtabs{
+	    display:grid;
+	    grid-template-columns:repeat(3,minmax(0,1fr));
+	  }
+	  .lab-subtabs button{
+	    flex:1 1 auto;
+	    min-width:0;
+	    padding:6px 4px;
+	    font-size:11px;
+	  }
+	  .weekly-goal-card,
+	  .weekly-bonus-card{
+	    flex-direction:column;
+	    align-items:stretch;
+	  }
+	  .weekly-goal-card button,
+	  .weekly-bonus-card button{
+	    width:100%;
+	  }
   body.app-shell-ui header{
     flex-wrap:wrap;
     align-items:center;
@@ -2478,8 +2679,9 @@ body.app-shell-ui #tutorialStepHint{
   .app-main-tabs button,
   body.app-shell-ui button,
   .hack-mode-segment button,
-  .achievement-toolbar button,
-  .stage-card{
+	  .achievement-toolbar button,
+	  .weekly-filter button,
+	  .stage-card{
     transition:none;
   }
 }

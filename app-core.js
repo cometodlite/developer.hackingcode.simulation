@@ -1,10 +1,10 @@
-const CURRENT_VERSION = '2.1.2';
+const CURRENT_VERSION = '2.2.0';
 const TUTORIAL_VERSION = 3;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
   ko: {
-    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', more: '더보기 ▾', moreTitle: '더보기', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'코드 인벤토리', codeDetail:'코드 상세',
+    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'LIST', listTitle:'LIST', more: '더보기 ▾', moreTitle: '더보기', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'코드 인벤토리', codeDetail:'코드 상세',
     level:'레벨', exp:'경험치', credits:'크레딧', cpuTier:'CPU 티어', gpuTier:'GPU 티어', energy:'에너지', nextRecovery:'다음 회복까지', energyPack:'에너지 팩', lastSave:'마지막 저장', use:'사용', sort:'정렬', category:'분류', all:'전체', system:'시스템', economy:'경제', utility:'유틸',
     codeScan:'코드 스캔', serverHack:'서버 해킹', cpuUpgrade:'CPU 업그레이드', gpuUpgrade:'GPU 업그레이드', targetServer:'타겟 서버', loadout:'로드아웃', saveSlot:'슬롯 저장', loadSlot:'슬롯 불러오기', hackMode:'해킹 모드',
     actionsDesc1:'· 에너지 1칸 = 120초, 0.1초 단위로 카운트다운 표시', actionsDesc2:'· 코드 스캔: 에너지 1, 스캔 EXP 소량 (희귀도별 스캔 시간 차등)', actionsDesc3:'· 서버 해킹: NORMAL/RISK/EXTREME 난이도 선택 가능', actionsDesc4:'· CPU는 성공률 안정, GPU는 반복/도전 보상 증폭을 담당합니다.',
@@ -24,7 +24,7 @@ const I18N = {
     noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'데이터 타워', mobileComing:'COMING SOON', tutorialReplay:'튜토리얼 다시 보기', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
   },
   en: {
-    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
+    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'LIST', listTitle:'LIST', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
     level:'Level', exp:'EXP', credits:'Credits', cpuTier:'CPU Tier', gpuTier:'GPU Tier', energy:'Energy', nextRecovery:'Next Recovery', energyPack:'Energy Pack', lastSave:'Last Save', use:'Use', sort:'Sort', category:'Category', all:'All', system:'System', economy:'Economy', utility:'Utility',
     codeScan:'Scan Code', serverHack:'Hack Server', cpuUpgrade:'Upgrade CPU', gpuUpgrade:'Upgrade GPU', targetServer:'Target Server', loadout:'Loadout', saveSlot:'Save Slot', loadSlot:'Load Slot', hackMode:'Hack Mode',
     actionsDesc1:'· 1 energy = 120 seconds, shown with 0.1-second countdown', actionsDesc2:'· Scan Code: costs 1 energy and grants scan EXP', actionsDesc3:'· Hack Server: choose NORMAL / RISK / EXTREME difficulty', actionsDesc4:'· CPU stabilizes success, GPU amplifies repeat/challenge rewards.',
@@ -390,7 +390,7 @@ function refreshMobileTabTexts(){
 }
 function applyLanguageToUI(){
   try{ document.documentElement.lang = getLang(); document.title = t('appTitle'); }catch(e){}
-  setText('subtitleText', t('subtitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle')); setText('btnOpenTutorial', t('tutorialReplay'));
+  setText('subtitleText', t('subtitle')); setText('btnList', t('list')); setText('listTitle', t('listTitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle')); setText('btnOpenTutorial', t('tutorialReplay'));
   setText('titleStatus', t('status')); setText('titleShop', t('shop')); setText('titleActions', t('actions')); setText('titleCodeInventory', t('codeInventory')); setText('titleCodeDetail', t('codeDetail'));
   setText('labelLevel', t('level')); setText('labelExp', t('exp')); setText('labelCredits', t('credits')); setText('labelCpuTier', t('cpuTier')); setText('labelGpuTier', t('gpuTier')); setText('labelEnergy', t('energy')); setText('labelEnergyTimer', t('nextRecovery')); setText('labelEnergyPack', t('energyPack')); setText('labelLastSave', t('lastSave')); setText('btnUseEnergyPack', t('use'));
   setText('shopSortLabel', t('sort')); setText('shopCategoryLabel', t('category')); setText('shopCatAll', t('all')); setText('shopCatEnergy', t('energy')); setText('shopCatSystem', t('system')); setText('shopCatEconomy', t('economy')); setText('shopCatUtility', t('utility'));
@@ -398,7 +398,7 @@ function applyLanguageToUI(){
   setText('actionsDesc1', t('actionsDesc1')); setText('actionsDesc2', t('actionsDesc2')); setText('actionsDesc3', t('actionsDesc3')); setText('actionsDesc4', t('actionsDesc4'));
   setText('btnUpgradeCode', t('codeUpgrade')); setText('btnSyncCode', t('codeSync')); setText('btnEvolveCode', t('codeEvolve')); setText('codeDesc1', t('codeDesc1')); setText('codeDesc2', t('codeDesc2')); setText('codeDesc3', t('codeDesc3'));
   setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnLogs', t('logs')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data'));
-  setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('logsTabTitle', t('records')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnMoreClose2', t('close'));
+  setText('listTabBtnMission', t('mission')); setText('listTabBtnAchievement', t('achievement')); setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('logsTabTitle', t('records')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnListClose2', t('close')); setText('btnMoreClose2', t('close'));
   setText('logSearchHelp', t('logSearchHelp')); const lsi=document.getElementById('logSearchInput'); if(lsi) lsi.placeholder=t('searchPlaceholder'); setText('btnClearLogs', t('clearLogs')); const btnToggle=document.getElementById('btnToggleLogs'); if(btnToggle){ btnToggle.textContent = (window.logsHidden ? t('showLogs') : t('hideLogs')); } setText('logFilterTitle', t('logFilter'));
   document.querySelectorAll('[data-achievement-filter="all"]').forEach(el => { el.textContent = t('achievementAll'); });
   document.querySelectorAll('[data-achievement-filter="incomplete"]').forEach(el => { el.textContent = t('achievementIncomplete'); });
@@ -666,6 +666,15 @@ function applyLanguageToUI(){
           'Network Broadcast의 빈 공지 fallback이 ONLINE 상태와 충돌하지 않도록 정리했습니다.',
           'LIVE NET이 온라인일 때는 LOCAL MIRROR 안내 대신 Broadcast Standby 상태를 표시합니다.'
         ]
+      },
+      {
+        version: '2.2.0',
+        lines: [
+          'LAB에 WEEKLY CHALLENGE 탭을 추가하고 월요일 05:00 KST 기준 고정 로테이션을 적용했습니다.',
+          '주간 목표 5개와 보너스 목표 1개를 수동 CLAIM 보상 구조로 분리했습니다.',
+          'Weekly Token, 주간 점수, 주간 배지 저장 필드를 추가했습니다.',
+          '미션과 업적은 헤더 LIST 모달로 분리하고 더보기는 도감/로그/설정/클라우드 중심으로 정리했습니다.'
+        ]
       }
 
     ];
@@ -682,11 +691,12 @@ function applyLanguageToUI(){
       energy: 20,
       energyMax: 20,
       energyTimerMs: 0,
-      items: { energyPack: 0 },
+      items: { energyPack: 0, weeklyToken: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
       tutorial: { completed: false, step: 0, seen: false, version: TUTORIAL_VERSION },
       stage: { selectedId: 'stage_001', chapterFilter: '1', highestCleared: 0, cleared: {}, chapterRewardsClaimed: {} },
+      weeklyChallenge: { weekKey: null, progress: {}, claimed: {}, bonusClaimed: false, score: 0, badges: {} },
       activeCodeId: null,
       hackMode: 'normal',
       riskMode: false,
@@ -738,7 +748,7 @@ function applyLanguageToUI(){
         shop: true,
         level: true
       },
-      ui: { lang: 'ko', shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, sfxEnabled: true, sfxVolume: 35, autoSaveToast: false, logSearch: '', snowEnabled: null, achievementFilter: 'incomplete', showHiddenAchievements: false, liveNetworkEnabled: true, liveNicknameMode: 'nickname' },
+      ui: { lang: 'ko', shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent', toastDurationMs: 3000, uiZoom: 1, fontScale: 100, anim: true, sfxEnabled: true, sfxVolume: 35, autoSaveToast: false, logSearch: '', snowEnabled: null, achievementFilter: 'incomplete', showHiddenAchievements: false, liveNetworkEnabled: true, liveNicknameMode: 'nickname', weeklyFilter: 'incomplete' },
       stats: {
         scanCount: 0,
         hackSuccessCount: 0,
@@ -755,7 +765,8 @@ function applyLanguageToUI(){
         energyPacksUsed: 0,
         stageAttemptCount: 0,
         stageClearCount: 0,
-        gpuUpgradeCount: 0
+        gpuUpgradeCount: 0,
+        weeklyAllClearCount: 0
       }
     };
 
@@ -1854,6 +1865,10 @@ function applyLanguageToUI(){
     const resizerLeft = document.getElementById('resizerLeft');
     const resizerRight = document.getElementById('resizerRight');
 
+    const btnList = document.getElementById('btnList');
+    const listModalBackdrop = document.getElementById('listModalBackdrop');
+    const btnListClose = document.getElementById('btnListClose');
+    const btnListClose2 = document.getElementById('btnListClose2');
     const btnMore = document.getElementById('btnMore');
     const moreModalBackdrop = document.getElementById('moreModalBackdrop');
     const btnMoreClose = document.getElementById('btnMoreClose');
@@ -1883,6 +1898,7 @@ function applyLanguageToUI(){
     const filterShop = document.getElementById('filterShop');
     const filterLevel = document.getElementById('filterLevel');
 
+    const listTabButtons = document.querySelectorAll('.list-tab-button');
     const moreTabButtons = document.querySelectorAll('.more-tab-button');
     const tabUpdate = document.getElementById('tabUpdate');
     const tabMission = document.getElementById('tabMission');
@@ -1967,7 +1983,7 @@ function applyLanguageToUI(){
           { title: 'HOME', text: 'Check energy, choose a server, set NORMAL/RISK/EXTREME, and upgrade CPU or GPU.', hint: 'CPU helps control. GPU boosts repeat rewards.' },
           { title: 'CODES', text: 'Manage code upgrades, sync, evolution, and the active code.', hint: 'The active code drives hacking and Data Tower.' },
           { title: 'SHOP', text: 'Buy energy, system, economy, and utility items.', hint: 'Use filters when the list gets long.' },
-          { title: 'LAB', text: 'Open Data Tower 1-100 here. Each chapter can be folded.', hint: 'First clear, repeat clear, and chapter rewards are separate.' },
+          { title: 'LAB', text: 'Open Data Tower 1-100 and Weekly Challenge here.', hint: 'Weekly goals refresh every Monday 05:00 KST.' },
           { title: 'COMING SOON', text: 'Future modes and season content will land here.', hint: 'Cloud account tools are in More.' },
           { title: 'Ready', text: 'NORMAL is steady. RISK pays more. EXTREME opens at Lv.5.', hint: 'Tap Start.' }
         ];
@@ -1977,7 +1993,7 @@ function applyLanguageToUI(){
         { title: 'HOME', text: '에너지, 서버, 해킹 난이도, CPU/GPU 업그레이드를 관리합니다.', hint: 'CPU는 제어, GPU는 반복 보상입니다.' },
         { title: 'CODES', text: '코드 강화, 동기화, 진화, 활성 코드를 관리합니다.', hint: '활성 코드가 해킹과 데이터 타워에 쓰입니다.' },
         { title: 'SHOP', text: '에너지, 시스템, 경제, 유틸 아이템을 구매합니다.', hint: '목록이 길면 분류를 쓰세요.' },
-        { title: 'LAB', text: '데이터 타워 1~100을 진행합니다. 챕터는 접고 펼칠 수 있습니다.', hint: '첫 클리어, 반복, 챕터 보상은 따로 계산됩니다.' },
+        { title: 'LAB', text: '데이터 타워 1~100과 WEEKLY CHALLENGE를 진행합니다.', hint: '주간 목표는 월요일 05:00 KST마다 갱신됩니다.' },
         { title: 'COMING SOON', text: '다음 모드와 시즌 콘텐츠가 이곳에 들어옵니다.', hint: '클라우드 계정은 더보기에서 관리합니다.' },
         { title: '준비 완료', text: 'NORMAL은 안정적입니다. RISK는 보상이 큽니다. EXTREME은 Lv.5부터 열립니다.', hint: '시작하기를 누르세요.' }
       ];
@@ -1986,12 +2002,320 @@ function applyLanguageToUI(){
     function getDayKey() {
       return new Date().toISOString().slice(0, 10);
     }
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const KST_WEEK_RESET_OFFSET_MS = 4 * 60 * 60 * 1000; // UTC + 9h, then 05:00 KST reset.
+    function getKstWeeklyStartMs(ms = Date.now()) {
+      const logical = new Date(ms + KST_WEEK_RESET_OFFSET_MS);
+      const day = logical.getUTCDay();
+      const mondayOffset = (day + 6) % 7;
+      return Date.UTC(logical.getUTCFullYear(), logical.getUTCMonth(), logical.getUTCDate()) - mondayOffset * DAY_MS;
+    }
     function getWeekKey() {
-      return Math.floor(Date.now() / (7 * 24 * 3600 * 1000));
+      const start = new Date(getKstWeeklyStartMs());
+      return `${start.getUTCFullYear()}-${String(start.getUTCMonth() + 1).padStart(2, '0')}-${String(start.getUTCDate()).padStart(2, '0')}`;
+    }
+    function getNextWeeklyResetMs(ms = Date.now()) {
+      return getKstWeeklyStartMs(ms) + (7 * DAY_MS) - KST_WEEK_RESET_OFFSET_MS;
     }
     function getMonthKey() {
       const d = new Date();
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    const weeklyChallengeDefs = [
+      { id:'weekly_hack_any_10', pool:'normal', type:'hackSuccess', target:10, score:100, credits:220, tokens:1, titleKo:'서버 해킹 10회 성공', titleEn:'Hack 10 servers', descKo:'모드와 서버 제한 없이 해킹 성공을 누적합니다.', descEn:'Accumulate successful hacks in any mode.' },
+      { id:'weekly_scan_15', pool:'normal', type:'scans', target:15, score:100, credits:180, tokens:1, titleKo:'코드 스캔 15회', titleEn:'Scan 15 codes', descKo:'코드 신호를 꾸준히 수집합니다.', descEn:'Gather code signals steadily.' },
+      { id:'weekly_tower_clear_5', pool:'normal', type:'stageClears', target:5, score:100, credits:240, tokens:1, titleKo:'데이터 타워 5회 클리어', titleEn:'Clear Data Tower 5 times', descKo:'첫 클리어와 반복 클리어가 모두 반영됩니다.', descEn:'First clears and repeat clears both count.' },
+      { id:'weekly_energy_40', pool:'normal', type:'energySpent', target:40, score:100, credits:200, tokens:1, titleKo:'에너지 40 소모', titleEn:'Spend 40 energy', descKo:'스캔, 해킹, 데이터 타워 작전에 사용한 에너지를 집계합니다.', descEn:'Counts energy spent on scans, hacks, and Data Tower.' },
+      { id:'weekly_code_upgrade_3', pool:'normal', type:'codeUpgrades', target:3, score:100, credits:220, tokens:1, titleKo:'코드 강화 3회', titleEn:'Upgrade codes 3 times', descKo:'활성 코드 강화가 주간 성장으로 기록됩니다.', descEn:'Active code upgrades count toward weekly growth.' },
+      { id:'weekly_bonus_server_3', pool:'normal', type:'bonusServerHack', target:3, score:100, credits:260, tokens:1, titleKo:'이벤트 노드 해킹 3회', titleEn:'Hack the bonus node 3 times', descKo:'이번 주 지정 서버에서 성공을 기록합니다.', descEn:'Score successful hacks against this week’s server.' },
+      { id:'weekly_risk_3', pool:'medium', type:'riskHackSuccess', target:3, score:200, credits:420, tokens:2, titleKo:'RISK 성공 3회', titleEn:'Win RISK 3 times', descKo:'RISK 전용 성공만 집계합니다.', descEn:'Only RISK successes count.' },
+      { id:'weekly_scan_30', pool:'medium', type:'scans', target:30, score:200, credits:360, tokens:2, titleKo:'코드 스캔 30회', titleEn:'Scan 30 codes', descKo:'긴 신호 탐색 루프를 완주합니다.', descEn:'Complete a longer signal sweep.' },
+      { id:'weekly_epic_plus_1', pool:'medium', type:'epicPlus', target:1, score:200, credits:500, tokens:2, titleKo:'EPIC 이상 코드 신호 1회', titleEn:'Find 1 EPIC+ signal', descKo:'EPIC 또는 LEGENDARY 발견을 기록합니다.', descEn:'Find an EPIC or LEGENDARY code.' },
+      { id:'weekly_gpu_upgrade_1', pool:'medium', type:'gpuUpgrades', target:1, score:200, credits:420, tokens:2, titleKo:'GPU 업그레이드 1회', titleEn:'Upgrade GPU once', descKo:'반복 보상 라인을 한 단계 끌어올립니다.', descEn:'Boost your repeat-reward pipeline.' },
+      { id:'weekly_cpu_upgrade_1', pool:'medium', type:'cpuUpgrades', target:1, score:200, credits:380, tokens:2, titleKo:'CPU 업그레이드 1회', titleEn:'Upgrade CPU once', descKo:'안정성 라인을 한 단계 끌어올립니다.', descEn:'Improve your stability pipeline.' },
+      { id:'weekly_code_sync_2', pool:'medium', type:'codeSyncs', target:2, score:200, credits:400, tokens:2, titleKo:'코드 동기화 2회', titleEn:'Sync codes twice', descKo:'중복 조각을 작전 보정으로 전환합니다.', descEn:'Convert duplicate shards into control.' },
+      { id:'weekly_tower_chapter_3', pool:'medium', type:'eventChapterClears', target:3, score:200, credits:450, tokens:2, titleKo:'이벤트 챕터 클리어 3회', titleEn:'Clear event chapter 3 times', descKo:'이번 주 지정 데이터 타워 챕터에서 클리어합니다.', descEn:'Clear this week’s Data Tower chapter.' },
+      { id:'weekly_shards_8', pool:'medium', type:'shards', target:8, score:200, credits:360, tokens:2, titleKo:'코드 조각 8개 획득', titleEn:'Gain 8 code shards', descKo:'중복 코드에서 얻은 조각을 누적합니다.', descEn:'Collect shards from duplicate codes.' },
+      { id:'weekly_extreme_2', pool:'hard', type:'extremeHackSuccess', target:2, score:400, credits:750, tokens:3, titleKo:'EXTREME 성공 2회', titleEn:'Win EXTREME twice', descKo:'EXTREME 전용 성공만 집계합니다.', descEn:'Only EXTREME successes count.' },
+      { id:'weekly_all_modes_1', pool:'hard', type:'allModes', target:3, score:400, credits:900, tokens:3, titleKo:'세 난이도 모두 성공', titleEn:'Win all hack modes', descKo:'NORMAL, RISK, EXTREME을 각각 1회 이상 성공합니다.', descEn:'Win NORMAL, RISK, and EXTREME at least once.' },
+      { id:'weekly_code_evolve_1', pool:'hard', type:'codeEvolves', target:1, score:400, credits:850, tokens:3, titleKo:'코드 진화 1회', titleEn:'Evolve a code once', descKo:'주간 빌드의 핵심 코드를 승급합니다.', descEn:'Rank up a core weekly build code.' },
+      { id:'weekly_tower_first_2', pool:'hard', type:'stageFirstClears', target:2, score:400, credits:780, tokens:3, titleKo:'데이터 타워 첫 클리어 2회', titleEn:'First-clear 2 Data Tower stages', descKo:'아직 클리어하지 않은 구간을 새로 돌파합니다.', descEn:'Break through two uncleared tower stages.' },
+      { id:'weekly_extreme_or_risk_8', pool:'hard', type:'riskExtremeSuccess', target:8, score:400, credits:700, tokens:3, titleKo:'고난도 해킹 성공 8회', titleEn:'Win 8 high-risk hacks', descKo:'RISK와 EXTREME 성공을 함께 집계합니다.', descEn:'RISK and EXTREME wins both count.' },
+      { id:'weekly_high_power_loop', pool:'hard', type:'actions', target:60, score:400, credits:650, tokens:3, titleKo:'작전 행동 60회', titleEn:'Run 60 operations', descKo:'스캔과 해킹을 중심으로 작전 행동을 누적합니다.', descEn:'Accumulate scan and hack operation actions.' }
+    ];
+
+    function hashString(input) {
+      let h = 0;
+      const str = String(input || '');
+      for (let i = 0; i < str.length; i += 1) {
+        h = ((h << 5) - h) + str.charCodeAt(i);
+        h |= 0;
+      }
+      return Math.abs(h);
+    }
+
+    function localizeWeekly(def, field) {
+      const en = getLang() === 'en';
+      if (field === 'title') return en ? def.titleEn : def.titleKo;
+      if (field === 'desc') return en ? def.descEn : def.descKo;
+      return '';
+    }
+
+    function getWeeklyEvent() {
+      const weekKey = getWeekKey();
+      const seed = hashString(`event:${weekKey}`);
+      const server = servers[seed % servers.length] || servers[0];
+      const chapter = (seed % 10) + 1;
+      const nodeLabels = ['ALPHA NODE', 'BETA TRACE', 'DELTA CACHE', 'OMEGA LINK', 'VAULT ROUTE'];
+      return {
+        weekKey,
+        serverId: server && server.id,
+        serverName: server ? localizeServerName(server) : 'LOCAL NODE',
+        chapter,
+        label: nodeLabels[seed % nodeLabels.length]
+      };
+    }
+
+    function getWeeklyGoalsForWeek(weekKey = getWeekKey()) {
+      function pick(pool, count) {
+        return weeklyChallengeDefs
+          .filter(def => def.pool === pool)
+          .sort((a, b) => hashString(`${weekKey}:${pool}:${a.id}`) - hashString(`${weekKey}:${pool}:${b.id}`))
+          .slice(0, count);
+      }
+      return [...pick('normal', 2), ...pick('medium', 2), ...pick('hard', 1)];
+    }
+
+    function ensureWeeklyChallengeDefaults() {
+      state.items = state.items || {};
+      state.items.energyPack = state.items.energyPack || 0;
+      state.items.weeklyToken = state.items.weeklyToken || 0;
+      state.weeklyChallenge = state.weeklyChallenge || {};
+      const wc = state.weeklyChallenge;
+      wc.progress = wc.progress && typeof wc.progress === 'object' ? wc.progress : {};
+      wc.claimed = wc.claimed && typeof wc.claimed === 'object' ? wc.claimed : {};
+      wc.badges = wc.badges && typeof wc.badges === 'object' ? wc.badges : {};
+      wc.score = Math.max(0, Math.round(Number(wc.score || 0)));
+      wc.bonusClaimed = !!wc.bonusClaimed;
+      const weekKey = getWeekKey();
+      if (wc.weekKey !== weekKey) {
+        wc.weekKey = weekKey;
+        wc.progress = {};
+        wc.claimed = {};
+        wc.bonusClaimed = false;
+        wc.score = 0;
+      }
+      state.ui = state.ui || {};
+      state.ui.weeklyFilter = ['all', 'incomplete', 'complete'].includes(state.ui.weeklyFilter) ? state.ui.weeklyFilter : 'incomplete';
+    }
+
+    function getWeeklyProgress() {
+      ensureWeeklyChallengeDefaults();
+      return state.weeklyChallenge.progress;
+    }
+
+    function incrementWeeklyValue(key, amount = 1) {
+      const progress = getWeeklyProgress();
+      progress[key] = Math.max(0, Math.round(Number(progress[key] || 0) + Number(amount || 0)));
+    }
+
+    function markWeeklyMode(mode) {
+      const progress = getWeeklyProgress();
+      progress.modes = progress.modes && typeof progress.modes === 'object' ? progress.modes : {};
+      progress.modes[normalizeHackMode(mode)] = true;
+    }
+
+    function getWeeklyGoalValue(def) {
+      const progress = getWeeklyProgress();
+      if (def.type === 'allModes') {
+        const modes = progress.modes || {};
+        return ['normal', 'risk', 'extreme'].filter(mode => modes[mode]).length;
+      }
+      return Math.max(0, Math.round(Number(progress[def.type] || 0)));
+    }
+
+    function isWeeklyGoalComplete(def) {
+      return getWeeklyGoalValue(def) >= def.target;
+    }
+
+    function getSelectedWeeklyGoal(goalId) {
+      return getWeeklyGoalsForWeek().find(def => def.id === goalId) || null;
+    }
+
+    function trackWeeklyChallenge(type, payload = {}) {
+      ensureWeeklyChallengeDefaults();
+      const event = getWeeklyEvent();
+      let changed = false;
+      const add = (key, amount = 1) => {
+        incrementWeeklyValue(key, amount);
+        changed = true;
+      };
+      if (type === 'energy_spent') add('energySpent', payload.amount || 0);
+      if (type === 'scan') {
+        add('scans');
+        add('actions');
+        if (payload.rarity === 'EPIC' || payload.rarity === 'LEGENDARY') add('epicPlus');
+        if (payload.shards) add('shards', payload.shards);
+      }
+      if (type === 'hack_success') {
+        const mode = normalizeHackMode(payload.mode || 'normal');
+        add('hackSuccess');
+        add('actions');
+        markWeeklyMode(mode);
+        if (mode === 'risk') add('riskHackSuccess');
+        if (mode === 'extreme') add('extremeHackSuccess');
+        if (mode === 'risk' || mode === 'extreme') add('riskExtremeSuccess');
+        if (payload.serverId && payload.serverId === event.serverId) add('bonusServerHack');
+      }
+      if (type === 'stage_clear') {
+        add('stageClears');
+        if (payload.firstClear) add('stageFirstClears');
+        if (Number(payload.chapter) === event.chapter) add('eventChapterClears');
+      }
+      if (type === 'cpu_upgrade') add('cpuUpgrades');
+      if (type === 'gpu_upgrade') add('gpuUpgrades');
+      if (type === 'code_upgrade') add('codeUpgrades');
+      if (type === 'code_sync') add('codeSyncs');
+      if (type === 'code_evolve') add('codeEvolves');
+      if (changed) {
+        renderWeeklyPanel();
+        scheduleSilentSave();
+      }
+    }
+
+    function formatWeeklyCountdown() {
+      const remain = Math.max(0, getNextWeeklyResetMs() - Date.now());
+      const days = Math.floor(remain / DAY_MS);
+      const hours = Math.floor((remain % DAY_MS) / (60 * 60 * 1000));
+      const mins = Math.floor((remain % (60 * 60 * 1000)) / (60 * 1000));
+      if (getLang() === 'en') return `${days}d ${hours}h ${mins}m`;
+      return `${days}일 ${hours}시간 ${mins}분`;
+    }
+
+    function claimWeeklyGoal(goalId) {
+      ensureWeeklyChallengeDefaults();
+      const def = getSelectedWeeklyGoal(goalId);
+      if (!def || state.weeklyChallenge.claimed[def.id] || !isWeeklyGoalComplete(def)) return;
+      state.weeklyChallenge.claimed[def.id] = true;
+      state.weeklyChallenge.score = (state.weeklyChallenge.score || 0) + def.score;
+      state.credits += def.credits;
+      state.stats.creditsEarnedTotal = (state.stats.creditsEarnedTotal || 0) + def.credits;
+      state.items.weeklyToken = (state.items.weeklyToken || 0) + def.tokens;
+      playSfx('achievement');
+      const title = localizeWeekly(def, 'title');
+      log(`[WEEKLY CLAIM] ${title} (+${def.score} score, +${def.tokens} token, +${def.credits} credits)`, 'system');
+      showToast(`WEEKLY CLAIM: ${title}`, 'achievement');
+      emitActivity('weekly_goal_claimed', { value: def.score, refId: def.id });
+      renderWeeklyPanel();
+      updateStatsUI();
+      saveGame(true);
+    }
+
+    function claimWeeklyBonus() {
+      ensureWeeklyChallengeDefaults();
+      const goals = getWeeklyGoalsForWeek();
+      const allClaimed = goals.every(def => state.weeklyChallenge.claimed[def.id]);
+      if (!allClaimed || state.weeklyChallenge.bonusClaimed) return;
+      const weekKey = state.weeklyChallenge.weekKey;
+      state.weeklyChallenge.bonusClaimed = true;
+      state.weeklyChallenge.score = (state.weeklyChallenge.score || 0) + 700;
+      state.weeklyChallenge.badges[weekKey] = {
+        id: `weekly-${weekKey}`,
+        title: `WEEKLY OPS ${weekKey}`,
+        claimedAt: Date.now()
+      };
+      state.stats.weeklyAllClearCount = (state.stats.weeklyAllClearCount || 0) + 1;
+      state.items.weeklyToken = (state.items.weeklyToken || 0) + 5;
+      playSfx('achievement');
+      log(`[WEEKLY ALL CLEAR] ${weekKey} (+700 score, Weekly Token +5)`, 'system');
+      showToast(getLang() === 'en' ? 'Weekly all clear badge acquired' : '주간 올클리어 배지 획득', 'achievement');
+      emitActivity('weekly_all_clear', { value: 700, refId: weekKey });
+      renderWeeklyPanel();
+      updateStatsUI();
+      saveGame(true);
+    }
+
+    function renderWeeklyPanel() {
+      const goalList = document.getElementById('weeklyGoalList');
+      const bonusCard = document.getElementById('weeklyBonusCard');
+      if (!goalList || !bonusCard) return;
+      ensureWeeklyChallengeDefaults();
+      const goals = getWeeklyGoalsForWeek();
+      const claimedCount = goals.filter(def => state.weeklyChallenge.claimed[def.id]).length;
+      const completeCount = goals.filter(isWeeklyGoalComplete).length;
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      };
+      setText('weeklyCountdown', formatWeeklyCountdown());
+      setText('weeklyProgressText', `${claimedCount} / ${goals.length}`);
+      setText('weeklyScore', String(state.weeklyChallenge.score || 0));
+      setText('weeklyTokenCount', String((state.items && state.items.weeklyToken) || 0));
+      const event = getWeeklyEvent();
+      const eventNode = document.getElementById('weeklyEventNode');
+      if (eventNode) {
+        eventNode.textContent = `WEEKLY OPS ACTIVE · NEW CHALLENGE DEPLOYED · BONUS NODE ${event.label}: ${event.serverName} · DATA TOWER CH.${event.chapter}`;
+      }
+      const filter = state.ui.weeklyFilter || 'incomplete';
+      document.querySelectorAll('[data-weekly-filter]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.weeklyFilter === filter);
+      });
+
+      goalList.innerHTML = '';
+      goals.forEach(def => {
+        const value = getWeeklyGoalValue(def);
+        const complete = value >= def.target;
+	        const claimed = !!state.weeklyChallenge.claimed[def.id];
+	        if (filter === 'incomplete' && claimed) return;
+	        if (filter === 'complete' && !complete && !claimed) return;
+        const card = document.createElement('article');
+        card.className = `weekly-goal-card ${complete ? 'is-complete' : ''} ${claimed ? 'is-claimed' : ''}`;
+        const pct = Math.max(0, Math.min(100, Math.round((Math.min(value, def.target) / def.target) * 100)));
+        card.innerHTML = `
+          <div class="weekly-goal-main">
+            <div class="weekly-goal-top">
+              <span class="badge">${def.pool.toUpperCase()}</span>
+              <strong>${localizeWeekly(def, 'title')}</strong>
+            </div>
+            <p>${localizeWeekly(def, 'desc')}</p>
+            <div class="weekly-progress-line"><span style="width:${pct}%"></span></div>
+            <div class="weekly-goal-meta">${Math.min(value, def.target)} / ${def.target} · +${def.score} SCORE · +${def.credits} CR · TOKEN +${def.tokens}</div>
+          </div>
+        `;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = claimed ? 'CLAIMED' : 'CLAIM';
+        button.disabled = claimed || !complete;
+        button.addEventListener('click', () => claimWeeklyGoal(def.id));
+        card.appendChild(button);
+        goalList.appendChild(card);
+      });
+      if (!goalList.children.length) {
+        const empty = document.createElement('div');
+        empty.className = 'weekly-empty';
+        empty.textContent = filter === 'incomplete'
+          ? (getLang() === 'en' ? 'No unclaimed weekly goals.' : '수령 대기 중인 주간 목표가 없습니다.')
+          : (getLang() === 'en' ? 'No weekly goals in this filter.' : '이 필터에 표시할 주간 목표가 없습니다.');
+        goalList.appendChild(empty);
+      }
+
+      const allClaimed = goals.every(def => state.weeklyChallenge.claimed[def.id]);
+      const bonusClaimed = !!state.weeklyChallenge.bonusClaimed;
+      bonusCard.innerHTML = `
+        <div>
+          <span class="badge">BONUS</span>
+          <h4>${getLang() === 'en' ? 'Weekly All Clear' : '주간 올클리어'}</h4>
+          <p>${getLang() === 'en' ? 'Claim all five goals to unlock the weekly badge.' : '기본 목표 5개를 모두 CLAIM하면 주간 배지가 열립니다.'}</p>
+          <strong>${completeCount} COMPLETE · ${claimedCount} CLAIMED · +700 SCORE · TOKEN +5</strong>
+        </div>
+      `;
+      const bonusButton = document.createElement('button');
+      bonusButton.type = 'button';
+      bonusButton.textContent = bonusClaimed ? 'BADGE CLAIMED' : 'CLAIM BONUS';
+      bonusButton.disabled = bonusClaimed || !allClaimed;
+      bonusButton.addEventListener('click', claimWeeklyBonus);
+      bonusCard.appendChild(bonusButton);
     }
 
     function ensureTutorialDefaults() {
@@ -2508,6 +2832,7 @@ function applyLanguageToUI(){
       renderShop();
       updateStatsUI();
       renderStagePanel();
+      renderWeeklyPanel();
     }
 
     function consumeEnergy(amount) {
@@ -2519,6 +2844,7 @@ function applyLanguageToUI(){
       state.missionProgress.daily.energySpent += amount;
       state.missionProgress.weekly.energySpent += amount;
       state.missionProgress.month.energySpent += amount;
+      trackWeeklyChallenge('energy_spent', { amount });
 
       checkMissions('daily');
       checkMissions('weekly');
@@ -3207,14 +3533,20 @@ function applyLanguageToUI(){
         state.stage.highestCleared = Math.max(state.stage.highestCleared || 0, stage.number);
         state.stats.stageClearCount = (state.stats.stageClearCount || 0) + 1;
         applyStageChapterReward(stage.chapter);
-        emitActivity('stage_clear', {
-          stageId: stage.id,
-          refId: stage.id,
-          value: stage.number,
-          codeId: code.id
-        });
+	        emitActivity('stage_clear', {
+	          stageId: stage.id,
+	          refId: stage.id,
+	          value: stage.number,
+	          codeId: code.id
+	        });
+	        trackWeeklyChallenge('stage_clear', {
+	          stageId: stage.id,
+	          chapter: stage.chapter.index,
+	          firstClear,
+	          codeId: code.id
+	        });
 
-        const rewardText = getStageRewardText(reward);
+	        const rewardText = getStageRewardText(reward);
         playSfx('stage');
         const msg = stageCopy(
           `${stage.name} 클리어! 성공률 ${Math.round(successInfo.chance * 100)}%. ${rewardText}`,
@@ -3259,7 +3591,8 @@ function applyLanguageToUI(){
       code.syncLevel += 1;
       const powerBonus = getSyncPowerBonus(code.rarity);
       code.power += powerBonus;
-      state.stats.codeSyncCount = (state.stats.codeSyncCount || 0) + 1;
+	      state.stats.codeSyncCount = (state.stats.codeSyncCount || 0) + 1;
+	      trackWeeklyChallenge('code_sync', { codeId: code.id });
 
       playSfx('upgrade');
       log(t('syncDone', { name: code.name, lv: code.syncLevel, pwr: powerBonus, rate: Math.round(getSyncSuccessBonus(code.syncLevel) * 100) }), 'system');
@@ -3282,7 +3615,8 @@ function applyLanguageToUI(){
       state.credits -= cost;
       code.level++;
       code.power += 5;
-      state.stats.codeUpgradeCount = (state.stats.codeUpgradeCount || 0) + 1;
+	      state.stats.codeUpgradeCount = (state.stats.codeUpgradeCount || 0) + 1;
+	      trackWeeklyChallenge('code_upgrade', { codeId: code.id });
       playSfx('upgrade');
       log(t('upgradeDone', { name: code.name, lv: code.level, pwr: code.power, cost }), 'system');
       updateStatsUI();
@@ -3312,7 +3646,8 @@ function applyLanguageToUI(){
       const nextRarity = rarityOrder[idx + 1];
       code.rarity = nextRarity;
       code.power += 10;
-      state.stats.codeEvolutionCount = (state.stats.codeEvolutionCount || 0) + 1;
+	      state.stats.codeEvolutionCount = (state.stats.codeEvolutionCount || 0) + 1;
+	      trackWeeklyChallenge('code_evolve', { codeId: code.id, rarity: nextRarity });
       playSfx('upgrade');
       log(t('evolveDone', { name: code.name, rarity: nextRarity, pwr: code.power }), 'system');
 
@@ -3745,10 +4080,11 @@ function applyLanguageToUI(){
       setNodeDisabled(btnUpgradeCpu, true);
       setNodeDisabled(btnUpgradeGpu, true);
 
-      runScanAnimation(duration, () => {
-        playSfx('scanComplete');
-        const templates = Object.values(codeDefs).filter(d => d.rarity === rarity);
-        let chosen = null;
+	      runScanAnimation(duration, () => {
+	        playSfx('scanComplete');
+	        const templates = Object.values(codeDefs).filter(d => d.rarity === rarity);
+	        let chosen = null;
+	        let weeklyShardGain = 0;
 
         if (templates.length > 0) {
           const candidatesNew = templates.filter(t => !getOwnedCode(t.id));
@@ -3774,9 +4110,10 @@ function applyLanguageToUI(){
             });
             unlockAchievement('get_epic_code');
           }
-        } else {
-          const shardGain = getShardGainByRarity(rarity) + Math.max(0, Number(activeEffect.scanShardBonus || 0));
-          existing.shards = (existing.shards || 0) + shardGain;
+	        } else {
+	          const shardGain = getShardGainByRarity(rarity) + Math.max(0, Number(activeEffect.scanShardBonus || 0));
+	          weeklyShardGain = shardGain;
+	          existing.shards = (existing.shards || 0) + shardGain;
           state.stats.codeShardsTotal = (state.stats.codeShardsTotal || 0) + shardGain;
           log(t('scanDuplicate', { name: chosen.name, rarity, gain: shardGain, have: existing.shards }), 'scan');
           showToast(`${chosen.name} 조각 +${shardGain}`, 'scan');
@@ -3786,9 +4123,10 @@ function applyLanguageToUI(){
           }
         }
 
-        const expGain = 2 + modifiers.scanExtraExp + Math.max(0, Number(activeEffect.scanExpBonus || 0));
-        addExp(expGain);
-        log(t('scanDone', { exp: expGain }), 'scan');
+	        const expGain = 2 + modifiers.scanExtraExp + Math.max(0, Number(activeEffect.scanExpBonus || 0));
+	        addExp(expGain);
+	        trackWeeklyChallenge('scan', { rarity, codeId: chosen.id, shards: weeklyShardGain });
+	        log(t('scanDone', { exp: expGain }), 'scan');
         onTutorialAction('scan');
 
         checkAchievements('scan');
@@ -3932,15 +4270,21 @@ function applyLanguageToUI(){
           state.missionProgress.weekly.extremeHackSuccess = (state.missionProgress.weekly.extremeHackSuccess || 0) + 1;
           state.missionProgress.month.extremeHackSuccess = (state.missionProgress.month.extremeHackSuccess || 0) + 1;
         }
-        emitActivity(modeInfo.id === 'extreme' ? 'extreme_success' : 'hack_success', {
-          mode: modeInfo.id,
-          serverId: server.id,
-          refId: server.id,
-          codeId: code.id,
-          value: rewardCredits
-        });
+	        emitActivity(modeInfo.id === 'extreme' ? 'extreme_success' : 'hack_success', {
+	          mode: modeInfo.id,
+	          serverId: server.id,
+	          refId: server.id,
+	          codeId: code.id,
+	          value: rewardCredits
+	        });
+	        trackWeeklyChallenge('hack_success', {
+	          mode: modeInfo.id,
+	          serverId: server.id,
+	          codeId: code.id,
+	          credits: rewardCredits
+	        });
 
-        checkMissions('daily');
+	        checkMissions('daily');
         checkMissions('weekly');
         checkMissions('month');
         checkMissions('general');
@@ -3973,6 +4317,7 @@ function applyLanguageToUI(){
         if (def && def.id === 'overflow_inject') {
           state.energy = Math.max(0, state.energy - 1);
           state.stats.energySpentTotal += 1;
+          trackWeeklyChallenge('energy_spent', { amount: 1 });
           if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
             state.energyTimerMs = ENERGY_INTERVAL_MS;
           }
@@ -3982,6 +4327,7 @@ function applyLanguageToUI(){
         if (modeInfo.failEnergyPenalty > 0) {
           state.energy = Math.max(0, state.energy - modeInfo.failEnergyPenalty);
           state.stats.energySpentTotal += modeInfo.failEnergyPenalty;
+          trackWeeklyChallenge('energy_spent', { amount: modeInfo.failEnergyPenalty });
           if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
             state.energyTimerMs = ENERGY_INTERVAL_MS;
           }
@@ -4017,8 +4363,9 @@ function applyLanguageToUI(){
       state.credits -= cost;
       state.cpuTier += 1;
       playSfx('upgrade');
-      log(`CPU 업그레이드 완료! 현재 티어: ${state.cpuTier} (소모 크레딧 ${cost})`, 'system');
-      emitActivity('cpu_tier_up', { value: state.cpuTier, refId: 'cpu' });
+	      log(`CPU 업그레이드 완료! 현재 티어: ${state.cpuTier} (소모 크레딧 ${cost})`, 'system');
+	      emitActivity('cpu_tier_up', { value: state.cpuTier, refId: 'cpu' });
+	      trackWeeklyChallenge('cpu_upgrade', { tier: state.cpuTier });
       if (state.cpuTier >= 15) {
         unlockAchievement('cpu_tier_5');
       }
@@ -4039,9 +4386,10 @@ function applyLanguageToUI(){
       state.gpuTier = tier + 1;
       state.stats.gpuUpgradeCount = (state.stats.gpuUpgradeCount || 0) + 1;
       playSfx('upgrade');
-      log(t('gpuUpgradeLog', { tier: state.gpuTier, cost }), 'system');
-      showToast(t('gpuUpgradeLog', { tier: state.gpuTier, cost }), 'system');
-      emitActivity('gpu_tier_up', { value: state.gpuTier, refId: 'gpu' });
+	      log(t('gpuUpgradeLog', { tier: state.gpuTier, cost }), 'system');
+	      showToast(t('gpuUpgradeLog', { tier: state.gpuTier, cost }), 'system');
+	      emitActivity('gpu_tier_up', { value: state.gpuTier, refId: 'gpu' });
+	      trackWeeklyChallenge('gpu_upgrade', { tier: state.gpuTier });
       updateStatsUI();
       renderStagePanel();
       checkMissions('general');
@@ -4098,6 +4446,7 @@ function applyLanguageToUI(){
       if (!state.missionProgress.general.completed) {
         state.missionProgress.general.completed = {};
       }
+      ensureWeeklyChallengeDefaults();
     }
 
     function getMissionProgressValue(scope, type) {
@@ -4595,29 +4944,51 @@ function applyLanguageToUI(){
     bind(window, 'mousemove', onMouseMove);
     bind(window, 'mouseup', onMouseUp);
 
-    // 더보기 모달 / 탭
-    function setActiveTab(tabName) {
+    // LIST / 더보기 모달 탭
+    function setActiveListTab(tabName) {
       const panelMap = {
         mission: tabMission,
-        achievement: tabAchievement,
-        codex: tabCodex,
-        logs: tabLogs,
-        settings: tabSettings,
-        save: tabSave
+        achievement: tabAchievement
       };
       Object.keys(panelMap).forEach(name => {
         if (!panelMap[name]) return;
         panelMap[name].classList.toggle('active', name === tabName);
       });
+      listTabButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.listTab === tabName);
+      });
+      renderMissions();
+      renderAchievements();
+    }
+
+    function setActiveMoreTab(tabName) {
+      const panelMap = {
+        codex: tabCodex,
+        logs: tabLogs,
+        settings: tabSettings,
+        save: tabSave
+      };
+      const activeTab = panelMap[tabName] ? tabName : 'codex';
+      Object.keys(panelMap).forEach(name => {
+        if (!panelMap[name]) return;
+        panelMap[name].classList.toggle('active', name === activeTab);
+      });
       moreTabButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tabName);
+        btn.classList.toggle('active', btn.dataset.tab === activeTab);
       });
     }
+
+    listTabButtons.forEach(btn => {
+      bind(btn, 'click', () => {
+        const tab = btn.dataset.listTab || 'mission';
+        setActiveListTab(tab);
+      });
+    });
 
     moreTabButtons.forEach(btn => {
       bind(btn, 'click', () => {
         const tab = btn.dataset.tab;
-        setActiveTab(tab);
+        setActiveMoreTab(tab);
       });
     });
 
@@ -4644,9 +5015,25 @@ function applyLanguageToUI(){
       renderUpdateLog();
     });
 
-    function openMoreModal(defaultTab = 'mission', showDontShowButton = false) {
+    function openListModal(defaultTab = 'mission') {
       try {
-        setActiveTab(defaultTab);
+        setActiveListTab(defaultTab);
+        if (!listModalBackdrop) return;
+        listModalBackdrop.classList.add('active');
+      } catch (err) {
+        console.error('[ListModal] open failed:', err);
+        try { showToast('LIST를 여는 중 오류가 발생했습니다. (콘솔 확인)', 'warn'); } catch(e) {}
+      }
+    }
+
+    function closeListModal() {
+      if (!listModalBackdrop) return;
+      listModalBackdrop.classList.remove('active');
+    }
+
+    function openMoreModal(defaultTab = 'codex', showDontShowButton = false) {
+      try {
+        setActiveMoreTab(defaultTab);
         renderUpdateLog();
         if (btnUpdateDontShow) btnUpdateDontShow.style.display = showDontShowButton ? 'inline-block' : 'none';
         if (!moreModalBackdrop) return;
@@ -4664,10 +5051,18 @@ function applyLanguageToUI(){
     }
 
     // v1.6.2: 더보기 버튼 클릭 이슈 방지 (가드 + 이벤트 위임)
-    bind(btnMore, 'click', () => openMoreModal('mission', false));
+    bind(btnList, 'click', () => openListModal('mission'));
+    bind(btnMore, 'click', () => openMoreModal('codex', false));
     bind(document, 'click', (e) => {
-      const t = e.target.closest && e.target.closest('#btnMore');
-      if (t) openMoreModal('mission', false);
+      const listTarget = e.target.closest && e.target.closest('#btnList');
+      if (listTarget) openListModal('mission');
+      const moreTarget = e.target.closest && e.target.closest('#btnMore');
+      if (moreTarget) openMoreModal('codex', false);
+    });
+    bind(btnListClose, 'click', closeListModal);
+    bind(btnListClose2, 'click', closeListModal);
+    bind(listModalBackdrop, 'click', (e) => {
+      if (e.target === listModalBackdrop) closeListModal();
     });
     bind(btnMoreClose, 'click', closeMoreModal);
     bind(btnMoreClose2, 'click', closeMoreModal);
@@ -4772,6 +5167,7 @@ function applyLanguageToUI(){
       renderCodeDetail();
       renderUpdateLog();
       renderStagePanel();
+      renderWeeklyPanel();
       updateStatsUI();
       if (btnToggleLogs) {
         btnToggleLogs.textContent = logsHidden ? t('showLogs') : t('hideLogs');
@@ -4864,9 +5260,10 @@ function applyLanguageToUI(){
         state.stats.riskHackSuccessCount ||= 0;
         state.stats.extremeHackSuccessCount ||= 0;
         state.stats.gpuUpgradeCount ||= 0;
-        state.stats.codeShardsTotal ||= 0;
-        state.stats.stageAttemptCount ||= 0;
-        state.stats.stageClearCount ||= 0;
+	        state.stats.codeShardsTotal ||= 0;
+	        state.stats.stageAttemptCount ||= 0;
+	        state.stats.stageClearCount ||= 0;
+	        state.stats.weeklyAllClearCount ||= 0;
         state.gpuTier = Math.max(1, Number(state.gpuTier || 1));
         state.hackMode = normalizeHackMode(state.hackMode || (state.riskMode ? 'risk' : 'normal'));
         state.riskMode = state.hackMode === 'risk';
@@ -4888,9 +5285,10 @@ function applyLanguageToUI(){
         state.missionProgress.general = state.missionProgress.general || { completed: {} };
         state.missionProgress.general.completed = state.missionProgress.general.completed || {};
 
-        // v1.6.0 필드 보정
-        state.items = state.items || { energyPack: 0 };
-        state.items.energyPack = state.items.energyPack || 0;
+	        // v1.6.0 필드 보정
+	        state.items = state.items || { energyPack: 0 };
+	        state.items.energyPack = state.items.energyPack || 0;
+	        state.items.weeklyToken = state.items.weeklyToken || 0;
         state.missionProgress.daily.actions = state.missionProgress.daily.actions || 0;
 
         // v1.6.1 UI 설정 보정
@@ -4911,8 +5309,15 @@ function applyLanguageToUI(){
         state.ui.logSearch = state.ui.logSearch || '';
         state.ui.achievementFilter = ['all', 'incomplete', 'complete'].includes(state.ui.achievementFilter) ? state.ui.achievementFilter : 'incomplete';
         state.ui.showHiddenAchievements = !!state.ui.showHiddenAchievements;
-        state.ui.liveNetworkEnabled = state.ui.liveNetworkEnabled !== false;
-        state.ui.liveNicknameMode = state.ui.liveNicknameMode === 'callsign' ? 'callsign' : 'nickname';
+	        state.ui.liveNetworkEnabled = state.ui.liveNetworkEnabled !== false;
+	        state.ui.liveNicknameMode = state.ui.liveNicknameMode === 'callsign' ? 'callsign' : 'nickname';
+	        state.ui.weeklyFilter = ['all', 'incomplete', 'complete'].includes(state.ui.weeklyFilter) ? state.ui.weeklyFilter : 'incomplete';
+	        state.weeklyChallenge = state.weeklyChallenge || { weekKey: null, progress: {}, claimed: {}, bonusClaimed: false, score: 0, badges: {} };
+	        state.weeklyChallenge.progress = state.weeklyChallenge.progress || {};
+	        state.weeklyChallenge.claimed = state.weeklyChallenge.claimed || {};
+	        state.weeklyChallenge.badges = state.weeklyChallenge.badges || {};
+	        state.weeklyChallenge.score = Math.max(0, Math.round(Number(state.weeklyChallenge.score || 0)));
+	        state.weeklyChallenge.bonusClaimed = !!state.weeklyChallenge.bonusClaimed;
 
         state.loadouts = state.loadouts || {};
         ['1', '2', '3'].forEach(slot => {
@@ -5257,8 +5662,25 @@ function applyLanguageToUI(){
     bind(btnEvolveCode, 'click', evolveSelectedCode);
 
     bind(btnUseEnergyPack, 'click', useEnergyPack);
-    bind(document, 'hcsig:lab-ready', renderStagePanel);
-    bind(window, 'hcsig:language-applied', renderStagePanel);
+    bind(document, 'hcsig:lab-ready', () => {
+      renderStagePanel();
+      renderWeeklyPanel();
+    });
+    bind(window, 'hcsig:language-applied', () => {
+      renderStagePanel();
+      renderWeeklyPanel();
+    });
+    bind(document, 'click', (event) => {
+      const btn = event.target.closest && event.target.closest('[data-weekly-filter]');
+      if (!btn) return;
+      state.ui = state.ui || {};
+      state.ui.weeklyFilter = btn.dataset.weeklyFilter || 'incomplete';
+      renderWeeklyPanel();
+      scheduleSilentSave();
+    });
+    setInterval(() => {
+      if (document.body.classList.contains('app-view-lab')) renderWeeklyPanel();
+    }, 30000);
 
     hackModeButtons.forEach(btn => {
       bind(btn, 'click', () => {

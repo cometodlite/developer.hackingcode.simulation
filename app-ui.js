@@ -311,10 +311,11 @@
 	        </div>
 	        <div class="lab-mode-chip">LAB ONLINE</div>
 	      </div>
-      <div class="lab-subtabs" id="labSubtabs">
-        <button type="button" class="active" data-lab-tab="stage">데이터 타워</button>
-        <button type="button" data-lab-tab="coming">COMING SOON</button>
-      </div>
+	      <div class="lab-subtabs" id="labSubtabs">
+	        <button type="button" class="active" data-lab-tab="stage">데이터 타워</button>
+	        <button type="button" data-lab-tab="weekly">WEEKLY</button>
+	        <button type="button" data-lab-tab="coming">COMING SOON</button>
+	      </div>
       <section class="lab-panel active" data-lab-panel="stage">
         <div class="stage-head">
           <div>
@@ -333,15 +334,38 @@
 	          <h4>데이터 타워 선택 대기</h4>
 	          <p>챕터를 선택하면 추천값과 보상이 표시됩니다.</p>
 	        </div>
-	        <div class="stage-chapter-list" id="stageChapterList" aria-label="Data Tower chapters"></div>
+		        <div class="stage-chapter-list" id="stageChapterList" aria-label="Data Tower chapters"></div>
+		      </section>
+	      <section class="lab-panel" data-lab-panel="weekly">
+	        <div class="weekly-head" id="weeklyPanel">
+	          <div>
+	            <span class="badge">WEEKLY OPS</span>
+	            <h3>WEEKLY CHALLENGE</h3>
+	            <p>월요일 05:00 KST마다 작전 세트가 갱신됩니다.</p>
+	          </div>
+	          <div class="weekly-summary">
+	            <div><span>RESET</span><strong id="weeklyCountdown">--</strong></div>
+	            <div><span>PROGRESS</span><strong id="weeklyProgressText">0 / 5</strong></div>
+	            <div><span>SCORE</span><strong id="weeklyScore">0</strong></div>
+	            <div><span>TOKEN</span><strong id="weeklyTokenCount">0</strong></div>
+	          </div>
+	        </div>
+	        <div class="weekly-event-node" id="weeklyEventNode">BONUS NODE 대기 중</div>
+	        <div class="weekly-filter" id="weeklyFilter" aria-label="Weekly challenge filter">
+	          <button type="button" data-weekly-filter="incomplete" class="active">미완료</button>
+	          <button type="button" data-weekly-filter="all">전체</button>
+	          <button type="button" data-weekly-filter="complete">완료</button>
+	        </div>
+	        <div class="weekly-goal-list" id="weeklyGoalList"></div>
+	        <div class="weekly-bonus-card" id="weeklyBonusCard"></div>
 	      </section>
-      <section class="lab-panel" data-lab-panel="coming">
-        <span class="badge">NEXT</span>
+	      <section class="lab-panel" data-lab-panel="coming">
+	        <span class="badge">NEXT</span>
         <h3>준비 중</h3>
         <p>아직 열리지 않은 실험 모드입니다.</p>
         <div class="lab-preview-grid">
           <div><strong>BOSS RUSH</strong><span>연속 보스전</span></div>
-          <div><strong>WEEKLY RUN</strong><span>주간 조건 도전</span></div>
+	          <div><strong>CODE PRESET</strong><span>빌드 저장 슬롯</span></div>
           <div><strong>SERVER EVENT</strong><span>변칙 서버</span></div>
           <div><strong>HYBRID TEST</strong><span>CPU/GPU 빌드</span></div>
         </div>
@@ -374,10 +398,10 @@
       <section class="coming-panel">
         <span class="badge">QUEUE</span>
         <h3>예정 콘텐츠</h3>
-        <p>보스 러시, 주간 도전, 코드 프리셋, 특수 서버 이벤트를 준비합니다.</p>
+	        <p>보스 러시, 코드 프리셋, 특수 서버 이벤트를 준비합니다.</p>
         <div class="lab-preview-grid coming-preview-grid">
           <div><strong>BOSS RUSH</strong><span>연속 도전</span></div>
-          <div><strong>WEEKLY RUN</strong><span>주간 보상</span></div>
+	          <div><strong>CODE PRESET</strong><span>빌드 저장</span></div>
           <div><strong>PRESETS</strong><span>코드 조합 저장</span></div>
           <div><strong>SEASON CODE</strong><span>한정 코드</span></div>
         </div>
