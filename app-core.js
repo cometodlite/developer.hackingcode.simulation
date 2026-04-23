@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.2.6';
+const CURRENT_VERSION = '2.2.7';
 const TUTORIAL_VERSION = 5;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -736,6 +736,13 @@ function applyLanguageToUI(){
         lines: [
           '모바일 온보딩 모달 폭과 버튼 줄바꿈을 보정해 신규 세션에서도 조작 버튼이 잘리지 않게 했습니다.',
           '2.2.5 레이아웃 수정이 확실히 반영되도록 캐시 버스터를 갱신했습니다.'
+        ]
+      },
+      {
+        version: '2.2.7',
+        lines: [
+          '모바일 헤더, HOME STATUS, ACTIONS 높이를 줄여 첫 화면에서 핵심 조작이 함께 보이도록 조정했습니다.',
+          '데이터 타워 요약과 선택 상세를 압축해 도전 버튼까지 더 빠르게 닿도록 정리했습니다.'
         ]
       }
 

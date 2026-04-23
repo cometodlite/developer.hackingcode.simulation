@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=2.2.6" rel="stylesheet"/>
+<link href="style.css?v=2.2.7" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">2.2.6 (Web)</span>
+<span class="header-version">2.2.7 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -54,21 +54,21 @@
 <span class="label" id="labelEnergy">에너지</span>
 <span class="value" id="statEnergyValue">20 / 20</span>
 </div>
-<div class="stat-row">
+<div class="stat-row energy-timer-row">
 <span class="label" id="labelEnergyTimer">다음 회복까지</span>
 <span class="value" id="statEnergyTimer">FULL</span>
 </div>
 <div id="energyBarWrapper">
 <div id="energyBarInner"></div>
 </div>
-<div class="stat-row" style="align-items:center;">
+<div class="stat-row energy-pack-row" style="align-items:center;">
 <span class="label" id="labelEnergyPack">에너지 팩</span>
 <span class="value" style="display:flex; align-items:center; gap:6px;">
 <span id="statEnergyPack">0</span>
 <button id="btnUseEnergyPack" title="에너지 팩 1개를 사용해 에너지를 최대치까지 회복합니다.">사용</button>
 </span>
 </div>
-<div class="stat-row">
+<div class="stat-row last-save-row">
 <span class="label" id="labelLastSave">마지막 저장</span>
 <span class="value" id="statLastSave">-</span>
 </div>
@@ -614,10 +614,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=2.2.6"></script>
-<script src="auth.js?v=2.2.6"></script>
-<script src="cloudSave.js?v=2.2.6"></script>
-<script src="app-core.js?v=2.2.6"></script>
-<script src="app-ui.js?v=2.2.6"></script>
-<script src="liveOps.js?v=2.2.6"></script></body>
+<script src="firebase-config.js?v=2.2.7"></script>
+<script src="auth.js?v=2.2.7"></script>
+<script src="cloudSave.js?v=2.2.7"></script>
+<script src="app-core.js?v=2.2.7"></script>
+<script src="app-ui.js?v=2.2.7"></script>
+<script src="liveOps.js?v=2.2.7"></script></body>
 </html>

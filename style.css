@@ -2879,22 +2879,22 @@ body.app-shell-ui #tutorialStepHint{
 }
 @media (max-width: 900px), (hover: none) and (pointer: coarse){
   body.app-shell-ui{
-    padding-bottom:calc(var(--mobileTabsH, 82px) + 18px + env(safe-area-inset-bottom)) !important;
+    padding-bottom:calc(var(--mobileTabsH, 70px) + 14px + env(safe-area-inset-bottom)) !important;
   }
   body.app-shell-ui #main{
-    height:calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
-    max-height:calc(var(--appH, 100dvh) - var(--headerH, 52px)) !important;
+    height:calc(var(--appH, 100dvh) - var(--headerH, 48px)) !important;
+    max-height:calc(var(--appH, 100dvh) - var(--headerH, 48px)) !important;
   }
   .app-main-tabs{
     position:fixed;
     left:8px !important;
     right:auto !important;
     width:min(calc(100vw - 16px), 374px);
-    bottom:calc(8px + env(safe-area-inset-bottom));
+    bottom:calc(6px + env(safe-area-inset-bottom));
     z-index:1100;
     display:flex !important;
-    gap:5px;
-    padding:8px !important;
+    gap:4px;
+    padding:6px !important;
     border:1px solid rgba(94,234,212,.18);
     border-radius:8px;
     box-shadow:0 18px 44px rgba(0,0,0,.40);
@@ -2902,7 +2902,7 @@ body.app-shell-ui #tutorialStepHint{
   }
   .app-main-tabs button{
     flex:1 1 0;
-    min-height:46px;
+    min-height:40px;
     min-width:0 !important;
     padding:6px 2px;
     font-size:10px;
@@ -2929,7 +2929,7 @@ body.app-shell-ui #tutorialStepHint{
     transform:none !important;
   }
   .app-main-view{
-    padding:10px 10px calc(var(--mobileTabsH, 82px) + 28px + env(safe-area-inset-bottom));
+    padding:8px 10px calc(var(--mobileTabsH, 70px) + 18px + env(safe-area-inset-bottom));
   }
 		  .app-view-home.active,
 		  .home-cockpit,
@@ -2942,30 +2942,80 @@ body.app-shell-ui #tutorialStepHint{
 		    display:grid;
 		    grid-template-columns:1fr;
 		  }
-		  .stage-summary,
-		  .weekly-summary,
-		  .stage-meta-grid{
+		  .weekly-summary{
 		    grid-template-columns:1fr;
 		    min-width:0;
 	  }
+  .stage-summary{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    min-width:0;
+    gap:6px;
+  }
+  .stage-summary div{
+    padding:7px 6px;
+  }
+  .stage-summary span{
+    margin-bottom:3px;
+    font-size:10px;
+  }
+  .stage-summary strong{
+    font-size:13px;
+  }
+  .stage-meta-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:6px;
+  }
+  .stage-meta-grid div,
+  .stage-reward-grid div{
+    padding:7px;
+  }
 	  .stage-list{
 	    max-height:none;
 	    min-height:0;
 	    grid-template-columns:repeat(2,minmax(0,1fr));
 	  }
 	  .stage-card{
-	    min-height:112px;
+	    min-height:76px;
+	    padding:8px;
 	  }
 	  .stage-detail{
 	    position:static;
+	    padding:10px;
 	  }
+  .stage-detail h4{
+    font-size:18px;
+    margin:6px 0 2px;
+  }
+  .stage-detail p{
+    font-size:12px;
+    line-height:1.35;
+  }
+  .stage-detail-head{
+    gap:8px;
+  }
+  .stage-status-pill{
+    padding:6px 8px;
+    font-size:11px;
+    white-space:nowrap;
+  }
 	  .stage-action-row{
-	    flex-direction:column;
-	    align-items:stretch;
+	    flex-direction:row;
+	    align-items:center;
 	  }
 	  .stage-action-row button{
-	    width:100%;
+	    width:auto;
+	    flex:0 0 auto;
+	    min-height:38px;
+	    padding:0 12px;
 	  }
+  .stage-action-row .small{
+    min-width:0;
+    font-size:11px;
+    line-height:1.3;
+  }
+  .stage-note{
+    display:none;
+  }
   .app-view-home .flex-row{
     flex-direction:column;
   }
@@ -3016,13 +3066,23 @@ body.app-shell-ui #tutorialStepHint{
 	  }
   body.app-shell-ui header{
     display:grid;
-    grid-template-columns:1fr;
-    gap:10px;
+    grid-template-columns:minmax(100px,.72fr) minmax(0,1fr);
+    gap:8px;
     align-items:center;
-    padding:12px 12px 10px !important;
+    padding:8px 10px !important;
   }
   body.app-shell-ui .header-left{
     justify-content:flex-start;
+    gap:6px;
+    min-width:0;
+  }
+  body.app-shell-ui header h1{
+    font-size:18px !important;
+    letter-spacing:3px;
+  }
+  body.app-shell-ui .header-version{
+    font-size:10px !important;
+    white-space:nowrap;
   }
   body.app-shell-ui header .subtitle{
     display:none;
@@ -3031,33 +3091,127 @@ body.app-shell-ui #tutorialStepHint{
     width:100%;
     display:grid;
     grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:8px;
+    gap:5px;
   }
   body.app-shell-ui .header-right button{
     min-width:0 !important;
-    min-height:44px;
+    min-height:34px;
     width:100%;
-    padding:8px 6px;
+    padding:5px 4px;
+    font-size:10px !important;
   }
   .home-cockpit{
-    padding:12px;
-    gap:12px;
+    padding:9px;
+    gap:8px;
+  }
+  .home-cockpit > #titleStatus{
+    font-size:16px !important;
+    letter-spacing:.08em;
   }
   .home-status-grid{
     grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:6px !important;
   }
   body.app-shell-ui .home-status-grid .stat-row{
-    min-height:52px;
-    padding:8px;
+    min-height:34px;
+    padding:6px 7px;
+    gap:3px;
+  }
+  body.app-shell-ui .home-status-grid .stat-row .label{
+    font-size:11px;
+    line-height:1.2;
+  }
+  body.app-shell-ui .home-status-grid .stat-row .value{
+    font-size:14px;
+    line-height:1.25;
+  }
+  body.app-shell-ui .home-status-grid .energy-timer-row,
+  body.app-shell-ui .home-status-grid .last-save-row{
+    display:none;
+  }
+  body.app-shell-ui .home-status-grid #energyBarWrapper{
+    height:7px;
+    margin:0;
+  }
+  body.app-shell-ui .home-status-grid .energy-pack-row{
+    grid-column:1 / -1;
+    min-height:36px;
+    flex-direction:row;
+    justify-content:center;
+  }
+  body.app-shell-ui .home-status-grid .energy-pack-row .value{
+    gap:8px !important;
+  }
+  body.app-shell-ui .home-status-grid .energy-pack-row button{
+    min-height:30px;
+    padding:0 10px;
+    font-size:11px !important;
   }
   .home-actions-box .button-row{
     grid-template-columns:1fr 1fr !important;
+    gap:6px !important;
+    margin-bottom:6px;
+  }
+  body.app-shell-ui .home-actions-box .button-row > button{
+    min-height:38px;
+    padding:6px 8px;
+    font-size:12px !important;
+  }
+  .home-actions-box .section-title{
+    font-size:16px !important;
+    letter-spacing:.08em;
+    margin-bottom:6px;
+  }
+  .home-actions-box .flex-col{
+    gap:6px;
+  }
+  .home-actions-box > .flex-col > .flex-row{
+    display:grid;
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+    gap:6px;
+  }
+  .home-actions-box > .flex-col > .flex-row > div,
+  .home-actions-box > .flex-col > .flex-row select{
+    width:100%;
+    max-width:100%;
+  }
+  .home-actions-box .small{
+    font-size:11px;
   }
   .home-loadout-block .loadout-control-row{
-    grid-template-columns:1fr 1fr !important;
+    grid-template-columns:.72fr 1fr 1fr !important;
+    gap:5px !important;
   }
   .home-loadout-block .loadout-control-row select{
-    grid-column:1 / -1;
+    grid-column:auto;
+  }
+  .home-loadout-block .loadout-control-row select,
+  .home-loadout-block .loadout-control-row button{
+    min-height:34px;
+    padding:4px 6px;
+    font-size:11px !important;
+  }
+  .lab-subtabs{
+    gap:6px;
+    margin-bottom:8px;
+  }
+  .lab-subtabs button{
+    min-height:36px;
+  }
+  .stage-head{
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .stage-head h3{
+    font-size:22px;
+    margin:6px 0;
+  }
+  .stage-head p{
+    font-size:13px;
+    line-height:1.45;
+  }
+  .stage-chapter .stage-list{
+    padding:8px;
   }
   .home-live-hint{
     flex-direction:column;
