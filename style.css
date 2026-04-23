@@ -1157,25 +1157,80 @@ body.tutorial-open{ overflow:hidden; }
   background: transparent;
   backdrop-filter: none;
   pointer-events: none;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: calc(var(--headerH, 56px) + 12px);
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 12px 14px 18px;
 }
 #tutorialBackdrop.interactive #tutorialModal{
+  pointer-events: none;
+  width: min(420px, calc(100vw - 24px));
+  max-height: min(48vh, 430px);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.34);
+}
+#tutorialBackdrop.interactive #tutorialHeader,
+#tutorialBackdrop.interactive #tutorialFooter{
   pointer-events: auto;
-  width: min(520px, calc(100vw - 20px));
-  box-shadow: 0 12px 28px rgba(0,0,0,0.38);
+}
+#tutorialBackdrop.interactive #tutorialBody{
+  padding: 12px 14px;
+}
+#tutorialBackdrop.interactive #tutorialBody h3{
+  margin-top: 4px;
+  font-size: 17px;
+}
+#tutorialBackdrop.interactive #tutorialStepText{
+  font-size: 13px;
+  line-height: 1.45;
+}
+#tutorialBackdrop.interactive #tutorialStepGoal{
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+#tutorialBackdrop.interactive .tutorial-checklist-list{
+  gap: 6px;
+}
+#tutorialBackdrop.interactive .tutorial-checklist-list li{
+  padding: 6px 8px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+#tutorialBackdrop.interactive #tutorialStepHint{
+  margin-top: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.4;
 }
 body.tutorial-open.tutorial-interactive{ overflow:auto; }
 @media (max-width: 900px), (hover: none) and (pointer: coarse){
   #tutorialBackdrop.interactive{
-    padding: calc(var(--headerH, 52px) + 8px) 8px 8px;
-    align-items: flex-start;
+    padding: 8px 8px calc(var(--mobileTabsH, 72px) + var(--safe-bottom, 0px) + 10px);
+    align-items: flex-end;
+    justify-content: center;
   }
   #tutorialBackdrop.interactive #tutorialModal{
     width: calc(100vw - 16px);
-    border-radius: 16px;
+    max-height: min(42vh, 360px);
+    border-radius: 12px;
     margin: 0;
+  }
+  #tutorialBackdrop.interactive #tutorialHeader h2{
+    display:none;
+  }
+  #tutorialBackdrop.interactive #tutorialHeader,
+  #tutorialBackdrop.interactive #tutorialFooter{
+    padding: 8px 10px;
+  }
+  #tutorialBackdrop.interactive #tutorialBody{
+    padding: 10px;
+  }
+  #tutorialBackdrop.interactive #tutorialBody h3{
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  #tutorialBackdrop.interactive .tutorial-checklist-list li:nth-child(n+3){
+    display:none;
   }
 }
 

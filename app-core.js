@@ -1,5 +1,5 @@
-const CURRENT_VERSION = '2.2.2';
-const TUTORIAL_VERSION = 4;
+const CURRENT_VERSION = '2.2.3';
+const TUTORIAL_VERSION = 5;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -692,6 +692,15 @@ function applyLanguageToUI(){
           '튜토리얼 단계에 목표와 체크리스트를 추가해 각 화면에서 해야 할 일을 더 명확하게 표시합니다.',
           '행동 안내 단계는 직접 수행하면 자동 진행되지만, 다시 보기 중에는 다음 버튼으로도 넘길 수 있게 했습니다.',
           'LIST, 더보기, 클라우드 계정, LAB 주간 콘텐츠까지 초반 동선 설명을 보강했습니다.'
+        ]
+      },
+      {
+        version: '2.2.3',
+        lines: [
+          '튜토리얼 행동 단계가 실제 버튼 조작을 가리지 않도록 하단 코치 패널 방식으로 수정했습니다.',
+          '스캔, 코드 선택, 해킹 안내 중에는 안내창 본문 클릭이 게임 화면으로 통과되게 했습니다.',
+          '모바일에서는 하단 메인 탭 위로 튜토리얼을 띄워 탭 이동과 버튼 입력이 막히지 않도록 정리했습니다.',
+          '행동 단계의 건너뛰기 문구를 닫고 플레이로 바꿔 새 플레이어가 바로 게임에 들어가기 쉽게 했습니다.'
         ]
       }
 
@@ -2011,7 +2020,7 @@ function applyLanguageToUI(){
             goal: 'Get your first code',
             text: 'On HOME, press Scan Code. A scan costs 1 energy and gives a small amount of EXP.',
             checklist: ['A new code is added to CODES.', 'Duplicate codes become shards.', 'Shards are used later for Sync.'],
-            hint: 'Try Scan Code now. If you are replaying this tutorial, Next is also fine.',
+            hint: 'The guide moves aside while you act. Press Scan Code now, or tap Next to keep reading.',
             waitAction: 'scan'
           },
           {
@@ -2019,7 +2028,7 @@ function applyLanguageToUI(){
             goal: 'Choose the code you want to use',
             text: 'Open CODES and select one owned code. The active code affects hacking and Data Tower attempts.',
             checklist: ['Higher power helps more.', 'Sync raises success bonus.', 'Evolution raises rarity when the code is ready.'],
-            hint: 'Tap a code card to make it active, or press Next to continue.',
+            hint: 'The guide will not block the screen. Tap a code card, or press Next to continue.',
             waitAction: 'selectCode'
           },
           {
@@ -2027,7 +2036,7 @@ function applyLanguageToUI(){
             goal: 'Clear one NORMAL hack',
             text: 'Return HOME, keep NORMAL selected, choose an available server, then press Server Hack.',
             checklist: ['NORMAL is the safest starting mode.', 'Success gives credits and EXP.', 'Failure only means you try again after recovering energy.'],
-            hint: 'Try one server hack now, or press Next to keep reading.',
+            hint: 'Keep NORMAL selected and try Server Hack, or press Next to keep reading.',
             waitAction: 'hack'
           },
           {
@@ -2094,7 +2103,7 @@ function applyLanguageToUI(){
           goal: '첫 코드를 확보하세요',
           text: 'HOME에서 코드 스캔 버튼을 누르세요. 스캔은 에너지 1을 사용하고 소량의 EXP를 줍니다.',
           checklist: ['새 코드는 CODES에 추가됩니다.', '이미 가진 코드는 중복 조각이 됩니다.', '조각은 나중에 동기화에 사용됩니다.'],
-          hint: '지금 코드 스캔을 직접 눌러보세요. 다시 보기 중이라면 다음으로 넘겨도 됩니다.',
+          hint: '안내창은 아래로 물러납니다. 지금 코드 스캔을 누르거나, 다음으로 넘겨도 됩니다.',
           waitAction: 'scan'
         },
         {
@@ -2102,7 +2111,7 @@ function applyLanguageToUI(){
           goal: '사용할 코드를 하나 고르세요',
           text: 'CODES로 이동해 보유 코드 하나를 선택하세요. 활성 코드는 해킹과 데이터 타워 도전에 영향을 줍니다.',
           checklist: ['파워가 높을수록 도움이 됩니다.', '동기화는 성공률 보정을 올립니다.', '진화는 준비된 코드를 더 높은 등급으로 올립니다.'],
-          hint: '코드 카드를 누르면 활성 코드가 됩니다. 계속 읽고 싶다면 다음을 눌러도 됩니다.',
+          hint: '안내창이 화면 조작을 막지 않습니다. 코드 카드를 누르거나, 다음으로 넘겨도 됩니다.',
           waitAction: 'selectCode'
         },
         {
@@ -2110,7 +2119,7 @@ function applyLanguageToUI(){
           goal: 'NORMAL 해킹 1회를 시도하세요',
           text: 'HOME으로 돌아와 NORMAL을 유지하고, 입장 가능한 서버를 고른 뒤 서버 해킹 버튼을 누르세요.',
           checklist: ['NORMAL은 초반에 가장 안정적입니다.', '성공하면 크레딧과 EXP를 얻습니다.', '실패해도 회복 후 다시 시도하면 됩니다.'],
-          hint: '지금 서버 해킹을 한 번 시도해보세요. 읽기만 하려면 다음을 눌러도 됩니다.',
+          hint: 'NORMAL을 유지하고 서버 해킹을 눌러보세요. 읽기만 하려면 다음으로 넘겨도 됩니다.',
           waitAction: 'hack'
         },
         {
@@ -2539,10 +2548,10 @@ function applyLanguageToUI(){
       setNodeText(btnTutorialPrev, getLang() === 'en' ? 'Back' : '이전');
       setNodeText(btnTutorialNext, getLang() === 'en' ? 'Next' : '다음');
       setNodeText(btnTutorialFinish, getLang() === 'en' ? 'Start' : '시작하기');
-      setNodeText(btnTutorialSkip, getLang() === 'en' ? 'Skip' : '건너뛰기');
+      const interactive = !!step.waitAction;
+      setNodeText(btnTutorialSkip, interactive ? (getLang() === 'en' ? 'Close guide' : '닫고 플레이') : (getLang() === 'en' ? 'Skip' : '건너뛰기'));
       setNodeDisplay(tutorialStepGoal, step.goal ? '' : 'none');
       setNodeDisplay(tutorialStepHint, step.hint ? '' : 'none');
-      const interactive = !!step.waitAction;
       tutorialBackdrop.classList.toggle('interactive', interactive);
       document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
       setNodeDisabled(btnTutorialPrev, idx <= 0);
