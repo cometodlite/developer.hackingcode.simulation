@@ -370,10 +370,38 @@
 	          <article><strong>침투</strong><span>탐지 게이지가 오르기 전 핵심 노드를 돌파합니다.</span></article>
 	          <article><strong>탈출</strong><span>획득한 신호를 정리하고 보상을 회수합니다.</span></article>
 	        </div>
+	        <div class="zero-day-mode-grid" aria-label="Zero-day preview modes">
+	          <article class="zero-day-mode-card">
+	            <div class="zero-day-mode-head">
+	              <span class="badge">SINGLE</span>
+	              <strong>싱글모드</strong>
+	            </div>
+	            <p>혼자 침투를 진행합니다. 코드 빌드, 성향 세팅, 노드 선택, 탈출 타이밍까지 직접 판단합니다.</p>
+	            <div class="zero-day-mode-meta">
+	              <span>개인 기록 중심</span>
+	              <span>최고 깊이</span>
+	              <span>최대 보상</span>
+	            </div>
+	            <button type="button" disabled>프리뷰만 공개</button>
+	          </article>
+	          <article class="zero-day-mode-card">
+	            <div class="zero-day-mode-head">
+	              <span class="badge">COMPETE</span>
+	              <strong>경쟁모드</strong>
+	            </div>
+	            <p>제한된 환경에서 다른 침투자와 기록을 겨룹니다. 속도, 탐지율, 보상 회수가 승부의 핵심입니다.</p>
+	            <div class="zero-day-mode-meta">
+	              <span>시즌 랭킹 예정</span>
+	              <span>고정 시드</span>
+	              <span>리플레이 확장</span>
+	            </div>
+	            <button type="button" disabled>다음 대형 업데이트</button>
+	          </article>
+	        </div>
 	        <div class="zero-day-meter" aria-label="Zero-day preview detection gauge">
 	          <span style="width:42%"></span>
 	        </div>
-	        <div class="small">ZERO-DAY는 실제 플레이 버튼 없이 프리뷰 셸로만 표시됩니다.</div>
+	        <div class="small">이번 버전의 ZERO-DAY는 실제 침투 버튼 없이 프리뷰 셸로만 표시됩니다.</div>
 	      </section>
 	      <section class="lab-panel" data-lab-panel="coming">
 	        <span class="badge">ROADMAP</span>

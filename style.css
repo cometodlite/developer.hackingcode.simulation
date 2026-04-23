@@ -2474,6 +2474,59 @@ body.app-shell-ui .list-tab-button{
   font-size:12px;
   line-height:1.55;
 }
+.zero-day-mode-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:10px 0 12px;
+}
+.zero-day-mode-card{
+  display:grid;
+  gap:10px;
+  min-width:0;
+  padding:14px;
+  border:1px solid rgba(94,234,212,.16);
+  border-radius:8px;
+  background:
+    linear-gradient(180deg, rgba(12,18,16,.88), rgba(7,11,10,.92)),
+    radial-gradient(circle at 100% 0%, rgba(168,85,247,.12), transparent 34%);
+}
+.zero-day-mode-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.zero-day-mode-head strong{
+  color:#f5fff7;
+  font-size:16px;
+}
+.zero-day-mode-card p{
+  margin:0;
+  color:#d7efe3;
+  font-size:13px;
+  line-height:1.55;
+}
+.zero-day-mode-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.zero-day-mode-meta span{
+  padding:4px 7px;
+  border:1px solid rgba(148,163,184,.15);
+  border-radius:8px;
+  background:rgba(15,23,42,.42);
+  color:#cbd5e1;
+  font-size:11px;
+  font-weight:800;
+}
+.zero-day-mode-card button{
+  justify-self:start;
+  min-height:36px;
+  color:#dbeafe;
+  opacity:.72;
+}
 .zero-day-meter{
   height:10px;
   border-radius:999px;
@@ -3257,8 +3310,16 @@ body.app-shell-ui #tutorialStepHint{
     align-items:flex-start;
   }
   .zero-day-flow,
+  .zero-day-mode-grid,
   .live-node-row{
     grid-template-columns:1fr;
+  }
+  .zero-day-mode-card{
+    padding:11px;
+    gap:8px;
+  }
+  .zero-day-mode-card p{
+    font-size:12px;
   }
   .live-mini-feed div{
     flex-direction:column;

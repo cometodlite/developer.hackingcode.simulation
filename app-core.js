@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.2.8';
+const CURRENT_VERSION = '2.2.9';
 const TUTORIAL_VERSION = 5;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -750,6 +750,13 @@ function applyLanguageToUI(){
         lines: [
           '모바일 코드 상세 모달의 액션 버튼을 2열 그리드로 압축하고 sticky 충돌을 제거했습니다.',
           '코드 상세 정보 영역을 카드형 그리드로 정리해 본문과 버튼이 한 화면에 더 자연스럽게 들어오도록 조정했습니다.'
+        ]
+      },
+      {
+        version: '2.2.9',
+        lines: [
+          'ZERO-DAY 프리뷰에 싱글모드와 경쟁모드 선택 구조를 추가했습니다.',
+          '정식 침투 엔진 전 준비, 침투, 탈출 흐름과 다음 대형 업데이트 예고를 더 명확히 정리했습니다.'
         ]
       }
 
