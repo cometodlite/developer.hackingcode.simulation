@@ -332,7 +332,7 @@
 	        <div>
 	          <div class="section-title">LAB</div>
 	          <h2>LAB</h2>
-	          <p>데이터 타워와 다음 실험을 여기서 관리합니다.</p>
+	          <p>데이터 타워, ZERO-DAY 침투, 다음 실험을 여기서 관리합니다.</p>
 	        </div>
 	        <div class="lab-mode-chip">LAB ONLINE</div>
 	      </div>
@@ -362,46 +362,49 @@
 		        <div class="stage-chapter-list" id="stageChapterList" aria-label="Data Tower chapters"></div>
 		      </section>
 	      <section class="lab-panel" data-lab-panel="zero">
-	        <span class="badge">PREVIEW</span>
+	        <span class="badge">LIVE MODE</span>
 	        <h3>ZERO-DAY</h3>
-	        <p>정식 침투 엔진은 다음 대형 업데이트에서 열립니다. 이번 버전에서는 모드 흐름만 먼저 공개합니다.</p>
+	        <p>정식 침투 엔진이 열렸습니다. 탐지 게이지가 100%에 닿기 전에 핵심 노드를 돌파하고 신호를 회수하세요.</p>
 	        <div class="zero-day-flow">
 	          <article><strong>준비</strong><span>코드 빌드와 CPU/GPU 성향을 맞춥니다.</span></article>
 	          <article><strong>침투</strong><span>탐지 게이지가 오르기 전 핵심 노드를 돌파합니다.</span></article>
 	          <article><strong>탈출</strong><span>획득한 신호를 정리하고 보상을 회수합니다.</span></article>
 	        </div>
-	        <div class="zero-day-mode-grid" aria-label="Zero-day preview modes">
-	          <article class="zero-day-mode-card">
+	        <div class="zero-day-summary" id="zeroDaySummary">
+	          <div><span>BEST DEPTH</span><strong>0 / 12</strong></div>
+	          <div><span>BEST SCORE</span><strong>0</strong></div>
+	          <div><span>RUNS</span><strong>0</strong></div>
+	          <div><span>SIGNAL</span><strong>0</strong></div>
+	        </div>
+	        <div class="zero-day-mode-grid" id="zeroDayModeGrid" aria-label="Zero-day modes">
+	          <article class="zero-day-mode-card" data-zero-day-mode-card="single">
 	            <div class="zero-day-mode-head">
 	              <span class="badge">SINGLE</span>
 	              <strong>싱글모드</strong>
 	            </div>
-	            <p>혼자 침투를 진행합니다. 코드 빌드, 성향 세팅, 노드 선택, 탈출 타이밍까지 직접 판단합니다.</p>
+	            <p>안정적인 단독 침투입니다. 기본 흐름을 익히고 개인 기록과 보상 회수에 집중합니다.</p>
 	            <div class="zero-day-mode-meta">
 	              <span>개인 기록 중심</span>
 	              <span>최고 깊이</span>
 	              <span>최대 보상</span>
 	            </div>
-	            <button type="button" disabled>프리뷰만 공개</button>
+	            <button type="button" data-zero-day-start="single">싱글 침투 시작</button>
 	          </article>
-	          <article class="zero-day-mode-card">
+	          <article class="zero-day-mode-card" data-zero-day-mode-card="compete">
 	            <div class="zero-day-mode-head">
 	              <span class="badge">COMPETE</span>
 	              <strong>경쟁모드</strong>
 	            </div>
-	            <p>제한된 환경에서 다른 침투자와 기록을 겨룹니다. 속도, 탐지율, 보상 회수가 승부의 핵심입니다.</p>
+	            <p>점수형 침투입니다. 탐지 압박이 높지만 깊이, 속도, 회수 신호가 더 큰 점수로 환산됩니다.</p>
 	            <div class="zero-day-mode-meta">
-	              <span>시즌 랭킹 예정</span>
-	              <span>고정 시드</span>
-	              <span>리플레이 확장</span>
+	              <span>점수 경쟁</span>
+	              <span>탐지 압박 증가</span>
+	              <span>고효율 회수</span>
 	            </div>
-	            <button type="button" disabled>다음 대형 업데이트</button>
+	            <button type="button" data-zero-day-start="compete">경쟁 침투 시작</button>
 	          </article>
 	        </div>
-	        <div class="zero-day-meter" aria-label="Zero-day preview detection gauge">
-	          <span style="width:42%"></span>
-	        </div>
-	        <div class="small">이번 버전의 ZERO-DAY는 실제 침투 버튼 없이 프리뷰 셸로만 표시됩니다.</div>
+	        <div class="zero-day-run-panel" id="zeroDayRunPanel"></div>
 	      </section>
 	      <section class="lab-panel" data-lab-panel="coming">
 	        <span class="badge">ROADMAP</span>
@@ -411,7 +414,7 @@
           <div><strong>BOSS RUSH</strong><span>연속 보스전</span></div>
 	          <div><strong>CODE PRESET</strong><span>빌드 저장 슬롯</span></div>
           <div><strong>SEASON CODE</strong><span>시즌 한정 코드</span></div>
-          <div><strong>ZERO-DAY CORE</strong><span>정식 침투 엔진</span></div>
+          <div><strong>ZERO-DAY SEASON</strong><span>시즌 규칙 확장</span></div>
         </div>
       </section>
     `;

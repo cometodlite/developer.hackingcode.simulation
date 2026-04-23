@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.2.9';
+const CURRENT_VERSION = '2.3.0';
 const TUTORIAL_VERSION = 5;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -758,6 +758,14 @@ function applyLanguageToUI(){
           'ZERO-DAY 프리뷰에 싱글모드와 경쟁모드 선택 구조를 추가했습니다.',
           '정식 침투 엔진 전 준비, 침투, 탈출 흐름과 다음 대형 업데이트 예고를 더 명확히 정리했습니다.'
         ]
+      },
+      {
+        version: '2.3.0',
+        lines: [
+          'ZERO-DAY 실제 침투 엔진을 출시했습니다. 싱글모드와 경쟁모드를 선택해 런을 시작할 수 있습니다.',
+          '노드 돌파, 은폐, 신호 수집, 탈출 액션을 추가하고 탐지율 100% 도달 전 보상을 회수하는 구조를 적용했습니다.',
+          'ZERO-DAY 개인 기록, 최고 깊이, 최고 점수, 총 회수 신호를 저장합니다.'
+        ]
       }
 
     ];
@@ -779,6 +787,7 @@ function applyLanguageToUI(){
       lastSeenAt: null,
       tutorial: { completed: false, step: 0, seen: false, version: TUTORIAL_VERSION },
       stage: { selectedId: 'stage_001', chapterFilter: '1', highestCleared: 0, cleared: {}, chapterRewardsClaimed: {} },
+      zeroDay: { mode: 'single', active: null, bestDepth: 0, bestSignal: 0, bestScore: 0, runs: 0, extracts: 0, traces: 0, totalSignal: 0, lastResult: null },
       weeklyChallenge: { weekKey: null, progress: {}, claimed: {}, bonusClaimed: false, score: 0, badges: {} },
       activeCodeId: null,
       hackMode: 'normal',
@@ -848,6 +857,12 @@ function applyLanguageToUI(){
         energyPacksUsed: 0,
         stageAttemptCount: 0,
         stageClearCount: 0,
+        zeroDayRunCount: 0,
+        zeroDayExtractCount: 0,
+        zeroDayTraceCount: 0,
+        zeroDayBestDepth: 0,
+        zeroDayBestScore: 0,
+        zeroDaySignalTotal: 0,
         gpuUpgradeCount: 0,
         weeklyAllClearCount: 0,
         codeShardsSpentTotal: 0
@@ -2946,6 +2961,7 @@ function applyLanguageToUI(){
       renderMissions();
       renderAchievements();
       renderCodex();
+      renderZeroDayPanel();
     }
 
 
@@ -3244,6 +3260,7 @@ function applyLanguageToUI(){
       updateStatsUI();
       renderStagePanel();
       renderWeeklyPanel();
+      renderZeroDayPanel();
     }
 
     function getEnergyIntervalMs() {
@@ -3655,6 +3672,342 @@ function applyLanguageToUI(){
         exp: Math.max(1, Math.round((reward.exp || 0) * getGpuExpMultiplier())),
         energyPack: reward.energyPack || 0
       };
+    }
+
+    const ZERO_DAY_MAX_DEPTH = 12;
+
+    function zeroCopy(ko, en) {
+      return getLang() === 'en' ? en : ko;
+    }
+
+    function clampNumber(value, min, max) {
+      return Math.max(min, Math.min(max, Number(value) || 0));
+    }
+
+    function ensureZeroDayDefaults() {
+      state.zeroDay = state.zeroDay && typeof state.zeroDay === 'object' ? state.zeroDay : {};
+      const zd = state.zeroDay;
+      zd.mode = zd.mode === 'compete' ? 'compete' : 'single';
+      zd.active = zd.active && typeof zd.active === 'object' ? zd.active : null;
+      zd.bestDepth = Math.max(0, Math.round(Number(zd.bestDepth || 0)));
+      zd.bestSignal = Math.max(0, Math.round(Number(zd.bestSignal || 0)));
+      zd.bestScore = Math.max(0, Math.round(Number(zd.bestScore || 0)));
+      zd.runs = Math.max(0, Math.round(Number(zd.runs || 0)));
+      zd.extracts = Math.max(0, Math.round(Number(zd.extracts || 0)));
+      zd.traces = Math.max(0, Math.round(Number(zd.traces || 0)));
+      zd.totalSignal = Math.max(0, Math.round(Number(zd.totalSignal || 0)));
+      zd.lastResult = zd.lastResult && typeof zd.lastResult === 'object' ? zd.lastResult : null;
+      if (zd.active) {
+        zd.active.mode = zd.active.mode === 'compete' ? 'compete' : 'single';
+        zd.active.depth = clampNumber(zd.active.depth, 0, ZERO_DAY_MAX_DEPTH);
+        zd.active.detection = clampNumber(zd.active.detection, 0, 100);
+        zd.active.signal = Math.max(0, Math.round(Number(zd.active.signal || 0)));
+        zd.active.turns = Math.max(0, Math.round(Number(zd.active.turns || 0)));
+        zd.active.startedAt = Number(zd.active.startedAt || Date.now());
+        zd.active.log = Array.isArray(zd.active.log) ? zd.active.log.slice(-5) : [];
+      }
+      state.stats = state.stats || {};
+      state.stats.zeroDayRunCount = state.stats.zeroDayRunCount || zd.runs || 0;
+      state.stats.zeroDayExtractCount = state.stats.zeroDayExtractCount || zd.extracts || 0;
+      state.stats.zeroDayTraceCount = state.stats.zeroDayTraceCount || zd.traces || 0;
+      state.stats.zeroDayBestDepth = Math.max(state.stats.zeroDayBestDepth || 0, zd.bestDepth || 0);
+      state.stats.zeroDayBestScore = Math.max(state.stats.zeroDayBestScore || 0, zd.bestScore || 0);
+      state.stats.zeroDaySignalTotal = Math.max(state.stats.zeroDaySignalTotal || 0, zd.totalSignal || 0);
+    }
+
+    function getZeroDayModeInfo(mode) {
+      const id = mode === 'compete' ? 'compete' : 'single';
+      return id === 'compete'
+        ? { id, label: zeroCopy('경쟁모드', 'Compete'), startEnergy: 4, detectionBase: 10, detectionMult: 1.25, signalMult: 1.18, scoreMult: 1.25 }
+        : { id, label: zeroCopy('싱글모드', 'Single'), startEnergy: 3, detectionBase: 5, detectionMult: 1, signalMult: 1, scoreMult: 1 };
+    }
+
+    function appendZeroDayLog(run, message) {
+      if (!run) return;
+      run.log = Array.isArray(run.log) ? run.log : [];
+      run.log.unshift(message);
+      run.log = run.log.slice(0, 5);
+    }
+
+    function getZeroDayMetrics(run = null, code = null) {
+      ensureZeroDayDefaults();
+      const activeRun = run || state.zeroDay.active || { mode: state.zeroDay.mode, depth: 0, detection: 0, signal: 0, turns: 0 };
+      const modeInfo = getZeroDayModeInfo(activeRun.mode);
+      const activeCode = code || getActiveCodeInstance();
+      const syncLevel = activeCode ? Number(activeCode.syncLevel || 0) : 0;
+      const depth = Math.max(0, Number(activeRun.depth || 0));
+      const detection = clampNumber(activeRun.detection || 0, 0, 100);
+      const power = activeCode ? Number(activeCode.power || 0) * (1 + 0.055 * Math.max(0, state.cpuTier - 1)) : 0;
+      const security = 42 + depth * 9 + (modeInfo.id === 'compete' ? 10 : 0);
+      let breachChance = activeCode ? power / (power + security) : 0;
+      breachChance += getSyncSuccessBonus(syncLevel);
+      breachChance += Math.min(0.09, Math.max(0, state.cpuTier - 1) * 0.006);
+      breachChance -= detection * 0.0014;
+      breachChance = clampNumber(breachChance, 0.12, 0.92);
+      const gpuSignal = 1 + Math.max(0, Number(state.gpuTier || 1) - 1) * 0.075;
+      const signalGain = Math.max(6, Math.round((12 + depth * 4) * gpuSignal * modeInfo.signalMult));
+      const collectGain = Math.max(8, Math.round((18 + depth * 3) * gpuSignal * modeInfo.signalMult));
+      const successDetection = Math.max(5, Math.round((modeInfo.detectionBase + 6 + depth * 1.1 - state.cpuTier * 0.45) * modeInfo.detectionMult));
+      const failDetection = Math.max(16, Math.round((modeInfo.detectionBase + 18 + depth * 1.9 - state.cpuTier * 0.55) * modeInfo.detectionMult));
+      const collectDetection = Math.max(8, Math.round((modeInfo.detectionBase + 9 + depth * 1.2) * modeInfo.detectionMult));
+      const cloakPower = Math.max(10, Math.round(12 + state.cpuTier * 2.1 + syncLevel * 2));
+      const score = getZeroDayScore(activeRun);
+      return { modeInfo, activeCode, power, security, breachChance, signalGain, collectGain, successDetection, failDetection, collectDetection, cloakPower, score };
+    }
+
+    function getZeroDayScore(run) {
+      if (!run) return 0;
+      const modeInfo = getZeroDayModeInfo(run.mode);
+      const depth = Number(run.depth || 0);
+      const signal = Number(run.signal || 0);
+      const detection = Number(run.detection || 0);
+      const turns = Number(run.turns || 0);
+      return Math.max(0, Math.round((depth * 230 + signal * 5 - detection * 3 - turns * 12) * modeInfo.scoreMult));
+    }
+
+    function startZeroDay(mode) {
+      ensureZeroDayDefaults();
+      if (state.zeroDay.active) {
+        showToast(zeroCopy('진행 중인 ZERO-DAY 런이 있습니다.', 'A ZERO-DAY run is already active.'), 'warn');
+        return;
+      }
+      const code = getActiveCodeInstance();
+      if (!code) {
+        showToast(t('noOwnedCodes'), 'warn');
+        return;
+      }
+      const modeInfo = getZeroDayModeInfo(mode);
+      if (!consumeEnergy(modeInfo.startEnergy)) {
+        showToast(zeroCopy(`에너지 ${modeInfo.startEnergy} 필요`, `Need ${modeInfo.startEnergy} energy`), 'warn');
+        return;
+      }
+      state.zeroDay.mode = modeInfo.id;
+      state.zeroDay.runs += 1;
+      state.stats.zeroDayRunCount = (state.stats.zeroDayRunCount || 0) + 1;
+      state.zeroDay.active = {
+        id: `zd_${Date.now()}`,
+        mode: modeInfo.id,
+        depth: 0,
+        detection: modeInfo.detectionBase,
+        signal: 0,
+        turns: 0,
+        startedAt: Date.now(),
+        codeId: code.id,
+        log: [zeroCopy(`${modeInfo.label} 침투 시작: ${code.name}`, `${modeInfo.label} breach started: ${code.name}`)]
+      };
+      playSfx('mode');
+      log(zeroCopy(`[ZERO-DAY] ${modeInfo.label} 침투 시작`, `[ZERO-DAY] ${modeInfo.label} run started`), 'hack');
+      renderZeroDayPanel();
+      saveGame(true);
+    }
+
+    function finishZeroDayRun(status, reason = '') {
+      ensureZeroDayDefaults();
+      const run = state.zeroDay.active;
+      if (!run) return;
+      const score = getZeroDayScore(run);
+      const extracted = status === 'extract';
+      let rewardCredits = 0;
+      let rewardExp = 0;
+      if (extracted) {
+        rewardCredits = Math.max(8, Math.round(run.signal * 3.2 + run.depth * 36));
+        rewardExp = Math.max(1, Math.round(run.depth * 1.6 + run.signal / 28));
+        state.credits += rewardCredits;
+        state.stats.creditsEarnedTotal += rewardCredits;
+        addExp(rewardExp);
+        state.zeroDay.extracts += 1;
+        state.stats.zeroDayExtractCount = (state.stats.zeroDayExtractCount || 0) + 1;
+        playSfx('success');
+      } else {
+        state.zeroDay.traces += 1;
+        state.stats.zeroDayTraceCount = (state.stats.zeroDayTraceCount || 0) + 1;
+        playSfx('fail');
+      }
+      state.zeroDay.bestDepth = Math.max(state.zeroDay.bestDepth || 0, run.depth || 0);
+      state.zeroDay.bestSignal = Math.max(state.zeroDay.bestSignal || 0, run.signal || 0);
+      state.zeroDay.bestScore = Math.max(state.zeroDay.bestScore || 0, score);
+      state.zeroDay.totalSignal += Math.max(0, run.signal || 0);
+      state.stats.zeroDayBestDepth = Math.max(state.stats.zeroDayBestDepth || 0, state.zeroDay.bestDepth || 0);
+      state.stats.zeroDayBestScore = Math.max(state.stats.zeroDayBestScore || 0, state.zeroDay.bestScore || 0);
+      state.stats.zeroDaySignalTotal = (state.stats.zeroDaySignalTotal || 0) + Math.max(0, run.signal || 0);
+      state.zeroDay.lastResult = {
+        status,
+        mode: run.mode,
+        depth: run.depth,
+        signal: run.signal,
+        detection: run.detection,
+        turns: run.turns,
+        score,
+        credits: rewardCredits,
+        exp: rewardExp,
+        reason,
+        endedAt: Date.now()
+      };
+      state.zeroDay.active = null;
+      const msg = extracted
+        ? zeroCopy(`[ZERO-DAY] 탈출 성공: 깊이 ${run.depth}, 신호 ${run.signal}, 점수 ${score}, 크레딧 +${rewardCredits}, EXP +${rewardExp}`, `[ZERO-DAY] Extracted: depth ${run.depth}, signal ${run.signal}, score ${score}, credits +${rewardCredits}, EXP +${rewardExp}`)
+        : zeroCopy(`[ZERO-DAY] 추적됨: 깊이 ${run.depth}, 신호 ${run.signal}, 점수 ${score}`, `[ZERO-DAY] Traced: depth ${run.depth}, signal ${run.signal}, score ${score}`);
+      log(msg, extracted ? 'system' : 'hack');
+      showToast(extracted ? zeroCopy('ZERO-DAY 탈출 성공', 'ZERO-DAY extracted') : zeroCopy('ZERO-DAY 추적됨', 'ZERO-DAY traced'), extracted ? 'achievement' : 'warn');
+      renderZeroDayPanel();
+      saveGame(true);
+    }
+
+    function runZeroDayAction(action) {
+      ensureZeroDayDefaults();
+      const run = state.zeroDay.active;
+      if (!run) {
+        showToast(zeroCopy('먼저 ZERO-DAY 런을 시작하세요.', 'Start a ZERO-DAY run first.'), 'warn');
+        return;
+      }
+      const code = getActiveCodeInstance();
+      if (!code) {
+        finishZeroDayRun('trace', zeroCopy('활성 코드 없음', 'No active code'));
+        return;
+      }
+      const metrics = getZeroDayMetrics(run, code);
+      if (action === 'extract') {
+        if (run.depth <= 0 && run.signal <= 0) {
+          showToast(zeroCopy('회수할 신호가 없습니다.', 'No signal to extract.'), 'warn');
+          return;
+        }
+        finishZeroDayRun('extract');
+        return;
+      }
+      if (action === 'abort') {
+        finishZeroDayRun('trace', zeroCopy('작전 포기', 'Run aborted'));
+        return;
+      }
+      if (action === 'cloak') {
+        if (!consumeEnergy(1)) {
+          showToast(zeroCopy('은폐에는 에너지 1이 필요합니다.', 'Cloak needs 1 energy.'), 'warn');
+          return;
+        }
+        run.turns += 1;
+        const before = run.detection;
+        run.detection = clampNumber(run.detection - metrics.cloakPower, 0, 100);
+        appendZeroDayLog(run, zeroCopy(`은폐 성공: 탐지 ${before}% → ${run.detection}%`, `Cloak: detection ${before}% -> ${run.detection}%`));
+        playSfx('mode');
+      }
+      if (action === 'collect') {
+        run.turns += 1;
+        run.signal += metrics.collectGain;
+        run.detection = clampNumber(run.detection + metrics.collectDetection, 0, 100);
+        appendZeroDayLog(run, zeroCopy(`신호 수집 +${metrics.collectGain}, 탐지 +${metrics.collectDetection}%`, `Signal +${metrics.collectGain}, detection +${metrics.collectDetection}%`));
+        playSfx('scanComplete');
+      }
+      if (action === 'breach') {
+        if (run.depth >= ZERO_DAY_MAX_DEPTH) {
+          showToast(zeroCopy('코어 깊이에 도달했습니다. 탈출하세요.', 'Core depth reached. Extract now.'), 'warn');
+          return;
+        }
+        run.turns += 1;
+        const success = Math.random() < metrics.breachChance;
+        if (success) {
+          run.depth += 1;
+          run.signal += metrics.signalGain;
+          run.detection = clampNumber(run.detection + metrics.successDetection, 0, 100);
+          code.usage = (code.usage || 0) + 1;
+          appendZeroDayLog(run, zeroCopy(`노드 ${run.depth} 돌파: 신호 +${metrics.signalGain}, 탐지 +${metrics.successDetection}%`, `Node ${run.depth} breached: signal +${metrics.signalGain}, detection +${metrics.successDetection}%`));
+          playSfx('success');
+        } else {
+          run.detection = clampNumber(run.detection + metrics.failDetection, 0, 100);
+          appendZeroDayLog(run, zeroCopy(`돌파 실패: 탐지 +${metrics.failDetection}%`, `Breach failed: detection +${metrics.failDetection}%`));
+          playSfx('fail');
+        }
+      }
+      if (run.detection >= 100) {
+        finishZeroDayRun('trace', zeroCopy('탐지율 100%', 'Detection reached 100%'));
+        return;
+      }
+      if (run.depth >= ZERO_DAY_MAX_DEPTH) {
+        appendZeroDayLog(run, zeroCopy('코어 깊이에 도달했습니다. 탈출을 권장합니다.', 'Core depth reached. Extraction recommended.'));
+      }
+      renderZeroDayPanel();
+      saveGame(true);
+    }
+
+    function renderZeroDayPanel() {
+      ensureZeroDayDefaults();
+      const summaryEl = document.getElementById('zeroDaySummary');
+      const runEl = document.getElementById('zeroDayRunPanel');
+      const modeCards = document.querySelectorAll('[data-zero-day-mode-card]');
+      const startButtons = document.querySelectorAll('[data-zero-day-start]');
+      if (!summaryEl || !runEl) return;
+      const zd = state.zeroDay;
+      summaryEl.innerHTML = `
+        <div><span>BEST DEPTH</span><strong>${zd.bestDepth || 0} / ${ZERO_DAY_MAX_DEPTH}</strong></div>
+        <div><span>BEST SCORE</span><strong>${zd.bestScore || 0}</strong></div>
+        <div><span>RUNS</span><strong>${zd.runs || 0}</strong></div>
+        <div><span>SIGNAL</span><strong>${zd.totalSignal || 0}</strong></div>
+      `;
+      const active = zd.active;
+      modeCards.forEach(card => {
+        const mode = card.dataset.zeroDayModeCard || 'single';
+        card.classList.toggle('active', (active ? active.mode : zd.mode) === mode);
+        card.classList.toggle('is-locked', !!active);
+      });
+      startButtons.forEach(btn => {
+        const mode = btn.dataset.zeroDayStart || 'single';
+        const info = getZeroDayModeInfo(mode);
+        btn.disabled = !!active;
+        btn.textContent = active
+          ? zeroCopy('침투 진행 중', 'Run active')
+          : (mode === 'compete' ? zeroCopy(`경쟁 침투 시작 · 에너지 ${info.startEnergy}`, `Start compete · ${info.startEnergy} energy`) : zeroCopy(`싱글 침투 시작 · 에너지 ${info.startEnergy}`, `Start single · ${info.startEnergy} energy`));
+      });
+      if (!active) {
+        const result = zd.lastResult;
+        const resultHtml = result ? `
+          <div class="zero-day-result ${result.status === 'extract' ? 'is-success' : 'is-trace'}">
+            <span>${result.status === 'extract' ? zeroCopy('최근 탈출', 'Last extract') : zeroCopy('최근 추적', 'Last trace')}</span>
+            <strong>${zeroCopy('깊이', 'Depth')} ${result.depth || 0} · ${zeroCopy('신호', 'Signal')} ${result.signal || 0} · SCORE ${result.score || 0}</strong>
+          </div>
+        ` : '';
+        runEl.innerHTML = `
+          <div class="zero-day-idle">
+            <span class="badge">READY</span>
+            <h4>${zeroCopy('침투 대기', 'Ready to breach')}</h4>
+            <p>${zeroCopy('활성 코드를 선택한 뒤 싱글모드 또는 경쟁모드로 ZERO-DAY 런을 시작하세요.', 'Select an active code, then start a ZERO-DAY run in Single or Compete mode.')}</p>
+            ${resultHtml}
+          </div>
+        `;
+        return;
+      }
+      const metrics = getZeroDayMetrics(active);
+      const chancePct = Math.round(metrics.breachChance * 100);
+      const score = getZeroDayScore(active);
+      const modeLabel = metrics.modeInfo.label;
+      const codeName = metrics.activeCode ? metrics.activeCode.name : '-';
+      const logLines = (active.log || []).slice(0, 4).map(item => `<li>${item}</li>`).join('');
+      runEl.innerHTML = `
+        <div class="zero-day-run-head">
+          <div>
+            <span class="badge">${metrics.modeInfo.id === 'compete' ? 'COMPETE' : 'SINGLE'}</span>
+            <h4>${zeroCopy('침투 진행 중', 'Breach in progress')}</h4>
+            <p>${modeLabel} · ${codeName}</p>
+          </div>
+          <div class="zero-day-score"><span>SCORE</span><strong>${score}</strong></div>
+        </div>
+        <div class="zero-day-live-grid">
+          <div><span>${zeroCopy('깊이', 'Depth')}</span><strong>${active.depth} / ${ZERO_DAY_MAX_DEPTH}</strong></div>
+          <div><span>${zeroCopy('탐지', 'Detection')}</span><strong>${active.detection}%</strong></div>
+          <div><span>${zeroCopy('신호', 'Signal')}</span><strong>${active.signal}</strong></div>
+          <div><span>${zeroCopy('돌파율', 'Breach')}</span><strong>${chancePct}%</strong></div>
+          <div><span>${zeroCopy('다음 신호', 'Next Signal')}</span><strong>+${metrics.signalGain}</strong></div>
+          <div><span>${zeroCopy('은폐력', 'Cloak')}</span><strong>-${metrics.cloakPower}%</strong></div>
+        </div>
+        <div class="zero-day-meter" aria-label="Zero-day detection gauge">
+          <span style="width:${active.detection}%"></span>
+        </div>
+        <div class="zero-day-actions">
+          <button type="button" data-zero-day-action="breach" ${active.depth >= ZERO_DAY_MAX_DEPTH ? 'disabled' : ''}>${zeroCopy('노드 돌파', 'Breach Node')}</button>
+          <button type="button" data-zero-day-action="collect">${zeroCopy('신호 수집', 'Collect Signal')}</button>
+          <button type="button" data-zero-day-action="cloak">${zeroCopy('은폐', 'Cloak')}</button>
+          <button type="button" data-zero-day-action="extract" ${active.depth <= 0 && active.signal <= 0 ? 'disabled' : ''}>${zeroCopy('탈출', 'Extract')}</button>
+          <button type="button" data-zero-day-action="abort">${zeroCopy('포기', 'Abort')}</button>
+        </div>
+        <ul class="zero-day-log">${logLines || `<li>${zeroCopy('작전 로그 대기 중', 'Waiting for operation log')}</li>`}</ul>
+      `;
     }
 
     const stageChapters = [
@@ -5727,6 +6080,7 @@ function applyLanguageToUI(){
 
     function refreshUiAfterStateRestore() {
       ensureStageDefaults();
+      ensureZeroDayDefaults();
       applySettings();
       syncSettingsUI();
       applyLanguageToUI();
@@ -5740,6 +6094,7 @@ function applyLanguageToUI(){
       renderUpdateLog();
       renderStagePanel();
       renderWeeklyPanel();
+      renderZeroDayPanel();
       updateStatsUI();
       if (btnToggleLogs) {
         btnToggleLogs.textContent = logsHidden ? t('showLogs') : t('hideLogs');
@@ -5839,6 +6194,12 @@ function applyLanguageToUI(){
 	        state.stats.stageClearCount ||= 0;
 	        state.stats.weeklyAllClearCount ||= 0;
 	        state.stats.codeShardsSpentTotal ||= 0;
+	        state.stats.zeroDayRunCount ||= 0;
+	        state.stats.zeroDayExtractCount ||= 0;
+	        state.stats.zeroDayTraceCount ||= 0;
+	        state.stats.zeroDayBestDepth ||= 0;
+	        state.stats.zeroDayBestScore ||= 0;
+	        state.stats.zeroDaySignalTotal ||= 0;
         state.gpuTier = Math.max(1, Number(state.gpuTier || 1));
         state.hackMode = normalizeHackMode(state.hackMode || (state.riskMode ? 'risk' : 'normal'));
         state.riskMode = state.hackMode === 'risk';
@@ -5904,6 +6265,7 @@ function applyLanguageToUI(){
 
         ensureTutorialDefaults();
         ensureStageDefaults();
+        ensureZeroDayDefaults();
         state.lastSeenAt = Number(state.lastSeenAt || data.savedAt || 0) || null;
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
@@ -6248,10 +6610,12 @@ function applyLanguageToUI(){
     bind(document, 'hcsig:lab-ready', () => {
       renderStagePanel();
       renderWeeklyPanel();
+      renderZeroDayPanel();
     });
     bind(window, 'hcsig:language-applied', () => {
       renderStagePanel();
       renderWeeklyPanel();
+      renderZeroDayPanel();
     });
     bind(document, 'click', (event) => {
       const btn = event.target.closest && event.target.closest('[data-weekly-filter]');
@@ -6260,6 +6624,16 @@ function applyLanguageToUI(){
       state.ui.weeklyFilter = btn.dataset.weeklyFilter || 'incomplete';
       renderWeeklyPanel();
       scheduleSilentSave();
+    });
+    bind(document, 'click', (event) => {
+      const startBtn = event.target.closest && event.target.closest('[data-zero-day-start]');
+      if (startBtn) {
+        startZeroDay(startBtn.dataset.zeroDayStart || 'single');
+        return;
+      }
+      const actionBtn = event.target.closest && event.target.closest('[data-zero-day-action]');
+      if (!actionBtn) return;
+      runZeroDayAction(actionBtn.dataset.zeroDayAction || '');
     });
     setInterval(() => {
       if (document.body.classList.contains('app-view-lab') || (eventModalBackdrop && eventModalBackdrop.classList.contains('active'))) renderWeeklyPanel();
