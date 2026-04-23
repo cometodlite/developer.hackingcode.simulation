@@ -1869,6 +1869,7 @@ body.app-shell-ui .list-tab-button{
   border-radius:8px;
   background:linear-gradient(180deg, rgba(8,16,14,.92), rgba(7,10,9,.94));
   box-shadow:0 14px 36px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03);
+  contain:layout paint style;
 }
 	.live-pulse-card{
 	  padding:14px;
@@ -1970,6 +1971,7 @@ body.app-shell-ui .list-tab-button{
   min-height:38px;
   border-radius:8px;
   padding:8px 12px;
+  transition:background .12s ease, border-color .12s ease, color .12s ease;
 }
 .live-broadcast-tabs button.active,
 .live-rank-tabs button.active{
@@ -1983,7 +1985,7 @@ body.app-shell-ui .list-tab-button{
 }
 .live-broadcast-panel.active{
   display:block;
-  animation:hcsigPanelIn .18s ease both;
+  animation:hcsigPanelIn .12s ease both;
 }
 .live-broadcast-panel h3{
   margin:10px 0 8px;
@@ -2008,6 +2010,7 @@ body.app-shell-ui .list-tab-button{
   border:1px solid rgba(94,234,212,.14);
   border-radius:8px;
   background:rgba(12,18,16,.72);
+  contain:layout paint style;
 }
 .live-announcement,
 .live-feed-item{

@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.2.0';
+const CURRENT_VERSION = '2.2.1';
 const TUTORIAL_VERSION = 3;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -674,6 +674,15 @@ function applyLanguageToUI(){
           '주간 목표 5개와 보너스 목표 1개를 수동 CLAIM 보상 구조로 분리했습니다.',
           'Weekly Token, 주간 점수, 주간 배지 저장 필드를 추가했습니다.',
           '미션과 업적은 헤더 LIST 모달로 분리하고 더보기는 도감/로그/설정/클라우드 중심으로 정리했습니다.'
+        ]
+      },
+      {
+        version: '2.2.1',
+        lines: [
+          'LIVE NET 숫자 갱신 주기를 느리게 조정해 SYNC ms 튐과 헤더 재렌더를 줄였습니다.',
+          'COMING SOON 내부 Broadcast / Nodes / Feed / Rank 탭은 열려 있을 때만 해당 상세 구독을 유지합니다.',
+          '헤더, Network Pulse, Broadcast, Rank 렌더를 분리해 클릭 반응 저하를 줄였습니다.',
+          'LIVE 패널 전환과 카드 반응 애니메이션을 한 단계 완화했습니다.'
         ]
       }
 

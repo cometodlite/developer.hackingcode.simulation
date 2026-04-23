@@ -1,8 +1,14 @@
 (function(){
-  const VERSION = '2.2.0';
-  const HEARTBEAT_MS = 45000;
+  const VERSION = '2.2.1';
+  const HEARTBEAT_MS = 60000;
   const ACTIVE_WINDOW_MS = 120000;
   const RANK_WRITE_MS = 60000;
+  const PRESENCE_SAMPLE_MS = 30000;
+  const HEADER_RENDER_MS = 3000;
+  const LIVE_RENDER_MS = 120;
+  const RANK_RENDER_MS = 100;
+  const SYNC_SAMPLE_MS = 3000;
+  const MAX_SYNC_MS = 999;
   const ALLOWED_STATUS = ['ONLINE', 'DEGRADED', 'MAINTENANCE', 'LOCAL MIRROR'];
   const ALLOWED_ACTIVITY = ['hack_success', 'extreme_success', 'stage_clear', 'epic_code_found', 'gpu_tier_up', 'cpu_tier_up', 'weekly_goal_claimed', 'weekly_all_clear'];
   const BOARDS = [
@@ -26,6 +32,7 @@
     agents: '--',
     syncMs: '--',
     selectedBoard: 'hack',
+    selectedLiveTab: 'broadcast',
     coreUnsubs: [],
     homeUnsubs: [],
     detailUnsubs: [],
@@ -35,7 +42,12 @@
     lastRankWriteAt: 0,
     rankTimer: null,
     lastActivityAt: {},
-    lastErrorCode: ''
+    lastErrorCode: '',
+    lastHeaderRenderAt: 0,
+    lastPresenceSampleAt: 0,
+    lastHeartbeatAt: 0,
+    lastSyncSampleAt: 0,
+    renderTimers: Object.create(null)
   };
 
   const el = {};
@@ -112,8 +124,79 @@
       eventTitle: 'LIVE NETWORK',
       maintenanceText: '',
       liveEnabled: true,
-	      rankSeasonLabel: 'SEASON 2.2'
+      rankSeasonLabel: 'SEASON 2.2'
     };
+  }
+
+  function clearRenderTimer(name){
+    if (!state.renderTimers[name]) return;
+    clearTimeout(state.renderTimers[name]);
+    state.renderTimers[name] = null;
+  }
+
+  function queueRender(name, fn, delay){
+    clearRenderTimer(name);
+    state.renderTimers[name] = setTimeout(() => {
+      state.renderTimers[name] = null;
+      try { fn(); } catch(e) {}
+    }, Math.max(0, delay || 0));
+  }
+
+  function scheduleHeaderRender(force){
+    const run = () => {
+      state.lastHeaderRenderAt = Date.now();
+      renderHeader();
+    };
+    if (force || !state.lastHeaderRenderAt) {
+      clearRenderTimer('header');
+      run();
+      return;
+    }
+    const elapsed = Date.now() - state.lastHeaderRenderAt;
+    const wait = Math.max(0, HEADER_RENDER_MS - elapsed);
+    queueRender('header', run, wait);
+  }
+
+  function schedulePulseRender(force){
+    if (force) {
+      clearRenderTimer('pulse');
+      renderPulse();
+      return;
+    }
+    queueRender('pulse', renderPulse, LIVE_RENDER_MS);
+  }
+
+  function scheduleBroadcastRender(force){
+    if (force) {
+      clearRenderTimer('broadcast');
+      renderBroadcast();
+      return;
+    }
+    queueRender('broadcast', renderBroadcast, LIVE_RENDER_MS);
+  }
+
+  function scheduleRankRender(force){
+    const run = () => {
+      renderRankTabs();
+      renderRank();
+    };
+    if (force) {
+      clearRenderTimer('rank');
+      run();
+      return;
+    }
+    queueRender('rank', run, RANK_RENDER_MS);
+  }
+
+  function markSyncSignal(sampleMs){
+    const stamp = Date.now();
+    if (!sampleMs || (stamp - state.lastSyncSampleAt < SYNC_SAMPLE_MS && state.syncMs !== '--')) return;
+    const raw = Math.max(24, Math.min(MAX_SYNC_MS, Math.round(Number(sampleMs) || 0)));
+    const prev = Number.parseInt(String(state.syncMs || '').replace(/[^\d]/g, ''), 10);
+    const next = Number.isFinite(prev) ? Math.round((prev * 0.68) + (raw * 0.32)) : raw;
+    state.syncMs = `${next}ms`;
+    state.lastSyncSampleAt = stamp;
+    scheduleHeaderRender(false);
   }
 
   function fallbackNodes(){
@@ -306,7 +389,7 @@
       </section>
       <section class="live-broadcast-panel" data-live-panel="rank">
         <span class="badge">SOFT RANK</span>
-        <h3>Network Rank <small id="liveRankSeason">SEASON 2.1</small></h3>
+        <h3>Network Rank <small id="liveRankSeason">SEASON 2.2</small></h3>
         <div class="live-rank-tabs" id="liveRankTabs"></div>
         <div class="live-rank-list" id="liveRankList"></div>
       </section>
@@ -317,19 +400,23 @@
     tabs.forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.dataset.liveTab || 'broadcast';
+        if (state.selectedLiveTab === tab) return;
+        state.selectedLiveTab = tab;
         tabs.forEach(item => item.classList.toggle('active', item === btn));
         panels.forEach(panel => panel.classList.toggle('active', panel.dataset.livePanel === tab));
+        routeSubscriptions();
+        if (tab === 'rank') scheduleRankRender(true);
+        else scheduleBroadcastRender(true);
       });
     });
   }
 
   function renderAll(){
     ensureUi();
-    renderHeader();
-    renderPulse();
-    renderBroadcast();
-    renderRankTabs();
-    renderRank();
+    scheduleHeaderRender(true);
+    schedulePulseRender(true);
+    scheduleBroadcastRender(true);
+    scheduleRankRender(true);
   }
 
   function getLiveStatus(){
@@ -371,14 +458,15 @@
 
   function renderBroadcast(){
     const status = getLiveStatus();
+    const activeTab = state.selectedLiveTab || 'broadcast';
     const title = (state.config && state.config.eventTitle) || 'LIVE NETWORK';
     if (el.liveBroadcastStatus) el.liveBroadcastStatus.textContent = status;
     const titleEl = document.getElementById('liveBroadcastTitle');
     if (titleEl) titleEl.textContent = title;
     if (el.liveBroadcastMotd) el.liveBroadcastMotd.textContent = getMotd();
-        if (el.liveRankSeason) el.liveRankSeason.textContent = (state.config && state.config.rankSeasonLabel) || 'SEASON 2.2';
+    if (el.liveRankSeason) el.liveRankSeason.textContent = (state.config && state.config.rankSeasonLabel) || 'SEASON 2.2';
 
-    if (el.liveBroadcastAnnouncements) {
+    if (activeTab === 'broadcast' && el.liveBroadcastAnnouncements) {
       const announcements = getAnnouncementItems(status);
       el.liveBroadcastAnnouncements.innerHTML = announcements.slice(0, 8).map(item => `
         <article class="live-announcement">
@@ -389,7 +477,7 @@
       `).join('');
     }
 
-    if (el.liveBroadcastNodes) {
+    if (activeTab === 'nodes' && el.liveBroadcastNodes) {
       el.liveBroadcastNodes.innerHTML = state.nodes.slice(0, 12).map(node => `
         <article class="live-node-card ${escapeHtml(String(node.status || '').toLowerCase())}">
           <div><strong>${escapeHtml(node.name || node.id || 'NODE')}</strong><span>${escapeHtml(node.tag || 'UPLINK')}</span></div>
@@ -399,7 +487,7 @@
       `).join('');
     }
 
-    if (el.liveBroadcastFeed) {
+    if (activeTab === 'feed' && el.liveBroadcastFeed) {
       el.liveBroadcastFeed.innerHTML = state.feed.slice(0, 20).map(item => {
         const line = formatFeedItem(item);
         return `
@@ -419,7 +507,7 @@
   }
 
   function renderRankTabs(){
-    if (!el.liveRankTabs) return;
+    if (!el.liveRankTabs || state.selectedLiveTab !== 'rank') return;
     el.liveRankTabs.innerHTML = BOARDS.map(board => `
       <button type="button" class="${board.id === state.selectedBoard ? 'active' : ''}" data-rank-board="${board.id}">${board.label}</button>
     `).join('');
@@ -435,7 +523,7 @@
   }
 
   function renderRank(){
-    if (!el.liveRankList) return;
+    if (!el.liveRankList || state.selectedLiveTab !== 'rank') return;
     const entries = state.rankEntries || [];
     if (!entries.length) {
       el.liveRankList.innerHTML = `<div class="live-empty">${escapeHtml(text('랭킹 신호 대기 중', 'Waiting for rank signal'))}</div>`;
@@ -510,14 +598,41 @@
     stopPresenceWatcher();
   }
 
+  function stopDetailType(type){
+    const keep = [];
+    (state.detailUnsubs || []).forEach(unsub => {
+      if (unsub && unsub.__type === type) {
+        try { unsub(); } catch(e) {}
+      } else if (unsub) {
+        keep.push(unsub);
+      }
+    });
+    state.detailUnsubs = keep;
+  }
+
+  function hasDetailType(type){
+    return !!(state.detailUnsubs || []).find(unsub => unsub && unsub.__type === type);
+  }
+
+  function pushDetailSub(type, unsub){
+    if (!unsub) return;
+    unsub.__type = type;
+    state.detailUnsubs.push(unsub);
+  }
+
   function subscribeCore(){
     if (!canUseFirebase() || state.coreUnsubs.length) return;
-    const started = performance.now ? performance.now() : Date.now();
+    let started = performance.now ? performance.now() : Date.now();
     const configUnsub = db().collection('liveConfig').doc('main').onSnapshot(snap => {
-      state.syncMs = `${Math.max(1, Math.round((performance.now ? performance.now() : Date.now()) - started))}ms`;
+      const nowSample = performance.now ? performance.now() : Date.now();
+      markSyncSignal(nowSample - started);
+      started = nowSample;
       if (snap.exists) state.config = Object.assign(defaultConfig(), snap.data() || {});
       else state.config = defaultConfig();
-      renderAll();
+      scheduleHeaderRender(true);
+      schedulePulseRender(false);
+      scheduleBroadcastRender(false);
+      scheduleRankRender(false);
     }, err => handleLiveError(err));
     state.coreUnsubs.push(configUnsub);
     startPresenceWatcher();
@@ -525,64 +640,121 @@
 
   function subscribeHome(){
     if (!canUseFirebase() || state.homeUnsubs.length || state.activeView === 'coming') return;
+    let annStarted = performance.now ? performance.now() : Date.now();
     state.homeUnsubs.push(db().collection('liveAnnouncements').orderBy('createdAt', 'desc').limit(2).onSnapshot(snap => {
+      const sampleNow = performance.now ? performance.now() : Date.now();
+      markSyncSignal(sampleNow - annStarted);
+      annStarted = sampleNow;
       state.announcements = mapDocs(snap).filter(item => item.active !== false);
-      renderAll();
+      schedulePulseRender(false);
     }, err => handleLiveError(err)));
+    let nodeStarted = performance.now ? performance.now() : Date.now();
     state.homeUnsubs.push(db().collection('liveServerNodes').orderBy('priority', 'asc').limit(3).onSnapshot(snap => {
+      const sampleNow = performance.now ? performance.now() : Date.now();
+      markSyncSignal(sampleNow - nodeStarted);
+      nodeStarted = sampleNow;
       state.nodes = mapDocs(snap);
       if (!state.nodes.length) state.nodes = fallbackNodes();
-      renderAll();
+      schedulePulseRender(false);
     }, err => handleLiveError(err)));
+    let feedStarted = performance.now ? performance.now() : Date.now();
     state.homeUnsubs.push(db().collection('liveFeed').orderBy('createdAt', 'desc').limit(3).onSnapshot(snap => {
+      const sampleNow = performance.now ? performance.now() : Date.now();
+      markSyncSignal(sampleNow - feedStarted);
+      feedStarted = sampleNow;
       state.feed = mapDocs(snap);
       if (!state.feed.length) state.feed = fallbackFeed();
-      renderAll();
+      schedulePulseRender(false);
     }, err => handleLiveError(err)));
   }
 
   function subscribeDetail(){
-    if (!canUseFirebase() || state.detailUnsubs.length || state.activeView !== 'coming') return;
-    state.detailUnsubs.push(db().collection('liveAnnouncements').orderBy('createdAt', 'desc').limit(8).onSnapshot(snap => {
-      state.announcements = mapDocs(snap).filter(item => item.active !== false);
-      renderAll();
-    }, err => handleLiveError(err)));
-    state.detailUnsubs.push(db().collection('liveServerNodes').orderBy('priority', 'asc').limit(12).onSnapshot(snap => {
-      state.nodes = mapDocs(snap);
-      if (!state.nodes.length) state.nodes = fallbackNodes();
-      renderAll();
-    }, err => handleLiveError(err)));
-    state.detailUnsubs.push(db().collection('liveFeed').orderBy('createdAt', 'desc').limit(20).onSnapshot(snap => {
-      state.feed = mapDocs(snap);
-      if (!state.feed.length) state.feed = fallbackFeed();
-      renderAll();
-    }, err => handleLiveError(err)));
+    if (!canUseFirebase() || state.activeView !== 'coming') return;
+    const tab = state.selectedLiveTab || 'broadcast';
+    if (tab === 'broadcast') {
+      stopDetailType('nodes');
+      stopDetailType('feed');
+      stopDetailType('rank');
+      if (!hasDetailType('broadcast')) {
+        let annStarted = performance.now ? performance.now() : Date.now();
+        pushDetailSub('broadcast', db().collection('liveAnnouncements').orderBy('createdAt', 'desc').limit(8).onSnapshot(snap => {
+          const sampleNow = performance.now ? performance.now() : Date.now();
+          markSyncSignal(sampleNow - annStarted);
+          annStarted = sampleNow;
+          state.announcements = mapDocs(snap).filter(item => item.active !== false);
+          scheduleBroadcastRender(false);
+        }, err => handleLiveError(err)));
+      }
+      return;
+    }
+    stopDetailType('broadcast');
+    if (tab === 'nodes') {
+      stopDetailType('feed');
+      stopDetailType('rank');
+      if (!hasDetailType('nodes')) {
+        let nodeStarted = performance.now ? performance.now() : Date.now();
+        pushDetailSub('nodes', db().collection('liveServerNodes').orderBy('priority', 'asc').limit(12).onSnapshot(snap => {
+          const sampleNow = performance.now ? performance.now() : Date.now();
+          markSyncSignal(sampleNow - nodeStarted);
+          nodeStarted = sampleNow;
+          state.nodes = mapDocs(snap);
+          if (!state.nodes.length) state.nodes = fallbackNodes();
+          scheduleBroadcastRender(false);
+        }, err => handleLiveError(err)));
+      }
+      return;
+    }
+    stopDetailType('nodes');
+    if (tab === 'feed') {
+      stopDetailType('rank');
+      if (!hasDetailType('feed')) {
+        let feedStarted = performance.now ? performance.now() : Date.now();
+        pushDetailSub('feed', db().collection('liveFeed').orderBy('createdAt', 'desc').limit(20).onSnapshot(snap => {
+          const sampleNow = performance.now ? performance.now() : Date.now();
+          markSyncSignal(sampleNow - feedStarted);
+          feedStarted = sampleNow;
+          state.feed = mapDocs(snap);
+          if (!state.feed.length) state.feed = fallbackFeed();
+          scheduleBroadcastRender(false);
+        }, err => handleLiveError(err)));
+      }
+      return;
+    }
+    stopDetailType('feed');
     subscribeRankBoard();
   }
 
   function subscribeRankBoard(){
-    if (!canUseFirebase() || state.activeView !== 'coming') return;
-    const oldRank = state.detailUnsubs.find(unsub => unsub && unsub.__rank);
-    if (oldRank) {
-      try { oldRank(); } catch(e) {}
-      state.detailUnsubs = state.detailUnsubs.filter(unsub => unsub !== oldRank);
+    if (!canUseFirebase() || state.activeView !== 'coming' || state.selectedLiveTab !== 'rank') {
+      stopDetailType('rank');
+      return;
     }
+    stopDetailType('broadcast');
+    stopDetailType('nodes');
+    stopDetailType('feed');
+    stopDetailType('rank');
     const board = BOARDS.find(item => item.id === state.selectedBoard) || BOARDS[0];
+    let rankStarted = performance.now ? performance.now() : Date.now();
     const unsub = db().collection('leaderboards').doc(board.id).collection('entries')
       .orderBy('score', 'desc')
       .limit(10)
       .onSnapshot(snap => {
+        const sampleNow = performance.now ? performance.now() : Date.now();
+        markSyncSignal(sampleNow - rankStarted);
+        rankStarted = sampleNow;
         state.rankEntries = mapDocs(snap);
-        renderRank();
+        scheduleRankRender(false);
       }, err => handleLiveError(err));
-    unsub.__rank = true;
-    state.detailUnsubs.push(unsub);
+    pushDetailSub('rank', unsub);
   }
 
   function routeSubscriptions(){
     if (!isLiveEnabled() || !canUseFirebase()) {
       stopAllLive();
-      renderAll();
+      scheduleHeaderRender(true);
+      schedulePulseRender(true);
+      scheduleBroadcastRender(true);
+      scheduleRankRender(true);
       return;
     }
     subscribeCore();
@@ -597,8 +769,8 @@
 
   function startPresenceWatcher(){
     if (state.presenceTimer) return;
-    subscribePresenceCount();
-    state.presenceTimer = setInterval(subscribePresenceCount, HEARTBEAT_MS);
+    subscribePresenceCount(true);
+    state.presenceTimer = setInterval(() => subscribePresenceCount(false), PRESENCE_SAMPLE_MS);
   }
 
   function stopPresenceWatcher(){
@@ -612,8 +784,11 @@
     }
   }
 
-  function subscribePresenceCount(){
+  function subscribePresenceCount(force){
     if (!canUseFirebase() || !isLiveEnabled()) return;
+    const stamp = Date.now();
+    if (!force && state.lastPresenceSampleAt && (stamp - state.lastPresenceSampleAt < PRESENCE_SAMPLE_MS)) return;
+    state.lastPresenceSampleAt = stamp;
     if (state.presenceUnsub) {
       try { state.presenceUnsub(); } catch(e) {}
       state.presenceUnsub = null;
@@ -625,18 +800,20 @@
       .limit(200)
       .onSnapshot(snap => {
         state.agents = String(snap.size || 0);
-        renderHeader();
+        scheduleHeaderRender(false);
       }, err => handleLiveError(err));
   }
 
   function startHeartbeat(){
     stopHeartbeat();
     if (!canUseWrites()) {
-      renderAll();
+      scheduleHeaderRender(true);
+      schedulePulseRender(false);
+      scheduleBroadcastRender(false);
       return;
     }
-    updateHeartbeat();
-    state.heartbeatTimer = setInterval(updateHeartbeat, HEARTBEAT_MS);
+    updateHeartbeat(true);
+    state.heartbeatTimer = setInterval(() => updateHeartbeat(false), HEARTBEAT_MS);
   }
 
   function stopHeartbeat(){
@@ -646,8 +823,11 @@
     }
   }
 
-  async function updateHeartbeat(){
+  async function updateHeartbeat(force){
     if (!canUseWrites()) return;
+    const stamp = Date.now();
+    if (!force && state.lastHeartbeatAt && (stamp - state.lastHeartbeatAt < HEARTBEAT_MS - 1500)) return;
+    state.lastHeartbeatAt = stamp;
     const display = getDisplayContext();
     try {
       await db().collection('livePresence').doc(display.uid).set({
@@ -784,7 +964,10 @@
 	      state.rankEntries = [];
 	      state.agents = '--';
 	    }
-    renderAll();
+    scheduleHeaderRender(true);
+    schedulePulseRender(true);
+    scheduleBroadcastRender(true);
+    scheduleRankRender(true);
     if (state.lastErrorCode !== code && !/permission|PERMISSION|Missing or insufficient permissions/.test(code)) {
       state.lastErrorCode = code;
       try { console.warn('[HCSIG LiveOps]', code); } catch(e) {}
@@ -795,7 +978,10 @@
     state.authUser = user || (auth() && auth().getUser ? auth().getUser() : null);
     startHeartbeat();
     routeSubscriptions();
-    renderAll();
+    scheduleHeaderRender(true);
+    schedulePulseRender(false);
+    scheduleBroadcastRender(false);
+    scheduleRankRender(false);
   }
 
   function handleReady(){
@@ -816,14 +1002,20 @@
       startHeartbeat();
       scheduleRankPush();
     }
-    renderAll();
+    scheduleHeaderRender(true);
+    schedulePulseRender(false);
+    scheduleBroadcastRender(false);
+    scheduleRankRender(false);
   }
 
   function setActiveView(view){
     state.activeView = view === 'coming' ? 'coming' : view;
     ensureUi();
     routeSubscriptions();
-    renderAll();
+    scheduleHeaderRender(true);
+    schedulePulseRender(true);
+    scheduleBroadcastRender(true);
+    scheduleRankRender(true);
   }
 
   function inferViewFromBody(){
@@ -843,16 +1035,16 @@
     document.addEventListener('hcsig:main-view', event => setActiveView(event.detail && event.detail.view));
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
-        updateHeartbeat();
-        subscribePresenceCount();
+        updateHeartbeat(true);
+        subscribePresenceCount(true);
       }
     });
     window.addEventListener('pageshow', () => {
-      updateHeartbeat();
+      updateHeartbeat(true);
       routeSubscriptions();
     });
     window.addEventListener('beforeunload', () => {
-      updateHeartbeat();
+      updateHeartbeat(true);
     });
 
     try {
