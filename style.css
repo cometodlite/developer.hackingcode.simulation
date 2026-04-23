@@ -2500,6 +2500,45 @@ body.app-shell-ui .list-tab-button{
   flex:1 1 112px;
   min-height:40px;
 }
+.code-modal-identity{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:2px;
+}
+.code-modal-identity strong{
+  font-size:16px;
+}
+.code-modal-stat-grid,
+.code-modal-cost-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+}
+.code-modal-stat-grid .small,
+.code-modal-cost-grid .small{
+  min-width:0;
+  padding:6px 8px;
+  border:1px solid rgba(148,163,184,.14);
+  border-radius:8px;
+  background:rgba(15,23,42,.42);
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+.code-modal-ability{
+  display:grid;
+  gap:4px;
+  padding-top:2px;
+}
+.code-modal-ability > .small:first-child{
+  color:#a5b4fc;
+  font-weight:800;
+}
+.code-modal-ability p{
+  margin:0;
+  line-height:1.45;
+}
 .more-live-mount{
   margin-top:8px;
   display:grid;
@@ -3243,13 +3282,70 @@ body.app-shell-ui #tutorialStepHint{
     align-items:flex-end;
   }
   #codeDetailModal{
-    width:100vw;
-    max-width:100vw;
-    max-height:82vh;
+    width:calc(100vw - 12px);
+    max-width:calc(100vw - 12px);
+    max-height:min(76vh, calc(var(--appH, 100dvh) - 72px));
     border-radius:8px 8px 0 0;
+    margin-bottom:calc(6px + env(safe-area-inset-bottom));
+    overflow:hidden;
+  }
+  #codeDetailModalHeader{
+    padding:8px 10px;
+  }
+  #codeDetailModalHeader h2{
+    font-size:15px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    max-width:68vw;
+  }
+  #btnCodeDetailClose{
+    flex:0 0 40px;
+    width:40px;
+    height:40px;
+    min-height:40px;
+    padding:0;
+  }
+  #codeDetailModalBody{
+    padding:8px 10px;
+    gap:6px;
+    font-size:12px;
   }
   #codeDetailModalFooter{
-    padding-bottom:calc(12px + env(safe-area-inset-bottom));
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+    position:static !important;
+    bottom:auto !important;
+    padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+    background:#020617;
+  }
+  #codeDetailModalFooter button{
+    min-height:38px;
+    padding:0 8px;
+    font-size:12px !important;
+  }
+  .code-modal-identity{
+    gap:6px;
+  }
+  .code-modal-identity strong{
+    font-size:15px;
+  }
+  .code-modal-stat-grid,
+  .code-modal-cost-grid{
+    gap:5px;
+  }
+  .code-modal-stat-grid .small,
+  .code-modal-cost-grid .small{
+    padding:5px 6px;
+    font-size:11px;
+  }
+  .code-modal-ability p{
+    font-size:11px;
+    display:-webkit-box;
+    -webkit-line-clamp:3;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
   }
 }
 @media (prefers-reduced-motion: reduce){

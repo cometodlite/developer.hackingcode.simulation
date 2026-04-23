@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.2.7';
+const CURRENT_VERSION = '2.2.8';
 const TUTORIAL_VERSION = 5;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -743,6 +743,13 @@ function applyLanguageToUI(){
         lines: [
           '모바일 헤더, HOME STATUS, ACTIONS 높이를 줄여 첫 화면에서 핵심 조작이 함께 보이도록 조정했습니다.',
           '데이터 타워 요약과 선택 상세를 압축해 도전 버튼까지 더 빠르게 닿도록 정리했습니다.'
+        ]
+      },
+      {
+        version: '2.2.8',
+        lines: [
+          '모바일 코드 상세 모달의 액션 버튼을 2열 그리드로 압축하고 sticky 충돌을 제거했습니다.',
+          '코드 상세 정보 영역을 카드형 그리드로 정리해 본문과 버튼이 한 화면에 더 자연스럽게 들어오도록 조정했습니다.'
         ]
       }
 
@@ -3534,21 +3541,27 @@ function applyLanguageToUI(){
       const syncBonusText = Math.round((getSyncSuccessBonus(syncLevel + 1) - getSyncSuccessBonus(syncLevel)) * 100);
       const shardBoostCost = getShardEnhanceCost(code);
       return `
-        <div style="margin-bottom:4px;">
+        <div class="code-modal-identity">
           <strong class="${rarityClass}">${code.name}</strong>
           <span class="rarity-tag ${rarityClass}">[${localizeRarityLabel(code.rarity)}]</span>
         </div>
-        <div class="small">${t('levelLabel', { v: code.level })}</div>
-        <div class="small">${t('powerLabel', { v: code.power })}</div>
-        <div class="small">${t('usageLabel', { v: usage })}</div>
-        <div class="small">${t('shardsLabel', { v: shardCount })}</div>
-        <div class="small">${t('syncLabel', { v: syncLevel })}</div>
-        <div class="small code-next-meta">${t('nextUpgrade', { v: upgradeCost })}</div>
-        <div class="small code-next-meta">${t('nextSync', { a: syncCost, b: syncBonusText })}</div>
-        <div class="small code-next-meta">${t('shardEnhanceCost', { cost: shardBoostCost })}</div>
-        <div class="small code-next-meta">${evolveReady ? t('evolveReady') : t('evolveNeed')}</div>
-        <div class="small" style="margin-top:6px; color:#a5b4fc;">${t('ability')}</div>
-        <div class="small">${ability}</div>
+        <div class="code-modal-stat-grid">
+          <div class="small">${t('levelLabel', { v: code.level })}</div>
+          <div class="small">${t('powerLabel', { v: code.power })}</div>
+          <div class="small">${t('usageLabel', { v: usage })}</div>
+          <div class="small">${t('shardsLabel', { v: shardCount })}</div>
+          <div class="small">${t('syncLabel', { v: syncLevel })}</div>
+        </div>
+        <div class="code-modal-cost-grid">
+          <div class="small code-next-meta">${t('nextUpgrade', { v: upgradeCost })}</div>
+          <div class="small code-next-meta">${t('nextSync', { a: syncCost, b: syncBonusText })}</div>
+          <div class="small code-next-meta">${t('shardEnhanceCost', { cost: shardBoostCost })}</div>
+          <div class="small code-next-meta">${evolveReady ? t('evolveReady') : t('evolveNeed')}</div>
+        </div>
+        <div class="code-modal-ability">
+          <div class="small">${t('ability')}</div>
+          <p class="small">${ability}</p>
+        </div>
       `;
     }
 
