@@ -227,7 +227,7 @@
 
 
 
-// === APP SHELL NAV (HOME / CODES / SHOP / LAB / COMING SOON) ===
+// === APP SHELL NAV (SHOP / CODES / HOME / LAB / COMING SOON) ===
 (function(){
   const main = document.getElementById('main');
   const left = document.getElementById('leftPanel');
@@ -264,9 +264,9 @@
   }
 
   const views = {
-    home: ensureView('appViewHome', 'home'),
-    codes: ensureView('appViewCodes', 'codes'),
     shop: ensureView('appViewShop', 'shop'),
+    codes: ensureView('appViewCodes', 'codes'),
+    home: ensureView('appViewHome', 'home'),
     lab: ensureView('appViewLab', 'lab'),
     coming: ensureView('appViewComing', 'coming')
   };
@@ -377,31 +377,44 @@
 	          <div><span>SIGNAL</span><strong>0</strong></div>
 	        </div>
 	        <div class="zero-day-mode-grid" id="zeroDayModeGrid" aria-label="Zero-day modes">
-	          <article class="zero-day-mode-card" data-zero-day-mode-card="single">
+	          <article class="zero-day-mode-card" data-zero-day-mode-card="onboarding">
 	            <div class="zero-day-mode-head">
-	              <span class="badge">SINGLE</span>
-	              <strong>싱글모드</strong>
+	              <span class="badge">ONBOARDING</span>
+	              <strong>온보딩</strong>
 	            </div>
-	            <p>안정적인 단독 침투입니다. 기본 흐름을 익히고 개인 기록과 보상 회수에 집중합니다.</p>
+	            <p>첫 침투 흐름을 익히는 튜토리얼 런입니다. 완료 시 취약점 1개를 지급합니다.</p>
 	            <div class="zero-day-mode-meta">
-	              <span>개인 기록 중심</span>
-	              <span>최고 깊이</span>
-	              <span>최대 보상</span>
+	              <span>문법 학습</span>
+	              <span>무료 진입</span>
+	              <span>첫 취약점 지급</span>
 	            </div>
-	            <button type="button" data-zero-day-start="single">싱글 침투 시작</button>
+	            <button type="button" data-zero-day-start="onboarding">온보딩 시작</button>
 	          </article>
-	          <article class="zero-day-mode-card" data-zero-day-mode-card="compete">
+	          <article class="zero-day-mode-card" data-zero-day-mode-card="pve">
 	            <div class="zero-day-mode-head">
-	              <span class="badge">COMPETE</span>
-	              <strong>경쟁모드</strong>
+	              <span class="badge">PVE</span>
+	              <strong>단독 침투</strong>
 	            </div>
-	            <p>점수형 침투입니다. 탐지 압박이 높지만 깊이, 속도, 회수 신호가 더 큰 점수로 환산됩니다.</p>
+	            <p>안정형 ZERO-DAY 런입니다. 수행도와 난이도에 따라 OneDay와 일반 보상을 획득합니다.</p>
 	            <div class="zero-day-mode-meta">
-	              <span>점수 경쟁</span>
-	              <span>탐지 압박 증가</span>
-	              <span>고효율 회수</span>
+	              <span>안정 보상</span>
+	              <span>5단 난이도</span>
+	              <span>입문 무료 1회</span>
 	            </div>
-	            <button type="button" data-zero-day-start="compete">경쟁 침투 시작</button>
+	            <button type="button" data-zero-day-start="pve">PVE 침투 시작</button>
+	          </article>
+	          <article class="zero-day-mode-card" data-zero-day-mode-card="pvp">
+	            <div class="zero-day-mode-head">
+	              <span class="badge">PVP</span>
+	              <strong>스냅샷 공방</strong>
+	            </div>
+	            <p>클라우드 방어 스냅샷을 상대로 공략하는 비동기 공방입니다. PVP 전용 레이팅과 고점 보상이 적용됩니다.</p>
+	            <div class="zero-day-mode-meta">
+	              <span>비동기 공방</span>
+	              <span>레이팅 적용</span>
+	              <span>PVP 고점 보상</span>
+	            </div>
+	            <button type="button" data-zero-day-start="pvp">PVP 침투 시작</button>
 	          </article>
 	        </div>
 	        <div class="zero-day-run-panel" id="zeroDayRunPanel"></div>
@@ -423,6 +436,13 @@
     labTabs.forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.dataset.labTab || 'stage';
+        if (tab === 'coming') {
+          try {
+            const toast = (window.HCSIG_BRIDGE && window.HCSIG_BRIDGE.toast) || null;
+            if (toast) toast('추후 공개', 'warn');
+          } catch(e) {}
+          return;
+        }
         labTabs.forEach(item => item.classList.toggle('active', item === btn));
         labPanels.forEach(panel => panel.classList.toggle('active', panel.dataset.labPanel === tab));
       });
@@ -461,9 +481,9 @@
   nav.id = 'appMainNav';
   nav.className = 'mobile-tabs app-main-tabs';
   nav.innerHTML = `
-    <button type="button" data-main-view="home">${label('mobileHome', 'HOME')}</button>
-    <button type="button" data-main-view="codes">${label('mobileCodes', 'CODES')}</button>
     <button type="button" data-main-view="shop">${label('mobileShop', 'SHOP')}</button>
+    <button type="button" data-main-view="codes">${label('mobileCodes', 'CODES')}</button>
+    <button type="button" data-main-view="home">${label('mobileHome', 'HOME')}</button>
     <button type="button" data-main-view="lab">${label('mobileLab', 'LAB')}</button>
     <button type="button" data-main-view="coming">${label('mobileComing', 'COMING SOON')}</button>
   `;
@@ -497,7 +517,16 @@
   }
 
   nav.querySelectorAll('[data-main-view]').forEach(btn => {
-    btn.addEventListener('click', () => setView(btn.dataset.mainView));
+    btn.addEventListener('click', () => {
+      if (btn.dataset.mainView === 'coming') {
+        try {
+          const toast = (window.HCSIG_BRIDGE && window.HCSIG_BRIDGE.toast) || null;
+          if (toast) toast('추후 공개', 'warn');
+        } catch(e) {}
+        return;
+      }
+      setView(btn.dataset.mainView);
+    });
   });
 
   document.addEventListener('hcsig:navigate-main', (event) => {
@@ -506,9 +535,9 @@
   });
 
   function syncLabels(){
-    nav.querySelector('[data-main-view="home"]').textContent = label('mobileHome', 'HOME');
-    nav.querySelector('[data-main-view="codes"]').textContent = label('mobileCodes', 'CODES');
     nav.querySelector('[data-main-view="shop"]').textContent = label('mobileShop', 'SHOP');
+    nav.querySelector('[data-main-view="codes"]').textContent = label('mobileCodes', 'CODES');
+    nav.querySelector('[data-main-view="home"]').textContent = label('mobileHome', 'HOME');
     nav.querySelector('[data-main-view="lab"]').textContent = label('mobileLab', 'LAB');
     nav.querySelector('[data-main-view="coming"]').textContent = label('mobileComing', 'COMING SOON');
   }
@@ -518,70 +547,6 @@
 
   syncLabels();
   setView('home');
-})();
-
-
-/* === CHRISTMAS SNOW EFFECT (v1.6.6: toggle + stop) === */
-(function(){
-  const canvas = document.getElementById('snow-canvas');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  let w = 0, h = 0;
-  let rafId = null;
-  let enabled = false;
-
-  function resize(){
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize, {passive:true});
-
-  const flakes = Array.from({length: 80}, () => ({
-    x: Math.random()*w,
-    y: Math.random()*h,
-    r: Math.random()*2+1,
-    s: Math.random()*0.5+0.5,
-    o: Math.random()*0.5+0.3
-  }));
-
-  function tick(){
-    if(!enabled){ rafId = null; return; }
-    ctx.clearRect(0,0,w,h);
-    for(const f of flakes){
-      ctx.beginPath();
-      ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(255,255,255,${f.o})`;
-      ctx.fill();
-      f.y += f.s;
-      if(f.y > h){ f.y = -5; f.x = Math.random()*w; }
-    }
-    rafId = requestAnimationFrame(tick);
-  }
-
-  function start(){
-    if(enabled && !rafId) rafId = requestAnimationFrame(tick);
-  }
-
-  function stop(){
-    enabled = false;
-    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
-    try { ctx.clearRect(0,0,w,h); } catch(e) {}
-  }
-
-  window.__snowFX = {
-    setEnabled(on){
-      enabled = !!on;
-      if(enabled){
-        start();
-      } else {
-        stop();
-      }
-    }
-  };
-
-  window.__snowFX.setEnabled(canvas.style.display !== 'none');
 })();
 
 

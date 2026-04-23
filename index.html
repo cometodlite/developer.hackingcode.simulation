@@ -9,20 +9,19 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=2.3.0" rel="stylesheet"/>
+<link href="style.css?v=3.0.0" rel="stylesheet"/>
 </head>
 <body>
-<canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">2.3.0 (Web)</span>
+<span class="header-version">3.0.0 (Dev)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
 <button id="btnList" title="미션과 업적 리스트">LIST</button>
 <button id="btnEvent" title="주간 이벤트와 기간 한정 작전">EVENT</button>
-<button id="btnMore" title="코드 도감, LIVE NET, RANK, 설정, 클라우드 계정">더보기 ▾</button>
+<button id="btnMore" title="LIVE NET, RANK, 설정, 클라우드 계정, 크레딧, 설명서">더보기 ▾</button>
 </div>
 </header>
 <div id="main">
@@ -39,6 +38,19 @@
 <span class="value" id="statExp">0 / 20</span>
 </div>
 <div class="stat-row">
+<span class="label" id="labelEnergy">에너지</span>
+<span class="value" id="statEnergyValue">20 / 20</span>
+</div>
+<div class="stat-row energy-timer-row">
+<span class="label" id="labelEnergyTimer">다음 회복까지</span>
+<span class="value" id="statEnergyTimer">FULL</span>
+</div>
+<div id="energyBarWrapper">
+<div id="energyBarInner"></div>
+</div>
+<button type="button" class="home-status-toggle" id="btnToggleSystemStatus" aria-expanded="false">시스템 상태 ▾</button>
+<div id="homeSystemStatusPanel" hidden>
+<div class="stat-row">
 <span class="label" id="labelCredits">크레딧</span>
 <span class="value" id="statCredits">0</span>
 </div>
@@ -50,17 +62,6 @@
 <span class="label" id="labelGpuTier">GPU 티어</span>
 <span class="value" id="statGpuTier">1</span>
 </div>
-<div class="stat-row">
-<span class="label" id="labelEnergy">에너지</span>
-<span class="value" id="statEnergyValue">20 / 20</span>
-</div>
-<div class="stat-row energy-timer-row">
-<span class="label" id="labelEnergyTimer">다음 회복까지</span>
-<span class="value" id="statEnergyTimer">FULL</span>
-</div>
-<div id="energyBarWrapper">
-<div id="energyBarInner"></div>
-</div>
 <div class="stat-row energy-pack-row" style="align-items:center;">
 <span class="label" id="labelEnergyPack">에너지 팩</span>
 <span class="value" style="display:flex; align-items:center; gap:6px;">
@@ -71,6 +72,7 @@
 <div class="stat-row last-save-row">
 <span class="label" id="labelLastSave">마지막 저장</span>
 <span class="value" id="statLastSave">-</span>
+</div>
 </div>
 </div>
 <div class="section-title" id="titleShop">Shop</div>
@@ -104,8 +106,8 @@
 <div class="button-row">
 <button id="btnScan" title="에너지 1 소모. 코드 희귀도 가챠 + 경험치 획득.">코드 스캔</button>
 <button id="btnHack" title="에너지 2 소모. 선택한 코드와 서버 정보로 해킹을 시도.">서버 해킹</button>
-<button id="btnUpgradeCpu" title="CPU 티어 업그레이드. 티어 × 500 크레딧(할인 적용) 소모, 해킹 성공률 증가.">CPU 업그레이드</button>
-<button id="btnUpgradeGpu" title="GPU 티어 업그레이드. 티어 × 650 크레딧 소모, 반복/도전 보상 증가.">GPU 업그레이드</button>
+<button hidden="" id="btnUpgradeCpu" title="CPU 티어 업그레이드. 티어 × 500 크레딧(할인 적용) 소모, 해킹 성공률 증가.">CPU 업그레이드</button>
+<button hidden="" id="btnUpgradeGpu" title="GPU 티어 업그레이드. 티어 × 650 크레딧 소모, 반복/도전 보상 증가.">GPU 업그레이드</button>
 </div>
 <div class="flex-col">
 <div class="flex-row">
@@ -114,6 +116,30 @@
 <select id="serverSelect"></select>
 </div>
 <div style="flex:1;">
+<span class="small" id="labelServerRoute">공격 루트</span>
+<select id="serverRouteSelect">
+<option value="external">외부</option>
+<option value="internal">내부</option>
+<option value="core">코어</option>
+</select>
+</div>
+</div>
+<div class="flex-row action-upgrade-row">
+<div style="flex:1;">
+<span class="small" id="labelUpgradeTarget">업그레이드 대상</span>
+<select id="upgradeTargetSelect">
+<option value="cpu">CPU</option>
+<option value="gpu">GPU</option>
+</select>
+</div>
+<div style="flex:1;">
+<span class="small" id="labelUpgradeAction">시스템 업그레이드</span>
+<div class="button-row" style="margin-top:2px; gap:4px;">
+<button id="btnUpgradeSystem" title="선택한 시스템을 업그레이드합니다.">업그레이드</button>
+</div>
+</div>
+</div>
+<div class="legacy-loadout-row" hidden="">
 <span class="small" id="labelLoadout">로드아웃</span>
 <div class="button-row" style="margin-top:2px; gap:4px;">
 <select id="loadoutSelect" style="max-width:90px; margin-bottom:0;">
@@ -136,10 +162,10 @@
 <div class="small" id="hackModeHint">NORMAL: 안정적인 기본 해킹 모드</div>
 </div>
 <div class="small" style="margin-top:4px;">
-              <span id="actionsDesc1">· 에너지 1칸 = 120초, 0.1초 단위로 카운트다운 표시</span><br/>
+              <span id="actionsDesc1">· 에너지 1칸 = 60초, 0.1초 단위로 카운트다운 표시</span><br/>
               <span id="actionsDesc2">· 코드 스캔: 에너지 1, 스캔 EXP 소량 (희귀도별 스캔 시간 차등)</span><br/>
-              <span id="actionsDesc3">· 서버 해킹: 에너지 2, 성공 시 크레딧·EXP 획득</span><br/>
-              <span id="actionsDesc4">· 레벨업 시 크레딧 +100, CPU 업그레이드 비용 = 500 × 티어 × 할인 계수</span>
+              <span id="actionsDesc3">· 서버 해킹: NORMAL/RISK/EXTREME 난이도와 외부/내부/코어 루트 선택 가능</span><br/>
+              <span id="actionsDesc4">· CPU는 성공률 안정, GPU는 반복/도전 보상 증폭을 담당합니다.</span>
             </div>
 </div>
 </div>
@@ -249,12 +275,47 @@
 <div id="eventModalBody">
 <div class="event-intro">
 <div>
-<span class="badge">WEEKLY OPS</span>
-<h3>WEEKLY CHALLENGE</h3>
-<p>월요일 05:00 KST마다 작전 세트가 갱신됩니다.</p>
+<span class="badge">EVENT OPS</span>
+<h3>PASS / WEEKLY CHALLENGE</h3>
+<p>월간 시즌 패스와 주간 작전을 한 곳에서 관리합니다.</p>
 </div>
-<span class="event-chip">EVENT BOARD</span>
+<span class="event-chip" id="eventSeasonChip">PRESEASON</span>
 </div>
+<div class="event-tabs">
+<button class="event-tab-button active" data-event-tab="pass" id="eventTabBtnPass">PASS</button>
+<button class="event-tab-button" data-event-tab="weekly" id="eventTabBtnWeekly">WEEKLY CHALLENGE</button>
+</div>
+<div class="event-tab-panel active" id="eventPassPanel">
+<div class="weekly-head" id="seasonPassPanel">
+<div>
+<span class="badge">SEASON PASS</span>
+<h3 id="seasonPassTitle">PRESEASON</h3>
+<p id="seasonPassDesc">시즌 1 시작 전까지 기본 보상 구성을 미리 확인하세요.</p>
+</div>
+<div class="weekly-summary">
+<div><span>SEASON</span><strong id="seasonLabel">PRESEASON</strong></div>
+<div><span>TIER</span><strong id="seasonPassTier">0 / 30</strong></div>
+<div><span>PASS PT</span><strong id="seasonPassPoints">0 / 3000</strong></div>
+<div><span>COIN</span><strong id="seasonCoinCount">0</strong></div>
+</div>
+</div>
+<div class="weekly-event-node" id="seasonStatusLine">시즌 1 - ZERO-DAY 대기 중</div>
+<div class="pass-progress-block">
+<div class="weekly-progress-line pass-progress-line"><span id="seasonPassBar" style="width:0%"></span></div>
+<div class="small" id="seasonPassHint">30티어 무료 패스. 시즌 종료 시 패스 진행도만 초기화됩니다.</div>
+</div>
+<div class="weekly-goal-list" id="seasonPassTierList"></div>
+<div class="weekly-bonus-card season-shop-card" id="seasonShopCard">
+<div>
+<span class="badge">SEASON SHOP</span>
+<h4>COIN SHOP</h4>
+<p>코인은 전투력 직결이 아닌 시즌 장식 보상에 사용합니다.</p>
+<strong id="seasonShopSummary">COIN 0</strong>
+</div>
+<div class="weekly-goal-list season-shop-list" id="seasonShopList"></div>
+</div>
+</div>
+<div class="event-tab-panel" id="eventWeeklyPanel">
 <div class="weekly-head" id="weeklyPanel">
 <div>
 <span class="badge">CURRENT WEEK</span>
@@ -266,16 +327,35 @@
 <div><span>PROGRESS</span><strong id="weeklyProgressText">0 / 5</strong></div>
 <div><span>SCORE</span><strong id="weeklyScore">0</strong></div>
 <div><span>TOKEN</span><strong id="weeklyTokenCount">0</strong></div>
+<div><span>PASS PT</span><strong id="weeklyPassPointCount">0</strong></div>
 </div>
 </div>
 <div class="weekly-event-node" id="weeklyEventNode">BONUS NODE 대기 중</div>
+<div class="weekly-progress-controls">
+<div class="weekly-filter progress-tier-filter" id="weeklyProgressTier" aria-label="Weekly progress tier">
+<button type="button" data-progress-tier="foundation" class="active">기초</button>
+<button type="button" data-progress-tier="apprentice">견습</button>
+<button type="button" data-progress-tier="advanced">심화</button>
+<button type="button" data-progress-tier="expert">전문가</button>
+</div>
 <div class="weekly-filter" id="weeklyFilter" aria-label="Weekly challenge filter">
 <button type="button" data-weekly-filter="incomplete" class="active">미완료</button>
 <button type="button" data-weekly-filter="all">전체</button>
 <button type="button" data-weekly-filter="complete">완료</button>
 </div>
+</div>
 <div class="weekly-goal-list" id="weeklyGoalList"></div>
 <div class="weekly-bonus-card" id="weeklyBonusCard"></div>
+<div class="weekly-bonus-card ops-shop-card" id="opsShopCard">
+<div>
+<span class="badge">OPS SHOP</span>
+<h4>TOKEN OPS</h4>
+<p>SCORE로 해금하고 TOKEN으로 구매하는 주간 작전 상점입니다.</p>
+<strong id="opsShopSummary">TOKEN 0 · SCORE 0</strong>
+</div>
+<div class="weekly-goal-list season-shop-list" id="opsShopList"></div>
+</div>
+</div>
 </div>
 <div id="eventModalFooter">
 <button id="btnEventClose2">닫기</button>
@@ -297,6 +377,7 @@
 <button class="more-tab-button" data-tab="rank" id="tabBtnRank">RANK</button>
 <button class="more-tab-button" data-tab="settings" id="tabBtnSettings">설정</button>
 <button class="more-tab-button" data-tab="save" id="tabBtnSave">클라우드 계정</button>
+<button class="more-tab-button" data-tab="credits" id="tabBtnCredits">CREDITS</button>
 </div>
 <div class="more-quick-actions">
 <button id="btnOpenTutorial" type="button">튜토리얼 다시 보기</button>
@@ -337,6 +418,7 @@
 <select id="setLanguage" title="Select language">
 <option value="ko">한국어</option>
 <option value="en">English</option>
+<option value="ja">日本語</option>
 </select>
 </span>
 </div>
@@ -345,14 +427,6 @@
 <span class="value" style="display:flex; align-items:center; gap:10px;">
 <input id="setFontScale" max="120" min="90" step="5" style="width:180px;" type="range"/>
 <span id="setFontScaleLabel">100%</span>
-</span>
-</div>
-<div class="stat-row" style="align-items:center;">
-<span class="label" id="labelSnow">눈 이펙트</span>
-<span class="value">
-<label class="log-filter-label" style="display:inline-flex; align-items:center; gap:6px;">
-<input id="setSnow" type="checkbox"/> 사용
-                </label>
 </span>
 </div>
 <div class="stat-row" style="align-items:center;">
@@ -385,7 +459,7 @@
 <span class="label" id="labelSfxVolume">효과음 볼륨</span>
 <span class="value" style="display:flex; align-items:center; gap:10px;">
 <input id="setSfxVolume" max="100" min="0" step="5" style="width:180px;" type="range"/>
-<span id="setSfxVolumeLabel">35%</span>
+<span id="setSfxVolumeLabel">100%</span>
 </span>
 </div>
 <div class="stat-row" style="align-items:center;">
@@ -420,6 +494,16 @@
 <select id="setLiveNicknameMode" title="Live network display name">
 <option value="nickname">닉네임</option>
 <option value="callsign">Callsign</option>
+</select>
+</span>
+</div>
+<div class="stat-row" style="align-items:center;">
+<span class="label" id="labelZeroDayCommandLocale">ZERO-DAY 명령어 표시</span>
+<span class="value">
+<select id="setZeroDayCommandLocale" title="ZERO-DAY command locale">
+<option value="auto">AUTO</option>
+<option value="english">ENGLISH</option>
+<option value="korean">한국어</option>
 </select>
 </span>
 </div>
@@ -555,6 +639,20 @@
 </div>
 </div>
 </div>
+<div class="more-tab-panel" id="tabCredits">
+<div>
+<span class="badge">CREDITS</span>
+<span id="creditsTabTitle">크레딧</span>
+</div>
+<div class="stat-box credits-panel">
+<div class="credits-card">
+<strong id="creditsDevLine">개발: COMET DEVELOPS</strong>
+<span id="creditsPubLine">유통: COMETODLITE</span>
+<span id="creditsCopyrightLine">© 2025–2026 COMET</span>
+</div>
+<div class="small credits-meta" id="creditsMetaLine">HCSiG 3.0.0 · DEV BUILD</div>
+</div>
+</div>
 <div id="moreModalFooter">
 <button id="btnMoreClose2">닫기</button>
 </div>
@@ -614,10 +712,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=2.3.0"></script>
-<script src="auth.js?v=2.3.0"></script>
-<script src="cloudSave.js?v=2.3.0"></script>
-<script src="app-core.js?v=2.3.0"></script>
-<script src="app-ui.js?v=2.3.0"></script>
-<script src="liveOps.js?v=2.3.0"></script></body>
+<script src="firebase-config.js?v=3.0.0"></script>
+<script src="auth.js?v=3.0.0"></script>
+<script src="cloudSave.js?v=3.0.0"></script>
+<script src="app-core.js?v=3.0.0"></script>
+<script src="app-ui.js?v=3.0.0"></script>
+<script src="liveOps.js?v=3.0.0"></script></body>
 </html>

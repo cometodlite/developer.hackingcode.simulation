@@ -720,19 +720,37 @@ button:hover {
       margin-left: 4px;
     }
 
+    .diff-intro,
     .diff-easy {
+      background: #164e63;
+      color: #cffafe;
+    }
+
+    .diff-general,
+    .diff-normal {
       background: #14532d;
       color: #bbf7d0;
     }
 
-    .diff-normal {
+    .diff-standard {
       background: #1d4ed8;
       color: #bfdbfe;
     }
 
     .diff-hard {
+      background: #7c2d12;
+      color: #fed7aa;
+    }
+
+    .diff-chaos {
+      background: #7e22ce;
+      color: #f3e8ff;
+    }
+
+    .diff-impossible {
       background: #7f1d1d;
       color: #fecaca;
+      box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.28);
     }
 
     /* 미션 탭 버튼 */
@@ -792,6 +810,11 @@ button:hover {
       color: #fef3c7;
       border-color: #fbbf24;
       background: #422006;
+    }
+    .shop-rarity-operation {
+      color: #fbcfe8;
+      border-color: #ec4899;
+      background: #3b0a24;
     }
 
     /* 상점 정렬 UI */
@@ -1031,16 +1054,6 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
     padding-bottom: calc(10px + var(--safe-bottom));
   }
 }
-
-/* === CHRISTMAS SNOW EFFECT (minimal) === */
-#snow-canvas{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-
 
 /* === TUTORIAL MODAL v1.6.11(j) === */
 #tutorialBackdrop{
@@ -1724,10 +1737,42 @@ body.app-shell-ui .home-status-grid .stat-row{
   background:rgba(6,12,11,.64);
 }
 body.app-shell-ui .home-status-grid #energyBarWrapper,
-body.app-shell-ui .home-status-grid .stat-row:nth-last-child(3),
-body.app-shell-ui .home-status-grid .stat-row:nth-last-child(2),
-body.app-shell-ui .home-status-grid .stat-row:nth-last-child(1){
+body.app-shell-ui .home-status-grid .energy-timer-row,
+body.app-shell-ui .home-status-grid .home-status-toggle,
+body.app-shell-ui .home-status-grid #homeSystemStatusPanel{
   grid-column:1 / -1;
+}
+body.app-shell-ui .home-status-grid .energy-timer-row .value{
+  white-space:nowrap;
+}
+.home-status-toggle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  min-height:40px;
+  margin-top:4px;
+  padding:10px 12px;
+  border:1px solid rgba(94,234,212,.18);
+  border-radius:8px;
+  background:rgba(8,16,14,.78);
+  color:#d7fbe6;
+  font-size:12px;
+  font-weight:800;
+}
+#homeSystemStatusPanel{
+  display:grid;
+  gap:8px;
+  margin-top:2px;
+}
+#homeSystemStatusPanel[hidden]{
+  display:none !important;
+}
+#homeSystemStatusPanel .stat-row{
+  padding:10px;
+  border:1px solid rgba(94,234,212,.14);
+  border-radius:8px;
+  background:rgba(6,12,11,.64);
 }
 body.app-shell-ui .home-actions-box .button-row{
   display:grid;
@@ -1831,16 +1876,6 @@ body.app-shell-ui button:active{
   user-select:none;
   position:relative;
 }
-.app-view-codes #codeList li.code-card::after{
-  content:"상세";
-  position:absolute;
-  right:12px;
-  bottom:10px;
-  color:#6ee7b7;
-  font-size:10px;
-  font-weight:900;
-  opacity:.72;
-}
 .app-view-codes #codeList li.code-card.active{
   border-color:rgba(134,239,172,.54);
   background:rgba(20,83,45,.22);
@@ -1864,6 +1899,25 @@ body.app-shell-ui button:active{
 .code-card-main span{
   color:#b9c9c4;
   font-size:12px;
+}
+.code-card-actions{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+}
+.code-card-detail-btn{
+  min-height:36px;
+  min-width:72px;
+  padding:0 12px;
+  border-radius:8px;
+  border:1px solid rgba(94,234,212,.24);
+  background:rgba(15,23,42,.48);
+  color:#d6ffef;
+  font-size:11px;
+  font-weight:900;
+}
+.code-card-detail-btn:hover{
+  border-color:rgba(45,212,191,.54);
 }
 .app-codes-layout > .stat-box.resizable-box{
   display:none;
@@ -2024,6 +2078,9 @@ body.app-shell-ui .list-tab-button{
   border-color:rgba(45,212,191,.68);
   background:rgba(20,184,166,.28);
   color:#fff;
+}
+.zero-day-difficulty-filter{
+  margin-top:10px;
 }
 .weekly-goal-list{
   display:grid;
@@ -2476,7 +2533,7 @@ body.app-shell-ui .list-tab-button{
 }
 .zero-day-mode-grid{
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:10px;
   margin:10px 0 12px;
 }
@@ -2582,6 +2639,58 @@ body.app-shell-ui .list-tab-button{
     radial-gradient(circle at 8% 0%, rgba(52,211,153,.12), transparent 34%);
   overflow:hidden;
 }
+.zero-day-terminal{
+  display:grid;
+  gap:10px;
+  padding:14px;
+  border-top:1px solid rgba(148,163,184,.12);
+  background:rgba(2,6,23,.28);
+}
+.zero-day-prompt-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.zero-day-prompt{
+  flex:0 0 auto;
+  color:#86efac;
+  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.zero-day-command-input{
+  flex:1 1 auto;
+  min-width:0;
+  min-height:40px;
+  padding:0 12px;
+  border:1px solid rgba(94,234,212,.18);
+  border-radius:8px;
+  background:rgba(3,7,18,.88);
+  color:#f8fafc;
+  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size:13px;
+}
+.zero-day-command-submit{
+  flex:0 0 auto;
+  min-height:40px;
+  padding:0 12px;
+}
+.zero-day-command-help{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.zero-day-command-help span{
+  padding:4px 8px;
+  border:1px solid rgba(94,234,212,.14);
+  border-radius:8px;
+  background:rgba(7,12,11,.72);
+  color:#cde7dc;
+  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size:11px;
+}
 .zero-day-idle{
   padding:14px;
 }
@@ -2640,7 +2749,7 @@ body.app-shell-ui .list-tab-button{
 }
 .zero-day-actions{
   display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
   gap:8px;
   padding:0 14px 14px;
 }
@@ -2669,6 +2778,8 @@ body.app-shell-ui .list-tab-button{
   border:1px solid rgba(148,163,184,.10);
   border-radius:8px;
   background:rgba(2,6,23,.36);
+  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+  line-height:1.45;
 }
 #codeDetailModal{
   width:520px;
@@ -2830,6 +2941,12 @@ body.app-shell-ui .list-tab-button{
 	.stage-card.is-boss{
 	  border-color:rgba(251,113,133,.36);
 	}
+	.stage-card:disabled{
+	  opacity:.4;
+	  cursor:not-allowed;
+	  box-shadow:none;
+	  transform:none;
+	}
 	.stage-card-top{
 	  display:flex;
 	  justify-content:space-between;
@@ -2913,12 +3030,13 @@ body.app-shell-ui .list-tab-button{
 	.stage-reward-grid strong{
 	  overflow-wrap:anywhere;
 	}
-	.stage-action-row{
-	  display:flex;
-	  align-items:center;
-	  gap:10px;
-	  margin:10px 0 12px;
-	}
+.stage-action-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:10px 0 12px;
+}
 	.stage-action-row button{
 	  flex:0 0 min(210px, 46%);
 	  min-height:42px;
@@ -2932,12 +3050,109 @@ body.app-shell-ui .list-tab-button{
 	  opacity:.48;
 	  cursor:not-allowed;
 	}
-	.stage-note{
-	  border-top:1px solid rgba(148,163,184,.14);
-	  padding-top:10px;
-	  color:#bcd8d1 !important;
-	  font-size:12px;
-	}
+.stage-note{
+  border-top:1px solid rgba(148,163,184,.14);
+  padding-top:10px;
+  color:#bcd8d1 !important;
+  font-size:12px;
+}
+.stage-battle-panel{
+  display:grid;
+  gap:12px;
+}
+.stage-battle-meter{
+  display:grid;
+  gap:6px;
+}
+.stage-battle-meter strong{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-size:12px;
+}
+.stage-battle-meter-bar{
+  height:10px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(15,23,42,.86);
+}
+.stage-battle-meter-bar span{
+  display:block;
+  height:100%;
+  border-radius:999px;
+}
+.stage-battle-meter.player .stage-battle-meter-bar span{
+  background:linear-gradient(90deg, #34d399, #2dd4bf);
+}
+.stage-battle-meter.enemy .stage-battle-meter-bar span{
+  background:linear-gradient(90deg, #fb7185, #f97316);
+}
+.stage-battle-actions{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+.stage-battle-actions button{
+  min-height:40px;
+  padding:0 10px;
+}
+.stage-battle-log{
+  display:grid;
+  gap:6px;
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+.stage-battle-log li{
+  padding:8px 10px;
+  border:1px solid rgba(148,163,184,.10);
+  border-radius:8px;
+  background:rgba(2,6,23,.32);
+  color:#d7efe3;
+  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size:12px;
+}
+.credits-panel{
+  display:grid;
+  gap:10px;
+}
+.credits-card{
+  display:grid;
+  gap:6px;
+  padding:14px;
+  border:1px solid rgba(94,234,212,.18);
+  border-radius:8px;
+  background:linear-gradient(135deg, rgba(20,83,45,.22), rgba(7,10,9,.92));
+}
+.credits-card strong,
+.credits-card span{
+  color:#f8fff9;
+}
+.credits-meta{
+  color:#b9c9c4;
+}
+body.app-shell-ui .more-tab-button[data-tab="credits"]{
+  color:#fef3c7;
+}
+@media (max-width: 900px){
+  .zero-day-mode-grid,
+  .zero-day-flow,
+  .zero-day-summary,
+  .zero-day-live-grid,
+  .stage-layout,
+  .stage-meta-grid,
+  .weekly-goal-list,
+  .lab-preview-grid{
+    grid-template-columns:1fr;
+  }
+  .stage-battle-actions,
+  .zero-day-actions{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .code-card-actions{
+    align-self:flex-start;
+  }
+}
 	body.app-shell-ui #tutorialBackdrop.show{
 	  display:flex !important;
 	}

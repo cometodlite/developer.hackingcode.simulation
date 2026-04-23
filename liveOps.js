@@ -1,5 +1,5 @@
 (function(){
-  const VERSION = '2.3.0';
+  const VERSION = '3.0.0';
   const HEARTBEAT_MS = 60000;
   const ACTIVE_WINDOW_MS = 120000;
   const RANK_WRITE_MS = 60000;
@@ -88,11 +88,14 @@
     try {
       if (bridge() && bridge().getLanguage) return bridge().getLanguage();
     } catch(e) {}
-    return document.documentElement.lang === 'en' ? 'en' : 'ko';
+    const lang = (document.documentElement.lang || '').toLowerCase();
+    if (lang.startsWith('ja')) return 'ja';
+    if (lang.startsWith('en')) return 'en';
+    return 'ko';
   }
 
   function text(ko, en){
-    return getLang() === 'en' ? en : ko;
+    return getLang() === 'ko' ? ko : en;
   }
 
   function escapeHtml(value){
@@ -121,11 +124,11 @@
   function defaultConfig(){
     return {
       status: 'ONLINE',
-      motd: 'NODE ROUTE OPEN. Watch the trace feed.',
+      motd: 'ZERO-DAY season prep is live. Watch the trace feed.',
       eventTitle: 'LIVE NETWORK',
       maintenanceText: '',
       liveEnabled: true,
-      rankSeasonLabel: 'SEASON 2.2'
+      rankSeasonLabel: 'SEASON 1'
     };
   }
 

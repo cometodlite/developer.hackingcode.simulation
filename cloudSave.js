@@ -4,6 +4,8 @@
   let authUser = null;
   let bridgeReady = false;
   let pendingInitialSync = false;
+  let lastCloudSaveAt = 0;
+  const CLOUD_AUTOSAVE_THROTTLE_MS = 30000;
 
   function bridge(){ return window.HCSIG_BRIDGE; }
   function auth(){ return window.HCSIG_AUTH; }
@@ -54,6 +56,7 @@
     await userRef().set(buildProfilePatch(payload), { merge:true });
     if (auth().refreshProfile) await auth().refreshProfile();
     auth().setCloudMeta('클라우드 저장됨: ' + new Date().toLocaleString());
+    lastCloudSaveAt = Date.now();
     return true;
   }
 
@@ -167,7 +170,10 @@
   window.addEventListener('hcsig:save', async (event)=>{
     if (!canUseCloud()) return;
     try {
-      await saveCloud(event.detail && event.detail.silent ? 'autosave' : 'local-save');
+      const silent = !!(event.detail && event.detail.silent);
+      const reason = silent ? 'autosave' : 'local-save';
+      if (silent && (Date.now() - lastCloudSaveAt) < CLOUD_AUTOSAVE_THROTTLE_MS) return;
+      await saveCloud(reason);
     } catch (err) {
       auth().setStatus('자동 클라우드 저장 실패: ' + (err.message || err));
     }
