@@ -1,15 +1,15 @@
-const CURRENT_VERSION = '2.2.3';
+const CURRENT_VERSION = '2.2.4';
 const TUTORIAL_VERSION = 5;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
   ko: {
-    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'LIST', listTitle:'LIST', more: '더보기 ▾', moreTitle: '더보기', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'코드 인벤토리', codeDetail:'코드 상세',
+    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'LIST', listTitle:'LIST', event:'EVENT', eventTitle:'EVENT', more: '더보기 ▾', moreTitle: '더보기', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'코드 인벤토리', codeDetail:'코드 상세',
     level:'레벨', exp:'경험치', credits:'크레딧', cpuTier:'CPU 티어', gpuTier:'GPU 티어', energy:'에너지', nextRecovery:'다음 회복까지', energyPack:'에너지 팩', lastSave:'마지막 저장', use:'사용', sort:'정렬', category:'분류', all:'전체', system:'시스템', economy:'경제', utility:'유틸',
     codeScan:'코드 스캔', serverHack:'서버 해킹', cpuUpgrade:'CPU 업그레이드', gpuUpgrade:'GPU 업그레이드', targetServer:'타겟 서버', loadout:'로드아웃', saveSlot:'슬롯 저장', loadSlot:'슬롯 불러오기', hackMode:'해킹 모드',
     actionsDesc1:'· 에너지 1칸 = 120초, 0.1초 단위로 카운트다운 표시', actionsDesc2:'· 코드 스캔: 에너지 1, 스캔 EXP 소량 (희귀도별 스캔 시간 차등)', actionsDesc3:'· 서버 해킹: NORMAL/RISK/EXTREME 난이도 선택 가능', actionsDesc4:'· CPU는 성공률 안정, GPU는 반복/도전 보상 증폭을 담당합니다.',
-    codeUpgrade:'코드 강화', codeSync:'코드 동기화', codeEvolve:'코드 진화', codeDesc1:'· 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).', codeDesc2:'· 동기화: 중복 조각을 모아 성공률 보정과 파워를 함께 강화합니다.', codeDesc3:'· 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).',
-    mission:'미션', achievement:'업적', codex:'코드 도감', logs:'로그', settings:'설정', data:'클라우드 계정', quest:'퀘스트', records:'기록', envSettings:'환경 설정', dataManage:'클라우드 계정', close:'닫기',
+    codeUpgrade:'코드 강화', codeSync:'코드 동기화', codeEvolve:'코드 진화', shardEnhance:'조각 강화', codeDesc1:'· 강화: 코드 레벨에 비례한 크레딧 소모, 파워 증가 (파괴 없음).', codeDesc2:'· 동기화: 중복 조각을 모아 성공률 보정과 파워를 함께 강화합니다.', codeDesc3:'· 진화: 일정 레벨 이상 시 희귀도 승급 (COMMON → UNCOMMON → … → LEGENDARY).',
+    mission:'미션', achievement:'업적', codex:'코드 도감', logs:'로그', liveNet:'LIVE NET', rank:'RANK', settings:'설정', data:'클라우드 계정', quest:'퀘스트', records:'기록', liveNetRecords:'네트워크 관제', softRank:'소프트 랭킹', envSettings:'환경 설정', dataManage:'클라우드 계정', close:'닫기',
     logSearchHelp:'로그 검색 (로그 항목 클릭 → 핀/해제)', searchPlaceholder:'검색어 입력...', clearLogs:'로그 초기화', hideLogs:'로그 숨기기', showLogs:'로그 보이기', logFilter:'로그 필터',
     language:'언어', fontScale:'폰트 크기', snow:'눈 이펙트', uiScale:'UI 스케일', animation:'애니메이션', sfx:'효과음', sfxVolume:'효과음 볼륨', toastTime:'토스트 시간', autosaveToast:'자동저장 알림', liveNetwork:'LIVE NET', liveNicknameMode:'네트워크 표시명', nickname:'닉네임', callsign:'Callsign', enabled:'사용', settingsHelp:'· 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.',
     saveNow:'저장하기', loadNow:'불러오기', clearSave:'저장 데이터 삭제', exportSave:'내보내기', importFile:'파일 불러오기', importText:'텍스트로 불러오기', importTextPlaceholder:'여기에 JSON을 붙여넣고 불러오기를 누르세요.', importTextBtn:'텍스트 불러오기', saveHelp:'· 저장 위치: 클라우드 계정<br/>· 브라우저 내부 저장은 자동 캐시와 기존 세이브 이전에만 사용됩니다.',
@@ -20,16 +20,16 @@ const I18N = {
     full:'FULL', seconds:'초', minutes:'분', visible:'표시', on:'ON', off:'OFF',
     saveStateSaved:'게임 상태가 클라우드 캐시에 저장되었습니다.', saveComplete:'클라우드 캐시 저장 완료', autosaveComplete:'✅ 자동 캐시 저장 완료', noSavedData:'저장된 데이터가 없습니다.', saveLoaded:'저장된 데이터를 불러왔습니다.', saveLoadError:'저장 데이터를 불러오는 중 오류가 발생했습니다.', saveDeleted:'저장 데이터가 삭제되었습니다.', exportFail:'내보내기 실패 (콘솔 확인)', hackModeLog:'해킹 모드: {mode}', riskPenaltyLog:'RISK 실패 페널티: 에너지가 추가로 1 소모되었습니다.', extremePenaltyLog:'EXTREME 실패 페널티: 에너지가 추가로 2 소모되었습니다.', gpuUpgradeLog:'GPU 업그레이드 완료! 현재 티어: {tier} (소모 크레딧 {cost})', gpuUpgradeFail:'GPU 업그레이드 실패: 크레딧이 부족합니다. (필요: {cost})', loadoutSaved:'로드아웃 슬롯 {slot}에 현재 설정을 저장했습니다.', loadoutEmpty:'로드아웃 슬롯 {slot}에 저장된 설정이 없습니다.', loadoutLoaded:'로드아웃 슬롯 {slot}을 불러왔습니다.',
     toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +50 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
-    noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.',
+    noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.', shardEnhanceFail:'조각 강화 실패: 조각이 부족합니다. (필요: {need}, 보유: {have})', shardEnhanceDone:'조각 강화: {name} PWR +2 → {pwr}. 조각 -{cost}.', shardEnhanceCost:'조각 강화 비용: 조각 {cost} / PWR +2',
     noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'데이터 타워', mobileComing:'COMING SOON', tutorialReplay:'튜토리얼 다시 보기', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
   },
   en: {
-    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'LIST', listTitle:'LIST', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
+    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'LIST', listTitle:'LIST', event:'EVENT', eventTitle:'EVENT', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
     level:'Level', exp:'EXP', credits:'Credits', cpuTier:'CPU Tier', gpuTier:'GPU Tier', energy:'Energy', nextRecovery:'Next Recovery', energyPack:'Energy Pack', lastSave:'Last Save', use:'Use', sort:'Sort', category:'Category', all:'All', system:'System', economy:'Economy', utility:'Utility',
     codeScan:'Scan Code', serverHack:'Hack Server', cpuUpgrade:'Upgrade CPU', gpuUpgrade:'Upgrade GPU', targetServer:'Target Server', loadout:'Loadout', saveSlot:'Save Slot', loadSlot:'Load Slot', hackMode:'Hack Mode',
     actionsDesc1:'· 1 energy = 120 seconds, shown with 0.1-second countdown', actionsDesc2:'· Scan Code: costs 1 energy and grants scan EXP', actionsDesc3:'· Hack Server: choose NORMAL / RISK / EXTREME difficulty', actionsDesc4:'· CPU stabilizes success, GPU amplifies repeat/challenge rewards.',
-    codeUpgrade:'Upgrade Code', codeSync:'Sync Code', codeEvolve:'Evolve Code', codeDesc1:'· Upgrade: costs credits based on code level and raises power (no destruction).', codeDesc2:'· Sync: spend duplicate shards to raise success bonus and power together.', codeDesc3:'· Evolve: rank up at a required level (COMMON → UNCOMMON → … → LEGENDARY).',
-    mission:'Mission', achievement:'Achievements', codex:'Code Codex', logs:'Logs', settings:'Settings', data:'Cloud Account', quest:'Quests', records:'Records', envSettings:'Settings', dataManage:'Cloud Account', close:'Close',
+    codeUpgrade:'Upgrade Code', codeSync:'Sync Code', codeEvolve:'Evolve Code', shardEnhance:'Shard Boost', codeDesc1:'· Upgrade: costs credits based on code level and raises power (no destruction).', codeDesc2:'· Sync: spend duplicate shards to raise success bonus and power together.', codeDesc3:'· Evolve: rank up at a required level (COMMON → UNCOMMON → … → LEGENDARY).',
+    mission:'Mission', achievement:'Achievements', codex:'Code Codex', logs:'Logs', liveNet:'LIVE NET', rank:'RANK', settings:'Settings', data:'Cloud Account', quest:'Quests', records:'Records', liveNetRecords:'Network Control', softRank:'Soft Ranking', envSettings:'Settings', dataManage:'Cloud Account', close:'Close',
     logSearchHelp:'Search logs (click a log entry to pin/unpin)', searchPlaceholder:'Type to search...', clearLogs:'Clear Logs', hideLogs:'Hide Logs', showLogs:'Show Logs', logFilter:'Log Filter',
     language:'Language', fontScale:'Font Size', snow:'Snow Effect', uiScale:'UI Scale', animation:'Animation', sfx:'Sound Effects', sfxVolume:'SFX Volume', toastTime:'Toast Duration', autosaveToast:'Autosave Toast', liveNetwork:'LIVE NET', liveNicknameMode:'Network Name', nickname:'Nickname', callsign:'Callsign', enabled:'Enabled', settingsHelp:'· Settings are stored with save data and remain after refresh.',
     saveNow:'Save', loadNow:'Load', clearSave:'Delete Save Data', exportSave:'Export', importFile:'Import File', importText:'Import from Text', importTextPlaceholder:'Paste JSON here and press import.', importTextBtn:'Import Text', saveHelp:'· Save location: cloud account<br/>· Browser storage is used only for automatic cache and migration.',
@@ -40,7 +40,7 @@ const I18N = {
     full:'FULL', seconds:'sec', minutes:'min', visible:'Visible', on:'ON', off:'OFF',
     saveStateSaved:'Game state saved to cloud cache.', saveComplete:'Cloud cache saved', autosaveComplete:'✅ Autosave cache complete', noSavedData:'No saved data found.', saveLoaded:'Saved data loaded.', saveLoadError:'An error occurred while loading save data.', saveDeleted:'Save data deleted.', exportFail:'Export failed (check console)', hackModeLog:'Hack Mode: {mode}', riskPenaltyLog:'RISK failure penalty consumed 1 additional energy.', extremePenaltyLog:'EXTREME failure penalty consumed 2 additional energy.', gpuUpgradeLog:'GPU upgrade complete! Current tier: {tier} (Credits -{cost})', gpuUpgradeFail:'GPU upgrade failed: not enough credits. (Need: {cost})', loadoutSaved:'Saved current setup to loadout slot {slot}.', loadoutEmpty:'There is no saved setup in loadout slot {slot}.', loadoutLoaded:'Loaded loadout slot {slot}.',
     toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +50.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
-    noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.',
+    noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.', shardEnhanceFail:'Shard boost failed: not enough shards. (Need: {need}, Have: {have})', shardEnhanceDone:'Shard boost: {name} PWR +2 → {pwr}. Shards -{cost}.', shardEnhanceCost:'Shard boost cost: {cost} shards / PWR +2',
     noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY'
     ,mobileMore:'MORE', mobileLab:'LAB', mobileStage:'DATA TOWER', tutorialReplay:'Replay Tutorial'
   }
@@ -66,12 +66,22 @@ const TEXT_DATA = {
       max_energy_up: { name:'Max Energy Upgrade', desc:'Permanently increases max energy by +5.' },
       scanner_module: { name:'Advanced Scanner Module', desc:'Gain +2 extra EXP when scanning codes.' },
       energy_boost_2: { name:'Energy Booster II', desc:'Instantly restores +10 energy.' },
+      quick_charge_cell: { name:'Quick Charge Cell', desc:'Instantly restores +6 energy.' },
+      recovery_daemon: { name:'Recovery Daemon', desc:'Speeds up the next 5 energy recovery ticks by 25%.' },
+      full_battery_pack: { name:'Full Battery Pack', desc:'Instantly restores energy to full.' },
       exp_boost: { name:'EXP Amplifier', desc:'Permanently increases EXP gain by 20%.' },
       cpu_discount: { name:'CPU Upgrade Coupon', desc:'Reduces CPU upgrade cost by 10% (stacks).' },
+      gpu_discount_coupon: { name:'GPU Upgrade Coupon', desc:'Reduces GPU upgrade cost by 10%, down to a 60% floor.' },
+      overclock_script: { name:'Overclock Script', desc:'The next 5 code scans gain +3 EXP.' },
+      scan_exp_script: { name:'Scan EXP Script', desc:'The next 10 code scans gain +1 EXP.' },
       perm_credit_boost: { name:'Permanent Credit Multiplier', desc:'Permanently increases hack credit rewards by 15% (one-time purchase).' },
       risk_support: { name:'Risk Hack Supporter', desc:'Permanently adds +5%p success chance in Risk Hack Mode (one-time purchase).' },
       big_credit_pack: { name:'Data Credit Pack', desc:'Instantly grants +500 credits. (Daily purchase limit: 2)' },
+      credit_cache: { name:'Credit Cache', desc:'Instantly grants +500 credits.' },
+      credit_relay_script: { name:'Credit Relay Script', desc:'The next 5 successful hacks gain +20% credits.' },
       scanner_plus: { name:'Precision Scanner', desc:'Gain +1 extra EXP when scanning codes (permanent, one-time purchase).' },
+      hack_stability_patch: { name:'Hack Stability Patch', desc:'Adds +2%p hack success chance, up to +8%p.' },
+      failure_buffer_module: { name:'Failure Buffer Module', desc:'Adds 2 buffer charges that prevent RISK/EXTREME extra energy penalties.' },
       level_ticket: { name:'Simulation Level Ticket', desc:'Instantly raises your level by 1.' }
     }
   }
@@ -390,15 +400,15 @@ function refreshMobileTabTexts(){
 }
 function applyLanguageToUI(){
   try{ document.documentElement.lang = getLang(); document.title = t('appTitle'); }catch(e){}
-  setText('subtitleText', t('subtitle')); setText('btnList', t('list')); setText('listTitle', t('listTitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle')); setText('btnOpenTutorial', t('tutorialReplay'));
+  setText('subtitleText', t('subtitle')); setText('btnList', t('list')); setText('listTitle', t('listTitle')); setText('btnEvent', t('event')); setText('eventTitle', t('eventTitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle')); setText('btnOpenTutorial', t('tutorialReplay'));
   setText('titleStatus', t('status')); setText('titleShop', t('shop')); setText('titleActions', t('actions')); setText('titleCodeInventory', t('codeInventory')); setText('titleCodeDetail', t('codeDetail'));
   setText('labelLevel', t('level')); setText('labelExp', t('exp')); setText('labelCredits', t('credits')); setText('labelCpuTier', t('cpuTier')); setText('labelGpuTier', t('gpuTier')); setText('labelEnergy', t('energy')); setText('labelEnergyTimer', t('nextRecovery')); setText('labelEnergyPack', t('energyPack')); setText('labelLastSave', t('lastSave')); setText('btnUseEnergyPack', t('use'));
   setText('shopSortLabel', t('sort')); setText('shopCategoryLabel', t('category')); setText('shopCatAll', t('all')); setText('shopCatEnergy', t('energy')); setText('shopCatSystem', t('system')); setText('shopCatEconomy', t('economy')); setText('shopCatUtility', t('utility'));
   setText('btnScan', t('codeScan')); setText('btnHack', t('serverHack')); setText('btnUpgradeCpu', t('cpuUpgrade')); setText('btnUpgradeGpu', t('gpuUpgrade')); setText('labelTargetServer', t('targetServer')); setText('labelLoadout', t('loadout')); setText('btnSaveLoadout', t('saveSlot')); setText('btnLoadLoadout', t('loadSlot')); setText('labelHackMode', t('hackMode'));
   setText('actionsDesc1', t('actionsDesc1')); setText('actionsDesc2', t('actionsDesc2')); setText('actionsDesc3', t('actionsDesc3')); setText('actionsDesc4', t('actionsDesc4'));
-  setText('btnUpgradeCode', t('codeUpgrade')); setText('btnSyncCode', t('codeSync')); setText('btnEvolveCode', t('codeEvolve')); setText('codeDesc1', t('codeDesc1')); setText('codeDesc2', t('codeDesc2')); setText('codeDesc3', t('codeDesc3'));
-  setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnLogs', t('logs')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data'));
-  setText('listTabBtnMission', t('mission')); setText('listTabBtnAchievement', t('achievement')); setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('logsTabTitle', t('records')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnListClose2', t('close')); setText('btnMoreClose2', t('close'));
+  setText('btnUpgradeCode', t('codeUpgrade')); setText('btnSyncCode', t('codeSync')); setText('btnEvolveCode', t('codeEvolve')); setText('btnModalUpgradeCode', t('codeUpgrade')); setText('btnModalSyncCode', t('codeSync')); setText('btnModalEvolveCode', t('codeEvolve')); setText('btnModalShardCode', t('shardEnhance')); setText('codeDesc1', t('codeDesc1')); setText('codeDesc2', t('codeDesc2')); setText('codeDesc3', t('codeDesc3'));
+  setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnLiveNet', t('liveNet')); setText('tabBtnRank', t('rank')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data'));
+  setText('listTabBtnMission', t('mission')); setText('listTabBtnAchievement', t('achievement')); setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('liveNetTabTitle', t('liveNetRecords')); setText('rankTabTitle', t('softRank')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnListClose2', t('close')); setText('btnEventClose2', t('close')); setText('btnMoreClose2', t('close'));
   setText('logSearchHelp', t('logSearchHelp')); const lsi=document.getElementById('logSearchInput'); if(lsi) lsi.placeholder=t('searchPlaceholder'); setText('btnClearLogs', t('clearLogs')); const btnToggle=document.getElementById('btnToggleLogs'); if(btnToggle){ btnToggle.textContent = (window.logsHidden ? t('showLogs') : t('hideLogs')); } setText('logFilterTitle', t('logFilter'));
   document.querySelectorAll('[data-achievement-filter="all"]').forEach(el => { el.textContent = t('achievementAll'); });
   document.querySelectorAll('[data-achievement-filter="incomplete"]').forEach(el => { el.textContent = t('achievementIncomplete'); });
@@ -702,6 +712,15 @@ function applyLanguageToUI(){
           '모바일에서는 하단 메인 탭 위로 튜토리얼을 띄워 탭 이동과 버튼 입력이 막히지 않도록 정리했습니다.',
           '행동 단계의 건너뛰기 문구를 닫고 플레이로 바꿔 새 플레이어가 바로 게임에 들어가기 쉽게 했습니다.'
         ]
+      },
+      {
+        version: '2.2.4',
+        lines: [
+          '헤더를 LIST / EVENT / 더보기 중심으로 정리하고 HOME을 상태와 핵심 행동 조종석으로 재배치했습니다.',
+          'WEEKLY CHALLENGE는 EVENT로 이동하고 LAB은 데이터 타워 / ZERO-DAY / COMING SOON 구조로 정리했습니다.',
+          'LIVE NET과 RANK는 더보기 안의 네트워크 관제실로 이동했습니다.',
+          'CODES 상세 모달, 조각 강화, 신규 상점 보급 아이템 10종을 추가했습니다.'
+        ]
       }
 
     ];
@@ -793,7 +812,8 @@ function applyLanguageToUI(){
         stageAttemptCount: 0,
         stageClearCount: 0,
         gpuUpgradeCount: 0,
-        weeklyAllClearCount: 0
+        weeklyAllClearCount: 0,
+        codeShardsSpentTotal: 0
       }
     };
 
@@ -1301,6 +1321,42 @@ function applyLanguageToUI(){
         }
       },
       {
+        id: 'quick_charge_cell',
+        name: '퀵 차지 셀',
+        desc: '즉시 에너지 +6. 짧은 플레이 흐름을 다시 이어갑니다.',
+        cost: 220,
+        rarity: 'COMMON',
+        category: 'ENERGY',
+        buy: () => {
+          state.energy = Math.min(state.energyMax, state.energy + 6);
+          if (state.energy >= state.energyMax) state.energyTimerMs = 0;
+        }
+      },
+      {
+        id: 'recovery_daemon',
+        name: '리커버리 데몬',
+        desc: '다음 에너지 회복 5틱의 회복 속도가 25% 빨라집니다.',
+        cost: 420,
+        rarity: 'UNCOMMON',
+        category: 'ENERGY',
+        buy: () => {
+          modifiers.fastRecoveryTicks = (modifiers.fastRecoveryTicks || 0) + 5;
+          if (state.energy < state.energyMax && state.energyTimerMs <= 0) state.energyTimerMs = getEnergyIntervalMs();
+        }
+      },
+      {
+        id: 'full_battery_pack',
+        name: '풀 배터리 팩',
+        desc: '에너지를 최대치까지 즉시 회복합니다.',
+        cost: 520,
+        rarity: 'UNCOMMON',
+        category: 'ENERGY',
+        buy: () => {
+          state.energy = state.energyMax;
+          state.energyTimerMs = 0;
+        }
+      },
+      {
         id: 'exp_boost',
         name: '경험치 증폭기',
         desc: '경험치 획득량 20% 증가 (영구).',
@@ -1323,6 +1379,40 @@ function applyLanguageToUI(){
           if (modifiers.cpuUpgradeDiscount < 0.5) {
             modifiers.cpuUpgradeDiscount = 0.5;
           }
+        }
+      },
+      {
+        id: 'gpu_discount_coupon',
+        name: 'GPU 업그레이드 쿠폰',
+        desc: 'GPU 업그레이드 비용 10% 할인. 하한은 60%입니다.',
+        cost: 900,
+        rarity: 'RARE',
+        category: 'SYSTEM',
+        buy: () => {
+          modifiers.gpuUpgradeDiscount *= 0.9;
+          if (modifiers.gpuUpgradeDiscount < 0.6) modifiers.gpuUpgradeDiscount = 0.6;
+        }
+      },
+      {
+        id: 'overclock_script',
+        name: '오버클럭 스크립트',
+        desc: '다음 5회 코드 스캔 EXP +3.',
+        cost: 480,
+        rarity: 'UNCOMMON',
+        category: 'SYSTEM',
+        buy: () => {
+          modifiers.overclockScanCharges = (modifiers.overclockScanCharges || 0) + 5;
+        }
+      },
+      {
+        id: 'scan_exp_script',
+        name: '스캔 EXP 스크립트',
+        desc: '다음 10회 코드 스캔 EXP +1.',
+        cost: 300,
+        rarity: 'COMMON',
+        category: 'SYSTEM',
+        buy: () => {
+          modifiers.scanExpScriptCharges = (modifiers.scanExpScriptCharges || 0) + 10;
         }
       },
       {
@@ -1360,6 +1450,29 @@ function applyLanguageToUI(){
         }
       },
       {
+        id: 'credit_cache',
+        name: '크레딧 캐시',
+        desc: '즉시 크레딧 +500. 막힌 업그레이드 흐름을 풀어줍니다.',
+        cost: 260,
+        rarity: 'COMMON',
+        category: 'ECONOMY',
+        buy: () => {
+          state.credits += 500;
+          state.stats.creditsEarnedTotal += 500;
+        }
+      },
+      {
+        id: 'credit_relay_script',
+        name: '크레딧 릴레이 스크립트',
+        desc: '다음 5회 해킹 성공 크레딧 +20%.',
+        cost: 620,
+        rarity: 'RARE',
+        category: 'ECONOMY',
+        buy: () => {
+          modifiers.creditRelayCharges = (modifiers.creditRelayCharges || 0) + 5;
+        }
+      },
+      {
         id: 'scanner_plus',
         name: '정밀 스캐너',
         desc: '코드 스캔 시 추가 경험치 +1 (영구, 1회 구매 한정).',
@@ -1368,6 +1481,28 @@ function applyLanguageToUI(){
         category: 'SYSTEM',
         buy: () => {
           modifiers.scanExtraExp += 1;
+        }
+      },
+      {
+        id: 'hack_stability_patch',
+        name: '해킹 안정화 패치',
+        desc: '해킹 성공률 +2%p. 누적 상한은 +8%p입니다.',
+        cost: 850,
+        rarity: 'RARE',
+        category: 'UTILITY',
+        buy: () => {
+          modifiers.hackStabilityBonus = Math.min(0.08, (modifiers.hackStabilityBonus || 0) + 0.02);
+        }
+      },
+      {
+        id: 'failure_buffer_module',
+        name: '실패 완충 모듈',
+        desc: '실패 완충 2회 충전. RISK/EXTREME 추가 에너지 페널티를 1회씩 방지합니다.',
+        cost: 560,
+        rarity: 'UNCOMMON',
+        category: 'UTILITY',
+        buy: () => {
+          modifiers.failureBufferCharges = (modifiers.failureBufferCharges || 0) + 2;
         }
       },
       {
@@ -1390,8 +1525,31 @@ function applyLanguageToUI(){
       creditMultiplierPermanent: 1.0,
       expMultiplier: 1.0,
       cpuUpgradeDiscount: 1.0,
-      riskSuccessBonus: 0.0
+      riskSuccessBonus: 0.0,
+      gpuUpgradeDiscount: 1.0,
+      hackStabilityBonus: 0.0,
+      failureBufferCharges: 0,
+      overclockScanCharges: 0,
+      scanExpScriptCharges: 0,
+      creditRelayCharges: 0,
+      fastRecoveryTicks: 0
     };
+
+    function ensureModifierDefaults() {
+      modifiers.creditMultiplierSession = Number.isFinite(Number(modifiers.creditMultiplierSession)) ? Number(modifiers.creditMultiplierSession) : 1.0;
+      modifiers.scanExtraExp = Number.isFinite(Number(modifiers.scanExtraExp)) ? Number(modifiers.scanExtraExp) : 0;
+      modifiers.creditMultiplierPermanent = Number.isFinite(Number(modifiers.creditMultiplierPermanent)) ? Number(modifiers.creditMultiplierPermanent) : 1.0;
+      modifiers.expMultiplier = Number.isFinite(Number(modifiers.expMultiplier)) ? Number(modifiers.expMultiplier) : 1.0;
+      modifiers.cpuUpgradeDiscount = Number.isFinite(Number(modifiers.cpuUpgradeDiscount)) ? Number(modifiers.cpuUpgradeDiscount) : 1.0;
+      modifiers.riskSuccessBonus = Number.isFinite(Number(modifiers.riskSuccessBonus)) ? Number(modifiers.riskSuccessBonus) : 0.0;
+      modifiers.gpuUpgradeDiscount = Number.isFinite(Number(modifiers.gpuUpgradeDiscount)) ? Math.max(0.6, Math.min(1, Number(modifiers.gpuUpgradeDiscount))) : 1.0;
+      modifiers.hackStabilityBonus = Number.isFinite(Number(modifiers.hackStabilityBonus)) ? Math.max(0, Math.min(0.08, Number(modifiers.hackStabilityBonus))) : 0.0;
+      modifiers.failureBufferCharges = Math.max(0, Math.round(Number(modifiers.failureBufferCharges || 0)));
+      modifiers.overclockScanCharges = Math.max(0, Math.round(Number(modifiers.overclockScanCharges || 0)));
+      modifiers.scanExpScriptCharges = Math.max(0, Math.round(Number(modifiers.scanExpScriptCharges || 0)));
+      modifiers.creditRelayCharges = Math.max(0, Math.round(Number(modifiers.creditRelayCharges || 0)));
+      modifiers.fastRecoveryTicks = Math.max(0, Math.round(Number(modifiers.fastRecoveryTicks || 0)));
+    }
 
     // 미션 정의
     const missionDefs = {
@@ -1896,6 +2054,10 @@ function applyLanguageToUI(){
     const listModalBackdrop = document.getElementById('listModalBackdrop');
     const btnListClose = document.getElementById('btnListClose');
     const btnListClose2 = document.getElementById('btnListClose2');
+    const btnEvent = document.getElementById('btnEvent');
+    const eventModalBackdrop = document.getElementById('eventModalBackdrop');
+    const btnEventClose = document.getElementById('btnEventClose');
+    const btnEventClose2 = document.getElementById('btnEventClose2');
     const btnMore = document.getElementById('btnMore');
     const moreModalBackdrop = document.getElementById('moreModalBackdrop');
     const btnMoreClose = document.getElementById('btnMoreClose');
@@ -1931,6 +2093,8 @@ function applyLanguageToUI(){
     const tabMission = document.getElementById('tabMission');
     const tabAchievement = document.getElementById('tabAchievement');
     const tabCodex = document.getElementById('tabCodex');
+    const tabLiveNet = document.getElementById('tabLiveNet');
+    const tabRank = document.getElementById('tabRank');
     const tabLogs = document.getElementById('tabLogs');
     const tabSettings = document.getElementById('tabSettings');
     const tabSave = document.getElementById('tabSave');
@@ -1974,6 +2138,15 @@ function applyLanguageToUI(){
     const btnTutorialFinish = document.getElementById('btnTutorialFinish');
     const btnTutorialSkip = document.getElementById('btnTutorialSkip');
     const btnOpenTutorial = document.getElementById('btnOpenTutorial');
+
+    const codeDetailModalBackdrop = document.getElementById('codeDetailModalBackdrop');
+    const codeDetailModalTitle = document.getElementById('codeDetailModalTitle');
+    const codeDetailModalBody = document.getElementById('codeDetailModalBody');
+    const btnCodeDetailClose = document.getElementById('btnCodeDetailClose');
+    const btnModalUpgradeCode = document.getElementById('btnModalUpgradeCode');
+    const btnModalSyncCode = document.getElementById('btnModalSyncCode');
+    const btnModalEvolveCode = document.getElementById('btnModalEvolveCode');
+    const btnModalShardCode = document.getElementById('btnModalShardCode');
 
     const btnExportSave = document.getElementById('btnExportSave');
     const btnImportSaveFile = document.getElementById('btnImportSaveFile');
@@ -2765,6 +2938,7 @@ function applyLanguageToUI(){
     }
 
     function log(message, type = 'system') {
+      if (!logList) return;
       const entry = document.createElement('div');
       entry.className = 'log-entry';
       entry.dataset.type = type;
@@ -2803,6 +2977,7 @@ function applyLanguageToUI(){
     }
 
     function applyLogFilter() {
+      if (!logList) return;
       const show = state.logFilter;
       const children = logList.children;
       for (let i = 0; i < children.length; i++) {
@@ -2825,6 +3000,7 @@ function applyLanguageToUI(){
     }
 
     function trimLogs() {
+      if (!logList) return;
       // 핀(고정) 로그는 제외하고 최신 100개까지만 유지
       const max = 100;
       const children = Array.from(logList.children);
@@ -3033,6 +3209,18 @@ function applyLanguageToUI(){
       renderWeeklyPanel();
     }
 
+    function getEnergyIntervalMs() {
+      ensureModifierDefaults();
+      return Math.round(ENERGY_INTERVAL_MS * (modifiers.fastRecoveryTicks > 0 ? 0.75 : 1));
+    }
+
+    function consumeFastRecoveryTick() {
+      if (modifiers.fastRecoveryTicks > 0) {
+        modifiers.fastRecoveryTicks -= 1;
+        if (modifiers.fastRecoveryTicks < 0) modifiers.fastRecoveryTicks = 0;
+      }
+    }
+
     function consumeEnergy(amount) {
       ensureMissionResets();
       if (state.energy < amount) return false;
@@ -3055,7 +3243,7 @@ function applyLanguageToUI(){
       }
 
       if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
-        state.energyTimerMs = ENERGY_INTERVAL_MS;
+        state.energyTimerMs = getEnergyIntervalMs();
       }
       updateStatsUI();
       return true;
@@ -3098,9 +3286,10 @@ function applyLanguageToUI(){
         state.energyTimerMs = Math.max(0, state.energyTimerMs - 100);
         if (state.energyTimerMs <= 0) {
           state.energy++;
+          consumeFastRecoveryTick();
           renderStagePanel();
           if (state.energy < state.energyMax) {
-            state.energyTimerMs = ENERGY_INTERVAL_MS;
+            state.energyTimerMs = getEnergyIntervalMs();
           } else {
             state.energyTimerMs = 0;
           }
@@ -3257,16 +3446,23 @@ function applyLanguageToUI(){
 
       getSortedOwnedCodes().forEach(code => {
         const li = document.createElement('li');
+        li.className = 'code-card';
         if (state.activeCodeId === code.id) li.classList.add('active');
 
-        const left = document.createElement('span');
-        left.textContent = code.name;
+        const left = document.createElement('div');
+        left.className = 'code-card-main';
+        const nameEl = document.createElement('strong');
+        nameEl.textContent = code.name;
         const rarityClass = 'rarity-' + code.rarity.toLowerCase();
-        left.classList.add(rarityClass);
+        nameEl.classList.add(rarityClass);
+        const shardEl = document.createElement('span');
+        shardEl.textContent = `${localizeRarityLabel(code.rarity)} · 조각 ${code.shards || 0}`;
+        left.appendChild(nameEl);
+        left.appendChild(shardEl);
 
         const right = document.createElement('span');
         right.className = 'meta';
-        right.textContent = `[${localizeRarityLabel(code.rarity)}] Lv.${code.level} / PWR ${code.power}`;
+        right.textContent = `Lv.${code.level} · PWR ${code.power}`;
 
         li.appendChild(left);
         li.appendChild(right);
@@ -3276,25 +3472,22 @@ function applyLanguageToUI(){
           updateStatsUI();
           log(t('activeCode', { name: code.name }), 'system');
           onTutorialAction('selectCode');
-          if (window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches) {
-            setTimeout(() => {
-              const detailWrap = codeDetailEl && codeDetailEl.closest('.stat-box');
-              if (detailWrap && typeof detailWrap.scrollIntoView === 'function') detailWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 20);
-          }
+          renderCodeList();
+          renderCodeDetail();
+          openCodeDetailModal(code.id);
         });
 
         codeListEl.appendChild(li);
       });
     }
 
-    function renderCodeDetail() {
-      if (!codeDetailEl) return;
-      const code = getActiveCodeInstance();
-      if (!code) {
-        codeDetailEl.innerHTML = `<div class="small">${t('selectCode')}</div>`;
-        return;
-      }
+    function getShardEnhanceCost(code) {
+      const map = { COMMON: 2, UNCOMMON: 3, RARE: 4, EPIC: 5, LEGENDARY: 6 };
+      return map[code && code.rarity] || 2;
+    }
+
+    function getCodeDetailHtml(code) {
+      if (!code) return `<div class="small">${t('selectCode')}</div>`;
       const def = codeDefs[code.id];
       const ability = def ? localizeCodeDescription(def) : t('noDesc');
       const usage = code.usage || 0;
@@ -3306,7 +3499,8 @@ function applyLanguageToUI(){
       const syncCost = getSyncShardCost(syncLevel);
       const evolveReady = code.level >= 5;
       const syncBonusText = Math.round((getSyncSuccessBonus(syncLevel + 1) - getSyncSuccessBonus(syncLevel)) * 100);
-      const html = `
+      const shardBoostCost = getShardEnhanceCost(code);
+      return `
         <div style="margin-bottom:4px;">
           <strong class="${rarityClass}">${code.name}</strong>
           <span class="rarity-tag ${rarityClass}">[${localizeRarityLabel(code.rarity)}]</span>
@@ -3318,11 +3512,37 @@ function applyLanguageToUI(){
         <div class="small">${t('syncLabel', { v: syncLevel })}</div>
         <div class="small code-next-meta">${t('nextUpgrade', { v: upgradeCost })}</div>
         <div class="small code-next-meta">${t('nextSync', { a: syncCost, b: syncBonusText })}</div>
+        <div class="small code-next-meta">${t('shardEnhanceCost', { cost: shardBoostCost })}</div>
         <div class="small code-next-meta">${evolveReady ? t('evolveReady') : t('evolveNeed')}</div>
         <div class="small" style="margin-top:6px; color:#a5b4fc;">${t('ability')}</div>
         <div class="small">${ability}</div>
       `;
-      codeDetailEl.innerHTML = html;
+    }
+
+    function renderCodeDetail() {
+      const code = getActiveCodeInstance();
+      const html = getCodeDetailHtml(code);
+      if (codeDetailEl) codeDetailEl.innerHTML = html;
+      if (codeDetailModalBody) codeDetailModalBody.innerHTML = html;
+      if (codeDetailModalTitle) codeDetailModalTitle.textContent = code ? code.name : t('codeDetail');
+      const hasCode = !!code;
+      [btnModalUpgradeCode, btnModalSyncCode, btnModalEvolveCode, btnModalShardCode].forEach(btn => {
+        if (btn) btn.disabled = !hasCode;
+      });
+    }
+
+    function openCodeDetailModal(codeId) {
+      if (codeId) state.activeCodeId = codeId;
+      renderCodeDetail();
+      if (!codeDetailModalBackdrop) return;
+      codeDetailModalBackdrop.classList.add('active');
+      codeDetailModalBackdrop.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeCodeDetailModal() {
+      if (!codeDetailModalBackdrop) return;
+      codeDetailModalBackdrop.classList.remove('active');
+      codeDetailModalBackdrop.setAttribute('aria-hidden', 'true');
     }
 
     function getActiveCodeInstance() {
@@ -3796,6 +4016,8 @@ function applyLanguageToUI(){
       log(t('syncDone', { name: code.name, lv: code.syncLevel, pwr: powerBonus, rate: Math.round(getSyncSuccessBonus(code.syncLevel) * 100) }), 'system');
       showToast(t('syncToast', { name: code.name, lv: code.syncLevel }), 'system');
       updateStatsUI();
+      renderCodeList();
+      renderCodeDetail();
       renderStagePanel();
     }
 
@@ -3818,6 +4040,8 @@ function applyLanguageToUI(){
       playSfx('upgrade');
       log(t('upgradeDone', { name: code.name, lv: code.level, pwr: code.power, cost }), 'system');
       updateStatsUI();
+      renderCodeList();
+      renderCodeDetail();
       renderStagePanel();
       checkMissions('general');
     }
@@ -3853,8 +4077,36 @@ function applyLanguageToUI(){
         unlockAchievement('get_epic_code');
       }
       updateStatsUI();
+      renderCodeList();
+      renderCodeDetail();
       renderStagePanel();
       checkMissions('general');
+    }
+
+    function shardEnhanceSelectedCode() {
+      const code = getActiveCodeInstance();
+      if (!code) {
+        log(t('noCodeUpgrade'), 'system');
+        return;
+      }
+      code.shards = code.shards || 0;
+      const cost = getShardEnhanceCost(code);
+      if (code.shards < cost) {
+        log(t('shardEnhanceFail', { need: cost, have: code.shards }), 'system');
+        showToast(t('shardEnhanceFail', { need: cost, have: code.shards }), 'warn');
+        return;
+      }
+      code.shards -= cost;
+      code.power += 2;
+      state.stats.codeShardsSpentTotal = (state.stats.codeShardsSpentTotal || 0) + cost;
+      playSfx('upgrade');
+      log(t('shardEnhanceDone', { name: code.name, pwr: code.power, cost }), 'system');
+      showToast(t('shardEnhanceDone', { name: code.name, pwr: code.power, cost }), 'system');
+      renderCodeList();
+      renderCodeDetail();
+      updateStatsUI();
+      renderStagePanel();
+      scheduleSilentSave();
     }
 
     function renderServers() {
@@ -3877,11 +4129,21 @@ function applyLanguageToUI(){
       energy_pack: { type: 'daily', limit: 3, label: '05:00 리셋 (3회)' },
       energy_boost_1: { type: 'daily', limit: 3, label: '05:00 리셋 (3회)' },
       energy_boost_2: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
+      quick_charge_cell: { type: 'daily', limit: 3, label: '05:00 리셋 (3회)' },
+      recovery_daemon: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
+      full_battery_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
       credit_boost_run: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
       scanner_module: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
       cpu_discount: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      gpu_discount_coupon: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      overclock_script: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
+      scan_exp_script: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
       max_energy_up: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
       big_credit_pack: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      credit_cache: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      credit_relay_script: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      hack_stability_patch: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
+      failure_buffer_module: { type: 'daily', limit: 2, label: '05:00 리셋 (2회)' },
       level_ticket: { type: 'daily', limit: 1, label: '05:00 리셋 (1회)' },
       // One-time (no stacking)
       exp_boost: { type: 'once', limit: 1, label: '1회' },
@@ -4129,6 +4391,7 @@ function applyLanguageToUI(){
           }
           state.credits -= item.cost;
           item.buy?.();
+          ensureModifierDefaults();
           // mark cap usage
           markShopPurchase(item.id);
 
@@ -4149,6 +4412,7 @@ function applyLanguageToUI(){
           if (state.stats.shopPurchaseCount >= 1) unlockAchievement('shop_first_buy');
           updateStatsUI();
           renderShop();
+          scheduleSilentSave();
         });
 
         const foot = document.createElement('div');
@@ -4321,7 +4585,16 @@ function applyLanguageToUI(){
           }
         }
 
-	        const expGain = 2 + modifiers.scanExtraExp + Math.max(0, Number(activeEffect.scanExpBonus || 0));
+	        let scriptExpBonus = 0;
+	        if (modifiers.overclockScanCharges > 0) {
+	          scriptExpBonus += 3;
+	          modifiers.overclockScanCharges -= 1;
+	        }
+	        if (modifiers.scanExpScriptCharges > 0) {
+	          scriptExpBonus += 1;
+	          modifiers.scanExpScriptCharges -= 1;
+	        }
+	        const expGain = 2 + modifiers.scanExtraExp + Math.max(0, Number(activeEffect.scanExpBonus || 0)) + scriptExpBonus;
 	        addExp(expGain);
 	        trackWeeklyChallenge('scan', { rarity, codeId: chosen.id, shards: weeklyShardGain });
 	        log(t('scanDone', { exp: expGain }), 'scan');
@@ -4386,6 +4659,7 @@ function applyLanguageToUI(){
       let successChanceBonus = getSyncSuccessBonus(code.syncLevel || 0);
       let expMultiplier = modeInfo.expMultiplier;
       const effect = getCodeEffect(def);
+      successChanceBonus += Number(modifiers.hackStabilityBonus || 0);
 
       if (def) {
         if (def.id === 'port_scanner') serverSec = Math.floor(serverSec * 0.9);
@@ -4442,6 +4716,10 @@ function applyLanguageToUI(){
         let gainedExp = 6;
         if (def && def.id === 'cache_sniffer') rewardCredits += 5;
         if (def && def.id === 'rapid_exploit') gainedExp += 3;
+        if (modifiers.creditRelayCharges > 0) {
+          rewardCredits = Math.max(1, Math.round(rewardCredits * 1.2));
+          modifiers.creditRelayCharges -= 1;
+        }
         gainedExp = Math.max(1, Math.round(gainedExp * expMultiplier * getGpuExpMultiplier()));
 
         state.credits += rewardCredits;
@@ -4517,20 +4795,25 @@ function applyLanguageToUI(){
           state.stats.energySpentTotal += 1;
           trackWeeklyChallenge('energy_spent', { amount: 1 });
           if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
-            state.energyTimerMs = ENERGY_INTERVAL_MS;
+            state.energyTimerMs = getEnergyIntervalMs();
           }
           log(getLang()==='en' ? 'Overflow_Inject penalty: consumed 1 additional energy.' : 'Overflow_Inject 페널티: 에너지가 추가로 1 소모되었습니다.', 'hack');
         }
 
         if (modeInfo.failEnergyPenalty > 0) {
-          state.energy = Math.max(0, state.energy - modeInfo.failEnergyPenalty);
-          state.stats.energySpentTotal += modeInfo.failEnergyPenalty;
-          trackWeeklyChallenge('energy_spent', { amount: modeInfo.failEnergyPenalty });
-          if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
-            state.energyTimerMs = ENERGY_INTERVAL_MS;
+          if (modifiers.failureBufferCharges > 0) {
+            modifiers.failureBufferCharges -= 1;
+            log(getLang() === 'en' ? 'Failure Buffer Module prevented the extra energy penalty.' : '실패 완충 모듈이 추가 에너지 페널티를 방지했습니다.', 'hack');
+          } else {
+            state.energy = Math.max(0, state.energy - modeInfo.failEnergyPenalty);
+            state.stats.energySpentTotal += modeInfo.failEnergyPenalty;
+            trackWeeklyChallenge('energy_spent', { amount: modeInfo.failEnergyPenalty });
+            if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
+              state.energyTimerMs = getEnergyIntervalMs();
+            }
+            log(t(modeInfo.id === 'extreme' ? 'extremePenaltyLog' : 'riskPenaltyLog'), 'hack');
+            if (state.energy === 0) unlockAchievement('energy_zero');
           }
-          log(t(modeInfo.id === 'extreme' ? 'extremePenaltyLog' : 'riskPenaltyLog'), 'hack');
-          if (state.energy === 0) unlockAchievement('energy_zero');
         }
 
         if (def && def.id === 'auto_patch' && Math.random() < 0.2) {
@@ -4574,7 +4857,8 @@ function applyLanguageToUI(){
 
     function upgradeGpu() {
       const tier = Math.max(1, Number(state.gpuTier || 1));
-      const cost = 650 * tier;
+      ensureModifierDefaults();
+      const cost = Math.round(650 * tier * modifiers.gpuUpgradeDiscount);
       if (state.credits < cost) {
         log(t('gpuUpgradeFail', { cost }), 'system');
         showToast(t('gpuUpgradeFail', { cost }), 'warn');
@@ -5162,7 +5446,8 @@ function applyLanguageToUI(){
     function setActiveMoreTab(tabName) {
       const panelMap = {
         codex: tabCodex,
-        logs: tabLogs,
+        live: tabLiveNet,
+        rank: tabRank,
         settings: tabSettings,
         save: tabSave
       };
@@ -5174,6 +5459,11 @@ function applyLanguageToUI(){
       moreTabButtons.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === activeTab);
       });
+      try {
+        document.dispatchEvent(new CustomEvent('hcsig:more-tab', {
+          detail: { tab: activeTab, open: !!(moreModalBackdrop && moreModalBackdrop.classList.contains('active')) }
+        }));
+      } catch (e) {}
     }
 
     listTabButtons.forEach(btn => {
@@ -5229,13 +5519,31 @@ function applyLanguageToUI(){
       listModalBackdrop.classList.remove('active');
     }
 
+    function openEventModal() {
+      try {
+        renderWeeklyPanel();
+        if (!eventModalBackdrop) return;
+        eventModalBackdrop.classList.add('active');
+        try { document.dispatchEvent(new CustomEvent('hcsig:event-open', { detail: { open: true } })); } catch(e) {}
+      } catch (err) {
+        console.error('[EventModal] open failed:', err);
+        try { showToast('EVENT를 여는 중 오류가 발생했습니다. (콘솔 확인)', 'warn'); } catch(e) {}
+      }
+    }
+
+    function closeEventModal() {
+      if (!eventModalBackdrop) return;
+      eventModalBackdrop.classList.remove('active');
+      try { document.dispatchEvent(new CustomEvent('hcsig:event-open', { detail: { open: false } })); } catch(e) {}
+    }
+
     function openMoreModal(defaultTab = 'codex', showDontShowButton = false) {
       try {
-        setActiveMoreTab(defaultTab);
         renderUpdateLog();
         if (btnUpdateDontShow) btnUpdateDontShow.style.display = showDontShowButton ? 'inline-block' : 'none';
         if (!moreModalBackdrop) return;
         moreModalBackdrop.classList.add('active');
+        setActiveMoreTab(defaultTab);
       } catch (err) {
         console.error('[MoreModal] open failed:', err);
         try { showToast('더보기를 여는 중 오류가 발생했습니다. (콘솔 확인)', 'warn'); } catch(e) {}
@@ -5246,21 +5554,34 @@ function applyLanguageToUI(){
     function closeMoreModal() {
       if (!moreModalBackdrop) return;
       moreModalBackdrop.classList.remove('active');
+      try {
+        document.dispatchEvent(new CustomEvent('hcsig:more-tab', { detail: { tab: 'closed', open: false } }));
+      } catch (e) {}
     }
 
     // v1.6.2: 더보기 버튼 클릭 이슈 방지 (가드 + 이벤트 위임)
     bind(btnList, 'click', () => openListModal('mission'));
+    bind(btnEvent, 'click', () => openEventModal());
     bind(btnMore, 'click', () => openMoreModal('codex', false));
     bind(document, 'click', (e) => {
       const listTarget = e.target.closest && e.target.closest('#btnList');
       if (listTarget) openListModal('mission');
+      const eventTarget = e.target.closest && e.target.closest('#btnEvent');
+      if (eventTarget) openEventModal();
       const moreTarget = e.target.closest && e.target.closest('#btnMore');
       if (moreTarget) openMoreModal('codex', false);
+      const homeLiveHint = e.target.closest && e.target.closest('#homeLiveHint');
+      if (homeLiveHint) openMoreModal('live', false);
     });
     bind(btnListClose, 'click', closeListModal);
     bind(btnListClose2, 'click', closeListModal);
     bind(listModalBackdrop, 'click', (e) => {
       if (e.target === listModalBackdrop) closeListModal();
+    });
+    bind(btnEventClose, 'click', closeEventModal);
+    bind(btnEventClose2, 'click', closeEventModal);
+    bind(eventModalBackdrop, 'click', (e) => {
+      if (e.target === eventModalBackdrop) closeEventModal();
     });
     bind(btnMoreClose, 'click', closeMoreModal);
     bind(btnMoreClose2, 'click', closeMoreModal);
@@ -5380,6 +5701,7 @@ function applyLanguageToUI(){
       state.lastSeenAt = state.lastSavedAt;
       state.hackMode = normalizeHackMode(state.hackMode);
       state.riskMode = state.hackMode === 'risk';
+      ensureModifierDefaults();
       const saveData = {
         version: CURRENT_VERSION,
         savedAt: state.lastSavedAt,
@@ -5450,6 +5772,7 @@ function applyLanguageToUI(){
         if (data.modifiers) {
           Object.assign(modifiers, data.modifiers);
         }
+        ensureModifierDefaults();
         // 새 필드 기본값 보정
         state.stats = state.stats || {};
         state.stats.energySpentTotal ||= 0;
@@ -5462,6 +5785,7 @@ function applyLanguageToUI(){
 	        state.stats.stageAttemptCount ||= 0;
 	        state.stats.stageClearCount ||= 0;
 	        state.stats.weeklyAllClearCount ||= 0;
+	        state.stats.codeShardsSpentTotal ||= 0;
         state.gpuTier = Math.max(1, Number(state.gpuTier || 1));
         state.hackMode = normalizeHackMode(state.hackMode || (state.riskMode ? 'risk' : 'normal'));
         state.riskMode = state.hackMode === 'risk';
@@ -5858,6 +6182,14 @@ function applyLanguageToUI(){
     bind(btnUpgradeCode, 'click', upgradeSelectedCode);
     bind(btnSyncCode, 'click', syncSelectedCode);
     bind(btnEvolveCode, 'click', evolveSelectedCode);
+    bind(btnModalUpgradeCode, 'click', upgradeSelectedCode);
+    bind(btnModalSyncCode, 'click', syncSelectedCode);
+    bind(btnModalEvolveCode, 'click', evolveSelectedCode);
+    bind(btnModalShardCode, 'click', shardEnhanceSelectedCode);
+    bind(btnCodeDetailClose, 'click', closeCodeDetailModal);
+    bind(codeDetailModalBackdrop, 'click', (e) => {
+      if (e.target === codeDetailModalBackdrop) closeCodeDetailModal();
+    });
 
     bind(btnUseEnergyPack, 'click', useEnergyPack);
     bind(document, 'hcsig:lab-ready', () => {
@@ -5877,7 +6209,7 @@ function applyLanguageToUI(){
       scheduleSilentSave();
     });
     setInterval(() => {
-      if (document.body.classList.contains('app-view-lab')) renderWeeklyPanel();
+      if (document.body.classList.contains('app-view-lab') || (eventModalBackdrop && eventModalBackdrop.classList.contains('active'))) renderWeeklyPanel();
     }, 30000);
 
     hackModeButtons.forEach(btn => {

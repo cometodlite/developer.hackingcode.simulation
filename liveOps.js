@@ -1,5 +1,5 @@
 (function(){
-  const VERSION = '2.2.3';
+  const VERSION = '2.2.4';
   const HEARTBEAT_MS = 60000;
   const ACTIVE_WINDOW_MS = 120000;
   const RANK_WRITE_MS = 60000;
@@ -24,6 +24,7 @@
     ready: false,
     authUser: null,
     activeView: document.body.classList.contains('app-view-coming') ? 'coming' : 'home',
+    moreTab: 'closed',
     config: defaultConfig(),
     announcements: [],
     nodes: fallbackNodes(),
@@ -307,97 +308,67 @@
   }
 
   function ensureUi(){
-    const header = document.querySelector('header');
-    if (header && !document.getElementById('liveNetStrip')) {
-      const strip = document.createElement('div');
-      strip.id = 'liveNetStrip';
-      strip.className = 'live-net-strip is-local';
-      strip.innerHTML = `
-        <span class="live-dot" aria-hidden="true"></span>
-        <strong id="liveNetStatus">LOCAL MIRROR</strong>
-        <span id="liveNetAgents">AGENTS --</span>
-        <span id="liveNetSync">SYNC --</span>
-      `;
-      header.appendChild(strip);
-    }
-
-    const home = document.getElementById('appViewHome');
-    if (home && !document.getElementById('livePulseCard')) {
-      const card = document.createElement('section');
-      card.id = 'livePulseCard';
-      card.className = 'live-pulse-card';
-      card.innerHTML = `
-        <div class="live-section-head">
-          <div>
-            <span class="section-title">NETWORK PULSE</span>
-            <h3 id="livePulseTitle">LIVE NET</h3>
-          </div>
-          <span class="live-status-pill" id="livePulseStatus">LOCAL MIRROR</span>
-        </div>
-        <p class="live-motd" id="livePulseMotd">LOCAL MIRROR active.</p>
-        <div class="live-node-row" id="livePulseNodes"></div>
-        <div class="live-mini-feed" id="livePulseFeed"></div>
-	      `;
-	      const actionBox = document.getElementById('titleActions') ? document.getElementById('titleActions').closest('.stat-box') : null;
-	      if (actionBox && actionBox.parentElement === home) actionBox.insertAdjacentElement('afterend', card);
-	      else home.appendChild(card);
-	    }
-
     buildBroadcastHub();
 
     [
-      'liveNetStrip','liveNetStatus','liveNetAgents','liveNetSync',
-      'livePulseCard','livePulseStatus','livePulseMotd','livePulseNodes','livePulseFeed',
       'liveBroadcastStatus','liveBroadcastMotd','liveBroadcastAnnouncements','liveBroadcastNodes',
-      'liveBroadcastFeed','liveRankTabs','liveRankList','liveRankSeason'
+      'liveBroadcastFeed','liveRankTabs','liveRankList','liveRankSeason','homeLiveHint'
     ].forEach(id => { el[id] = document.getElementById(id); });
   }
 
   function buildBroadcastHub(){
-    const coming = document.getElementById('appViewComing');
-    if (!coming || document.getElementById('liveBroadcastHub')) return;
-    coming.innerHTML = `
-      <div class="lab-hero coming-hero live-broadcast-hero" id="liveBroadcastHub">
-        <div>
-          <div class="section-title">COMING SOON</div>
-          <h2>Network Broadcast</h2>
-          <p>공식 노드 신호, 전역 피드, 소프트 랭킹을 이곳에서 확인합니다.</p>
+    const liveMount = document.getElementById('liveNetPanelMount');
+    const rankMount = document.getElementById('liveRankPanelMount');
+    if (liveMount && !document.getElementById('liveBroadcastHub')) {
+      liveMount.innerHTML = `
+        <div class="live-broadcast-hero" id="liveBroadcastHub">
+          <div>
+            <span class="badge">NETWORK CONTROL</span>
+            <h3>LIVE NET</h3>
+            <p>공지, 노드 상태, 전역 피드를 짧게 확인합니다.</p>
+          </div>
+          <span class="live-status-pill" id="liveBroadcastStatus">LOCAL MIRROR</span>
         </div>
-        <div class="lab-mode-chip" id="liveBroadcastStatus">LOCAL MIRROR</div>
-      </div>
-      <div class="live-broadcast-tabs" id="liveBroadcastTabs">
-        <button type="button" class="active" data-live-tab="broadcast">Broadcast</button>
-        <button type="button" data-live-tab="nodes">Nodes</button>
-        <button type="button" data-live-tab="feed">Feed</button>
-        <button type="button" data-live-tab="rank">Rank</button>
-      </div>
-      <section class="live-broadcast-panel active" data-live-panel="broadcast">
-        <span class="badge">MOTD</span>
-        <h3 id="liveBroadcastTitle">LIVE NETWORK</h3>
-        <p class="live-motd" id="liveBroadcastMotd">LOCAL MIRROR active.</p>
-        <div class="live-announcement-list" id="liveBroadcastAnnouncements"></div>
-      </section>
-      <section class="live-broadcast-panel" data-live-panel="nodes">
-        <span class="badge">NODES</span>
-        <h3>Node Status</h3>
-        <div class="live-node-grid" id="liveBroadcastNodes"></div>
-      </section>
-      <section class="live-broadcast-panel" data-live-panel="feed">
-        <span class="badge">TRACE FEED</span>
-        <h3>Agent Activity</h3>
-        <div class="live-feed-list" id="liveBroadcastFeed"></div>
-      </section>
-      <section class="live-broadcast-panel" data-live-panel="rank">
-        <span class="badge">SOFT RANK</span>
-        <h3>Network Rank <small id="liveRankSeason">SEASON 2.2</small></h3>
-        <div class="live-rank-tabs" id="liveRankTabs"></div>
-        <div class="live-rank-list" id="liveRankList"></div>
-      </section>
-    `;
+        <div class="live-broadcast-tabs" id="liveBroadcastTabs">
+          <button type="button" class="active" data-live-tab="broadcast">Broadcast</button>
+          <button type="button" data-live-tab="nodes">Nodes</button>
+          <button type="button" data-live-tab="feed">Feed</button>
+        </div>
+        <section class="live-broadcast-panel active" data-live-panel="broadcast">
+          <span class="badge">MOTD</span>
+          <h3 id="liveBroadcastTitle">LIVE NETWORK</h3>
+          <p class="live-motd" id="liveBroadcastMotd">LOCAL MIRROR active.</p>
+          <div class="live-announcement-list" id="liveBroadcastAnnouncements"></div>
+        </section>
+        <section class="live-broadcast-panel" data-live-panel="nodes">
+          <span class="badge">NODES</span>
+          <h3>Node Status</h3>
+          <div class="live-node-grid" id="liveBroadcastNodes"></div>
+        </section>
+        <section class="live-broadcast-panel" data-live-panel="feed">
+          <span class="badge">TRACE FEED</span>
+          <h3>Agent Activity</h3>
+          <div class="live-feed-list" id="liveBroadcastFeed"></div>
+        </section>
+      `;
+    }
+    if (rankMount && !document.getElementById('liveRankHub')) {
+      rankMount.innerHTML = `
+        <section class="live-broadcast-panel active" id="liveRankHub">
+          <span class="badge">SOFT RANK</span>
+          <h3>Network Rank <small id="liveRankSeason">SEASON 2.2</small></h3>
+          <p class="live-motd">검증 경쟁이 아닌 진행 공유용 소프트 랭킹입니다.</p>
+          <div class="live-rank-tabs" id="liveRankTabs"></div>
+          <div class="live-rank-list" id="liveRankList"></div>
+        </section>
+      `;
+    }
 
-    const tabs = coming.querySelectorAll('[data-live-tab]');
-    const panels = coming.querySelectorAll('[data-live-panel]');
+    const tabs = document.querySelectorAll('#liveBroadcastTabs [data-live-tab]');
+    const panels = document.querySelectorAll('#liveNetPanelMount [data-live-panel]');
     tabs.forEach(btn => {
+      if (btn.__hcsigLiveBound) return;
+      btn.__hcsigLiveBound = true;
       btn.addEventListener('click', () => {
         const tab = btn.dataset.liveTab || 'broadcast';
         if (state.selectedLiveTab === tab) return;
@@ -405,8 +376,7 @@
         tabs.forEach(item => item.classList.toggle('active', item === btn));
         panels.forEach(panel => panel.classList.toggle('active', panel.dataset.livePanel === tab));
         routeSubscriptions();
-        if (tab === 'rank') scheduleRankRender(true);
-        else scheduleBroadcastRender(true);
+        scheduleBroadcastRender(true);
       });
     });
   }
@@ -427,33 +397,15 @@
 
   function renderHeader(){
     const status = getLiveStatus();
-    if (el.liveNetStrip) {
-      el.liveNetStrip.classList.remove('is-online','is-degraded','is-maintenance','is-local');
-      const cls = status === 'ONLINE' ? 'is-online' : (status === 'DEGRADED' ? 'is-degraded' : (status === 'MAINTENANCE' ? 'is-maintenance' : 'is-local'));
-      el.liveNetStrip.classList.add(cls);
+    if (el.homeLiveHint) {
+      const agentText = status === 'LOCAL MIRROR' ? 'LOCAL MIRROR' : `AGENTS ${state.agents}`;
+      const syncText = status === 'LOCAL MIRROR' ? '관제 신호 대기' : `SYNC ${state.syncMs}`;
+      el.homeLiveHint.innerHTML = `<span>LIVE NET · ${escapeHtml(status)}</span><strong>${escapeHtml(agentText)} · ${escapeHtml(syncText)}</strong>`;
     }
-    if (el.liveNetStatus) el.liveNetStatus.textContent = status;
-    if (el.liveNetAgents) el.liveNetAgents.textContent = `AGENTS ${status === 'LOCAL MIRROR' ? '--' : state.agents}`;
-    if (el.liveNetSync) el.liveNetSync.textContent = `SYNC ${status === 'LOCAL MIRROR' ? '--' : state.syncMs}`;
   }
 
   function renderPulse(){
-    if (el.livePulseStatus) el.livePulseStatus.textContent = getLiveStatus();
-    if (el.livePulseMotd) el.livePulseMotd.textContent = getMotd();
-    if (el.livePulseNodes) {
-      el.livePulseNodes.innerHTML = state.nodes.slice(0, 3).map(node => `
-        <div class="live-node-mini">
-          <strong>${escapeHtml(node.name || node.id || 'NODE')}</strong>
-          <span>${escapeHtml(nodeStatusLabel(node.status))}</span>
-        </div>
-      `).join('');
-    }
-    if (el.livePulseFeed) {
-      el.livePulseFeed.innerHTML = state.feed.slice(0, 3).map(item => {
-        const line = formatFeedItem(item);
-        return `<div><strong>${escapeHtml(line.title)}</strong><span>${escapeHtml(line.meta)}</span></div>`;
-      }).join('');
-    }
+    renderHeader();
   }
 
   function renderBroadcast(){
@@ -507,7 +459,7 @@
   }
 
   function renderRankTabs(){
-    if (!el.liveRankTabs || state.selectedLiveTab !== 'rank') return;
+    if (!el.liveRankTabs || state.moreTab !== 'rank') return;
     el.liveRankTabs.innerHTML = BOARDS.map(board => `
       <button type="button" class="${board.id === state.selectedBoard ? 'active' : ''}" data-rank-board="${board.id}">${board.label}</button>
     `).join('');
@@ -523,7 +475,7 @@
   }
 
   function renderRank(){
-    if (!el.liveRankList || state.selectedLiveTab !== 'rank') return;
+    if (!el.liveRankList || state.moreTab !== 'rank') return;
     const entries = state.rankEntries || [];
     if (!entries.length) {
       el.liveRankList.innerHTML = `<div class="live-empty">${escapeHtml(text('랭킹 신호 대기 중', 'Waiting for rank signal'))}</div>`;
@@ -639,37 +591,15 @@
   }
 
   function subscribeHome(){
-    if (!canUseFirebase() || state.homeUnsubs.length || state.activeView === 'coming') return;
-    let annStarted = performance.now ? performance.now() : Date.now();
-    state.homeUnsubs.push(db().collection('liveAnnouncements').orderBy('createdAt', 'desc').limit(2).onSnapshot(snap => {
-      const sampleNow = performance.now ? performance.now() : Date.now();
-      markSyncSignal(sampleNow - annStarted);
-      annStarted = sampleNow;
-      state.announcements = mapDocs(snap).filter(item => item.active !== false);
-      schedulePulseRender(false);
-    }, err => handleLiveError(err)));
-    let nodeStarted = performance.now ? performance.now() : Date.now();
-    state.homeUnsubs.push(db().collection('liveServerNodes').orderBy('priority', 'asc').limit(3).onSnapshot(snap => {
-      const sampleNow = performance.now ? performance.now() : Date.now();
-      markSyncSignal(sampleNow - nodeStarted);
-      nodeStarted = sampleNow;
-      state.nodes = mapDocs(snap);
-      if (!state.nodes.length) state.nodes = fallbackNodes();
-      schedulePulseRender(false);
-    }, err => handleLiveError(err)));
-    let feedStarted = performance.now ? performance.now() : Date.now();
-    state.homeUnsubs.push(db().collection('liveFeed').orderBy('createdAt', 'desc').limit(3).onSnapshot(snap => {
-      const sampleNow = performance.now ? performance.now() : Date.now();
-      markSyncSignal(sampleNow - feedStarted);
-      feedStarted = sampleNow;
-      state.feed = mapDocs(snap);
-      if (!state.feed.length) state.feed = fallbackFeed();
-      schedulePulseRender(false);
-    }, err => handleLiveError(err)));
+    stop('homeUnsubs');
   }
 
   function subscribeDetail(){
-    if (!canUseFirebase() || state.activeView !== 'coming') return;
+    if (!canUseFirebase() || (state.moreTab !== 'live' && state.moreTab !== 'rank')) return;
+    if (state.moreTab === 'rank') {
+      subscribeRankBoard();
+      return;
+    }
     const tab = state.selectedLiveTab || 'broadcast';
     if (tab === 'broadcast') {
       stopDetailType('nodes');
@@ -725,7 +655,7 @@
   }
 
   function subscribeRankBoard(){
-    if (!canUseFirebase() || state.activeView !== 'coming' || state.selectedLiveTab !== 'rank') {
+    if (!canUseFirebase() || state.moreTab !== 'rank') {
       stopDetailType('rank');
       return;
     }
@@ -758,12 +688,11 @@
       return;
     }
     subscribeCore();
-    if (state.activeView === 'coming') {
-      stop('homeUnsubs');
+    stop('homeUnsubs');
+    if (state.moreTab === 'live' || state.moreTab === 'rank') {
       subscribeDetail();
     } else {
       stop('detailUnsubs');
-      subscribeHome();
     }
   }
 
@@ -1018,6 +947,15 @@
     scheduleRankRender(true);
   }
 
+  function setMoreTab(detail){
+    state.moreTab = detail && detail.open ? (detail.tab || 'closed') : 'closed';
+    ensureUi();
+    routeSubscriptions();
+    scheduleHeaderRender(true);
+    scheduleBroadcastRender(true);
+    scheduleRankRender(true);
+  }
+
   function inferViewFromBody(){
     if (document.body.classList.contains('app-view-coming')) return 'coming';
     if (document.body.classList.contains('app-view-lab')) return 'lab';
@@ -1033,6 +971,7 @@
     window.addEventListener('hcsig:activity', event => writeActivity(event.detail));
     window.addEventListener('hcsig:language-applied', renderAll);
     document.addEventListener('hcsig:main-view', event => setActiveView(event.detail && event.detail.view));
+    document.addEventListener('hcsig:more-tab', event => setMoreTab(event.detail || {}));
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         updateHeartbeat(true);

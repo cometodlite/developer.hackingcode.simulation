@@ -9,19 +9,20 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=2.2.3" rel="stylesheet"/>
+<link href="style.css?v=2.2.4" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">2.2.3 (Web)</span>
+<span class="header-version">2.2.4 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
 <button id="btnList" title="미션과 업적 리스트">LIST</button>
-<button id="btnMore" title="코드 도감, 로그, 설정, 클라우드 계정">더보기 ▾</button>
+<button id="btnEvent" title="주간 이벤트와 기간 한정 작전">EVENT</button>
+<button id="btnMore" title="코드 도감, LIVE NET, RANK, 설정, 클라우드 계정">더보기 ▾</button>
 </div>
 </header>
 <div id="main">
@@ -238,6 +239,50 @@
 </div>
 </div>
 
+<!-- 이벤트 모달 -->
+<div id="eventModalBackdrop">
+<div id="eventModal">
+<div id="eventModalHeader">
+<h2 id="eventTitle">EVENT</h2>
+<button id="btnEventClose">✕</button>
+</div>
+<div id="eventModalBody">
+<div class="event-intro">
+<div>
+<span class="badge">WEEKLY OPS</span>
+<h3>WEEKLY CHALLENGE</h3>
+<p>월요일 05:00 KST마다 작전 세트가 갱신됩니다.</p>
+</div>
+<span class="event-chip">EVENT BOARD</span>
+</div>
+<div class="weekly-head" id="weeklyPanel">
+<div>
+<span class="badge">CURRENT WEEK</span>
+<h3>주간 작전 현황</h3>
+<p>완료한 목표는 CLAIM으로 보상을 수령하세요.</p>
+</div>
+<div class="weekly-summary">
+<div><span>RESET</span><strong id="weeklyCountdown">--</strong></div>
+<div><span>PROGRESS</span><strong id="weeklyProgressText">0 / 5</strong></div>
+<div><span>SCORE</span><strong id="weeklyScore">0</strong></div>
+<div><span>TOKEN</span><strong id="weeklyTokenCount">0</strong></div>
+</div>
+</div>
+<div class="weekly-event-node" id="weeklyEventNode">BONUS NODE 대기 중</div>
+<div class="weekly-filter" id="weeklyFilter" aria-label="Weekly challenge filter">
+<button type="button" data-weekly-filter="incomplete" class="active">미완료</button>
+<button type="button" data-weekly-filter="all">전체</button>
+<button type="button" data-weekly-filter="complete">완료</button>
+</div>
+<div class="weekly-goal-list" id="weeklyGoalList"></div>
+<div class="weekly-bonus-card" id="weeklyBonusCard"></div>
+</div>
+<div id="eventModalFooter">
+<button id="btnEventClose2">닫기</button>
+</div>
+</div>
+</div>
+
 <!-- 더보기 모달 -->
 <div id="moreModalBackdrop">
 <div id="moreModal">
@@ -248,7 +293,8 @@
 <div id="moreModalBody">
 <div class="more-tabs">
 <button class="more-tab-button active" data-tab="codex" id="tabBtnCodex">코드 도감</button>
-<button class="more-tab-button" data-tab="logs" id="tabBtnLogs">로그</button>
+<button class="more-tab-button" data-tab="live" id="tabBtnLiveNet">LIVE NET</button>
+<button class="more-tab-button" data-tab="rank" id="tabBtnRank">RANK</button>
 <button class="more-tab-button" data-tab="settings" id="tabBtnSettings">설정</button>
 <button class="more-tab-button" data-tab="save" id="tabBtnSave">클라우드 계정</button>
 </div>
@@ -262,35 +308,21 @@
 </div>
 <div class="stat-box" id="codexList"></div>
 </div>
-<!-- 로그 탭 -->
-<div class="more-tab-panel" id="tabLogs">
+<!-- LIVE NET 탭 -->
+<div class="more-tab-panel" id="tabLiveNet">
 <div>
-<span class="badge">LOG</span>
-<span id="logsTabTitle">기록</span>
+<span class="badge">LIVE NET</span>
+<span id="liveNetTabTitle">네트워크 관제</span>
 </div>
-<div style="margin-top:8px;">
-<div class="stat-box" style="margin-bottom:6px;">
-<div class="small" style="margin-bottom:4px; opacity:0.9;" id="logSearchHelp">로그 검색 (로그 항목 클릭 → 핀/해제)</div>
-<input id="logSearchInput" placeholder="검색어 입력..." style="width:100%; padding:8px 10px; border-radius:10px; border:1px solid #243145; background:#0b1220; color:#e5e7eb;"/>
+<div id="liveNetPanelMount" class="more-live-mount"></div>
 </div>
-<div class="button-row" style="margin-bottom:4px;">
-<button id="btnClearLogs" title="현재 로그를 모두 지웁니다.">로그 초기화</button>
-<button id="btnToggleLogs" title="로그 영역을 숨기거나 다시 표시합니다.">로그 숨기기</button>
+<!-- RANK 탭 -->
+<div class="more-tab-panel" id="tabRank">
+<div>
+<span class="badge">SOFT RANK</span>
+<span id="rankTabTitle">소프트 랭킹</span>
 </div>
-<div id="logPanelBody">
-<div class="stat-box small" style="margin-bottom:6px;">
-<div style="margin-bottom:2px; opacity:0.9;" id="logFilterTitle">로그 필터</div>
-<label class="log-filter-label"><input checked="" id="filterSystem" type="checkbox"/> SYSTEM</label>
-<label class="log-filter-label"><input checked="" id="filterScan" type="checkbox"/> SCAN</label>
-<label class="log-filter-label"><input checked="" id="filterHack" type="checkbox"/> HACK</label>
-<label class="log-filter-label"><input checked="" id="filterShop" type="checkbox"/> SHOP</label>
-<label class="log-filter-label"><input checked="" id="filterLevel" type="checkbox"/> LEVEL</label>
-</div>
-<div class="stat-box resizable-box" id="logBox">
-<div id="logList"></div>
-</div>
-</div>
-</div>
+<div id="liveRankPanelMount" class="more-live-mount"></div>
 </div>
 <!-- 설정 탭 -->
 <div class="more-tab-panel" id="tabSettings">
@@ -529,6 +561,25 @@
 </div>
 </div>
 <div id="toastContainer"></div>
+<div id="logList" hidden></div>
+<div id="codeDetailModalBackdrop" aria-hidden="true">
+<div id="codeDetailModal" role="dialog" aria-modal="true" aria-labelledby="codeDetailModalTitle">
+<div id="codeDetailModalHeader">
+<div>
+<span class="badge">CODE DETAIL</span>
+<h2 id="codeDetailModalTitle">코드 상세</h2>
+</div>
+<button id="btnCodeDetailClose" type="button">✕</button>
+</div>
+<div id="codeDetailModalBody"></div>
+<div id="codeDetailModalFooter" class="button-row code-action-row">
+<button id="btnModalUpgradeCode" type="button">코드 강화</button>
+<button id="btnModalSyncCode" type="button">코드 동기화</button>
+<button id="btnModalEvolveCode" type="button">코드 진화</button>
+<button id="btnModalShardCode" type="button">조각 강화</button>
+</div>
+</div>
+</div>
 <div id="tutorialBackdrop" aria-hidden="true">
 <div id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="tutorialStepTitle">
 <div id="tutorialHeader">
@@ -563,10 +614,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=2.2.3"></script>
-<script src="auth.js?v=2.2.3"></script>
-<script src="cloudSave.js?v=2.2.3"></script>
-<script src="app-core.js?v=2.2.3"></script>
-<script src="app-ui.js?v=2.2.3"></script>
-<script src="liveOps.js?v=2.2.3"></script></body>
+<script src="firebase-config.js?v=2.2.4"></script>
+<script src="auth.js?v=2.2.4"></script>
+<script src="cloudSave.js?v=2.2.4"></script>
+<script src="app-core.js?v=2.2.4"></script>
+<script src="app-ui.js?v=2.2.4"></script>
+<script src="liveOps.js?v=2.2.4"></script></body>
 </html>

@@ -288,6 +288,18 @@
   [statusTitle, statusBox, actionBox, scanOverlay].forEach(el => {
     if(el && el.parentElement !== views.home) views.home.appendChild(el);
   });
+  if(statusBox) statusBox.classList.add('home-status-grid');
+  if(actionBox) {
+    actionBox.classList.add('home-actions-box');
+    if(!document.getElementById('homeLiveHint')){
+      actionBox.insertAdjacentHTML('afterend', `
+        <button type="button" id="homeLiveHint" class="home-live-hint">
+          <span>LIVE NET</span>
+          <strong>관제 신호 보기</strong>
+        </button>
+      `);
+    }
+  }
   [shopTitle, shopSortRow, shopList].forEach(el => {
     if(el && el.parentElement !== views.shop) views.shop.appendChild(el);
   });
@@ -313,7 +325,7 @@
 	      </div>
 	      <div class="lab-subtabs" id="labSubtabs">
 	        <button type="button" class="active" data-lab-tab="stage">데이터 타워</button>
-	        <button type="button" data-lab-tab="weekly">WEEKLY</button>
+	        <button type="button" data-lab-tab="zero">ZERO-DAY</button>
 	        <button type="button" data-lab-tab="coming">COMING SOON</button>
 	      </div>
       <section class="lab-panel active" data-lab-panel="stage">
@@ -336,38 +348,29 @@
 	        </div>
 		        <div class="stage-chapter-list" id="stageChapterList" aria-label="Data Tower chapters"></div>
 		      </section>
-	      <section class="lab-panel" data-lab-panel="weekly">
-	        <div class="weekly-head" id="weeklyPanel">
-	          <div>
-	            <span class="badge">WEEKLY OPS</span>
-	            <h3>WEEKLY CHALLENGE</h3>
-	            <p>월요일 05:00 KST마다 작전 세트가 갱신됩니다.</p>
-	          </div>
-	          <div class="weekly-summary">
-	            <div><span>RESET</span><strong id="weeklyCountdown">--</strong></div>
-	            <div><span>PROGRESS</span><strong id="weeklyProgressText">0 / 5</strong></div>
-	            <div><span>SCORE</span><strong id="weeklyScore">0</strong></div>
-	            <div><span>TOKEN</span><strong id="weeklyTokenCount">0</strong></div>
-	          </div>
+	      <section class="lab-panel" data-lab-panel="zero">
+	        <span class="badge">PREVIEW</span>
+	        <h3>ZERO-DAY</h3>
+	        <p>정식 침투 엔진은 다음 대형 업데이트에서 열립니다. 이번 버전에서는 모드 흐름만 먼저 공개합니다.</p>
+	        <div class="zero-day-flow">
+	          <article><strong>준비</strong><span>코드 빌드와 CPU/GPU 성향을 맞춥니다.</span></article>
+	          <article><strong>침투</strong><span>탐지 게이지가 오르기 전 핵심 노드를 돌파합니다.</span></article>
+	          <article><strong>탈출</strong><span>획득한 신호를 정리하고 보상을 회수합니다.</span></article>
 	        </div>
-	        <div class="weekly-event-node" id="weeklyEventNode">BONUS NODE 대기 중</div>
-	        <div class="weekly-filter" id="weeklyFilter" aria-label="Weekly challenge filter">
-	          <button type="button" data-weekly-filter="incomplete" class="active">미완료</button>
-	          <button type="button" data-weekly-filter="all">전체</button>
-	          <button type="button" data-weekly-filter="complete">완료</button>
+	        <div class="zero-day-meter" aria-label="Zero-day preview detection gauge">
+	          <span style="width:42%"></span>
 	        </div>
-	        <div class="weekly-goal-list" id="weeklyGoalList"></div>
-	        <div class="weekly-bonus-card" id="weeklyBonusCard"></div>
+	        <div class="small">ZERO-DAY는 실제 플레이 버튼 없이 프리뷰 셸로만 표시됩니다.</div>
 	      </section>
 	      <section class="lab-panel" data-lab-panel="coming">
-	        <span class="badge">NEXT</span>
-        <h3>준비 중</h3>
-        <p>아직 열리지 않은 실험 모드입니다.</p>
+	        <span class="badge">ROADMAP</span>
+        <h3>확장 로드맵</h3>
+        <p>LAB은 장기 도전과 다음 실험 콘텐츠를 준비하는 확장 허브입니다.</p>
         <div class="lab-preview-grid">
           <div><strong>BOSS RUSH</strong><span>연속 보스전</span></div>
 	          <div><strong>CODE PRESET</strong><span>빌드 저장 슬롯</span></div>
-          <div><strong>SERVER EVENT</strong><span>변칙 서버</span></div>
-          <div><strong>HYBRID TEST</strong><span>CPU/GPU 빌드</span></div>
+          <div><strong>SEASON CODE</strong><span>시즌 한정 코드</span></div>
+          <div><strong>ZERO-DAY CORE</strong><span>정식 침투 엔진</span></div>
         </div>
       </section>
     `;
