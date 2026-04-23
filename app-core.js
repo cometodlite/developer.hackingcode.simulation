@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.2.5';
+const CURRENT_VERSION = '2.2.6';
 const TUTORIAL_VERSION = 5;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -729,6 +729,13 @@ function applyLanguageToUI(){
           '로드아웃 저장/불러오기 줄과 코드 카드 터치 영역을 넓혀 모바일 조작 씹힘을 줄였습니다.',
           '경제 상점의 역보상 크레딧 상품을 정상 보급 상품으로 수정했습니다.',
           '데이터 타워 목록을 더 압축하고 내부 중첩 스크롤을 줄였습니다.'
+        ]
+      },
+      {
+        version: '2.2.6',
+        lines: [
+          '모바일 온보딩 모달 폭과 버튼 줄바꿈을 보정해 신규 세션에서도 조작 버튼이 잘리지 않게 했습니다.',
+          '2.2.5 레이아웃 수정이 확실히 반영되도록 캐시 버스터를 갱신했습니다.'
         ]
       }
 
