@@ -9,14 +9,14 @@
 
 
 <!-- cache-busting: bump ?v=... on release updates; localStorage saves remain intact -->
-<link href="style.css?v=2.2.1" rel="stylesheet"/>
+<link href="style.css?v=2.2.2" rel="stylesheet"/>
 </head>
 <body>
 <canvas id="snow-canvas"></canvas>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">2.2.1 (Web)</span>
+<span class="header-version">2.2.2 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -533,14 +533,16 @@
 <div id="tutorialModal" role="dialog" aria-modal="true" aria-labelledby="tutorialStepTitle">
 <div id="tutorialHeader">
 <div>
-<span class="badge" id="tutorialStepLabel">STEP 1 / 7</span>
+<span class="badge" id="tutorialStepLabel">STEP 1 / 11</span>
 <h2>HCSiG 온보딩</h2>
 </div>
 <button id="btnTutorialSkip" type="button">건너뛰기</button>
 </div>
 <div id="tutorialBody">
 <h3 id="tutorialStepTitle">환영합니다</h3>
+<div id="tutorialStepGoal">첫 목표: 코드 확보 → 서버 해킹</div>
 <p id="tutorialStepText">핵심 흐름을 짧게 안내합니다.</p>
+<div id="tutorialStepChecklist"></div>
 <div id="tutorialStepHint">다음 버튼을 눌러 진행하세요.</div>
 </div>
 <div id="tutorialFooter">
@@ -561,10 +563,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=2.2.1"></script>
-<script src="auth.js?v=2.2.1"></script>
-<script src="cloudSave.js?v=2.2.1"></script>
-<script src="app-core.js?v=2.2.1"></script>
-<script src="app-ui.js?v=2.2.1"></script>
-<script src="liveOps.js?v=2.2.1"></script></body>
+<script src="firebase-config.js?v=2.2.2"></script>
+<script src="auth.js?v=2.2.2"></script>
+<script src="cloudSave.js?v=2.2.2"></script>
+<script src="app-core.js?v=2.2.2"></script>
+<script src="app-ui.js?v=2.2.2"></script>
+<script src="liveOps.js?v=2.2.2"></script></body>
 </html>

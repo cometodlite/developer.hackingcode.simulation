@@ -1,5 +1,5 @@
 (function(){
-  const VERSION = '2.2.1';
+  const VERSION = '2.2.2';
   const HEARTBEAT_MS = 60000;
   const ACTIVE_WINDOW_MS = 120000;
   const RANK_WRITE_MS = 60000;

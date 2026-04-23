@@ -1,5 +1,5 @@
-const CURRENT_VERSION = '2.2.1';
-const TUTORIAL_VERSION = 3;
+const CURRENT_VERSION = '2.2.2';
+const TUTORIAL_VERSION = 4;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
 const I18N = {
@@ -683,6 +683,15 @@ function applyLanguageToUI(){
           'COMING SOON 내부 Broadcast / Nodes / Feed / Rank 탭은 열려 있을 때만 해당 상세 구독을 유지합니다.',
           '헤더, Network Pulse, Broadcast, Rank 렌더를 분리해 클릭 반응 저하를 줄였습니다.',
           'LIVE 패널 전환과 카드 반응 애니메이션을 한 단계 완화했습니다.'
+        ]
+      },
+      {
+        version: '2.2.2',
+        lines: [
+          '처음 플레이하는 사용자가 스캔, 코드 선택, NORMAL 해킹까지 따라갈 수 있도록 튜토리얼을 재구성했습니다.',
+          '튜토리얼 단계에 목표와 체크리스트를 추가해 각 화면에서 해야 할 일을 더 명확하게 표시합니다.',
+          '행동 안내 단계는 직접 수행하면 자동 진행되지만, 다시 보기 중에는 다음 버튼으로도 넘길 수 있게 했습니다.',
+          'LIST, 더보기, 클라우드 계정, LAB 주간 콘텐츠까지 초반 동선 설명을 보강했습니다.'
         ]
       }
 
@@ -1947,7 +1956,9 @@ function applyLanguageToUI(){
     const tutorialBackdrop = document.getElementById('tutorialBackdrop');
     const tutorialStepLabel = document.getElementById('tutorialStepLabel');
     const tutorialStepTitle = document.getElementById('tutorialStepTitle');
+    const tutorialStepGoal = document.getElementById('tutorialStepGoal');
     const tutorialStepText = document.getElementById('tutorialStepText');
+    const tutorialStepChecklist = document.getElementById('tutorialStepChecklist');
     const tutorialStepHint = document.getElementById('tutorialStepHint');
     const btnTutorialPrev = document.getElementById('btnTutorialPrev');
     const btnTutorialNext = document.getElementById('btnTutorialNext');
@@ -1988,23 +1999,169 @@ function applyLanguageToUI(){
     function getTutorialSteps() {
       if (getLang() === 'en') {
         return [
-          { title: 'Start', text: 'Scan a code, pick it, then hack. Data Tower starts from LAB.', hint: 'Tap Next.' },
-          { title: 'HOME', text: 'Check energy, choose a server, set NORMAL/RISK/EXTREME, and upgrade CPU or GPU.', hint: 'CPU helps control. GPU boosts repeat rewards.' },
-          { title: 'CODES', text: 'Manage code upgrades, sync, evolution, and the active code.', hint: 'The active code drives hacking and Data Tower.' },
-          { title: 'SHOP', text: 'Buy energy, system, economy, and utility items.', hint: 'Use filters when the list gets long.' },
-          { title: 'LAB', text: 'Open Data Tower 1-100 and Weekly Challenge here.', hint: 'Weekly goals refresh every Monday 05:00 KST.' },
-          { title: 'COMING SOON', text: 'Future modes and season content will land here.', hint: 'Cloud account tools are in More.' },
-          { title: 'Ready', text: 'NORMAL is steady. RISK pays more. EXTREME opens at Lv.5.', hint: 'Tap Start.' }
+          {
+            title: 'Welcome',
+            goal: 'First loop: code -> active code -> NORMAL hack',
+            text: 'Your first win is simple. Get one code, activate it, then clear one NORMAL server hack.',
+            checklist: ['Energy is spent on scans and hacks.', 'Codes are your equipment.', 'Credits upgrade your setup.'],
+            hint: 'Tap Next to start the first loop.'
+          },
+          {
+            title: '1. Scan a Code',
+            goal: 'Get your first code',
+            text: 'On HOME, press Scan Code. A scan costs 1 energy and gives a small amount of EXP.',
+            checklist: ['A new code is added to CODES.', 'Duplicate codes become shards.', 'Shards are used later for Sync.'],
+            hint: 'Try Scan Code now. If you are replaying this tutorial, Next is also fine.',
+            waitAction: 'scan'
+          },
+          {
+            title: '2. Activate a Code',
+            goal: 'Choose the code you want to use',
+            text: 'Open CODES and select one owned code. The active code affects hacking and Data Tower attempts.',
+            checklist: ['Higher power helps more.', 'Sync raises success bonus.', 'Evolution raises rarity when the code is ready.'],
+            hint: 'Tap a code card to make it active, or press Next to continue.',
+            waitAction: 'selectCode'
+          },
+          {
+            title: '3. Hack a Server',
+            goal: 'Clear one NORMAL hack',
+            text: 'Return HOME, keep NORMAL selected, choose an available server, then press Server Hack.',
+            checklist: ['NORMAL is the safest starting mode.', 'Success gives credits and EXP.', 'Failure only means you try again after recovering energy.'],
+            hint: 'Try one server hack now, or press Next to keep reading.',
+            waitAction: 'hack'
+          },
+          {
+            title: 'Hack Modes',
+            goal: 'Pick the right risk level',
+            text: 'NORMAL is stable. RISK lowers success for bigger credits. EXTREME opens at Lv.5 and rewards stronger runs.',
+            checklist: ['Use NORMAL while learning.', 'Use RISK when your success chance feels safe.', 'Use EXTREME after Lv.5 and better upgrades.'],
+            hint: 'You do not need EXTREME at the beginning.'
+          },
+          {
+            title: 'CPU and GPU',
+            goal: 'Understand your two upgrade paths',
+            text: 'CPU is control and stability. GPU is reward output for repeated play and harder clears.',
+            checklist: ['CPU helps success and safer runs.', 'GPU boosts repeat/challenge rewards.', 'Upgrade both over time.'],
+            hint: 'Early on, CPU makes the game feel smoother. GPU shines as you repeat content.'
+          },
+          {
+            title: 'Growing Codes',
+            goal: 'Make one favorite code stronger',
+            text: 'CODES is where you Upgrade, Sync, and Evolve codes. Pick a reliable active code and build around it.',
+            checklist: ['Upgrade uses credits.', 'Sync uses duplicate shards.', 'Evolve requires enough level and raises rarity.'],
+            hint: 'A focused code is usually better than many untouched codes.'
+          },
+          {
+            title: 'SHOP',
+            goal: 'Use the shop when progress slows down',
+            text: 'SHOP sells energy, system, economy, and utility items. Filters keep the long list manageable.',
+            checklist: ['Energy packs keep sessions moving.', 'Permanent items help long-term growth.', 'Check daily limits before spending.'],
+            hint: 'If you are stuck with no energy, come back after recovery or use an energy pack.'
+          },
+          {
+            title: 'LAB',
+            goal: 'Open longer goals',
+            text: 'LAB contains Data Tower and WEEKLY CHALLENGE. These are your main goals after the first hacks.',
+            checklist: ['Data Tower has 100 stages.', 'Weekly Challenge resets Monday 05:00 KST.', 'Rewards are claimed manually.'],
+            hint: 'Do not rush Data Tower. Upgrade first, then climb.'
+          },
+          {
+            title: 'LIST, More, and Cloud',
+            goal: 'Know where records and account tools live',
+            text: 'LIST contains missions and achievements. More contains codex, logs, settings, cloud account, and tutorial replay.',
+            checklist: ['Cloud account is the main save path.', 'Logs explain what just happened.', 'Tutorial replay is always in More.'],
+            hint: 'GitHub Pages can reload often, so cloud login is the safest way to keep progress.'
+          },
+          {
+            title: 'Ready',
+            goal: 'Recommended first route',
+            text: 'Scan until you own a code, activate it, clear NORMAL hacks, then use credits on code and CPU upgrades.',
+            checklist: ['First: Scan Code.', 'Second: select the code in CODES.', 'Third: hack servers on NORMAL.'],
+            hint: 'Tap Start. You are ready.'
+          }
         ];
       }
       return [
-        { title: '시작', text: '코드를 스캔하고, 하나를 고른 뒤 서버를 해킹합니다. 데이터 타워는 LAB에서 시작합니다.', hint: '다음을 누르세요.' },
-        { title: 'HOME', text: '에너지, 서버, 해킹 난이도, CPU/GPU 업그레이드를 관리합니다.', hint: 'CPU는 제어, GPU는 반복 보상입니다.' },
-        { title: 'CODES', text: '코드 강화, 동기화, 진화, 활성 코드를 관리합니다.', hint: '활성 코드가 해킹과 데이터 타워에 쓰입니다.' },
-        { title: 'SHOP', text: '에너지, 시스템, 경제, 유틸 아이템을 구매합니다.', hint: '목록이 길면 분류를 쓰세요.' },
-        { title: 'LAB', text: '데이터 타워 1~100과 WEEKLY CHALLENGE를 진행합니다.', hint: '주간 목표는 월요일 05:00 KST마다 갱신됩니다.' },
-        { title: 'COMING SOON', text: '다음 모드와 시즌 콘텐츠가 이곳에 들어옵니다.', hint: '클라우드 계정은 더보기에서 관리합니다.' },
-        { title: '준비 완료', text: 'NORMAL은 안정적입니다. RISK는 보상이 큽니다. EXTREME은 Lv.5부터 열립니다.', hint: '시작하기를 누르세요.' }
+        {
+          title: '환영합니다',
+          goal: '첫 루프: 코드 확보 → 활성 코드 선택 → NORMAL 해킹',
+          text: '처음 목표는 간단합니다. 코드 1개를 얻고 활성화한 뒤 NORMAL 서버 해킹 1회를 성공시키면 게임 흐름이 잡힙니다.',
+          checklist: ['에너지는 스캔과 해킹에 사용됩니다.', '코드는 장비처럼 성장합니다.', '크레딧으로 코드와 장비를 강화합니다.'],
+          hint: '다음을 누르면 첫 플레이 루프부터 안내합니다.'
+        },
+        {
+          title: '1. 코드 스캔',
+          goal: '첫 코드를 확보하세요',
+          text: 'HOME에서 코드 스캔 버튼을 누르세요. 스캔은 에너지 1을 사용하고 소량의 EXP를 줍니다.',
+          checklist: ['새 코드는 CODES에 추가됩니다.', '이미 가진 코드는 중복 조각이 됩니다.', '조각은 나중에 동기화에 사용됩니다.'],
+          hint: '지금 코드 스캔을 직접 눌러보세요. 다시 보기 중이라면 다음으로 넘겨도 됩니다.',
+          waitAction: 'scan'
+        },
+        {
+          title: '2. 활성 코드 선택',
+          goal: '사용할 코드를 하나 고르세요',
+          text: 'CODES로 이동해 보유 코드 하나를 선택하세요. 활성 코드는 해킹과 데이터 타워 도전에 영향을 줍니다.',
+          checklist: ['파워가 높을수록 도움이 됩니다.', '동기화는 성공률 보정을 올립니다.', '진화는 준비된 코드를 더 높은 등급으로 올립니다.'],
+          hint: '코드 카드를 누르면 활성 코드가 됩니다. 계속 읽고 싶다면 다음을 눌러도 됩니다.',
+          waitAction: 'selectCode'
+        },
+        {
+          title: '3. 서버 해킹',
+          goal: 'NORMAL 해킹 1회를 시도하세요',
+          text: 'HOME으로 돌아와 NORMAL을 유지하고, 입장 가능한 서버를 고른 뒤 서버 해킹 버튼을 누르세요.',
+          checklist: ['NORMAL은 초반에 가장 안정적입니다.', '성공하면 크레딧과 EXP를 얻습니다.', '실패해도 회복 후 다시 시도하면 됩니다.'],
+          hint: '지금 서버 해킹을 한 번 시도해보세요. 읽기만 하려면 다음을 눌러도 됩니다.',
+          waitAction: 'hack'
+        },
+        {
+          title: '해킹 난이도',
+          goal: '상황에 맞는 위험도를 고르세요',
+          text: 'NORMAL은 안정적입니다. RISK는 성공률이 낮아지는 대신 크레딧이 커지고, EXTREME은 Lv.5부터 열리는 고난도 선택입니다.',
+          checklist: ['처음에는 NORMAL을 추천합니다.', '성공률이 충분하면 RISK를 사용하세요.', 'EXTREME은 Lv.5 이후 성장한 뒤 도전하세요.'],
+          hint: '초반에는 EXTREME을 신경 쓰지 않아도 됩니다.'
+        },
+        {
+          title: 'CPU와 GPU',
+          goal: '두 성장 축을 구분하세요',
+          text: 'CPU는 제어와 안정성, GPU는 반복 플레이와 고난도 성공 보상 증폭을 담당합니다.',
+          checklist: ['CPU는 성공률과 안정감에 좋습니다.', 'GPU는 반복/도전 보상을 키웁니다.', '장기적으로 둘 다 올리는 것이 좋습니다.'],
+          hint: '초반 체감은 CPU가 더 부드럽고, GPU는 반복 콘텐츠에서 빛납니다.'
+        },
+        {
+          title: '코드 성장',
+          goal: '마음에 드는 코드 하나를 키우세요',
+          text: 'CODES에서는 강화, 동기화, 진화를 진행합니다. 먼저 믿을 만한 활성 코드 하나를 정하고 키우는 것이 좋습니다.',
+          checklist: ['강화는 크레딧을 사용합니다.', '동기화는 중복 조각을 사용합니다.', '진화는 레벨 조건을 만족하면 등급을 올립니다.'],
+          hint: '초반에는 여러 코드를 조금씩보다 한 코드를 확실히 키우는 편이 쉽습니다.'
+        },
+        {
+          title: 'SHOP',
+          goal: '막힐 때 상점을 확인하세요',
+          text: 'SHOP에서는 에너지, 시스템, 경제, 유틸 아이템을 구매합니다. 목록이 길면 필터를 사용하세요.',
+          checklist: ['에너지 팩은 플레이 흐름을 이어줍니다.', '영구 아이템은 장기 성장에 좋습니다.', '일일 제한과 1회 제한을 확인하세요.'],
+          hint: '에너지가 부족하면 회복을 기다리거나 에너지 팩을 사용하면 됩니다.'
+        },
+        {
+          title: 'LAB',
+          goal: '장기 목표를 여세요',
+          text: 'LAB에는 데이터 타워와 WEEKLY CHALLENGE가 있습니다. 기본 해킹에 익숙해진 뒤 도전하면 좋습니다.',
+          checklist: ['데이터 타워는 100개 스테이지입니다.', '주간 챌린지는 월요일 05:00 KST에 갱신됩니다.', '주간 보상은 CLAIM 버튼으로 직접 받습니다.'],
+          hint: '데이터 타워는 서두르지 말고 성장 후 올라가면 됩니다.'
+        },
+        {
+          title: 'LIST, 더보기, 클라우드',
+          goal: '기록과 계정 위치를 기억하세요',
+          text: 'LIST에는 미션과 업적이 있습니다. 더보기에는 도감, 로그, 설정, 클라우드 계정, 튜토리얼 다시 보기가 있습니다.',
+          checklist: ['클라우드 계정이 기본 저장 경로입니다.', '로그는 방금 일어난 일을 설명합니다.', '튜토리얼은 더보기에서 다시 볼 수 있습니다.'],
+          hint: 'GitHub Pages는 새로고침이 잦을 수 있으니 클라우드 로그인 상태가 가장 안전합니다.'
+        },
+        {
+          title: '준비 완료',
+          goal: '추천 첫 진행 순서',
+          text: '코드를 스캔하고, CODES에서 활성화한 뒤, NORMAL 해킹을 반복하며 크레딧으로 코드와 CPU를 강화하세요.',
+          checklist: ['첫째: 코드 스캔.', '둘째: CODES에서 코드 선택.', '셋째: NORMAL 서버 해킹.'],
+          hint: '시작하기를 누르면 바로 플레이할 수 있습니다.'
+        }
       ];
     }
 
@@ -2355,18 +2512,41 @@ function applyLanguageToUI(){
       const step = tutorialSteps[idx];
       setNodeText(tutorialStepLabel, `STEP ${idx + 1} / ${tutorialSteps.length}`);
       setNodeText(tutorialStepTitle, step.title);
+      setNodeText(tutorialStepGoal, step.goal || '');
       setNodeText(tutorialStepText, step.text);
       setNodeText(tutorialStepHint, step.hint || '');
+      if (tutorialStepChecklist) {
+        tutorialStepChecklist.textContent = '';
+        const items = Array.isArray(step.checklist) ? step.checklist : [];
+        if (items.length) {
+          const list = document.createElement('ul');
+          list.className = 'tutorial-checklist-list';
+          items.forEach(item => {
+            const li = document.createElement('li');
+            const marker = document.createElement('span');
+            marker.className = 'tutorial-check-marker';
+            marker.textContent = '✓';
+            const text = document.createElement('span');
+            text.textContent = item;
+            li.appendChild(marker);
+            li.appendChild(text);
+            list.appendChild(li);
+          });
+          tutorialStepChecklist.appendChild(list);
+        }
+        setNodeDisplay(tutorialStepChecklist, items.length ? '' : 'none');
+      }
       setNodeText(btnTutorialPrev, getLang() === 'en' ? 'Back' : '이전');
       setNodeText(btnTutorialNext, getLang() === 'en' ? 'Next' : '다음');
       setNodeText(btnTutorialFinish, getLang() === 'en' ? 'Start' : '시작하기');
       setNodeText(btnTutorialSkip, getLang() === 'en' ? 'Skip' : '건너뛰기');
+      setNodeDisplay(tutorialStepGoal, step.goal ? '' : 'none');
       setNodeDisplay(tutorialStepHint, step.hint ? '' : 'none');
       const interactive = !!step.waitAction;
       tutorialBackdrop.classList.toggle('interactive', interactive);
       document.body.classList.toggle('tutorial-interactive', interactive && isTutorialOpen());
       setNodeDisabled(btnTutorialPrev, idx <= 0);
-      const waiting = interactive;
+      const waiting = interactive && step.requireAction === true;
       setNodeDisplay(btnTutorialNext, idx === tutorialSteps.length - 1 ? 'none' : '');
       setNodeDisabled(btnTutorialNext, waiting);
       setNodeDisplay(btnTutorialFinish, idx === tutorialSteps.length - 1 ? '' : 'none');

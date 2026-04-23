@@ -1041,7 +1041,11 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 }
 #tutorialBackdrop.show{ display:flex; }
 #tutorialModal{
-  width: min(560px, calc(100vw - 24px));
+  width: min(600px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(10,15,25,0.98));
   border: 1px solid rgba(96,165,250,0.24);
   border-radius: 18px;
@@ -1062,15 +1066,65 @@ body { min-height: var(--app-height); padding-top: var(--safe-top); padding-bott
 }
 #tutorialBody{
   padding: 18px 16px 16px;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 #tutorialBody h3{
   margin: 8px 0 10px;
   font-size: 20px;
 }
+#tutorialStepGoal{
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 0 12px;
+  padding: 7px 10px;
+  border: 1px solid rgba(52,211,153,0.22);
+  border-radius: 8px;
+  background: rgba(16,185,129,0.10);
+  color: #a7f3d0;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
 #tutorialStepText{
   margin: 0;
   line-height: 1.6;
   color: #e5e7eb;
+}
+#tutorialStepChecklist{
+  margin-top: 12px;
+}
+.tutorial-checklist-list{
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tutorial-checklist-list li{
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  padding: 8px 10px;
+  border: 1px solid rgba(148,163,184,0.16);
+  border-radius: 8px;
+  background: rgba(15,23,42,0.54);
+  color: #dbeafe;
+  line-height: 1.45;
+}
+.tutorial-check-marker{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  background: rgba(52,211,153,0.14);
+  color: #86efac;
+  font-size: 13px;
+  font-weight: 900;
 }
 #tutorialStepHint{
   margin-top: 12px;
