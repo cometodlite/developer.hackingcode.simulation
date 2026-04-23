@@ -1665,6 +1665,28 @@ body.app-shell-ui .section-title{
   color:#6ee7b7;
   letter-spacing:.08em;
 }
+.home-cockpit{
+  display:grid;
+  grid-template-columns:minmax(260px,.86fr) minmax(330px,1.14fr);
+  gap:14px;
+  align-items:start;
+  padding:16px;
+  border:1px solid rgba(94,234,212,.18);
+  border-radius:8px;
+  background:linear-gradient(180deg, rgba(10,16,14,.94), rgba(6,10,9,.96));
+  box-shadow:0 14px 36px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03);
+}
+.home-cockpit > #titleStatus{
+  grid-column:1 / -1;
+  margin:0;
+}
+.home-cockpit > .stat-box{
+  margin:0;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:0;
+}
 body.app-shell-ui .home-status-grid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -1695,6 +1717,19 @@ body.app-shell-ui .home-actions-box .button-row{
 }
 body.app-shell-ui .home-actions-box .button-row > button{
   min-height:46px;
+}
+.home-loadout-block .loadout-control-row{
+  display:grid !important;
+  grid-template-columns:minmax(82px,.72fr) minmax(98px,1fr) minmax(98px,1fr);
+  gap:6px !important;
+  align-items:stretch;
+}
+.home-loadout-block .loadout-control-row select,
+.home-loadout-block .loadout-control-row button{
+  width:100% !important;
+  max-width:none !important;
+  min-width:0 !important;
+  min-height:38px;
 }
 body.app-shell-ui #btnScan,
 body.app-shell-ui #btnHack{
@@ -1745,13 +1780,10 @@ body.app-shell-ui button:active{
 }
 .app-view-home.active{
   display:grid;
-  grid-template-columns:minmax(260px,.72fr) minmax(320px,1.28fr);
+  grid-template-columns:1fr;
   align-content:start;
   gap:14px;
-}
-.app-view-home #titleStatus{
-  grid-column:1 / -1;
-  margin-bottom:-6px;
+  overflow:auto;
 }
 .app-view-home #scanOverlay{
   inset:16px;
@@ -1770,15 +1802,33 @@ body.app-shell-ui button:active{
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  min-height:68px;
-  padding:11px 12px;
+  min-height:82px;
+  padding:16px;
   border:1px solid rgba(94,234,212,.14);
   border-radius:8px;
   background:rgba(9,14,13,.82);
+  cursor:pointer;
+  touch-action:manipulation;
+  user-select:none;
+  position:relative;
+}
+.app-view-codes #codeList li.code-card::after{
+  content:"상세";
+  position:absolute;
+  right:12px;
+  bottom:10px;
+  color:#6ee7b7;
+  font-size:10px;
+  font-weight:900;
+  opacity:.72;
 }
 .app-view-codes #codeList li.code-card.active{
   border-color:rgba(134,239,172,.54);
   background:rgba(20,83,45,.22);
+}
+.app-view-codes #codeList li.code-card:focus-visible{
+  outline:2px solid rgba(52,211,153,.72);
+  outline-offset:2px;
 }
 .code-card-main{
   min-width:0;
@@ -2498,18 +2548,18 @@ body.app-shell-ui .list-tab-button{
 	}
 	.stage-layout{
 	  display:grid;
-	  grid-template-columns:minmax(280px,1.05fr) minmax(300px,.95fr);
+	  grid-template-columns:minmax(300px,.92fr) minmax(320px,1.08fr);
 	  gap:12px;
 	  align-items:start;
 	}
 	.stage-list{
 	  display:grid;
-	  grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+	  grid-template-columns:repeat(auto-fill,minmax(104px,1fr));
 	  gap:8px;
-	  max-height:calc(100vh - 330px);
-	  min-height:260px;
-	  overflow:auto;
-	  padding:2px 4px 2px 2px;
+	  max-height:none;
+	  min-height:0;
+	  overflow:visible;
+	  padding:0;
 	}
 	.stage-card{
 	  display:flex;
@@ -2517,8 +2567,8 @@ body.app-shell-ui .list-tab-button{
 	  align-items:stretch;
 	  text-align:left;
 	  gap:5px;
-	  min-height:116px;
-	  padding:10px;
+	  min-height:78px;
+	  padding:9px;
 	  border-radius:8px;
 	  border:1px solid rgba(94,234,212,.14);
 	  background:linear-gradient(180deg, rgba(14,20,18,.92), rgba(8,12,11,.92));
@@ -2573,8 +2623,8 @@ body.app-shell-ui .list-tab-button{
 	  color:#bef264;
 	}
 	.stage-detail{
-	  position:sticky;
-	  top:8px;
+	  position:relative;
+	  top:auto;
 	  border:1px solid rgba(94,234,212,.18);
 	  border-radius:8px;
 	  background:
@@ -2585,7 +2635,7 @@ body.app-shell-ui .list-tab-button{
 	}
 	.stage-detail h4{
 	  margin:8px 0 4px;
-	  font-size:22px;
+	  font-size:20px;
 	}
 	.stage-detail p{
 	  margin:0;
@@ -2629,7 +2679,7 @@ body.app-shell-ui .list-tab-button{
 	  margin:10px 0 12px;
 	}
 	.stage-action-row button{
-	  flex:0 0 auto;
+	  flex:0 0 min(210px, 46%);
 	  min-height:42px;
 	  padding:0 16px;
 	  border-color:rgba(45,212,191,.50);
@@ -2757,7 +2807,7 @@ body.app-shell-ui #tutorialStepHint{
 .stage-chapter-list{
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:8px;
   margin-top:12px;
 }
 .stage-chapter{
@@ -2771,8 +2821,8 @@ body.app-shell-ui #tutorialStepHint{
 }
 .stage-chapter-head{
   width:100%;
-  display:flex;
-  justify-content:space-between;
+  display:grid;
+  grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
   align-items:center;
   gap:12px;
   min-height:54px;
@@ -2802,9 +2852,10 @@ body.app-shell-ui #tutorialStepHint{
   background:linear-gradient(135deg, rgba(20,184,166,.23), rgba(15,23,20,.92));
 }
 .stage-chapter .stage-list{
-  max-height:420px;
+  max-height:none;
   min-height:0;
   padding:10px;
+  overflow:visible;
   border-top:1px solid rgba(148,163,184,.12);
 }
 @media (max-width: 900px), (hover: none) and (pointer: coarse){
@@ -2862,6 +2913,7 @@ body.app-shell-ui #tutorialStepHint{
     padding:10px 10px calc(var(--mobileTabsH, 82px) + 28px + env(safe-area-inset-bottom));
   }
 		  .app-view-home.active,
+		  .home-cockpit,
 		  .app-codes-layout,
 		  .lab-preview-grid,
 		  .weekly-head,
@@ -2968,11 +3020,25 @@ body.app-shell-ui #tutorialStepHint{
     width:100%;
     padding:8px 6px;
   }
+  .home-cockpit{
+    padding:12px;
+    gap:12px;
+  }
   .home-status-grid{
-    grid-template-columns:1fr !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  body.app-shell-ui .home-status-grid .stat-row{
+    min-height:52px;
+    padding:8px;
   }
   .home-actions-box .button-row{
     grid-template-columns:1fr 1fr !important;
+  }
+  .home-loadout-block .loadout-control-row{
+    grid-template-columns:1fr 1fr !important;
+  }
+  .home-loadout-block .loadout-control-row select{
+    grid-column:1 / -1;
   }
   .home-live-hint{
     flex-direction:column;

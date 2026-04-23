@@ -285,12 +285,25 @@
   const staleMoreView = document.getElementById('appViewMore');
   if(staleMoreView) staleMoreView.remove();
 
-  [statusTitle, statusBox, actionBox, scanOverlay].forEach(el => {
-    if(el && el.parentElement !== views.home) views.home.appendChild(el);
+  let homeCockpit = document.getElementById('homeCockpit');
+  if(!homeCockpit){
+    homeCockpit = document.createElement('section');
+    homeCockpit.id = 'homeCockpit';
+    homeCockpit.className = 'home-cockpit';
+    views.home.insertBefore(homeCockpit, views.home.firstChild);
+  }
+  [statusTitle, statusBox, actionBox].forEach(el => {
+    if(el && el.parentElement !== homeCockpit) homeCockpit.appendChild(el);
   });
+  if(scanOverlay && scanOverlay.parentElement !== views.home) views.home.appendChild(scanOverlay);
   if(statusBox) statusBox.classList.add('home-status-grid');
   if(actionBox) {
     actionBox.classList.add('home-actions-box');
+    const loadoutLabel = document.getElementById('labelLoadout');
+    const loadoutBlock = loadoutLabel && loadoutLabel.parentElement;
+    if(loadoutBlock) loadoutBlock.classList.add('home-loadout-block');
+    const loadoutRow = loadoutBlock && loadoutBlock.querySelector('.button-row');
+    if(loadoutRow) loadoutRow.classList.add('loadout-control-row');
     if(!document.getElementById('homeLiveHint')){
       actionBox.insertAdjacentHTML('afterend', `
         <button type="button" id="homeLiveHint" class="home-live-hint">
@@ -455,19 +468,6 @@
   nav.querySelectorAll('[data-main-view]').forEach(btn => {
     btn.addEventListener('click', () => setView(btn.dataset.mainView));
   });
-
-  const codeList = document.getElementById('codeList');
-  const codeDetail = document.getElementById('codeDetail');
-  if(codeList && codeDetail){
-    codeList.addEventListener('click', (e) => {
-      const li = e.target.closest('li');
-      if(!li) return;
-      setView('codes');
-      setTimeout(() => {
-        try { codeDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch(e) {}
-      }, 40);
-    });
-  }
 
   document.addEventListener('hcsig:navigate-main', (event) => {
     const view = event.detail && event.detail.view;

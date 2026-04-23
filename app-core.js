@@ -1,4 +1,4 @@
-const CURRENT_VERSION = '2.2.4';
+const CURRENT_VERSION = '2.2.5';
 const TUTORIAL_VERSION = 5;
     const ENERGY_INTERVAL_MS = 120000; // 에너지 1칸당 120초
     const SAVE_KEY = 'HCSiG_SAVE_v16';
@@ -76,7 +76,7 @@ const TEXT_DATA = {
       scan_exp_script: { name:'Scan EXP Script', desc:'The next 10 code scans gain +1 EXP.' },
       perm_credit_boost: { name:'Permanent Credit Multiplier', desc:'Permanently increases hack credit rewards by 15% (one-time purchase).' },
       risk_support: { name:'Risk Hack Supporter', desc:'Permanently adds +5%p success chance in Risk Hack Mode (one-time purchase).' },
-      big_credit_pack: { name:'Data Credit Pack', desc:'Instantly grants +500 credits. (Daily purchase limit: 2)' },
+      big_credit_pack: { name:'Data Credit Pack', desc:'Instantly grants +700 credits.' },
       credit_cache: { name:'Credit Cache', desc:'Instantly grants +500 credits.' },
       credit_relay_script: { name:'Credit Relay Script', desc:'The next 5 successful hacks gain +20% credits.' },
       scanner_plus: { name:'Precision Scanner', desc:'Gain +1 extra EXP when scanning codes (permanent, one-time purchase).' },
@@ -720,6 +720,15 @@ function applyLanguageToUI(){
           'WEEKLY CHALLENGE는 EVENT로 이동하고 LAB은 데이터 타워 / ZERO-DAY / COMING SOON 구조로 정리했습니다.',
           'LIVE NET과 RANK는 더보기 안의 네트워크 관제실로 이동했습니다.',
           'CODES 상세 모달, 조각 강화, 신규 상점 보급 아이템 10종을 추가했습니다.'
+        ]
+      },
+      {
+        version: '2.2.5',
+        lines: [
+          'HOME의 STATUS와 ACTIONS를 하나의 조종석 패널로 묶어 첫 화면 인지 흐름을 정리했습니다.',
+          '로드아웃 저장/불러오기 줄과 코드 카드 터치 영역을 넓혀 모바일 조작 씹힘을 줄였습니다.',
+          '경제 상점의 역보상 크레딧 상품을 정상 보급 상품으로 수정했습니다.',
+          '데이터 타워 목록을 더 압축하고 내부 중첩 스크롤을 줄였습니다.'
         ]
       }
 
@@ -1440,13 +1449,13 @@ function applyLanguageToUI(){
       {
         id: 'big_credit_pack',
         name: '데이터 크레딧 팩',
-        desc: '즉시 크레딧 +300. (일일 구매 제한)',
+        desc: '즉시 크레딧 +700. 경제 루프가 막혔을 때 쓰는 일일 보급품입니다.',
         cost: 400,
         rarity: 'COMMON',
         category: 'ECONOMY',
         buy: () => {
-          state.credits += 300;
-          state.stats.creditsEarnedTotal += 300;
+          state.credits += 700;
+          state.stats.creditsEarnedTotal += 700;
         }
       },
       {
@@ -3447,6 +3456,9 @@ function applyLanguageToUI(){
       getSortedOwnedCodes().forEach(code => {
         const li = document.createElement('li');
         li.className = 'code-card';
+        li.tabIndex = 0;
+        li.setAttribute('role', 'button');
+        li.setAttribute('aria-label', `${code.name} ${localizeRarityLabel(code.rarity)} Lv.${code.level} PWR ${code.power}`);
         if (state.activeCodeId === code.id) li.classList.add('active');
 
         const left = document.createElement('div');
@@ -3467,7 +3479,7 @@ function applyLanguageToUI(){
         li.appendChild(left);
         li.appendChild(right);
 
-        li.addEventListener('click', () => {
+        const openCode = () => {
           state.activeCodeId = code.id;
           updateStatsUI();
           log(t('activeCode', { name: code.name }), 'system');
@@ -3475,6 +3487,13 @@ function applyLanguageToUI(){
           renderCodeList();
           renderCodeDetail();
           openCodeDetailModal(code.id);
+        };
+        li.addEventListener('click', openCode);
+        li.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openCode();
+          }
         });
 
         codeListEl.appendChild(li);
