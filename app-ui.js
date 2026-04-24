@@ -73,6 +73,22 @@
         document.dispatchEvent(new CustomEvent('hcsig:more-event', { detail: { event: eventType } }));
       });
     });
+    // Event area tab switching
+    const eventArea = modal.querySelector('#eventArea');
+    if (eventArea) {
+      eventArea.querySelectorAll('[data-event-tab]').forEach(tbtn => {
+        tbtn.addEventListener('click', () => {
+          const tab = tbtn.dataset.eventTab;
+          eventArea.querySelectorAll('[data-event-tab]').forEach(x => x.classList.toggle('active', x === tbtn));
+          eventArea.querySelectorAll('[data-event-panel]').forEach(panel => {
+            const panelName = panel.getAttribute('data-event-panel');
+            const show = (panelName === tab);
+            panel.style.display = show ? 'block' : 'none';
+            panel.classList.toggle('active', show);
+          });
+        });
+      });
+    }
   }
 })();
 
