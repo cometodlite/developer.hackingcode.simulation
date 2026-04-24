@@ -27,6 +27,9 @@
         <button class="more-btn" data-action="open-account">계정</button>
         <button class="more-btn" data-action="mission">미션</button>
         <button class="more-btn" data-action="achievement">업적</button>
+        <button class="more-btn" data-action="skin-zero-shell">Zero Shell</button>
+        <button class="more-btn" data-action="skin-glass-console">Glass Console</button>
+        <button class="more-btn" data-action="skin-quartz-terminal">Quartz Terminal</button>
         <div class="event-subpanel" style="display:flex; align-items:center; gap:6px; padding-left:6px;">
           <span class="badge" style="margin-right:6px;">EVENT</span>
           <button class="subbtn" data-event="season">시즌</button>
@@ -37,7 +40,7 @@
     modal.querySelectorAll('.more-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const action = btn.dataset.action;
-        if (action === 'navigate-codes') {
+      if (action === 'navigate-codes') {
           document.dispatchEvent(new CustomEvent('hcsig:navigate-main', { detail: { view: 'codes' } }));
         } else if (action === 'navigate-live') {
           document.dispatchEvent(new CustomEvent('hcsig:more-tab', { detail: { tab: 'live' } }));
@@ -51,6 +54,16 @@
           document.dispatchEvent(new CustomEvent('hcsig:show-mission', {}));
         } else if (action === 'achievement') {
           document.dispatchEvent(new CustomEvent('hcsig:show-achievement', {}));
+        } else if (action === 'skin-zero-shell' || action === 'skin-glass-console' || action === 'skin-quartz-terminal') {
+          // Skin switching: normalize to kebab-case and persist
+          const skin = action.replace('skin-','');
+          try { localStorage.setItem('hackingcode_skin', skin); } catch(e) {}
+          if (typeof window.hcsig_apply_skin === 'function') {
+            window.hcsig_apply_skin();
+          } else {
+            // Fallback: reload to re-render with new skin class
+            window.location.reload();
+          }
         }
       });
     });
@@ -61,6 +74,21 @@
       });
     });
   }
+})();
+
+// Skin manager: apply saved skin on load and expose a hook for runtime changes
+(function(){
+  function applySkinFromStorage(){
+    const raw = (localStorage.getItem('hackingcode_skin') || 'zero-shell').toLowerCase();
+    const skin = raw.replace('_','-');
+    // remove any known skin classes
+    document.body.classList.remove('skin-zero-shell','skin-glass-console','skin-quartz-terminal');
+    document.body.classList.add('skin-' + skin);
+  }
+  // Initialize on load
+  try { applySkinFromStorage(); } catch(e) {}
+  // Expose for manual trigger
+  window.hcsig_apply_skin = applySkinFromStorage;
 })();
 
 
