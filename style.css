@@ -3230,6 +3230,19 @@ body.app-shell-ui #tutorialModal{
   border-color:rgba(94,234,212,.24);
   background:linear-gradient(180deg, rgba(15,22,18,.98), rgba(7,10,9,.98));
 }
+/* skin variations for ZERO-DAY skinning skeleton */
+.skin-zero-shell {
+  background: #0a0a0a;
+  color: #e6e6e6;
+}
+.skin-glass-console {
+  background: #0b1220;
+  color: #dce7ff;
+}
+.skin-quartz-terminal {
+  background: #111;
+  color: #e9e9e9;
+}
 body.app-shell-ui #tutorialStepHint{
   border-radius:8px;
   background:rgba(20,184,166,.14);
