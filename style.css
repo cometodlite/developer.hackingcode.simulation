@@ -610,7 +610,8 @@ button:hover {
     #eventModalBody,
     #codeDetailModalBody {
       padding: 8px 12px 10px;
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
       font-size: 12px;
       display: flex;
       flex-direction: column;
