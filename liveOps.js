@@ -10,7 +10,7 @@
   const SYNC_SAMPLE_MS = 3000;
   const MAX_SYNC_MS = 999;
   const ALLOWED_STATUS = ['ONLINE', 'DEGRADED', 'MAINTENANCE', 'LOCAL MIRROR'];
-  const ALLOWED_ACTIVITY = ['hack_success', 'extreme_success', 'stage_clear', 'epic_code_found', 'gpu_tier_up', 'cpu_tier_up', 'weekly_goal_claimed', 'weekly_all_clear'];
+  const ALLOWED_ACTIVITY = ['hack_success', 'extreme_success', 'stage_clear', 'epic_code_found', 'gpu_tier_up', 'cpu_tier_up', 'weekly_goal_claimed', 'weekly_all_clear', 'defense_card_used'];
   const BOARDS = [
     { id: 'hack', label: 'HACK', metric: 'hackSuccessCount' },
     { id: 'stage', label: 'TOWER', metric: 'stageClearCount' },
@@ -513,6 +513,8 @@
         return { title: `${name} broke EXTREME`, meta: value ? `reward ${value.toLocaleString()} credits` : 'high-risk route cleared' };
 	      case 'stage_clear':
 	        return { title: `${name} cleared DATA TOWER ${String(value || '').padStart(3, '0')}`, meta: ref || 'data tower route updated' };
+      case 'defense_card_used':
+        return { title: `${name} activated defense card`, meta: ref || '' };
       case 'epic_code_found':
         return { title: `${name} found rare code`, meta: ref || 'EPIC+ signature acquired' };
       case 'gpu_tier_up':
@@ -811,6 +813,20 @@
     } catch(err) {
       handleLiveError(err);
     }
+  }
+
+  // Expose a minimal defense-engage entry point for tests/integration
+  function engageDefenseCard(cardName, target){
+    try {
+      const name = cardName || 'DEFENSE';
+      // Use the defense card name as refId to surface in feed
+      writeActivity({ type: 'defense_card_used', value: 1, refId: String(name) + (target ? ' @ ' + String(target) : '') });
+    } catch(e) {
+      // swallow
+    }
+  }
+  if (typeof window !== 'undefined') {
+    window.hcsig_defense_engage = engageDefenseCard;
   }
 
   function computeScores(){
