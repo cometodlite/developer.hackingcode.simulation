@@ -8,6 +8,59 @@
     if('scrollRestoration' in history) history.scrollRestoration = 'manual';
     document.documentElement.style.setProperty('--appH', Math.ceil(window.innerHeight) + 'px');
   }catch(e){}
+ })();
+ 
+ // NEW: Enhance More panel visibility and EVENT split (Season / Weekly)
+(function(){
+  const backdrop = document.querySelector('#moreModalBackdrop') || document.querySelector('.more-modal-backdrop');
+  const modal = document.querySelector('#moreModal') || document.querySelector('.more-modal');
+  if (backdrop && modal && !modal.querySelector('.more-panel-buttons')) {
+    backdrop.style.display = 'block';
+    modal.style.display = 'block';
+    modal.style.zIndex = '9999';
+    modal.insertAdjacentHTML('beforeend', `
+      <div class="more-panel-buttons" style="padding:8px; display:flex; flex-wrap:wrap; gap:8px;">
+        <button class="more-btn" data-action="navigate-codes">코드 도감</button>
+        <button class="more-btn" data-action="navigate-live">LIVE NET</button>
+        <button class="more-btn" data-action="navigate-rank">랭크</button>
+        <button class="more-btn" data-action="open-settings">설정</button>
+        <button class="more-btn" data-action="open-account">계정</button>
+        <button class="more-btn" data-action="mission">미션</button>
+        <button class="more-btn" data-action="achievement">업적</button>
+        <div class="event-subpanel" style="display:flex; align-items:center; gap:6px; padding-left:6px;">
+          <span class="badge" style="margin-right:6px;">EVENT</span>
+          <button class="subbtn" data-event="season">시즌</button>
+          <button class="subbtn" data-event="weekly">위클리 챌린지</button>
+        </div>
+      </div>
+    `);
+    modal.querySelectorAll('.more-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        if (action === 'navigate-codes') {
+          document.dispatchEvent(new CustomEvent('hcsig:navigate-main', { detail: { view: 'codes' } }));
+        } else if (action === 'navigate-live') {
+          document.dispatchEvent(new CustomEvent('hcsig:more-tab', { detail: { tab: 'live' } }));
+        } else if (action === 'navigate-rank') {
+          document.dispatchEvent(new CustomEvent('hcsig:more-tab', { detail: { tab: 'rank' } }));
+        } else if (action === 'open-settings') {
+          document.dispatchEvent(new CustomEvent('hcsig:open-settings', {}));
+        } else if (action === 'open-account') {
+          document.dispatchEvent(new CustomEvent('hcsig:open-account', {}));
+        } else if (action === 'mission') {
+          document.dispatchEvent(new CustomEvent('hcsig:show-mission', {}));
+        } else if (action === 'achievement') {
+          document.dispatchEvent(new CustomEvent('hcsig:show-achievement', {}));
+        }
+      });
+    });
+    modal.querySelectorAll('.subbtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const eventType = btn.dataset.event;
+        document.dispatchEvent(new CustomEvent('hcsig:more-event', { detail: { event: eventType } }));
+      });
+    });
+  }
 })();
 
 
