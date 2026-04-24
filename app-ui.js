@@ -425,6 +425,16 @@
   }
   if(moreModal) moreModal.classList.remove('app-more-panel');
 
+  // CLEANUP: Remove potential empty top container in LIST area (LIST head)
+  (function pruneListTop(){
+    const list = document.getElementById('shopList');
+    if(!list) return;
+    const head = list.previousElementSibling;
+    if (head && head.textContent && head.textContent.trim() === '') {
+      head.remove();
+    }
+  })();
+
   function buildLab(){
     if(document.getElementById('labContent')) return;
     views.lab.innerHTML = `
