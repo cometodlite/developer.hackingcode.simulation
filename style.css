@@ -3911,3 +3911,9 @@ body.app-shell-ui #tutorialStepHint{
     transition:none;
   }
 }
+#moreModal {
+  max-height: calc(100vh - 140px);
+  overflow: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+  -webkit-overflow-scrolling: touch;
+}
