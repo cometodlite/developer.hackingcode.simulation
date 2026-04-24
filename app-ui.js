@@ -92,6 +92,9 @@
   kick();
   document.addEventListener('DOMContentLoaded', () => scheduleKick());
   window.addEventListener('load', () => scheduleKick());
+  // App moves DOM after boot; re-measure once game is ready.
+  window.addEventListener('hcsig:ready', () => scheduleKick(40));
+  window.addEventListener('hcsig:main-view', () => scheduleKick(40));
 
   const vv = window.visualViewport;
   if(vv){

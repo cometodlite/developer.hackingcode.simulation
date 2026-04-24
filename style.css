@@ -219,6 +219,7 @@
       border: 1px solid #20263b;
       border-radius: 6px;
       padding: 6px 10px;
+      min-height: 34px;
       font-size: 12px;
       cursor: pointer;
       transition: background 0.15s, border-color 0.15s, transform 0.05s;
@@ -314,12 +315,31 @@ button:hover {
       background: #0b1020;
       border: 1px solid #20263b;
       color: #e5e5e5;
-      border-radius: 4px;
-      padding: 4px 6px;
+      border-radius: 6px;
+      padding: 6px 10px;
+      min-height: 34px;
       font-size: 12px;
       width: 100%;
       margin-bottom: 6px;
       touch-action: manipulation;
+    }
+
+    /* iOS Safari: normalize native select sizing to match buttons */
+    @media (hover: none) and (pointer: coarse) {
+      select{
+        -webkit-appearance: none;
+        appearance: none;
+        line-height: 1.1;
+        padding-right: 28px;
+        background-image:
+          linear-gradient(45deg, transparent 50%, #94a3b8 50%),
+          linear-gradient(135deg, #94a3b8 50%, transparent 50%);
+        background-position:
+          calc(100% - 14px) 50%,
+          calc(100% - 9px) 50%;
+        background-size: 5px 5px, 5px 5px;
+        background-repeat: no-repeat;
+      }
     }
 
     .shop-item {
@@ -693,6 +713,29 @@ button:hover {
       background: transparent;
       cursor: pointer;
       opacity: 0.75;
+      flex: 0 0 auto;
+    }
+
+    /* Mobile: prevent tab row from clipping; allow horizontal scroll */
+    @media (max-width: 700px), (hover: none) and (pointer: coarse) {
+      .more-tabs,
+      .list-tabs{
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        padding-bottom: 6px;
+      }
+      .more-tab-button,
+      .list-tab-button{
+        scroll-snap-align: start;
+        white-space: nowrap;
+      }
+      .more-tabs::-webkit-scrollbar,
+      .list-tabs::-webkit-scrollbar{
+        display:none;
+      }
     }
 
     .more-tab-button.active,
@@ -1425,6 +1468,8 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
   color: #f3f4f6;
   text-align: right;
   word-break: break-all;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .cloud-profile-inline {
@@ -2511,6 +2556,29 @@ body.app-shell-ui .list-tab-button{
   font-size:11px;
   font-weight:900;
   background:rgba(20,83,45,.28);
+}
+
+.event-grid{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap:12px;
+  margin-top: 10px;
+}
+.event-pass-panel,
+.event-weekly-panel{
+  min-width:0;
+}
+.event-pass-panel{
+  border:1px solid rgba(94,234,212,.14);
+  border-radius:8px;
+  background:rgba(7,13,13,.74);
+  overflow:hidden;
+}
+.event-weekly-panel{
+  min-width:0;
+}
+@media (max-width: 900px){
+  .event-grid{ grid-template-columns:1fr; }
 }
 .zero-day-flow{
   display:grid;

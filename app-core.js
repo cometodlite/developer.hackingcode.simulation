@@ -2729,11 +2729,16 @@ function applyLanguageToUI(){
       ];
     }
 
-    function getDayKey() {
-      return new Date().toISOString().slice(0, 10);
-    }
     const DAY_MS = 24 * 60 * 60 * 1000;
-    const KST_WEEK_RESET_OFFSET_MS = 4 * 60 * 60 * 1000; // UTC + 9h, then 05:00 KST reset.
+    // Daily reset is fixed at 05:00 KST regardless of device timezone.
+    // KST is UTC+9, so 05:00 KST equals 20:00 UTC of the previous day.
+    // Emulate "day key with 05:00 KST boundary" by shifting time by +4h and taking the UTC date.
+    const KST_DAILY_RESET_OFFSET_MS = 4 * 60 * 60 * 1000;
+    const KST_WEEK_RESET_OFFSET_MS = KST_DAILY_RESET_OFFSET_MS; // Weekly reset also follows 05:00 KST boundary.
+
+    function getDayKey(ms = Date.now()) {
+      return new Date(ms + KST_DAILY_RESET_OFFSET_MS).toISOString().slice(0, 10);
+    }
     function getKstWeeklyStartMs(ms = Date.now()) {
       const logical = new Date(ms + KST_WEEK_RESET_OFFSET_MS);
       const day = logical.getUTCDay();
@@ -2747,9 +2752,9 @@ function applyLanguageToUI(){
     function getNextWeeklyResetMs(ms = Date.now()) {
       return getKstWeeklyStartMs(ms) + (7 * DAY_MS) - KST_WEEK_RESET_OFFSET_MS;
     }
-    function getMonthKey() {
-      const d = new Date();
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    function getMonthKey(ms = Date.now()) {
+      const d = new Date(ms + KST_DAILY_RESET_OFFSET_MS);
+      return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0');
     }
 
     const SEASON_START_KST_MS = Date.UTC(2026, 4, 1, 5 - 9, 0, 0, 0);
@@ -5741,15 +5746,8 @@ function applyLanguageToUI(){
     const SHOP_META_KEY = 'HCSIG_SHOP_META_V1';
 
     function getLocalDateKey() {
-      // SERVER RESET KEY (fixed 05:00 KST)
-      // 05:00 이전에는 '전날'로 간주, 05:00 이후는 '당일'로 간주
-      const RESET_HOUR = 5;
-      const d = new Date();
-      if (d.getHours() < RESET_HOUR) d.setDate(d.getDate() - 1);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
+      // Keep shop daily limits aligned with mission daily reset (fixed 05:00 KST).
+      return getDayKey();
     }
 
     function loadShopMeta() {
@@ -7065,24 +7063,11 @@ function applyLanguageToUI(){
     }
 
     function setActiveEventTab(tabName) {
-      const panelMap = {
-        pass: eventPassPanel,
-        weekly: eventWeeklyPanel
-      };
-      const activeTab = panelMap[tabName] ? tabName : 'pass';
-      Object.keys(panelMap).forEach(name => {
-        if (!panelMap[name]) return;
-        panelMap[name].classList.toggle('active', name === activeTab);
-      });
-      eventTabButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.eventTab === activeTab);
-      });
-      if (activeTab === 'pass') {
-        renderSeasonPassPanel();
-      } else {
-        renderWeeklyPanel();
-        renderOpsShop();
-      }
+      // 3.0.0: PASS and WEEKLY are split into two panels (shown together).
+      // Keep this function as a compatibility shim, but render both panels.
+      renderSeasonPassPanel();
+      renderWeeklyPanel();
+      renderOpsShop();
     }
 
     listTabButtons.forEach(btn => {
@@ -7122,7 +7107,6 @@ function applyLanguageToUI(){
 
     function openEventModal() {
       try {
-        setActiveEventTab('pass');
         renderSeasonPassPanel();
         renderWeeklyPanel();
         renderOpsShop();

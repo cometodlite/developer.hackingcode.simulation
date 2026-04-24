@@ -281,11 +281,8 @@
 </div>
 <span class="event-chip" id="eventSeasonChip">PRESEASON</span>
 </div>
-<div class="event-tabs">
-<button class="event-tab-button active" data-event-tab="pass" id="eventTabBtnPass">PASS</button>
-<button class="event-tab-button" data-event-tab="weekly" id="eventTabBtnWeekly">WEEKLY CHALLENGE</button>
-</div>
-<div class="event-tab-panel active" id="eventPassPanel">
+<div class="event-grid" id="eventGrid">
+<section class="event-pass-panel" id="eventPassPanel" aria-label="Event pass panel">
 <div class="weekly-head" id="seasonPassPanel">
 <div>
 <span class="badge">SEASON PASS</span>
@@ -315,7 +312,8 @@
 <div class="weekly-goal-list season-shop-list" id="seasonShopList"></div>
 </div>
 </div>
-<div class="event-tab-panel" id="eventWeeklyPanel">
+</section>
+<section class="event-weekly-panel" id="eventWeeklyPanel" aria-label="Weekly challenge panel">
 <div class="weekly-head" id="weeklyPanel">
 <div>
 <span class="badge">CURRENT WEEK</span>
@@ -356,6 +354,8 @@
 <div class="weekly-goal-list season-shop-list" id="opsShopList"></div>
 </div>
 </div>
+</div>
+</section>
 </div>
 <div id="eventModalFooter">
 <button id="btnEventClose2">닫기</button>
