@@ -2527,6 +2527,47 @@ function applyLanguageToUI(){
       };
     }
 
+    // PROGRESS 난이도 4종 정의
+    const PROGRESS_TIERS = {
+      foundation: {
+        id: 'foundation', ko: '기초', en: 'Foundation',
+        desc: '입문용 구성. 쉬운 목표 위주로 주간 루틴을 익힙니다.',
+        descEn: 'Beginner config. Focus on easy goals to learn the weekly routine.',
+        picks: { normal: 3, medium: 1, hard: 0 }
+      },
+      apprentice: {
+        id: 'apprentice', ko: '견습', en: 'Apprentice',
+        desc: '기본+중급 혼합. 균형 잡힌 주간 도전입니다.',
+        descEn: 'Normal+Medium mix. A balanced weekly challenge.',
+        picks: { normal: 2, medium: 2, hard: 0 }
+      },
+      advanced: {
+        id: 'advanced', ko: '심화', en: 'Advanced',
+        desc: '중급+고급 위주. 고점수를 노릴 수 있습니다.',
+        descEn: 'Medium+Hard focus. Aim for higher scores.',
+        picks: { normal: 1, medium: 2, hard: 2 }
+      },
+      expert: {
+        id: 'expert', ko: '전문가', en: 'Expert',
+        desc: '전문가 구성. 고급 목표 중심의 고난도 주간 도전.',
+        descEn: 'Expert config. Hard-goal-heavy weekly challenge.',
+        picks: { normal: 0, medium: 2, hard: 3 }
+      }
+    };
+
+    function getProgressTier() {
+      const key = (state.weeklyChallenge && state.weeklyChallenge.progressTierCurrent) || 'foundation';
+      return PROGRESS_TIERS[key] || PROGRESS_TIERS.foundation;
+    }
+
+    function setProgressTier(tierId) {
+      if (!PROGRESS_TIERS[tierId]) return;
+      ensureWeeklyChallengeDefaults();
+      state.weeklyChallenge.progressTierCurrent = tierId;
+      scheduleSilentSave();
+      renderWeeklyPanel();
+    }
+
     function getWeeklyGoalsForWeek(weekKey = getWeekKey()) {
       function pick(pool, count) {
         return weeklyChallengeDefs
@@ -2534,7 +2575,9 @@ function applyLanguageToUI(){
           .sort((a, b) => hashString(`${weekKey}:${pool}:${a.id}`) - hashString(`${weekKey}:${pool}:${b.id}`))
           .slice(0, count);
       }
-      return [...pick('normal', 2), ...pick('medium', 2), ...pick('hard', 1)];
+      const tier = getProgressTier();
+      const p = tier.picks;
+      return [...pick('normal', p.normal), ...pick('medium', p.medium), ...pick('hard', p.hard)];
     }
 
     function ensureWeeklyChallengeDefaults() {
@@ -2690,11 +2733,36 @@ function applyLanguageToUI(){
       saveGame(true);
     }
 
+    function renderProgressTierSelector() {
+      const el = document.getElementById('progressTierSelector');
+      if (!el) return;
+      const currentTier = getProgressTier();
+      const isEn = getLang() === 'en';
+      el.innerHTML = `
+        <div class="progress-tier-header">
+          <span class="badge">PROGRESS</span>
+          <strong>${isEn ? 'Weekly Difficulty' : '주간 난이도'}</strong>
+          <span class="progress-tier-note">${isEn ? '(applied next reset)' : '(다음 리셋 시 적용)'}</span>
+        </div>
+        <div class="progress-tier-grid">
+          ${Object.values(PROGRESS_TIERS).map(tier => `
+            <button type="button" class="progress-tier-btn ${tier.id === currentTier.id ? 'active' : ''}"
+              data-progress-tier="${tier.id}">
+              <strong>${isEn ? tier.en : tier.ko}</strong>
+              <span>${isEn ? tier.descEn : tier.desc}</span>
+              <span class="progress-tier-picks">N:${tier.picks.normal} M:${tier.picks.medium} H:${tier.picks.hard}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
     function renderWeeklyPanel() {
       const goalList = document.getElementById('weeklyGoalList');
       const bonusCard = document.getElementById('weeklyBonusCard');
       if (!goalList || !bonusCard) return;
       ensureWeeklyChallengeDefaults();
+      renderProgressTierSelector();
       const goals = getWeeklyGoalsForWeek();
       const claimedCount = goals.filter(def => state.weeklyChallenge.claimed[def.id]).length;
       const completeCount = goals.filter(isWeeklyGoalComplete).length;
@@ -2848,9 +2916,29 @@ function applyLanguageToUI(){
       setNodeDisplay(btnTutorialFinish, idx === tutorialSteps.length - 1 ? '' : 'none');
     }
 
+    // 튜토리얼 버튼 하이라이트
+    const TUTORIAL_HIGHLIGHT_MAP = {
+      scan:       ['btnScan'],
+      selectCode: ['appViewCodes', 'appMainNav [data-main-view="codes"]'],
+      hack:       ['btnHack']
+    };
+
+    function applyTutorialHighlight(step) {
+      document.querySelectorAll('.tutorial-highlight').forEach(el => el.classList.remove('tutorial-highlight'));
+      if (!step || !step.waitAction) return;
+      const targets = TUTORIAL_HIGHLIGHT_MAP[step.waitAction] || [];
+      targets.forEach(sel => {
+        try {
+          const el = document.getElementById(sel) || document.querySelector(sel);
+          if (el) el.classList.add('tutorial-highlight');
+        } catch(e) {}
+      });
+    }
+
     function openTutorial(forceRestart = false) {
       state.tutorial = state.tutorial || {};
       ensureTutorialDefaults();
+      const isReplay = forceRestart && state.tutorial.seen;
       if (forceRestart) {
         state.tutorial.step = 0;
         state.tutorial.completed = false;
@@ -2860,11 +2948,19 @@ function applyLanguageToUI(){
         tutorialBackdrop.classList.add('show');
         tutorialBackdrop.classList.remove('interactive');
         tutorialBackdrop.setAttribute('aria-hidden', 'false');
+        // 재보기 글리치 효과
+        if (isReplay) {
+          tutorialBackdrop.classList.add('tutorial-glitch');
+          setTimeout(() => tutorialBackdrop && tutorialBackdrop.classList.remove('tutorial-glitch'), 700);
+        }
       }
       document.body.classList.add('tutorial-open');
       document.body.classList.remove('tutorial-interactive');
       tutorialOpenedOnce = true;
       renderTutorial();
+      const steps = getTutorialSteps();
+      const idx = Math.min(Math.max(0, state.tutorial.step || 0), steps.length - 1);
+      applyTutorialHighlight(steps[idx]);
       saveGame(true);
     }
 
@@ -2890,6 +2986,7 @@ function applyLanguageToUI(){
       if (state.tutorial.step < tutorialSteps.length - 1) {
         state.tutorial.step += 1;
         renderTutorial();
+        applyTutorialHighlight(tutorialSteps[state.tutorial.step]);
         saveGame(true);
       }
     }
@@ -2898,7 +2995,9 @@ function applyLanguageToUI(){
       ensureTutorialDefaults();
       if (state.tutorial.step > 0) {
         state.tutorial.step -= 1;
+        const tutorialSteps = getTutorialSteps();
         renderTutorial();
+        applyTutorialHighlight(tutorialSteps[state.tutorial.step]);
       }
     }
 
@@ -2986,6 +3085,7 @@ function applyLanguageToUI(){
       setNodeText(statCpuTier, state.cpuTier);
       setNodeText(statGpuTier, state.gpuTier || 1);
       setNodeText(statEnergyValue, `${state.energy} / ${state.energyMax}`);
+      if (statEnergyValue) statEnergyValue.classList.toggle('energy-empty', state.energy <= 0);
 
       if (state.energy >= state.energyMax) {
         setNodeText(statEnergyTimer, t('full'));
@@ -3598,7 +3698,7 @@ function applyLanguageToUI(){
           onTutorialAction('selectCode');
           renderCodeList();
           renderCodeDetail();
-          openCodeDetailModal(code.id);
+          // 모달은 열지 않음 — 우측 상세 패널에 표시
         };
         li.addEventListener('click', openCode);
         li.addEventListener('keydown', (event) => {
@@ -5037,6 +5137,11 @@ function applyLanguageToUI(){
         option.textContent = t('serverOption', { name: localizeServerName(s), sec: s.security, lv: s.minLevel });
         serverSelect.appendChild(option);
       });
+      // 저장된 서버 선택 복원
+      const savedId = state.targeting && state.targeting.serverId;
+      if (savedId && servers.find(s => s.id === savedId)) {
+        serverSelect.value = savedId;
+      }
     }
 
     
@@ -7280,6 +7385,15 @@ function applyLanguageToUI(){
 
     // === v3.0.0 new UI wiring ===
 
+    // 서버 선택 변경 → state.targeting.serverId 저장
+    if (serverSelect) {
+      serverSelect.addEventListener('change', () => {
+        state.targeting = state.targeting || {};
+        state.targeting.serverId = serverSelect.value || 'school_lab';
+        scheduleSilentSave();
+      });
+    }
+
     // Route select (HOME ACTIONS)
     const routeSelectEl = document.getElementById('routeSelect');
     if (routeSelectEl) {
@@ -7321,6 +7435,24 @@ function applyLanguageToUI(){
         scheduleSilentSave();
       });
     }
+
+    // PROGRESS 난이도 선택 버튼 위임
+    bind(document, 'click', (e) => {
+      const btn = e.target.closest && e.target.closest('[data-progress-tier]');
+      if (!btn) return;
+      setProgressTier(btn.dataset.progressTier);
+    });
+
+    // 계정 서브탭 전환 (계정 및 클라우드 상태 / 계정 커스텀)
+    bind(document, 'click', (e) => {
+      const btn = e.target.closest && e.target.closest('[data-account-tab]');
+      if (!btn) return;
+      const tabId = btn.dataset.accountTab;
+      document.querySelectorAll('.account-subtab-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.accountTab === tabId));
+      document.querySelectorAll('.account-subpanel').forEach(p =>
+        p.classList.toggle('active', p.id === 'accountPanel' + tabId.charAt(0).toUpperCase() + tabId.slice(1)));
+    });
 
     // EVENT modal tab switching (WEEKLY / PASS)
     bind(document, 'click', (e) => {
