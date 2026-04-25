@@ -564,6 +564,7 @@ button:hover {
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75);
       display: flex;
       flex-direction: column;
+      overflow: hidden; /* v3.0.0: 가로 오버플로우 방지 */
     }
 
     #moreModalHeader,
@@ -589,17 +590,23 @@ button:hover {
     #listModalBody,
     #eventModalBody,
     #codeDetailModalBody {
-      padding: 8px 12px 10px;
-      overflow: auto;
+      padding: 8px 12px calc(20px + env(safe-area-inset-bottom));
+      overflow-y: auto;
+      overflow-x: hidden;
       font-size: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
+    /* v3.0.0 — 우상단 X만 사용. 하단 닫기 footer 제거 */
     #moreModalFooter,
     #listModalFooter,
-    #eventModalFooter,
+    #eventModalFooter {
+      display: none !important;
+    }
+
+    /* codeDetailModalFooter는 액션 버튼(강화/동기화 등)이 있어서 유지 */
     #codeDetailModalFooter {
       padding: 8px 12px;
       border-top: 1px solid #111827;
@@ -681,6 +688,21 @@ button:hover {
       margin-bottom: 6px;
       border-bottom: 1px solid #111827;
       padding-bottom: 4px;
+      /* v3.0.0: 모바일에서 가로 스크롤 + 잘림 방지 */
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .more-tabs::-webkit-scrollbar,
+    .list-tabs::-webkit-scrollbar {
+      height: 3px;
+    }
+    .more-tabs::-webkit-scrollbar-thumb,
+    .list-tabs::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 2px;
     }
 
     .more-tab-button,
@@ -693,6 +715,9 @@ button:hover {
       background: transparent;
       cursor: pointer;
       opacity: 0.75;
+      /* v3.0.0: 탭 버튼이 줄지 않도록 고정 */
+      flex-shrink: 0;
+      white-space: nowrap;
     }
 
     .more-tab-button.active,
@@ -741,6 +766,8 @@ button:hover {
       display: flex;
       gap: 6px;
       margin: 4px 0 6px;
+      /* v3.0.0: 좁은 화면에서 줄바꿈 + 가로 오버플로우 방지 */
+      flex-wrap: wrap;
     }
 
     .mission-scope-btn {
@@ -749,6 +776,8 @@ button:hover {
       border-radius: 999px;
       border-width: 1px;
       opacity: 0.75;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
 
     .mission-scope-btn.active {
@@ -1923,15 +1952,10 @@ body.app-shell-ui button:active{
   user-select:none;
   position:relative;
 }
+/* v3.0.0: ::after "상세" 라벨 제거 — 실제 "상세" 버튼이 카드 안에 있음 */
 .app-view-codes #codeList li.code-card::after{
-  content:"상세";
-  position:absolute;
-  right:12px;
-  bottom:10px;
-  color:#6ee7b7;
-  font-size:10px;
-  font-weight:900;
-  opacity:.72;
+  content:none;
+  display:none;
 }
 .app-view-codes #codeList li.code-card.active{
   border-color:rgba(134,239,172,.54);
@@ -1996,6 +2020,27 @@ body.app-shell-ui button:active{
 .more-quick-actions{
   display:flex;
   justify-content:flex-end;
+}
+/* v3.0.0: 설정 탭 안의 튜토리얼 다시 보기 버튼 영역 */
+.settings-tutorial-row{
+  display:flex;
+  justify-content:flex-start;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid #1f2937;
+}
+.settings-tutorial-row button{
+  padding:8px 14px;
+  background:#0d2a1a;
+  border:1px solid #1a4a2a;
+  color:#7ecfff;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:12px;
+}
+.settings-tutorial-row button:hover{
+  background:#0f3a25;
+  border-color:#7ecfff;
 }
 #btnOpenTutorial{
   display:inline-flex !important;
@@ -3197,7 +3242,7 @@ body.app-shell-ui #tutorialStepHint{
 .stage-chapter-head{
   width:100%;
   display:grid;
-  grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
+  grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr) 16px;
   align-items:center;
   gap:12px;
   min-height:54px;
@@ -3207,6 +3252,19 @@ body.app-shell-ui #tutorialStepHint{
   background:rgba(13,20,18,.86);
   color:#e5f7ef;
   text-align:left;
+  cursor:pointer;
+  position:relative;
+}
+/* v3.0.0: 챕터 아코디언 펼침/접힘 화살표 */
+.stage-chapter-head::after{
+  content:"▶";
+  color:#5eead4;
+  font-size:10px;
+  transition:transform 0.2s;
+  text-align:center;
+}
+.stage-chapter.open .stage-chapter-head::after{
+  transform:rotate(90deg);
 }
 .stage-chapter-head span,
 .stage-chapter-head em{
@@ -3285,7 +3343,8 @@ body.app-shell-ui #tutorialStepHint{
     transform:none !important;
   }
   .app-main-view{
-    padding:8px 10px calc(var(--mobileTabsH, 70px) + 18px + env(safe-area-inset-bottom));
+    /* v3.0.0: 하단 네비 위 여백 확장 (콘텐츠가 가리지 않도록) */
+    padding:8px 10px calc(var(--mobileTabsH, 70px) + 28px + env(safe-area-inset-bottom));
   }
 		  .app-view-home.active,
 		  .home-cockpit,
@@ -3829,6 +3888,8 @@ body.app-shell-ui #tutorialStepHint{
   grid-template-columns: 1fr 1fr;
   gap: 6px;
   margin-bottom: 10px;
+  width: 100%;
+  min-width: 0;
 }
 .progress-tier-btn {
   display: flex;
@@ -3841,6 +3902,15 @@ body.app-shell-ui #tutorialStepHint{
   cursor: pointer;
   text-align: left;
   transition: border-color 0.2s, background 0.2s;
+  min-width: 0; /* v3.0.0: 그리드 셀 오버플로우 방지 */
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.progress-tier-btn strong,
+.progress-tier-btn span {
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .progress-tier-btn strong { font-size: 12px; color: #ccd; }
 .progress-tier-btn span  { font-size: 10px; color: #667788; line-height: 1.4; }
@@ -4242,6 +4312,41 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 }
 .pass-header h3 { font-size: 14px; font-weight: 700; color: #7ecfff; letter-spacing: 1px; }
 .pass-header .pass-season-label { font-size: 11px; color: #4488aa; }
+
+/* v3.0.0: 프리시즌 카드 (큰 빈 공간 대신 정보가 있는 카드) */
+.pass-preseason-card {
+  background: linear-gradient(135deg, rgba(20, 60, 120, 0.18), rgba(10, 16, 32, 0.85));
+  border: 1px solid #1a3a5a;
+  border-radius: 10px;
+  padding: 24px 18px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.pass-preseason-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #7ecfff;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.pass-preseason-countdown {
+  font-size: 24px;
+  font-weight: 800;
+  color: #5eead4;
+  margin-bottom: 6px;
+  font-family: 'Courier New', Courier, monospace;
+}
+.pass-preseason-date {
+  font-size: 11px;
+  color: #4488aa;
+  margin-bottom: 14px;
+  font-family: 'Courier New', Courier, monospace;
+}
+.pass-preseason-note {
+  font-size: 11px;
+  color: #6b8aa0;
+  line-height: 1.5;
+}
 .pass-progress-row {
   display: flex;
   align-items: center;

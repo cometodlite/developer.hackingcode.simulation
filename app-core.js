@@ -127,7 +127,8 @@ function localizeRarityLabel(rarity){
 }
 function localizeShopLimitLabel(info){
   if (!info) return '';
-  if (info.type === 'daily') return t('dailyResetLabel', { n: info.limit });
+  // v3.0.0: 짧고 명확한 라벨로 축약 (가로 잘림 방지)
+  if (info.type === 'daily') return getLang() === 'en' ? '05:00 reset' : '05:00 리셋';
   if (info.type === 'once') return t('onceLabel');
   return info.label || '';
 }
@@ -4148,12 +4149,29 @@ function applyLanguageToUI(){
         ? (getLang()==='en' ? 'PRESEASON' : 'PRESEASON')
         : (getLang()==='en' ? `Season ${num} · ZERO-DAY` : `시즌 ${num} · ZERO-DAY`);
 
+      // v3.0.0: 프리시즌 카운트다운 계산
+      let preseasonDaysLeft = 0;
+      if (isPreseason) {
+        const msLeft = SEASON_START_DATE.getTime() - Date.now();
+        preseasonDaysLeft = Math.max(0, Math.ceil(msLeft / (24 * 60 * 60 * 1000)));
+      }
+
       el.innerHTML = `
         <div class="pass-header">
           <span class="badge">${seasonLabel}</span>
-          ${isPreseason ? `<p class="small">${getLang()==='en' ? 'Season 1 starts 2026-05-01 05:00 KST' : '시즌 1은 2026-05-01 05:00 KST에 시작합니다.'}</p>` : ''}
+          ${!isPreseason ? '' : ''}
         </div>
-        ${!isPreseason ? `
+        ${isPreseason ? `
+        <!-- v3.0.0: 프리시즌 안내 카드 (여백 축소, 정보 밀도 향상) -->
+        <div class="pass-preseason-card">
+          <div class="pass-preseason-title">${getLang()==='en' ? 'Season 1 — ZERO-DAY' : '시즌 1 — ZERO-DAY'}</div>
+          <div class="pass-preseason-countdown">${preseasonDaysLeft > 0
+            ? (getLang()==='en' ? `Starts in ${preseasonDaysLeft} day(s)` : `시작까지 ${preseasonDaysLeft}일`)
+            : (getLang()==='en' ? 'Starting soon' : '곧 시작')}</div>
+          <div class="pass-preseason-date">${getLang()==='en' ? '2026-05-01 05:00 KST' : '2026-05-01 05:00 KST'}</div>
+          <div class="pass-preseason-note small">${getLang()==='en' ? 'PASS rewards will unlock when Season 1 begins.' : '시즌 1이 시작되면 PASS 보상이 활성화됩니다.'}</div>
+        </div>
+        ` : `
         <div class="pass-progress-row">
           <span>${getLang()==='en' ? 'Tier' : '티어'} ${tier} / ${PASS_MAX_TIER}</span>
           <div class="pass-bar"><div class="pass-bar-fill" style="width:${Math.round(ptsInTier)}%"></div></div>
@@ -4176,7 +4194,7 @@ function applyLanguageToUI(){
             </div>`;
           }).join('')}
         </div>
-        ` : `<p class="small" style="padding:1rem;text-align:center;">${getLang()==='en' ? 'Pass will be available from Season 1.' : '패스는 시즌 1부터 이용 가능합니다.'}</p>`}
+        `}
       `;
       el.querySelectorAll('[data-claim-tier]').forEach(btn => {
         btn.addEventListener('click', () => claimPassTierReward(btn.dataset.claimTier));
@@ -5706,7 +5724,8 @@ function applyLanguageToUI(){
         if (lim) {
           const badge = document.createElement('span');
           badge.className = 'shop-limit-badge';
-          badge.textContent = `${lim.used}/${lim.limit} (${localizeShopLimitLabel(lim)})`;
+          // v3.0.0: 한 줄 축약 — "0/3 · 05:00 리셋" 또는 "0/1 · 1회"
+          badge.textContent = `${lim.used}/${lim.limit} · ${localizeShopLimitLabel(lim)}`;
           badge.style.marginLeft = '8px';
           badge.style.opacity = '0.85';
           costSpan.appendChild(badge);

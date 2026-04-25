@@ -247,7 +247,6 @@
     </div>
     <!-- 미션 탭 -->
     <div class="list-tab-panel active" id="tabMission">
-      <div><span class="badge">MISSION</span><span id="missionTabTitle">퀘스트</span></div>
       <div class="mission-scope-tabs">
         <button class="mission-scope-btn active" data-scope="daily">DAILY</button>
         <button class="mission-scope-btn" data-scope="weekly">WEEKLY</button>
@@ -255,10 +254,11 @@
         <button class="mission-scope-btn" data-scope="general">GENERAL</button>
       </div>
       <div class="stat-box" id="missionList"></div>
+      <!-- v3.0.0: 중복 제목 제거 (상단 탭에 이미 미션 라벨 있음) -->
+      <span hidden id="missionTabTitle">퀘스트</span>
     </div>
     <!-- 업적 탭 -->
     <div class="list-tab-panel" id="tabAchievement">
-      <div><span class="badge">ACHIEVEMENT</span><span id="achievementTabTitle">업적</span></div>
       <div class="achievement-toolbar" id="achievementToolbar" aria-label="업적 필터">
         <button class="active" data-achievement-filter="incomplete" type="button">미완료</button>
         <button data-achievement-filter="all" type="button">전체</button>
@@ -266,6 +266,8 @@
         <label class="log-filter-label achievement-hidden-toggle"><input id="chkShowHiddenAchievements" type="checkbox"/> 숨김 포함</label>
       </div>
       <div class="stat-box" id="achievementList"></div>
+      <!-- v3.0.0: 중복 제목 제거 -->
+      <span hidden id="achievementTabTitle">업적</span>
     </div>
   </div>
   <div id="listModalFooter"><button id="btnListClose2">닫기</button></div>
@@ -350,9 +352,7 @@
       <button class="more-tab-button"        data-tab="credits"  id="tabBtnCredits">CREDITS</button>
       <button class="more-tab-button"        data-tab="manual"   id="tabBtnManual">설명서</button>
     </div>
-    <div class="more-quick-actions">
-      <button id="btnOpenTutorial" type="button">튜토리얼 다시 보기</button>
-    </div>
+    <!-- v3.0.0: 튜토리얼 다시 보기는 설정 탭 안으로 이동됨. 더보기 상단의 플로팅 버튼 제거 -->
 
     <!-- 코드 도감 탭 -->
     <div class="more-tab-panel active" id="tabCodex">
@@ -477,6 +477,10 @@
         <div class="small" style="margin-top:6px;" id="settingsHelp">
           · 설정은 저장 데이터에 포함되며, 새로고침 후에도 유지됩니다.
         </div>
+      </div>
+      <!-- v3.0.0: 튜토리얼 다시 보기 — 더보기 상단에서 설정 안으로 이동 -->
+      <div class="settings-tutorial-row">
+        <button id="btnOpenTutorial" type="button">튜토리얼 다시 보기</button>
       </div>
     </div>
 
