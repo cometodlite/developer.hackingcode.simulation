@@ -1676,6 +1676,60 @@ function applyLanguageToUI(){
           // 프레스티지 리셋 로직은 별도 구현 필요
           showToast(getLang() === 'en' ? 'Prestige reset unlocked (feature coming)' : '프레스티지 기능 준비 중입니다.', 'shop');
         }
+      },
+      // ── SEASON SHOP ITEMS (시즌 상점 — PASS에서 이동) ──
+      {
+        id: 'ss_coin_frame',
+        name: '코인 프레임',
+        desc: '프로필 프레임 (코스메틱). 프로필을 꾸며 당신의 개성을 표현하세요.',
+        cost: 80,
+        rarity: 'UNCOMMON',
+        category: 'ECONOMY',
+        once: true,
+        buy: () => {
+          state.season = state.season || {};
+          state.season.shopPurchases = state.season.shopPurchases || {};
+          state.season.shopPurchases['ss_coin_frame'] = Date.now();
+        }
+      },
+      {
+        id: 'ss_title_ghost',
+        name: '칭호: GHOST',
+        desc: '칭호 코스메틱. ZERO-DAY 마스터의 증거를 프로필에 표시합니다.',
+        cost: 120,
+        rarity: 'EPIC',
+        category: 'ECONOMY',
+        once: true,
+        buy: () => {
+          state.season = state.season || {};
+          state.season.shopPurchases = state.season.shopPurchases || {};
+          state.season.shopPurchases['ss_title_ghost'] = Date.now();
+        }
+      },
+      {
+        id: 'ss_energy_assist',
+        name: '소형 에너지 패키지',
+        desc: '에너지 팩 +2, 크레딧 +150. 빠른 진행을 위한 부스트 패키지.',
+        cost: 30,
+        rarity: 'COMMON',
+        category: 'ENERGY',
+        buy: () => {
+          state.items.energyPack = (state.items.energyPack || 0) + 2;
+          state.credits = (state.credits || 0) + 150;
+          state.stats.creditsEarnedTotal = (state.stats.creditsEarnedTotal || 0) + 150;
+        }
+      },
+      {
+        id: 'ss_oneday_pack',
+        name: 'OneDay 소형 팩',
+        desc: 'OneDay +200. ZERO-DAY에서 향상된 성능으로 더 깊이 탐사할 수 있습니다.',
+        cost: 50,
+        rarity: 'RARE',
+        category: 'SYSTEM',
+        buy: () => {
+          state.items.oneDay = (state.items.oneDay || 0) + 200;
+          state.stats.zeroDayOneDayEarnedTotal = (state.stats.zeroDayOneDayEarnedTotal || 0) + 200;
+        }
       }
     ];
 
@@ -4123,65 +4177,10 @@ function applyLanguageToUI(){
           }).join('')}
         </div>
         ` : `<p class="small" style="padding:1rem;text-align:center;">${getLang()==='en' ? 'Pass will be available from Season 1.' : '패스는 시즌 1부터 이용 가능합니다.'}</p>`}
-        <div class="season-shop-section">
-          <h4 class="section-title">${getLang()==='en' ? 'Season Shop' : '시즌 상점'}</h4>
-          ${renderSeasonShopHTML()}
-        </div>
       `;
       el.querySelectorAll('[data-claim-tier]').forEach(btn => {
         btn.addEventListener('click', () => claimPassTierReward(btn.dataset.claimTier));
       });
-      el.querySelectorAll('[data-season-shop-buy]').forEach(btn => {
-        btn.addEventListener('click', () => buySeasonShopItem(btn.dataset.seasonShopBuy));
-      });
-    }
-
-    const seasonShopDefs = [
-      { id: 'ss_coin_frame', nameKo: '코인 프레임', nameEn: 'Coin Frame', cost: 80, currency: 'coin', desc: '프로필 프레임 (코스메틱)' },
-      { id: 'ss_title_ghost', nameKo: '칭호: GHOST', nameEn: 'Title: GHOST', cost: 120, currency: 'coin', desc: '칭호 코스메틱' },
-      { id: 'ss_energy_assist', nameKo: '소형 에너지 패키지', nameEn: 'Small Energy Package', cost: 30, currency: 'coin', desc: '에너지 팩 +2, 크레딧 +150', once: false },
-      { id: 'ss_oneday_pack', nameKo: 'OneDay 소형 팩', nameEn: 'Small OneDay Pack', cost: 50, currency: 'coin', desc: 'OneDay +200', once: false }
-    ];
-
-    function renderSeasonShopHTML() {
-      const coin = state.items.coin || 0;
-      return `<p class="small">${getLang()==='en' ? `COIN: ${coin}` : `COIN: ${coin}`}</p>
-        <div class="season-shop-list">
-          ${seasonShopDefs.map(item => {
-            const purchased = !!(state.season.shopPurchases && state.season.shopPurchases[item.id]);
-            const canBuy = coin >= item.cost && (!item.once || !purchased);
-            const name = getLang()==='en' ? item.nameEn : item.nameKo;
-            return `<div class="season-shop-item">
-              <span class="item-name">${name}</span>
-              <span class="item-cost">${item.cost} COIN</span>
-              <span class="item-desc small">${item.desc}</span>
-              <button type="button" data-season-shop-buy="${item.id}" ${canBuy ? '' : 'disabled'}>${purchased && item.once ? (getLang()==='en' ? 'Owned' : '보유') : (getLang()==='en' ? 'Buy' : '구매')}</button>
-            </div>`;
-          }).join('')}
-        </div>`;
-    }
-
-    function buySeasonShopItem(id) {
-      const def = seasonShopDefs.find(d => d.id === id);
-      if (!def) return;
-      const coin = state.items.coin || 0;
-      if (coin < def.cost) { showToast(getLang()==='en' ? 'Not enough COIN.' : 'COIN이 부족합니다.', 'warn'); return; }
-      if (def.once && state.season.shopPurchases && state.season.shopPurchases[id]) {
-        showToast(getLang()==='en' ? 'Already owned.' : '이미 보유 중입니다.', 'warn'); return;
-      }
-      state.items.coin = coin - def.cost;
-      state.stats.coinSpentTotal = (state.stats.coinSpentTotal || 0) + def.cost;
-      state.stats.eventShopPurchaseCount = (state.stats.eventShopPurchaseCount || 0) + 1;
-      state.season.shopPurchases = state.season.shopPurchases || {};
-      state.season.shopPurchases[id] = Date.now();
-      // apply reward
-      if (id === 'ss_energy_assist') { state.items.energyPack = (state.items.energyPack||0)+2; state.credits+=150; state.stats.creditsEarnedTotal+=150; }
-      if (id === 'ss_oneday_pack')   { state.items.oneDay = (state.items.oneDay||0)+200; state.stats.zeroDayOneDayEarnedTotal+=200; }
-      const name = getLang()==='en' ? def.nameEn : def.nameKo;
-      showToast(getLang()==='en' ? `Purchased: ${name}` : `구매 완료: ${name}`, 'achievement');
-      updateStatsUI();
-      renderPassPanel();
-      saveGame(true);
     }
 
     // OPS SHOP (inside WEEKLY CHALLENGE panel)
