@@ -1677,7 +1677,9 @@ function applyLanguageToUI(){
         { id: 'weekly_hack_risk5', name: '위험한 한 주',        type: 'riskHackSuccess', target: 5, rewardCredits: 240, desc: '위험 해킹 모드로 서버 해킹 성공 5회' },
         { id: 'weekly_buy5',       name: '주간 소비',          type: 'shopPurchases', target: 5,   rewardCredits: 160, desc: '상점에서 5회 구매하기' },
         { id: 'weekly_credit800',  name: '주간 수익',          type: 'creditsEarnedTotal', target: 800, rewardCredits: 180, desc: '누적 획득 크레딧 800 달성' },
-        { id: 'weekly_energy0',    name: '방전 습관',          type: 'energy0Flag', target: 1,   rewardCredits: 150, desc: '이번 주 최소 1회 에너지를 0까지 소모' }
+        { id: 'weekly_energy0',    name: '방전 습관',          type: 'energy0Flag', target: 1,   rewardCredits: 150, desc: '이번 주 최소 1회 에너지를 0까지 소모' },
+        { id: 'weekly_zd_run1',    name: 'ZERO-DAY 입문',      type: 'zeroDayRunCount', target: 1,   rewardCredits: 0, rewardCoin: 5, desc: '이번 주 ZERO-DAY PVE 1회 진행' },
+        { id: 'weekly_scan70',     name: '주간 집중 스캔',      type: 'scans',       target: 70,  rewardCredits: 0, rewardCoin: 10, desc: '코드 스캔 70회 수행' }
       ],
       month: [
         { id: 'month_scan100',     name: '월간 스캐너',        type: 'scans',           target: 100, rewardCredits: 300, desc: '코드 스캔 100회 수행' },
@@ -4192,6 +4194,77 @@ function applyLanguageToUI(){
       state.stats.zeroDayPvpAttackWinCount = state.stats.zeroDayPvpAttackWinCount || 0;
     }
 
+    // ── ZD Node Types (12종) ─────────────────────────────────────────────
+    // detMult: detection gain multiplier for this node type
+    // sigMult: signal gain multiplier
+    // cpuCheck / gpuCheck: whether high CPU/GPU tier reduces detection
+    const ZD_NODE_TYPES = {
+      ENTRY:    { id:'ENTRY',    ko:'진입점', en:'Entry Point', detMult:0.5,  sigMult:0.3,  cpuCheck:false, gpuCheck:false },
+      HUB:      { id:'HUB',     ko:'허브',   en:'Hub',         detMult:0.8,  sigMult:0.6,  cpuCheck:false, gpuCheck:false },
+      CORE:     { id:'CORE',    ko:'코어',   en:'Core',        detMult:1.4,  sigMult:2.0,  cpuCheck:false, gpuCheck:false },
+      FIREWALL: { id:'FIREWALL',ko:'방화벽', en:'Firewall',    detMult:1.6,  sigMult:0.8,  cpuCheck:true,  gpuCheck:false },
+      IDS:      { id:'IDS',     ko:'침입탐지',en:'IDS',        detMult:2.0,  sigMult:1.0,  cpuCheck:false, gpuCheck:false },
+      DECOY:    { id:'DECOY',   ko:'미끼',   en:'Decoy',       detMult:0.3,  sigMult:0.1,  cpuCheck:false, gpuCheck:false },
+      CPU_LOCK: { id:'CPU_LOCK',ko:'CPU잠금',en:'CPU Lock',    detMult:1.4,  sigMult:1.2,  cpuCheck:true,  gpuCheck:false },
+      GPU_LOCK: { id:'GPU_LOCK',ko:'GPU잠금',en:'GPU Lock',    detMult:1.4,  sigMult:1.2,  cpuCheck:false, gpuCheck:true  },
+      CACHE:    { id:'CACHE',   ko:'캐시',   en:'Cache Node',  detMult:0.6,  sigMult:1.5,  cpuCheck:false, gpuCheck:false },
+      WIPE:     { id:'WIPE',    ko:'와이프', en:'Wipe',        detMult:0.8,  sigMult:0.0,  cpuCheck:false, gpuCheck:false },
+      TRAP:     { id:'TRAP',    ko:'트랩',   en:'Trap',        detMult:2.5,  sigMult:0.5,  cpuCheck:false, gpuCheck:false },
+      EXIT:     { id:'EXIT',    ko:'출구',   en:'Exit Node',   detMult:0.2,  sigMult:0.0,  cpuCheck:false, gpuCheck:false }
+    };
+
+    // Node pools per difficulty: array of node type ids to sample from
+    const ZD_NODE_POOLS = {
+      intro:  ['ENTRY','HUB','CACHE','DECOY','EXIT'],
+      easy:   ['ENTRY','HUB','HUB','CACHE','FIREWALL','EXIT'],
+      normal: ['ENTRY','HUB','FIREWALL','IDS','CACHE','CPU_LOCK','GPU_LOCK','DECOY','EXIT'],
+      hard:   ['ENTRY','FIREWALL','IDS','IDS','CPU_LOCK','GPU_LOCK','CORE','TRAP','CACHE','EXIT'],
+      danger: ['ENTRY','FIREWALL','FIREWALL','IDS','IDS','CPU_LOCK','GPU_LOCK','CORE','TRAP','TRAP','WIPE','EXIT']
+    };
+
+    function generateZdNodeSequence(diff) {
+      const pool = ZD_NODE_POOLS[diff] || ZD_NODE_POOLS.easy;
+      const def  = ZD_PVE_DIFFICULTIES[diff] || ZD_PVE_DIFFICULTIES.easy;
+      const len  = def.depthMax;
+      const seq  = ['ENTRY'];
+      const mid  = pool.filter(n => n !== 'ENTRY' && n !== 'EXIT');
+      while (seq.length < len - 1) {
+        seq.push(mid[Math.floor(Math.random() * mid.length)]);
+      }
+      seq.push('EXIT');
+      return seq;
+    }
+
+    // ── Detection Stages (5단계) ─────────────────────────────────────────
+    function getZdDetectionStage(detection) {
+      if (detection >= 1.0)  return { id:'FAILED',   label:'FAILED',   ko:'실패',  color:'#ff2020' };
+      if (detection >= 0.81) return { id:'LOCKDOWN', label:'LOCKDOWN', ko:'봉쇄',  color:'#ff6600' };
+      if (detection >= 0.51) return { id:'PURSUIT',  label:'PURSUIT',  ko:'추적',  color:'#ffaa00' };
+      if (detection >= 0.26) return { id:'CAUTION',  label:'CAUTION',  ko:'경계',  color:'#ffee00' };
+      return                         { id:'SAFE',     label:'SAFE',     ko:'안전',  color:'#00ff88' };
+    }
+
+    // ── Code ZD Tags (5종 분류) ──────────────────────────────────────────
+    const CODE_ZD_TAGS = {
+      basic:'정찰',         port_scanner:'침투',     pulse_ping:'정찰',
+      cache_sniffer:'정찰', shield_bypass:'침투',    stack_tracer:'침투',
+      credit_siphon:'교란', fallback_node:'방어',    data_phantom:'침투',
+      auto_patch:'방어',    trace_scrambler:'은폐',  null_rewriter:'교란',
+      rapid_exploit:'침투', overflow_inject:'교란',  fortress_breaker:'침투',
+      quantum_splice:'침투',ghost_script:'은폐',     singularity_root:'침투',
+      scan_cache:'정찰',    rarity_lens:'정찰',      shard_magnet:'정찰',
+      deep_indexer:'정찰',  prism_crawler:'정찰',    oracle_spider:'정찰',
+      signal_anchor:'침투', kernel_probe:'침투',     handshake_forge:'침투',
+      exploit_router:'침투',zero_day_seed:'침투',    root_oracle:'침투',
+      coin_tap:'교란',      bounty_hook:'교란',      exp_stream:'교란',
+      vault_siphon:'교란',  reward_kernel:'교란',    jackpot_daemon:'교란',
+      risk_buffer:'방어',   trace_anchor:'방어',     extreme_buffer:'방어',
+      overclock_guard:'방어',abyss_contract:'침투',  singular_gambit:'침투',
+      stage_marker:'침투',  chapter_key:'침투',      trial_compass:'침투',
+      boss_keygen:'침투',   repeat_engine:'침투',    stage_sovereign:'침투',
+      operation_meridian:'침투', operation_blackout:'교란'
+    };
+
     const ZD_PVE_DIFFICULTIES = {
       intro:  { label: '입문', labelEn: 'Intro',  depthMax: 6,  detectionRate: 0.08, signalPerNode: 8,  baseScore: 50,  free: true },
       easy:   { label: '쉬움', labelEn: 'Easy',   depthMax: 8,  detectionRate: 0.12, signalPerNode: 12, baseScore: 100 },
@@ -4235,17 +4308,24 @@ function applyLanguageToUI(){
       } else {
         state.items.zeroDayVulnerability = (state.items.zeroDayVulnerability || 0) - 1;
       }
+      const nodeSeq = generateZdNodeSequence(diff);
       state.zeroDay.pve.active = {
         diff,
         depth: 0,
         detection: 0,
         signal: 0,
         score: 0,
-        log: [`root@zeroday:~# info: ${getLang()==='en' ? 'Run started' : '런 시작'} · ${def.labelEn} · depth 0/${def.depthMax}`],
+        nodes: nodeSeq,
+        log: [`root@zeroday:~# info: ${getLang()==='en' ? 'Run started' : '런 시작'} · ${def.labelEn} · depth 0/${def.depthMax} · node: ${nodeSeq[0]}`],
         startedAt: Date.now()
       };
       state.zeroDay.pve.runs = (state.zeroDay.pve.runs || 0) + 1;
       state.stats.zeroDayRunCount = (state.stats.zeroDayRunCount || 0) + 1;
+      // Track in weekly/monthly mission progress
+      state.missionProgress.weekly.zeroDayRuns = (state.missionProgress.weekly.zeroDayRuns || 0) + 1;
+      state.missionProgress.month.zeroDayRuns  = (state.missionProgress.month.zeroDayRuns  || 0) + 1;
+      checkMissions('weekly');
+      checkMissions('month');
       playSfx('hack');
       renderZeroDayPanel();
       saveGame(true);
@@ -4263,39 +4343,70 @@ function applyLanguageToUI(){
       };
 
       if (cmd === 'exfil' || cmd === 'exit' || cmd === 'disconnect') {
-        // Extract
         const extracted = run.detection < 1.0;
         finishZdPveRun(extracted, run, def);
         return;
       }
 
+      // Current node type
+      const nodes    = run.nodes || [];
+      const curNodeId = nodes[Math.min(run.depth, nodes.length - 1)] || 'HUB';
+      const curNode  = ZD_NODE_TYPES[curNodeId] || ZD_NODE_TYPES.HUB;
+
+      // Detection stage pressure
+      const stage = getZdDetectionStage(run.detection);
+
       const group = ZD_CMDS[cmd] ? ZD_CMDS[cmd].group : 'infiltrate';
-      let detectionGain = def.detectionRate;
+      let detectionGain = def.detectionRate * curNode.detMult;
       let signalGain    = 0;
       let depthGain     = 0;
       let extra         = '';
 
+      // Stage pressure effects
+      if (stage.id === 'LOCKDOWN') {
+        detectionGain *= 1.5; // LOCKDOWN: extra pressure
+      } else if (stage.id === 'PURSUIT') {
+        detectionGain *= 1.2;
+      }
+
+      // CPU/GPU check: high tier reduces detection for locked nodes
+      if (curNode.cpuCheck) {
+        const cpuBonus = Math.max(0.3, 1 - 0.04 * Math.max(0, (state.cpuTier || 1) - 1));
+        detectionGain *= cpuBonus;
+      }
+      if (curNode.gpuCheck) {
+        const gpuBonus = Math.max(0.3, 1 - 0.04 * Math.max(0, (state.gpuTier || 1) - 1));
+        detectionGain *= gpuBonus;
+      }
+
       if (group === 'recon') {
-        // Recon: low detection gain, small signal
         detectionGain *= 0.4;
-        signalGain = Math.round(def.signalPerNode * 0.3);
-        extra = getLang()==='en' ? `ok: reconnaissance data acquired (+${signalGain} sig)` : `ok: 정찰 데이터 수집 (+${signalGain} sig)`;
+        signalGain = Math.round(def.signalPerNode * curNode.sigMult * 0.5);
+        extra = getLang()==='en'
+          ? `ok: [${curNode.en}] recon data +${signalGain} sig`
+          : `ok: [${curNode.ko}] 정찰 데이터 +${signalGain} sig`;
       } else if (group === 'infiltrate') {
-        // Infiltrate: advance depth
         depthGain = 1;
-        signalGain = def.signalPerNode;
-        extra = getLang()==='en' ? `ok: node breached. depth +1, signal +${signalGain}` : `ok: 노드 침투. 깊이 +1, 신호 +${signalGain}`;
+        signalGain = Math.round(def.signalPerNode * curNode.sigMult);
+        const nextNodeId = nodes[Math.min(run.depth + 1, nodes.length - 1)] || 'EXIT';
+        extra = getLang()==='en'
+          ? `ok: [${curNode.en}] breached → next: ${nextNodeId} · depth +1, signal +${signalGain}`
+          : `ok: [${curNode.ko}] 침투 → 다음: ${nextNodeId} · 깊이 +1, 신호 +${signalGain}`;
       } else if (group === 'conceal') {
-        // Conceal: reduce detection
-        const reduce = def.detectionRate * 0.8;
+        // PURSUIT/LOCKDOWN: conceal is less effective
+        const eff = stage.id === 'LOCKDOWN' ? 0.3 : stage.id === 'PURSUIT' ? 0.5 : 0.8;
+        const reduce = def.detectionRate * eff;
         run.detection = Math.max(0, run.detection - reduce);
         detectionGain = 0;
-        extra = getLang()==='en' ? `ok: detection reduced by ${Math.round(reduce*100)}%` : `ok: 탐지율 ${Math.round(reduce*100)}% 감소`;
+        extra = getLang()==='en'
+          ? `ok: detection reduced by ${Math.round(reduce*100)}% (stage: ${stage.label})`
+          : `ok: 탐지율 ${Math.round(reduce*100)}% 감소 (단계: ${stage.ko})`;
       } else if (group === 'disrupt') {
-        // Disrupt: moderate signal, some detection
         detectionGain *= 0.6;
-        signalGain = Math.round(def.signalPerNode * 0.5);
-        extra = getLang()==='en' ? `ok: disruption deployed (+${signalGain} sig)` : `ok: 교란 배치 (+${signalGain} sig)`;
+        signalGain = Math.round(def.signalPerNode * curNode.sigMult * 0.5);
+        extra = getLang()==='en'
+          ? `ok: [${curNode.en}] disruption +${signalGain} sig`
+          : `ok: [${curNode.ko}] 교란 +${signalGain} sig`;
       }
 
       run.detection = Math.min(1.0, run.detection + detectionGain);
@@ -4303,10 +4414,11 @@ function applyLanguageToUI(){
       run.signal    += signalGain;
       run.score     += Math.round(signalGain * (1 + run.depth * 0.1));
 
-      const detPct = Math.round(run.detection * 100);
+      const newStage = getZdDetectionStage(run.detection);
+      const detPct   = Math.round(run.detection * 100);
       logPush(`root@zeroday:~# ${zdCmdDisplay(cmd)}`);
       if (extra) logPush(extra);
-      logPush(`info: detection ${detPct}% · depth ${run.depth}/${def.depthMax} · signal ${run.signal}`);
+      logPush(`info: ${newStage.label} ${detPct}% · depth ${run.depth}/${def.depthMax} · signal ${run.signal}`);
 
       if (run.detection >= 1.0) {
         logPush(`fatal: ${getLang()==='en' ? 'TRACE COMPLETE — connection terminated' : 'TRACE COMPLETE — 연결 종료'}`);
@@ -4323,7 +4435,10 @@ function applyLanguageToUI(){
       const signal = run.signal || 0;
       const depth = run.depth || 0;
       const rewardCredits = extracted ? Math.round(def.baseScore * 0.8 + score * 0.5) : 0;
-      const rewardOneDay  = extracted ? Math.round(def.baseScore * 0.3 + depth * 10)  : Math.round(depth * 3);
+      // OneDay: 30–80 range for PVE (spec v3.0.0)
+      const rewardOneDay = extracted
+        ? Math.min(80, Math.max(30, Math.round(30 + 50 * (depth / Math.max(1, def.depthMax)))))
+        : Math.round(depth * 2);
       state.zeroDay.pve.active = null;
       state.zeroDay.pve.bestDepth = Math.max(state.zeroDay.pve.bestDepth || 0, depth);
       state.zeroDay.pve.bestScore = Math.max(state.zeroDay.pve.bestScore || 0, score);
@@ -4331,11 +4446,20 @@ function applyLanguageToUI(){
         state.zeroDay.pve.extracts = (state.zeroDay.pve.extracts || 0) + 1;
         state.stats.zeroDayPveClearCount  = (state.stats.zeroDayPveClearCount || 0) + 1;
         state.stats.zeroDayPveEscapeCount = (state.stats.zeroDayPveEscapeCount || 0) + 1;
+        // Track difficulty for PVP recommendation
+        const diffOrder = ['intro','easy','normal','hard','danger'];
+        const diffIdx   = diffOrder.indexOf(run.diff);
+        const bestDiffIdx = diffOrder.indexOf(state.stats.zeroDayBestExtractDiff || 'intro');
+        if (diffIdx > bestDiffIdx) state.stats.zeroDayBestExtractDiff = run.diff;
+        // Track clean extract with detection < 50% for PVP recommendation
+        if ((run.detection || 0) < 0.5) {
+          state.stats.zeroDayLowDetectionExtracts = (state.stats.zeroDayLowDetectionExtracts || 0) + 1;
+        }
       }
       if (rewardCredits) { state.credits += rewardCredits; state.stats.creditsEarnedTotal += rewardCredits; }
       if (rewardOneDay)  { state.items.oneDay = (state.items.oneDay || 0) + rewardOneDay; state.stats.zeroDayOneDayEarnedTotal += rewardOneDay; }
       // pass points
-      if (extracted) addPassPoints(extracted ? 60 : 20);
+      addPassPoints(extracted ? 60 : 20);
       const resultLine = extracted
         ? `result: ${getLang()==='en' ? 'CLEAN EXIT' : 'CLEAN EXIT'} · depth ${depth} · signal ${signal} · score ${score} · credits +${rewardCredits} · OneDay +${rewardOneDay}`
         : `result: ${getLang()==='en' ? 'TRACE COMPLETE' : 'TRACE COMPLETE'} · depth ${depth} · signal ${signal} · OneDay +${rewardOneDay}`;
@@ -4389,8 +4513,14 @@ function applyLanguageToUI(){
 
       if (activeRun) {
         // Active run UI
-        const detPct = Math.round((activeRun.detection || 0) * 100);
-        const barW   = Math.min(100, detPct);
+        const detPct   = Math.round((activeRun.detection || 0) * 100);
+        const barW     = Math.min(100, detPct);
+        const detStage = getZdDetectionStage(activeRun.detection || 0);
+        const curDepth = activeRun.depth || 0;
+        const nodeSeq  = activeRun.nodes || [];
+        const curNodeId = nodeSeq[Math.min(curDepth, nodeSeq.length - 1)] || 'HUB';
+        const curNode   = ZD_NODE_TYPES[curNodeId] || ZD_NODE_TYPES.HUB;
+        const nodeLabel = getLang()==='en' ? curNode.en : curNode.ko;
         const actionGroups = [
           { label: getLang()==='en'?'Recon':'정찰',     cmds: ['scan','probe','enum'] },
           { label: getLang()==='en'?'Infiltrate':'침투', cmds: ['breach','inject','elevate','bypass'] },
@@ -4401,12 +4531,13 @@ function applyLanguageToUI(){
         el.innerHTML = `
           <div class="zd-terminal active-run">
             <div class="zd-status-bar">
-              <span>${getLang()==='en'?'Depth':'깊이'} ${activeRun.depth}/${diffDef.depthMax}</span>
+              <span>${getLang()==='en'?'Depth':'깊이'} ${curDepth}/${diffDef.depthMax}</span>
+              <span class="zd-node-badge">${nodeLabel}</span>
               <span>Signal ${activeRun.signal}</span>
               <span>Score ${activeRun.score}</span>
-              <span class="zd-det-label">${getLang()==='en'?'Detection':'탐지'} ${detPct}%</span>
+              <span class="zd-det-label" style="color:${detStage.color}">${getLang()==='en'?detStage.label:detStage.ko} ${detPct}%</span>
             </div>
-            <div class="zd-detection-bar"><div class="zd-det-fill" style="width:${barW}%"></div></div>
+            <div class="zd-detection-bar"><div class="zd-det-fill" style="width:${barW}%;background:${detStage.color}"></div></div>
             <div class="zd-term-output" id="zdTermOutput">
               ${activeRun.log.slice(-8).map(l=>`<div class="zd-line">${escapeHtml(l)}</div>`).join('')}
             </div>
@@ -4458,6 +4589,32 @@ function applyLanguageToUI(){
           </div>
           <div class="zd-pvp-section">
             <h4>${getLang()==='en'?'PVP (Async)':'PVP (비동기)'}</h4>
+            ${(()=>{
+              // PVP 강추천 조건 3종
+              const cond1 = ['normal','hard','danger'].includes(state.stats.zeroDayBestExtractDiff || '');
+              const cond2 = (state.stats.zeroDayPveEscapeCount || 0) >= 1;
+              const cond3 = (state.stats.zeroDayLowDetectionExtracts || 0) >= 1;
+              const condsMet = [cond1, cond2, cond3].filter(Boolean).length;
+              const recommended = condsMet >= 2;
+              const checkMark = (ok) => ok ? '✓' : '✗';
+              return recommended
+                ? `<div class="zd-pvp-recommend recommended">
+                    <strong>${getLang()==='en'?'⚡ PVP Recommended!':'⚡ PVP 강추천!'}</strong>
+                    <ul>
+                      <li>${checkMark(cond1)} ${getLang()==='en'?'Normal+ PVE extract':'보통 이상 PVE 클리어'}</li>
+                      <li>${checkMark(cond2)} ${getLang()==='en'?'Clean exit experience':'정식 탈출 경험'}</li>
+                      <li>${checkMark(cond3)} ${getLang()==='en'?'Low-detection extract':'탐지율 50% 미만 탈출'}</li>
+                    </ul>
+                  </div>`
+                : `<div class="zd-pvp-recommend">
+                    <span class="small">${getLang()==='en'?`PVP conditions: ${condsMet}/3 met`:`PVP 준비도: ${condsMet}/3`}</span>
+                    <ul class="small">
+                      <li>${checkMark(cond1)} ${getLang()==='en'?'Normal+ PVE extract':'보통 이상 PVE 클리어'}</li>
+                      <li>${checkMark(cond2)} ${getLang()==='en'?'Clean exit experience':'정식 탈출 경험'}</li>
+                      <li>${checkMark(cond3)} ${getLang()==='en'?'Low-detection extract (<50%)':'탐지율 50% 미만 탈출'}</li>
+                    </ul>
+                  </div>`;
+            })()}
             <p class="small">${getLang()==='en'?'Login required. Snapshot-based async PVP coming with cloud matchmaking.':'로그인 필요. 스냅샷 기반 비동기 PVP는 클라우드 매칭과 함께 제공됩니다.'}</p>
             <div class="zd-pvp-stats">
               <span>${getLang()==='en'?'Wins':'승'}: ${zd.pvp.seasonWins||0}</span>
@@ -5635,9 +5792,14 @@ function applyLanguageToUI(){
         // Vulnerability drops from scan
         {
           const scanRoll = Math.random();
+          // Pity counter: increments every scan, resets when vuln granted
+          state._vulnScanCount = (state._vulnScanCount || 0) + 1;
+          const pitied = state._vulnScanCount >= 100;
+
           if ((state._opsForcedOpScan || scanRoll < 0.001) && ownedCodes.length > 0) {
             // 0.1% chance OPERATION code from scan (or forced by OPS shop item)
             if (state._opsForcedOpScan) delete state._opsForcedOpScan;
+            state._vulnScanCount = 0; // operation scan resets pity
             const opCodes = ['operation_meridian', 'operation_blackout'];
             const opId = opCodes[Math.floor(Math.random() * opCodes.length)];
             const opDef = codeDefs[opId];
@@ -5648,16 +5810,18 @@ function applyLanguageToUI(){
               log(getLang()==='en' ? `[OPERATION] ${opDef.name} acquired via scan!` : `[OPERATION] ${opDef.name} 스캔 획득!`, 'hack');
               showToast(`OPERATION: ${opDef.name}`, 'achievement');
             }
-          } else if (scanRoll < 0.001 + 0.01) {
-            // 1% chance: completed vulnerability (pity ceiling at 100 scans)
-            state._vulnScanCount = (state._vulnScanCount || 0) + 1;
-            if (scanRoll < 0.001 + 0.01 || state._vulnScanCount >= 100) {
-              state._vulnScanCount = 0;
-              state.items.zeroDayVulnerability = (state.items.zeroDayVulnerability || 0) + 1;
+          } else if (scanRoll < 0.011 || pitied) {
+            // 1% chance OR pity guarantee at 100 scans: completed vulnerability
+            state._vulnScanCount = 0;
+            state.items.zeroDayVulnerability = (state.items.zeroDayVulnerability || 0) + 1;
+            if (pitied && scanRoll >= 0.011) {
+              log(getLang()==='en' ? '[ZERO-DAY] Vulnerability acquired (pity guarantee, 100 scans).' : '[ZERO-DAY] 취약점 획득 (100회 보장).', 'scan');
+              showToast(getLang()==='en' ? 'Vulnerability +1 (Pity)' : '취약점 +1 (100회 보장)', 'achievement');
+            } else {
               log(getLang()==='en' ? '[ZERO-DAY] Vulnerability acquired from scan.' : '[ZERO-DAY] 스캔에서 취약점 획득.', 'scan');
               showToast(getLang()==='en' ? 'Vulnerability +1' : '취약점 +1', 'achievement');
             }
-          } else if (scanRoll < 0.001 + 0.01 + 0.20) {
+          } else if (scanRoll < 0.211) {
             // 20% chance: vulnerability shard
             state.items.zeroDayVulnerabilityShard = (state.items.zeroDayVulnerabilityShard || 0) + 1;
             if (state.items.zeroDayVulnerabilityShard % 10 === 0) {
@@ -6013,6 +6177,7 @@ function applyLanguageToUI(){
         if (type === 'shopPurchases') return prog.shopPurchases || 0;
         if (type === 'creditsEarnedTotal') return state.stats.creditsEarnedTotal || 0;
         if (type === 'energy0Flag') return prog.energy0Reached ? 1 : 0;
+        if (type === 'zeroDayRunCount') return prog.zeroDayRuns || 0;
         return 0;
       }
 
@@ -6066,11 +6231,18 @@ function applyLanguageToUI(){
             state.items.energyPack = (state.items.energyPack || 0) + def.rewardEnergyPack;
           }
 
+          // 보조 보상: COIN
+          if (def.rewardCoin) {
+            state.items.coin = (state.items.coin || 0) + def.rewardCoin;
+            state.stats.coinEarnedTotal = (state.stats.coinEarnedTotal || 0) + def.rewardCoin;
+          }
+
           state.stats.missionsCompletedTotal++;
 
           const rewardTextParts = [];
           if (rewardCredits > 0) rewardTextParts.push(`크레딧 +${rewardCredits}`);
           if (def.rewardEnergyPack) rewardTextParts.push(`에너지 팩 +${def.rewardEnergyPack}`);
+          if (def.rewardCoin) rewardTextParts.push(`COIN +${def.rewardCoin}`);
           const rewardText = rewardTextParts.length ? rewardTextParts.join(', ') : '보상 없음';
 
           log(
@@ -6130,7 +6302,7 @@ function applyLanguageToUI(){
         main.innerHTML = `
           <div>${localizeMissionName(def)}</div>
           <div class="mission-progress">${localizeMissionDesc(def)} (${progVal} / ${def.target})</div>
-          <div class="mission-reward">${t('reward')}: ${def.rewardCredits ? (t('credits') + ' +' + def.rewardCredits) : ''}${def.rewardEnergyPack ? ((def.rewardCredits ? ' / ' : '') + (t('energyPack') + ' +' + def.rewardEnergyPack)) : ''}${(!def.rewardCredits && !def.rewardEnergyPack) ? t('none') : ''}</div>
+          <div class="mission-reward">${t('reward')}: ${def.rewardCredits ? (t('credits') + ' +' + def.rewardCredits) : ''}${def.rewardEnergyPack ? ((def.rewardCredits ? ' / ' : '') + (t('energyPack') + ' +' + def.rewardEnergyPack)) : ''}${def.rewardCoin ? (((def.rewardCredits || def.rewardEnergyPack) ? ' / ' : '') + 'COIN +' + def.rewardCoin) : ''}${(!def.rewardCredits && !def.rewardEnergyPack && !def.rewardCoin) ? t('none') : ''}</div>
         `;
 
         const tag = document.createElement('span');
@@ -6949,6 +7121,9 @@ function applyLanguageToUI(){
         state.stats.zeroDayPvpDefenseSuccessCount = state.stats.zeroDayPvpDefenseSuccessCount || 0;
         state.stats.zeroDayOneDayEarnedTotal = state.stats.zeroDayOneDayEarnedTotal || 0;
         state.stats.zeroDayOneDaySpentTotal = state.stats.zeroDayOneDaySpentTotal || 0;
+        state.stats.zeroDayBestExtractDiff = state.stats.zeroDayBestExtractDiff || '';
+        state.stats.zeroDayLowDetectionExtracts = state.stats.zeroDayLowDetectionExtracts || 0;
+        state._vulnScanCount = state._vulnScanCount || 0;
         state.stats.coinEarnedTotal = state.stats.coinEarnedTotal || 0;
         state.stats.coinSpentTotal = state.stats.coinSpentTotal || 0;
         state.stats.passTierReached = state.stats.passTierReached || 0;

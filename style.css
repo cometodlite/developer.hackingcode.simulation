@@ -3990,6 +3990,39 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   transition: width 0.4s ease, background 0.4s ease;
   background: linear-gradient(90deg, #44cc44, #ffcc44 60%, #ff4444);
 }
+/* Node badge in active run status bar */
+.zd-node-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
+  background: #0d2a0d;
+  color: #88ffcc;
+  border: 1px solid #1a4a1a;
+  letter-spacing: 0.5px;
+}
+/* PVP recommendation block */
+.zd-pvp-recommend {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #1a2a1a;
+  background: #070f07;
+  font-size: 11px;
+  color: #778899;
+}
+.zd-pvp-recommend.recommended {
+  border-color: #44ff88;
+  background: #051505;
+  color: #44ff88;
+}
+.zd-pvp-recommend ul {
+  margin: 4px 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.zd-pvp-recommend ul li { margin-bottom: 2px; }
 .zd-cmd-groups {
   display: flex;
   flex-wrap: wrap;
