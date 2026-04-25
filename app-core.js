@@ -43,6 +43,26 @@ const I18N = {
     noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.', shardEnhanceFail:'Shard boost failed: not enough shards. (Need: {need}, Have: {have})', shardEnhanceDone:'Shard boost: {name} PWR +2 → {pwr}. Shards -{cost}.', shardEnhanceCost:'Shard boost cost: {cost} shards / PWR +2',
     noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'COMING SOON', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY', rarityOperation:'OPERATION', routeExternal:'External Route', routeInternal:'Internal Route', routeCore:'Core Route', targetRoute:'Route', upgradeTarget:'Upgrade Target', systemStatus:'System Status', creditsTab:'CREDITS', manualTab:'Manual', difficultyIntro:'Intro', difficultyGeneral:'General', difficultyStandard:'Standard', difficultyHard:'Hard', difficultyChaos:'Chaos', difficultyImpossible:'Impossible', passTab:'PASS', weeklyTab:'WEEKLY', seasonPass:'Season Pass', passPoints:'Pass Points', passTier:'Pass Tier', seasonShop:'Season Shop', opsShop:'OPS Shop', zeroDayOnboarding:'Onboarding', zeroDayPve:'PVE', zeroDayPvp:'PVP', zeroDaySingle:'Single', zeroDayCompete:'Compete', vulnerability:'Vulnerability', vulnerabilityShard:'Vuln. Shard', oneDay:'OneDay', coin:'COIN', token:'TOKEN', accountStatus:'Account & Cloud Status', accountCustom:'Account Custom', comingSoonToastShort:'In preparation.', zeroDayCmdLocale:'ZERO-DAY Command Display', zdCmdAuto:'auto', zdCmdEn:'english', zdCmdKo:'korean', energyRecoveryDesc:'1 energy = 60 seconds'
     ,mobileMore:'MORE', mobileLab:'LAB', mobileStage:'DATA TOWER', tutorialReplay:'Replay Tutorial'
+  },
+  ja: {
+    appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'リスト', listTitle:'リスト', event:'イベント', eventTitle:'イベント', more: 'メニュー ▾', moreTitle: 'メニュー', status:'ステータス', shop:'ショップ', actions:'アクション', codeInventory:'コードインベントリ', codeDetail:'コード詳細',
+    level:'レベル', exp:'EXP', credits:'クレジット', cpuTier:'CPUティア', gpuTier:'GPUティア', energy:'エネルギー', nextRecovery:'次の回復まで', energyPack:'エネルギーパック', lastSave:'最終保存', use:'使用', sort:'並び替え', category:'カテゴリ', all:'全て', system:'システム', economy:'経済', utility:'ユーティリティ',
+    codeScan:'コードスキャン', serverHack:'サーバーハッキング', cpuUpgrade:'CPUアップグレード', gpuUpgrade:'GPUアップグレード', targetServer:'ターゲットサーバー', loadout:'ロードアウト', saveSlot:'スロット保存', loadSlot:'スロット読込', hackMode:'ハッキングモード',
+    actionsDesc1:'· エネルギー1 = 60秒、0.1秒単位でカウントダウン表示', actionsDesc2:'· コードスキャン: エネルギー1、スキャンEXP少量', actionsDesc3:'· サーバーハッキング: NORMAL/RISK/EXTREME 難易度を選択可能', actionsDesc4:'· CPUは成功率の安定、GPUは反復/挑戦報酬の増幅を担当します。',
+    codeUpgrade:'コード強化', codeSync:'コード同期', codeEvolve:'コード進化', shardEnhance:'シャード強化', codeDesc1:'· 強化: コードレベルに応じてクレジットを消費し、パワーが上昇します（破壊なし）。', codeDesc2:'· 同期: 重複シャードを集めて成功率補正とパワーを同時に強化します。', codeDesc3:'· 進化: 一定レベル以上でレアリティ昇格 (COMMON → UNCOMMON → … → LEGENDARY)。',
+    mission:'ミッション', achievement:'実績', codex:'コード図鑑', logs:'ログ', liveNet:'LIVE NET', rank:'RANK', settings:'設定', data:'クラウドアカウント', quest:'クエスト', records:'記録', liveNetRecords:'ネットワーク管制', softRank:'ソフトランキング', envSettings:'環境設定', dataManage:'クラウドアカウント', close:'閉じる',
+    logSearchHelp:'ログ検索 (ログ項目クリック → ピン留め/解除)', searchPlaceholder:'検索ワード入力...', clearLogs:'ログ初期化', hideLogs:'ログを隠す', showLogs:'ログを表示', logFilter:'ログフィルタ',
+    language:'言語', fontScale:'フォントサイズ', snow:'雪エフェクト', uiScale:'UIスケール', animation:'アニメーション', sfx:'効果音', sfxVolume:'効果音ボリューム', toastTime:'トースト表示時間', autosaveToast:'自動保存通知', liveNetwork:'LIVE NET', liveNicknameMode:'ネットワーク表示名', nickname:'ニックネーム', callsign:'コールサイン', enabled:'使用', settingsHelp:'· 設定はセーブデータに含まれ、リロード後も保持されます。',
+    saveNow:'保存', loadNow:'読込', clearSave:'セーブデータ削除', exportSave:'エクスポート', importFile:'ファイル読込', importText:'テキストで読込', importTextPlaceholder:'ここにJSONを貼り付けて読込を押してください。', importTextBtn:'テキスト読込', saveHelp:'· 保存場所: クラウドアカウント<br/>· ブラウザ内部保存は自動キャッシュと既存セーブの移行のみに使用されます。',
+    shopSortUpdate:'更新順', shopSortNew:'新着優先', shopSortRarity:'レアリティ順', shopSortPrice:'価格順', shopSortName:'名前順', codeSortRecent:'最新', codeSortRarity:'レアリティ', codeSortPower:'パワー', codeSortLevel:'レベル', codeSortName:'名前',
+    codexSummary:'発見 {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'基本パワー', ownedLvPwr:'所持 Lv.{lv} / PWR {pwr}', undiscoveredCode:'未発見コード', undiscoveredDesc:'まだ発見していないコードです。コードスキャンで解放してください。', noCodes:'所持コード無し。[コードスキャン] でコードを取得してください。', selectCode:'所持コードを選択すると詳細が表示されます。',
+    levelLabel:'レベル: Lv.{v}', powerLabel:'パワー: {v}', usageLabel:'使用回数: {v}', shardsLabel:'重複シャード: {v}', syncLabel:'同期段階: {v}', nextUpgrade:'次の強化コスト: {v} クレジット', nextSync:'次の同期コスト: シャード {a} / 予想成功率補正 +{b}%', evolveReady:'進化条件: 達成', evolveNeed:'進化条件: Lv.5以上が必要', ability:'能力', noDesc:'説明なし。',
+    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'報酬', none:'なし', complete:'完了', incomplete:'未完了', achieved:'達成', notYet:'未達', hiddenAchievement:'隠し実績です。達成時に公開されます。', difficultyEasy:'一般', difficultyNormal:'普通', difficultyHard:'難しい', hidden:'HIDDEN', achievementAll:'全て', achievementIncomplete:'未完了', achievementComplete:'完了', achievementShowHidden:'隠し含む',
+    full:'FULL', seconds:'秒', minutes:'分', visible:'表示', on:'ON', off:'OFF',
+    saveStateSaved:'ゲーム状態がクラウドキャッシュに保存されました。', saveComplete:'クラウドキャッシュ保存完了', autosaveComplete:'✅ 自動キャッシュ保存完了', noSavedData:'保存データがありません。', saveLoaded:'保存データを読み込みました。', saveLoadError:'保存データの読み込み中にエラーが発生しました。', saveDeleted:'保存データを削除しました。', exportFail:'エクスポート失敗 (コンソール確認)', hackModeLog:'ハッキングモード: {mode}', riskPenaltyLog:'RISK失敗ペナルティ: エネルギーが追加で1消費されました。', extremePenaltyLog:'EXTREME失敗ペナルティ: エネルギーが追加で2消費されました。', gpuUpgradeLog:'GPUアップグレード完了！ 現在のティア: {tier} (消費クレジット {cost})', gpuUpgradeFail:'GPUアップグレード失敗: クレジットが不足しています。 (必要: {cost})', loadoutSaved:'ロードアウトスロット {slot} に現在の設定を保存しました。', loadoutEmpty:'ロードアウトスロット {slot} に保存された設定がありません。', loadoutLoaded:'ロードアウトスロット {slot} を読み込みました。',
+    toastAchievement:'実績達成: {name}', achievementLog:'[実績達成] {name}', activeCode:'アクティブコード変更: {name}', levelUpLog:'レベルアップ！ Lv.{lv} 達成。 クレジット +50 付与。', noEnergyPack:'エネルギーパックがありません。', energyFull:'すでにエネルギーが満タンです。', usedEnergyPack:'エネルギーパックを1個使用してエネルギーを最大まで回復しました。',
+    noCodeSync:'同期するコードがありません。', syncFailShards:'コード同期失敗: 重複シャードが不足しています。 (必要: {need}, 所持: {have})', syncDone:'コード同期完了: {name} 同期 {lv}段階達成。 パワー +{pwr}, 成功率補正 +{rate}%。', syncToast:'{name} 同期 {lv}段階', noCodeUpgrade:'強化するコードがありません。先にコードをスキャンしてください。', upgradeFailCredits:'コード強化失敗: クレジットが不足しています。 (必要: {cost})', upgradeDone:'コード強化: {name} Lv.{lv} (パワー +5 → {pwr}), クレジット -{cost}。', noCodeEvolve:'進化するコードがありません。', maxRarity:'すでに最上位レアリティ(LEGENDARY)です。これ以上進化できません。', evolveNeedLv:'コード進化失敗: 進化には最低Lv.5以上が必要です。', evolveCannot:'進化を処理できません。', evolveDone:'コード進化成功: {name} が {rarity} に昇格、 パワー +10 → {pwr}。', shardEnhanceFail:'シャード強化失敗: シャードが不足しています。 (必要: {need}, 所持: {have})', shardEnhanceDone:'シャード強化: {name} PWR +2 → {pwr}。 シャード -{cost}。', shardEnhanceCost:'シャード強化コスト: シャード {cost} / PWR +2',
+    noEnergyScan:'エネルギーが不足しているためコードスキャンを実行できません。', noEnergyHack:'エネルギーが不足しているためサーバーハッキングを実行できません。', energyPackToast:'エネルギーパック +1 (所持: {v})', offlineRecoverLog:'オフライン中にエネルギー {v} 回復 ({label} 経過)', offlineRecoverToast:'オフライン回復: エネルギー +{v}', exportDone:'保存データのエクスポート完了', importDone:'保存データの読込完了', importFail:'読込失敗: JSON形式を確認してください。', emptyText:'テキストが空です。', logsHide:'ログを隠す', logsShow:'ログを表示', initLog:'HCSiG 初期化完了。 (言語設定、重複シャード/コード同期、モバイルUI、ショップ分類適用)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'データタワー', mobileComing:'COMING SOON', tutorialReplay:'チュートリアル再表示', comingSoonToast:'Coming Soon - 準備中の機能です。', buy:'購入', buyDone:'購入完了', buyUnavailable:'購入不可', buySpendTitle:'購入するとクレジットが消費されます。', buyDailyLimit:'本日の購入制限に達しました。', buyOnceLimit:'すでに購入済みの永久アイテムです。', notEnoughCredits:'クレジットが不足しています。', shopLog:'[ショップ] {msg}', shopBought:'{name} 購入 (💰 -{cost})', missionDoneToast:'ミッション完了: {name} ({reward})', missionDoneCredits:'クレジット +{v}', missionDoneEnergyPack:'エネルギーパック +{v}', missionDoneBoth:'クレジット +{c} / エネルギーパック +{e}', serverOption:'{name} (セキュリティ {sec}, Lv{lv}+)', serverLevelNeed:'このサーバーをハックするには最低 Lv.{lv} 以上が必要です。', noOwnedCodes:'所持コードがありません。先にコードスキャンでコードを取得してください。', scanFound:'新コード発見！ {name} [{rarity}]', scanDuplicate:'重複コード検出: {name} [{rarity}] → 重複シャード +{gain} (所持 {have})。', scanDone:'コードスキャン完了: 経験値 +{exp}。', hackSuccessLog:'サーバーハッキング成功！ [{server}] 成功確率 {chance}%。 クレジット +{credits}, EXP +{exp}。', hackFailLog:'サーバーハッキング失敗。 [{server}] 成功確率 {chance}% でした。', logDailyShopReset:'[システム] デイリーショップ制限がリセットされました。 (05:00 リセット)', loadoutSlot:'スロット {n}', logPinHint:'ログ項目クリック → ピン留め/解除', saveToLocal:'現在の状態をブラウザの LocalStorage に保存します。', loadFromLocal:'LocalStorage から保存データを読み込みます。', deleteSave:'保存データを削除します。', exportJson:'現在の保存データを JSON ファイルにエクスポートします。', importJsonFile:'JSON 保存ファイルを読み込みます。', importJsonText:'テキスト(JSON)で保存データを読み込みます。', languageTitle:'ゲーム言語を選択します。', uiScaleTitle:'全体UIサイズを調整します。', toastTitle:'画面通知(トースト)の表示時間を設定します。', shopSortTitle:'ショップアイテムの並び順を選択します。', codeSortTitle:'コードインベントリの並び順を選択します。', dailyResetLabel:'05:00 リセット ({n}回)', onceLabel:'1回', dailyShort:'デイリー', onceShort:'1回', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY', rarityOperation:'OPERATION', routeExternal:'外部ルート', routeInternal:'内部ルート', routeCore:'コアルート', targetRoute:'ルート', upgradeTarget:'アップグレード対象', systemStatus:'システム状態', creditsTab:'CREDITS', manualTab:'マニュアル', difficultyIntro:'入門', difficultyGeneral:'一般', difficultyStandard:'普通', difficultyHard:'難しい', difficultyChaos:'混沌', difficultyImpossible:'不可能', passTab:'PASS', weeklyTab:'WEEKLY', seasonPass:'シーズンパス', passPoints:'パスポイント', passTier:'パスティア', seasonShop:'シーズンショップ', opsShop:'OPSショップ', zeroDayOnboarding:'オンボーディング', zeroDayPve:'PVE', zeroDayPvp:'PVP', zeroDaySingle:'シングル', zeroDayCompete:'競争', vulnerability:'脆弱性', vulnerabilityShard:'脆弱性シャード', oneDay:'OneDay', coin:'COIN', token:'TOKEN', accountStatus:'アカウントとクラウドステータス', accountCustom:'アカウントカスタム', comingSoonToastShort:'準備中です。', zeroDayCmdLocale:'ZERO-DAY コマンド表示', zdCmdAuto:'auto', zdCmdEn:'english', zdCmdKo:'korean', energyRecoveryDesc:'エネルギー1 = 60秒'
   }
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
@@ -84,17 +104,48 @@ const TEXT_DATA = {
       failure_buffer_module: { name:'Failure Buffer Module', desc:'Adds 2 buffer charges that prevent RISK/EXTREME extra energy penalties.' },
       level_ticket: { name:'Simulation Level Ticket', desc:'Instantly raises your level by 1.' }
     }
+  },
+  // v3.0.0: 일본어 — 주요 서버명과 핵심 상점 아이템
+  ja: {
+    servers: {
+      school_lab: '学校実習サーバー',
+      bank_backup: '銀行バックアップノード',
+      gov_archive: '政府記録ノード',
+      central_core: '中央コアグリッド',
+      deep_space: 'ディープスペースリレー',
+      corp_dmz: '企業DMZノード',
+      black_market: 'ブラックマーケットルーター',
+      satellite_hub: '衛星ハブノード',
+      quantum_vault: 'クォンタム金庫サーバー',
+      neural_grid: 'ニューラルグリッドコア',
+      ghost_relay: 'ゴーストリレーノード',
+      zero_node: 'ゼロノードクラスター'
+    },
+    shop: {
+      energy_pack: { name:'エネルギーパック', desc:'インベントリに保存される消耗品。使用時にエネルギーを最大まで回復します。' },
+      energy_boost_1: { name:'エネルギーブースター I', desc:'即時エネルギー +5。' },
+      credit_boost_run: { name:'クレジットマルチプライヤー (セッション)', desc:'現在のセッション中、ハック成功時にクレジット 1.5 倍。' },
+      max_energy_up: { name:'最大エネルギーアップグレード', desc:'最大エネルギー +5 (永久)。' },
+      scanner_module: { name:'高性能スキャナーモジュール', desc:'コードスキャン時に経験値 +2 追加。' }
+    }
   }
 };
 
+// v3.0.0: 다국어 fallback 지원 (lang 키가 없으면 ko/원본명 사용)
 function localizeServerName(server){
-  return (getLang()==='en' && TEXT_DATA.en.servers[server.id]) ? TEXT_DATA.en.servers[server.id] : server.name;
+  const lang = getLang();
+  const data = TEXT_DATA[lang];
+  return (data && data.servers && data.servers[server.id]) ? data.servers[server.id] : server.name;
 }
 function localizeShopName(item){
-  return (getLang()==='en' && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].name) ? TEXT_DATA.en.shop[item.id].name : item.name;
+  const lang = getLang();
+  const data = TEXT_DATA[lang];
+  return (data && data.shop && data.shop[item.id] && data.shop[item.id].name) ? data.shop[item.id].name : item.name;
 }
 function localizeShopDesc(item){
-  return (getLang()==='en' && TEXT_DATA.en.shop[item.id] && TEXT_DATA.en.shop[item.id].desc) ? TEXT_DATA.en.shop[item.id].desc : item.desc;
+  const lang = getLang();
+  const data = TEXT_DATA[lang];
+  return (data && data.shop && data.shop[item.id] && data.shop[item.id].desc) ? data.shop[item.id].desc : item.desc;
 }
 function localizeCodeDescription(def){
   if (!def) return '';
@@ -7648,7 +7699,9 @@ function applyLanguageToUI(){
     
     if (setLanguage) {
       setLanguage.addEventListener('change', () => {
-        state.ui.lang = setLanguage.value || 'ko';
+        // v3.0.0: 지원 언어 화이트리스트 (ko/en/ja)
+        const next = setLanguage.value;
+        state.ui.lang = ['ko', 'en', 'ja'].includes(next) ? next : 'ko';
         refreshUiAfterStateRestore();
         scheduleSilentSave(60);
       });
