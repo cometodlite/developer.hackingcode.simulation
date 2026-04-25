@@ -3688,27 +3688,44 @@ function applyLanguageToUI(){
         left.appendChild(nameEl);
         left.appendChild(shardEl);
 
-        const right = document.createElement('span');
-        right.className = 'meta';
-        right.textContent = `Lv.${code.level} · PWR ${code.power}`;
+        const right = document.createElement('div');
+        right.className = 'code-card-right';
+
+        const metaEl = document.createElement('span');
+        metaEl.className = 'meta';
+        metaEl.textContent = `Lv.${code.level} · PWR ${code.power}`;
+
+        const detailBtn = document.createElement('button');
+        detailBtn.type = 'button';
+        detailBtn.className = 'code-detail-btn';
+        detailBtn.textContent = getLang() === 'en' ? 'Detail' : '상세';
+        detailBtn.setAttribute('aria-label', `${code.name} 상세 보기`);
+
+        right.appendChild(metaEl);
+        right.appendChild(detailBtn);
 
         li.appendChild(left);
         li.appendChild(right);
 
-        const openCode = () => {
+        const selectCode = () => {
           state.activeCodeId = code.id;
           updateStatsUI();
           log(t('activeCode', { name: code.name }), 'system');
           onTutorialAction('selectCode');
           renderCodeList();
           renderCodeDetail();
-          // 모달은 열지 않음 — 우측 상세 패널에 표시
         };
-        li.addEventListener('click', openCode);
+        detailBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectCode();
+          openCodeDetailModal(code.id);
+        });
+        li.addEventListener('click', selectCode);
         li.addEventListener('keydown', (event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
-            openCode();
+            selectCode();
+            openCodeDetailModal(code.id);
           }
         });
 
@@ -4558,14 +4575,16 @@ function applyLanguageToUI(){
         return;
       }
 
-      // Lobby UI
-      const diffOptions = Object.entries(ZD_PVE_DIFFICULTIES).map(([id, d]) => {
-        const selected = id === diff ? 'selected' : '';
-        const label = getLang()==='en' ? d.labelEn : d.label;
-        return `<option value="${id}" ${selected}>${label}</option>`;
+      // Lobby UI — 난이도 버튼 그리드
+      const check = canStartZdPve();
+      const diffBtns = Object.entries(ZD_PVE_DIFFICULTIES).map(([id, d]) => {
+        const label  = getLang()==='en' ? d.labelEn : d.label;
+        const costTx = d.free ? (getLang()==='en'?'Free (1/day)':'무료 1일1회') : (getLang()==='en'?'1 Vuln':'취약점 1개');
+        return `<button type="button" class="zd-diff-btn ${id===diff?'active':''}" data-zd-diff="${id}">
+          <strong>${label}</strong><span>${costTx}</span>
+        </button>`;
       }).join('');
 
-      const check = canStartZdPve();
       el.innerHTML = `
         <div class="zd-lobby">
           <div class="zd-inventory-row">
@@ -4580,14 +4599,16 @@ function applyLanguageToUI(){
             <div><span>${getLang()==='en'?'Extracts':'탈출'}</span><strong>${zd.pve.extracts||0}</strong></div>
             <div><span>${getLang()==='en'?'PVP Rating':'PVP 레이팅'}</span><strong>${zd.pvp.rating||1000}</strong></div>
           </div>
-          <div class="zd-mode-select">
-            <label>${getLang()==='en'?'Difficulty':'난이도'}:
-              <select id="zdDiffSelect">${diffOptions}</select>
-            </label>
+          <div class="zd-diff-section">
+            <div class="zd-diff-label">${getLang()==='en'?'Select Difficulty':'난이도 선택'}</div>
+            <div class="zd-diff-grid">${diffBtns}</div>
           </div>
           <div class="zd-start-row">
             <button type="button" id="btnStartZdPve" ${check.ok ? '' : 'disabled'}>${getLang()==='en'?'Start PVE':'PVE 시작'}</button>
-            <span class="small">${check.ok ? (getLang()==='en'?`Cost: ${diffDef.free?'Free (1/day)':'1 Vulnerability'}`:`비용: ${diffDef.free?'무료 (1일 1회)':'취약점 1개'}`) : check.reason}</span>
+            <span class="small zd-start-hint">${check.ok
+              ? (getLang()==='en'?`Cost: ${diffDef.free?'Free (1/day)':'1 Vulnerability'}`:`비용: ${diffDef.free?'무료 (1일 1회)':'취약점 1개'}`)
+              : `⚠ ${check.reason}`
+            }</span>
           </div>
           <div class="zd-pvp-section">
             <h4>${getLang()==='en'?'PVP (Async)':'PVP (비동기)'}</h4>
@@ -4635,10 +4656,12 @@ function applyLanguageToUI(){
           updateStatsUI(); renderZeroDayPanel(); saveGame(true);
         }
       });
-      document.getElementById('zdDiffSelect')?.addEventListener('change', (e) => {
-        state.zeroDay.pve.difficulty = e.target.value;
-        renderZeroDayPanel();
-        saveGame(true);
+      el.querySelectorAll('[data-zd-diff]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.zeroDay.pve.difficulty = btn.dataset.zdDiff;
+          renderZeroDayPanel();
+          saveGame(true);
+        });
       });
     }
 
@@ -4829,11 +4852,34 @@ function applyLanguageToUI(){
       const filter = state.stage.chapterFilter || 'all';
       const completedCount = Object.keys(state.stage.cleared || {}).length;
 
+      // 현재 챕터 = 미클리어 스테이지가 있는 가장 낮은 챕터
+      const currentProgressChapter = (() => {
+        for (const ch of stageChapters) {
+          const stages = stageDefs.filter(s => s.chapter.index === ch.index);
+          if (stages.some(s => !getStageClearInfo(s))) return String(ch.index);
+        }
+        return String(stageChapters[stageChapters.length - 1]?.index || '1');
+      })();
+
       summaryEl.innerHTML = `
         <div><span>HIGHEST</span><strong>${state.stage.highestCleared || 0} / 100</strong></div>
         <div><span>CLEARED</span><strong>${completedCount} / 100</strong></div>
         <div><span>ATTEMPTS</span><strong>${state.stats.stageAttemptCount || 0}</strong></div>
+        <button type="button" id="btnGoCurrentChapter" class="btn-go-chapter small">
+          ${stageCopy(`▶ CH.${currentProgressChapter} 이동`, `▶ Go to CH.${currentProgressChapter}`)}
+        </button>
       `;
+      document.getElementById('btnGoCurrentChapter')?.addEventListener('click', () => {
+        state.stage.chapterFilter = currentProgressChapter;
+        const stages = stageDefs.filter(s => String(s.chapter.index) === currentProgressChapter);
+        const firstReady = stages.find(s => !getStageClearInfo(s)) || stages[0];
+        if (firstReady) state.stage.selectedId = firstReady.id;
+        renderStagePanel();
+        scheduleSilentSave();
+        // 챕터 목록 스크롤
+        const chEl = chapterListEl.querySelector(`[data-stage-chapter="${currentProgressChapter}"]`);
+        if (chEl) chEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
 
       const clearInfo = getStageClearInfo(selectedStage);
       const activeCode = getActiveCodeInstance();

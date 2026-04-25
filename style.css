@@ -1929,6 +1929,28 @@ body.app-shell-ui button:active{
   color:#b9c9c4;
   font-size:12px;
 }
+.code-card-right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:4px;
+  flex-shrink:0;
+}
+.code-detail-btn{
+  padding:3px 8px;
+  font-size:10px;
+  background:#0d1a2a;
+  border:1px solid #1a3a5a;
+  border-radius:4px;
+  color:#7ecfff;
+  cursor:pointer;
+  transition:background 0.15s, border-color 0.15s;
+  white-space:nowrap;
+}
+.code-detail-btn:hover{
+  background:#1a2a4a;
+  border-color:#7ecfff;
+}
 .app-codes-layout > .stat-box.resizable-box{
   /* detail panel — always visible in codes view */
   display:flex;
@@ -2835,6 +2857,23 @@ body.app-shell-ui .list-tab-button{
 	  font-size:14px;
 	  line-height:1.35;
 	}
+/* 현재 챕터로 이동 버튼 */
+.btn-go-chapter {
+  grid-column: 1 / -1;
+  padding: 5px 10px;
+  background: rgba(12,24,18,.9);
+  border: 1px solid rgba(94,234,212,.25);
+  border-radius: 6px;
+  color: #5eefd4;
+  font-size: 11px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn-go-chapter:hover {
+  background: rgba(12,40,28,.9);
+  border-color: rgba(94,234,212,.5);
+}
 	.stage-toolbar{
 	  display:flex;
 	  flex-wrap:wrap;
@@ -3751,7 +3790,8 @@ body.app-shell-ui #tutorialStepHint{
 .progress-tier-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px 8px;
   padding: 8px 0 6px;
   font-size: 12px;
 }
@@ -4076,6 +4116,59 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 .zd-mode-card:hover { border-color: #44ff88; background: #0e1a0e; }
 .zd-mode-card h4 { font-size: 12px; color: #44ff88; margin-bottom: 4px; }
 .zd-mode-card p  { font-size: 11px; color: #778899; }
+
+/* ZD difficulty button grid */
+.zd-diff-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.zd-diff-label {
+  font-size: 11px;
+  color: #778899;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.zd-diff-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.zd-diff-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 6px;
+  background: #0b150b;
+  border: 1px solid #1a2a1a;
+  border-radius: 6px;
+  color: #aabbaa;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  text-align: center;
+}
+.zd-diff-btn strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: #44ff88;
+  display: block;
+}
+.zd-diff-btn span {
+  font-size: 10px;
+  color: #556655;
+}
+.zd-diff-btn:hover { border-color: #44ff88; background: #0e1a0e; }
+.zd-diff-btn.active {
+  border-color: #44ff88;
+  background: #0e2a0e;
+  color: #44ff88;
+  box-shadow: 0 0 8px rgba(68,255,136,0.2);
+}
+.zd-diff-btn.active span { color: #44aa66; }
+
 .zd-cmd-input-row {
   display: flex;
   gap: 6px;
@@ -4410,4 +4503,7 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   .pass-tier-list { max-height: 260px; }
   .credits-card { padding: 16px 12px; }
   .coming-toast { font-size: 12px; padding: 7px 16px; }
+  /* Weekly challenge difficulty selector — prevent clipping on narrow screens */
+  .progress-tier-note { flex-basis: 100%; margin-left: 0; }
+  .progress-tier-btn span { word-break: keep-all; }
 }
