@@ -745,6 +745,12 @@ button:hover {
       margin-left: 4px;
     }
 
+    /* v3.0.0: 6단계 난이도 색상 (입문 / 일반 / 보통 / 어려움 / 혼돈 / 불가능) */
+    .diff-intro {
+      background: #1f2937;
+      color: #cbd5e1;
+    }
+
     .diff-easy {
       background: #14532d;
       color: #bbf7d0;
@@ -758,6 +764,18 @@ button:hover {
     .diff-hard {
       background: #7f1d1d;
       color: #fecaca;
+    }
+
+    .diff-chaos {
+      background: #581c87;
+      color: #e9d5ff;
+    }
+
+    .diff-impossible {
+      background: linear-gradient(135deg, #1a1a2e, #2a0a3a);
+      color: #ff6b9d;
+      border: 1px solid #ff6b9d;
+      box-shadow: 0 0 6px rgba(255, 107, 157, 0.4);
     }
 
     /* 미션 탭 버튼 */

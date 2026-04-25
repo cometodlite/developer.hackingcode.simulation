@@ -2066,12 +2066,23 @@ function applyLanguageToUI(){
     ];
     achievementDefs.push(...extraAchievementDefs);
 
-    function createAchievementSeries(prefix, metric, targets, names, descTemplate, hiddenStart = targets.length, hardStart = Math.ceil(targets.length * 0.7)) {
+    // v3.0.0: 6단계 난이도 자동 분포 (intro / easy / normal / hard / chaos / impossible)
+    function pickAchievementDifficulty(index, totalCount) {
+      const ratio = index / Math.max(1, totalCount - 1);
+      if (ratio >= 0.92) return 'impossible';   // 최상위 8%
+      if (ratio >= 0.78) return 'chaos';        // 22%
+      if (ratio >= 0.58) return 'hard';         // 20%
+      if (ratio >= 0.36) return 'normal';       // 22%
+      if (ratio >= 0.14) return 'easy';         // 22%
+      return 'intro';                           // 14%
+    }
+
+    function createAchievementSeries(prefix, metric, targets, names, descTemplate, hiddenStart = targets.length, hardStart = null) {
       return targets.map((target, index) => ({
         id: `${prefix}_${index + 1}`,
         name: names[index],
         desc: descTemplate.replace('{v}', target),
-        difficulty: index >= hardStart ? 'hard' : (index >= Math.ceil(targets.length * 0.35) ? 'normal' : 'easy'),
+        difficulty: pickAchievementDifficulty(index, targets.length),
         hidden: index >= hiddenStart,
         metric,
         target
@@ -2165,7 +2176,7 @@ function applyLanguageToUI(){
         ['극한의 끝'], 'EXTREME 해킹 성공 {v}회를 달성했습니다.', 0),
       ...createAchievementSeries('v200_hidden_mission', 'missionsCompleted', [200],
         ['퀘스트 아카이브'], '퀘스트를 누적 {v}개 완료했습니다.', 0)
-    ].map(def => def.id.startsWith('v200_hidden_') ? { ...def, hidden: true, difficulty: 'hard' } : def);
+    ].map(def => def.id.startsWith('v200_hidden_') ? { ...def, hidden: true, difficulty: 'chaos' } : def);
 
     achievementDefs.push(...v200AchievementDefs);
 
@@ -4096,14 +4107,47 @@ function applyLanguageToUI(){
         state.season = { currentKey: key, currentNumber: getSeasonNumber(key), passPoints: 0, passTier: 0, passClaimed: {}, shopPurchases: {}, pvpSeasonRecord: {} };
       }
       if (state.season.currentKey !== key) {
-        // New season: reset pass progress and pvp season record
+        // v3.0.0: 시즌 전환 — 스펙대로 유지/리셋 분리
+        const prevKey = state.season.currentKey;
+
+        // ── 유지 (재화) ──
+        // state.items.coin       — COIN
+        // state.items.oneDay     — OneDay
+        // state.items.zeroDayVulnerability — 취약점
+        // state.items.zeroDayVulnerabilityShard — 취약점 조각
+        // (별도 처리 없음 — 그대로 유지됨)
+
+        // ── 리셋 ──
         state.season.currentKey = key;
         state.season.currentNumber = getSeasonNumber(key);
+        // 패스 진행도/수령 상태
         state.season.passPoints = 0;
         state.season.passTier = 0;
         state.season.passClaimed = {};
+        state.season.shopPurchases = {};
+        // PVP 시즌 레이팅/시즌 보드
         state.season.pvpSeasonRecord = {};
-        log(getLang() === 'en' ? `[System] New season started: ${key}` : `[시스템] 새 시즌 시작: ${key}`, 'system');
+        if (state.zeroDay && state.zeroDay.pvp) {
+          state.zeroDay.pvp.rating = 1000;
+          state.zeroDay.pvp.seasonWins = 0;
+          state.zeroDay.pvp.seasonLosses = 0;
+        }
+        // 주간 도전 상태 (강제 리셋 — 시즌과 별도로 매주 리셋되지만 시즌 시작 시점도 새로 시작)
+        if (state.weeklyChallenge) {
+          state.weeklyChallenge.weekKey = '';  // 다음 ensureWeeklyChallengeDefaults에서 새 weekKey로 재초기화
+          state.weeklyChallenge.progress = {};
+          state.weeklyChallenge.claimed = {};
+          state.weeklyChallenge.bonusClaimed = false;
+          state.weeklyChallenge.score = 0;
+        }
+
+        // 로그 + 토스트
+        const isStart = prevKey === 'preseason';
+        const msg = isStart
+          ? (getLang() === 'en' ? `Season ${state.season.currentNumber} has begun!` : `시즌 ${state.season.currentNumber} 시작!`)
+          : (getLang() === 'en' ? `New season: ${key} (PASS/PVP reset)` : `새 시즌: ${key} (PASS/PVP 리셋)`);
+        log(`[SEASON] ${msg}`, 'system');
+        try { showToast(msg, 'achievement'); } catch(e) {}
       }
     }
 
@@ -6787,10 +6831,14 @@ function applyLanguageToUI(){
       if (!achievementListEl) return;
       achievementListEl.innerHTML = '';
 
+      // v3.0.0: 6단계 난이도 (입문 / 일반 / 보통 / 어려움 / 혼돈 / 불가능)
       const diffLabel = {
-        easy: t('difficultyEasy'),
-        normal: t('difficultyNormal'),
-        hard: t('difficultyHard')
+        intro:      t('difficultyIntro'),       // 입문
+        easy:       t('difficultyEasy'),         // 일반
+        normal:     t('difficultyNormal'),       // 보통
+        hard:       t('difficultyHard'),         // 어려움
+        chaos:      t('difficultyChaos'),        // 혼돈
+        impossible: t('difficultyImpossible')    // 불가능
       };
 
       const filter = (state.ui && state.ui.achievementFilter) || 'incomplete';
