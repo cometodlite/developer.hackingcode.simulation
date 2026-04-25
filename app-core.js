@@ -7962,6 +7962,14 @@ function applyLanguageToUI(){
       }
     });
 
+    // 인증 상태 추적 (계정 삭제 방지용)
+    let authInitialized = false;
+    let authUser = null;
+    window.addEventListener('hcsig:auth-changed', (event) => {
+      authInitialized = true;
+      authUser = event.detail && event.detail.user ? event.detail.user : null;
+    });
+
     function init() {
       addCodeInstanceFromTemplate('basic');
       state.requiredExp = requiredExp(state.level);
@@ -7969,19 +7977,7 @@ function applyLanguageToUI(){
       ensureMissionResets();
       try { ensureSeasonState(); } catch(e) { console.warn('[Season] init error:', e); }
 
-      if (localStorage.getItem(SAVE_KEY)) {
-        loadGame();
-      } else {
-        state.lastSeenAt = Date.now();
-        refreshUiAfterStateRestore();
-      }
-
-      log(t('initLog'), 'system');
-      maybeShowUpdateOnStart();
-      setTimeout(() => {
-        maybeStartTutorial();
-      }, 180);
-
+      // ① HCSIG_BRIDGE를 먼저 설정 (cloudSave.js가 대기 중)
       try {
         window.HCSIG_BRIDGE = {
           version: CURRENT_VERSION,
@@ -8000,6 +7996,7 @@ function applyLanguageToUI(){
             if (!obj) return;
             localStorage.setItem(SAVE_KEY, JSON.stringify(obj));
             loadGame(JSON.stringify(obj));
+            refreshUiAfterStateRestore();
           },
           getLanguage: () => getLang(),
           getStateSummary: () => ({
@@ -8014,15 +8011,46 @@ function applyLanguageToUI(){
             refreshUiAfterStateRestore();
           }
         };
+      } catch (bridgeErr) {
+        console.warn('[CloudBridge] bridge setup failed:', bridgeErr);
+      }
+
+      // ② hcsig:ready 이벤트 발생 (cloudSave.js가 초기 동기화 시작)
+      try {
         window.dispatchEvent(new CustomEvent('hcsig:ready', {
           detail: {
             version: CURRENT_VERSION,
             hasLocalSave: !!localStorage.getItem(SAVE_KEY)
           }
         }));
-      } catch (bridgeErr) {
-        console.warn('[CloudBridge] ready event dispatch failed:', bridgeErr);
+      } catch (readyErr) {
+        console.warn('[CloudBridge] ready event dispatch failed:', readyErr);
       }
+
+      // ③ 인증 초기화 대기 (최대 3초)
+      const authWaitStart = Date.now();
+      const authCheckInterval = setInterval(() => {
+        if (authInitialized || Date.now() - authWaitStart > 3000) {
+          clearInterval(authCheckInterval);
+
+          // ④ 로컬 또는 클라우드 세이브 로드
+          if (localStorage.getItem(SAVE_KEY)) {
+            loadGame();
+          } else {
+            state.lastSeenAt = Date.now();
+            // 기본 상태는 유지
+          }
+
+          // ⑤ UI 렌더
+          refreshUiAfterStateRestore();
+
+          log(t('initLog'), 'system');
+          maybeShowUpdateOnStart();
+          setTimeout(() => {
+            maybeStartTutorial();
+          }, 180);
+        }
+      }, 50);
     }
 
     init();

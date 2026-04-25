@@ -370,21 +370,26 @@
       setBadge('CLOUD SETUP');
       setStatus('Firebase 설정 필요: 클라우드 계정 저장을 사용할 수 없습니다.');
       setLoggedInView(null);
+      // 비로그인 상태를 명시적으로 emit (cloudSave.js의 초기 동기화 시작)
+      emit('hcsig:auth-changed', { user: null });
       return;
     }
 
-    setBadge('CLOUD READY', 'is-ready');
-    setStatus('로그인 대기 중');
+    setBadge('인증 중...', '');
+    setStatus('Firebase 인증 중... 잠시만 기다려주세요.');
     window.HCSIG_FB.auth.onAuthStateChanged(async (user)=>{
       state.user = user || null;
       state.initialized = true;
       setLoggedInView(user || null);
       if (user) {
+        setBadge('CLOUD READY', 'is-ready');
         await loadProfile(user);
         setStatus('로그인됨: 클라우드 저장 사용 가능');
       } else {
+        setBadge('CLOUD READY', 'is-ready');
         setStatus('로그아웃 상태: 필요 시 로그인하세요.');
       }
+      // hcsig:auth-changed 이벤트 발생 (cloudSave.js의 초기 동기화 진행)
       emit('hcsig:auth-changed', { user: user ? { uid:user.uid, email:user.email || '', displayName:user.displayName || '' } : null });
     });
   }

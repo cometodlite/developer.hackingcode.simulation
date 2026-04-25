@@ -157,22 +157,30 @@
       const localRaw = localStorage.getItem(bridge().saveKey);
       let shouldApplyCloud = false;
       if (cloud && !localRaw) {
+        // 클라우드만 있음 → 클라우드 우선 적용
         shouldApplyCloud = true;
       } else if (cloud && localRaw) {
         try {
           const localParsed = JSON.parse(localRaw);
+          // 클라우드가 더 최신이면 클라우드 우선
           shouldApplyCloud = Number((cloud && cloud.savedAt) || 0) > Number((localParsed && localParsed.savedAt) || 0);
         } catch (e) {
+          // 로컬 파싱 실패 → 클라우드 우선
           shouldApplyCloud = true;
         }
       }
-      if (shouldApplyCloud) {
+      if (shouldApplyCloud && cloud) {
+        // ⚠️ loadFromObject는 UI를 함께 업데이트함 (app-core.js의 HCSIG_BRIDGE.loadFromObject 참고)
         bridge().loadFromObject(cloud);
         auth().setStatus('클라우드 저장본을 자동으로 적용했습니다.');
+      } else if (!cloud && !localRaw) {
+        // 클라우드도 없고 로컬도 없음 → 기본 상태 유지
+        auth().setStatus('새 게임 시작');
       }
       if (auth().refreshProfile) await auth().refreshProfile();
     } catch (err) {
       auth().setStatus('클라우드 초기 동기화 실패: ' + (err.message || err));
+      console.warn('[CloudSync] auth-changed error:', err);
     }
   });
 
