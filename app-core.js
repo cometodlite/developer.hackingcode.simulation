@@ -1782,6 +1782,23 @@ function applyLanguageToUI(){
           state.items.oneDay = (state.items.oneDay || 0) + 200;
           state.stats.zeroDayOneDayEarnedTotal = (state.stats.zeroDayOneDayEarnedTotal || 0) + 200;
         }
+      },
+      // v3.0.0: ZERO-DAY 스킨 — Glass Console (COIN 200)
+      {
+        id: 'zd_skin_glass_console',
+        name: 'ZD 스킨: Glass Console',
+        desc: 'ZERO-DAY 터미널 스킨. 반투명 콘솔 효과로 시각적 차별화.',
+        cost: 200,
+        rarity: 'EPIC',
+        category: 'SYSTEM',
+        once: true,
+        buy: () => {
+          state.zeroDay = state.zeroDay || {};
+          state.zeroDay.skins = state.zeroDay.skins || [];
+          if (!state.zeroDay.skins.includes('glass_console')) {
+            state.zeroDay.skins.push('glass_console');
+          }
+        }
       }
     ];
 
@@ -4250,6 +4267,10 @@ function applyLanguageToUI(){
       if (reward.energyPack)  { state.items.energyPack = (state.items.energyPack || 0) + reward.energyPack; }
       if (reward.weeklyToken) { state.items.weeklyToken = (state.items.weeklyToken || 0) + reward.weeklyToken; }
       if (reward.coin)        { state.items.coin = (state.items.coin || 0) + reward.coin; state.stats.coinEarnedTotal += reward.coin; }
+      // v3.0.0: 티어 25 도달 시 Quartz Terminal 스킨 자동 해금 (시즌 보상)
+      if (tNum >= 25 && state.season.currentNumber >= 1) {
+        try { unlockZdSkin('quartz_terminal'); } catch(e) {}
+      }
       const msg = getLang() === 'en'
         ? `Pass Tier ${tNum} claimed: ${reward.credits ? 'Credits +'+reward.credits : ''}${reward.energyPack ? ' EnergyPack +'+reward.energyPack : ''}${reward.coin ? ' COIN +'+reward.coin : ''}`
         : `패스 티어 ${tNum} 수령: ${reward.credits ? '크레딧 +'+reward.credits : ''}${reward.energyPack ? ' 에너지팩 +'+reward.energyPack : ''}${reward.coin ? ' COIN +'+reward.coin : ''}`;
@@ -4545,6 +4566,194 @@ function applyLanguageToUI(){
       danger: { label: '위험', labelEn: 'Danger', depthMax: 14, detectionRate: 0.30, signalPerNode: 35, baseScore: 450 }
     };
 
+    // ══════════════════════════════════════════════════════
+    //  v3.0.0: ZERO-DAY 방어자 카드 시스템
+    // ══════════════════════════════════════════════════════
+    const ZD_DEFENSE_CARDS = {
+      mask:     { id:'mask',     ko:'위장',     en:'Mask',       desc:'공격자의 정찰 명령을 1회 차단', descEn:'Block 1 attacker recon command', effect:{ blockRecon: 1 } },
+      delay:    { id:'delay',    ko:'지연',     en:'Delay',      desc:'공격자의 다음 행동에 +20% 탐지', descEn:'+20% detection on attacker next action', effect:{ detectionPenalty: 0.2 } },
+      trace:    { id:'trace',    ko:'역추적',   en:'Trace',      desc:'공격자가 사용한 마지막 명령을 카드 사용 슬롯에 차단(중복 불가)', descEn:'Block attacker last command type', effect:{ blockLastType: true } },
+      surveil:  { id:'surveil',  ko:'감시',     en:'Surveil',    desc:'공격자의 다음 명령을 노출 (UI 힌트)', descEn:'Reveal attacker next command (UI hint)', effect:{ revealNext: true } },
+      lockdown: { id:'lockdown', ko:'봉쇄',     en:'Lockdown',   desc:'공격자의 침투 명령을 1회 무효화', descEn:'Negate 1 attacker infiltrate command', effect:{ blockInfiltrate: 1 } }
+    };
+
+    // 슬롯 확장 비용 (스펙: 3 기본 / 4슬롯 500 OneDay / 5슬롯 1500 OneDay)
+    const ZD_SLOT_EXPAND_COST = {
+      4: 500,
+      5: 1500
+    };
+
+    // ══════════════════════════════════════════════════════
+    //  v3.0.0: ZERO-DAY 스킨 3종
+    // ══════════════════════════════════════════════════════
+    const ZD_SKINS = {
+      zero_shell: {
+        id:'zero_shell', ko:'Zero Shell', en:'Zero Shell',
+        desc:'기본 ZERO-DAY 터미널. 표준 모노 그린 컬러 스킴.',
+        descEn:'Default ZERO-DAY terminal. Standard mono-green color scheme.',
+        unlocked:true,
+        cssClass:'zd-skin-zero-shell'
+      },
+      glass_console: {
+        id:'glass_console', ko:'Glass Console', en:'Glass Console',
+        desc:'반투명 콘솔 효과. COIN 상점에서 200 COIN으로 구매.',
+        descEn:'Translucent console effect. Buy with 200 COIN in shop.',
+        unlocked:false,
+        cost:{ currency:'coin', amount:200 },
+        cssClass:'zd-skin-glass-console'
+      },
+      quartz_terminal: {
+        id:'quartz_terminal', ko:'Quartz Terminal', en:'Quartz Terminal',
+        desc:'결정 표시 효과 + 청량한 컬러. 시즌 1 PASS 티어 25 보상.',
+        descEn:'Crystal display effect + cool tones. Season 1 PASS Tier 25 reward.',
+        unlocked:false,
+        unlockVia:{ type:'pass_tier', season:1, tier:25 },
+        cssClass:'zd-skin-quartz-terminal'
+      }
+    };
+
+    function isZdSkinUnlocked(skinId) {
+      const skin = ZD_SKINS[skinId];
+      if (!skin) return false;
+      if (skin.unlocked) return true;
+      return !!(state.zeroDay.skins && state.zeroDay.skins.includes(skinId));
+    }
+
+    function unlockZdSkin(skinId, silent) {
+      if (!ZD_SKINS[skinId]) return false;
+      state.zeroDay.skins = state.zeroDay.skins || [];
+      if (state.zeroDay.skins.includes(skinId)) return false;
+      state.zeroDay.skins.push(skinId);
+      if (!silent) {
+        const skin = ZD_SKINS[skinId];
+        const name = getLang()==='en' ? skin.en : skin.ko;
+        showToast((getLang()==='en'?'ZD Skin Unlocked: ':'ZD 스킨 해금: ') + name, 'achievement');
+        log(`[ZERO-DAY] ${getLang()==='en'?'Skin unlocked':'스킨 해금'}: ${name}`, 'system');
+      }
+      return true;
+    }
+
+    function applyActiveZdSkin() {
+      const skinId = (state.zeroDay && state.zeroDay.activeSkin) || 'zero_shell';
+      const el = document.getElementById('zeroDayPanel');
+      if (!el) return;
+      // 모든 zd-skin-* 클래스 제거 후 활성 스킨 적용
+      Array.from(el.classList).forEach(c => {
+        if (c.startsWith('zd-skin-')) el.classList.remove(c);
+      });
+      const skin = ZD_SKINS[skinId];
+      if (skin && skin.cssClass) el.classList.add(skin.cssClass);
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  v3.0.0: ZERO-DAY 코드/프로토콜 4종
+    // ══════════════════════════════════════════════════════
+    const ZD_PROTOCOLS = {
+      protocol_phantom: {
+        id:'protocol_phantom',
+        ko:'PHANTOM', en:'PHANTOM',
+        descKo:'정찰 명령(scan/probe/enum) 사용 시 탐지 -25%',
+        descEn:'Recon commands (scan/probe/enum) cause -25% detection',
+        condition:{ type:'pveRuns', target:30 },
+        cost:{ currency:'oneDay', amount:300 },
+        effect:{ reconDetectionMult:0.75 }
+      },
+      protocol_breaker: {
+        id:'protocol_breaker',
+        ko:'BREAKER', en:'BREAKER',
+        descKo:'침투 명령(breach/inject/elevate/bypass) 성공률 +15%',
+        descEn:'Infiltrate commands +15% success rate',
+        condition:{ type:'pvpWins', target:5 },
+        cost:{ currency:'oneDay', amount:500 },
+        effect:{ infiltrateSuccessBonus:0.15 }
+      },
+      protocol_shroud: {
+        id:'protocol_shroud',
+        ko:'SHROUD', en:'SHROUD',
+        descKo:'추출 시 탐지율 -30% (1회 추가 보호막)',
+        descEn:'-30% detection on extraction (1 extra shield)',
+        condition:{ type:'lowDetectExtracts', target:10 },
+        cost:{ currency:'oneDay', amount:800 },
+        effect:{ extractionShield:1, extractionDetectionReduction:0.30 }
+      },
+      protocol_overlord: {
+        id:'protocol_overlord',
+        ko:'OVERLORD', en:'OVERLORD',
+        descKo:'모든 ZD 명령 효과 +10%, 탈출 시 OneDay +20%',
+        descEn:'All ZD command effects +10%, exit grants +20% OneDay',
+        condition:{ type:'passTier', target:25 },
+        cost:{ currency:'oneDay', amount:1500 },
+        effect:{ allCommandBonus:0.10, exitOneDayBonus:0.20 }
+      }
+    };
+
+    function getZdProtocolProgress(protocolId) {
+      const def = ZD_PROTOCOLS[protocolId];
+      if (!def) return { ok:false, current:0, target:0 };
+      const cond = def.condition;
+      let current = 0;
+      switch (cond.type) {
+        case 'pveRuns':
+          current = state.stats.zeroDayPveClearCount || 0; break;
+        case 'pvpWins':
+          current = state.stats.zeroDayPvpAttackWinCount || 0; break;
+        case 'lowDetectExtracts':
+          current = state.stats.zeroDayLowDetectionExtracts || 0; break;
+        case 'passTier':
+          current = (state.season && state.season.passTier) || 0; break;
+      }
+      return {
+        ok: current >= cond.target,
+        current,
+        target: cond.target
+      };
+    }
+
+    function isZdProtocolUnlocked(protocolId) {
+      return !!(state.zeroDay.unlocks && state.zeroDay.unlocks[protocolId]);
+    }
+
+    function tryUnlockZdProtocol(protocolId) {
+      const def = ZD_PROTOCOLS[protocolId];
+      if (!def) return { ok:false, reason:'unknown' };
+      if (isZdProtocolUnlocked(protocolId)) return { ok:false, reason:'already' };
+      const prog = getZdProtocolProgress(protocolId);
+      if (!prog.ok) return { ok:false, reason:'condition' };
+      const need = def.cost.amount;
+      const balance = (state.items[def.cost.currency] || 0);
+      if (balance < need) return { ok:false, reason:'currency' };
+      state.items[def.cost.currency] = balance - need;
+      if (def.cost.currency === 'oneDay') {
+        state.stats.zeroDayOneDaySpentTotal = (state.stats.zeroDayOneDaySpentTotal || 0) + need;
+      }
+      state.zeroDay.unlocks = state.zeroDay.unlocks || {};
+      state.zeroDay.unlocks[protocolId] = Date.now();
+      const name = getLang()==='en' ? def.en : def.ko;
+      showToast((getLang()==='en'?'Protocol unlocked: ':'프로토콜 해금: ') + name, 'achievement');
+      log(`[ZERO-DAY] ${getLang()==='en'?'Protocol unlocked':'프로토콜 해금'}: ${name}`, 'system');
+      return { ok:true };
+    }
+
+    function getZdProtocolEffectSum() {
+      const sum = {
+        reconDetectionMult: 1.0,
+        infiltrateSuccessBonus: 0,
+        extractionShield: 0,
+        extractionDetectionReduction: 0,
+        allCommandBonus: 0,
+        exitOneDayBonus: 0
+      };
+      Object.keys(ZD_PROTOCOLS).forEach(pid => {
+        if (!isZdProtocolUnlocked(pid)) return;
+        const eff = ZD_PROTOCOLS[pid].effect || {};
+        Object.keys(eff).forEach(k => {
+          if (k === 'reconDetectionMult') sum[k] *= eff[k];
+          else sum[k] = (sum[k] || 0) + eff[k];
+        });
+      });
+      return sum;
+    }
+
     function canStartZdPve() {
       const diff = (state.zeroDay.pve && state.zeroDay.pve.difficulty) || 'easy';
       const def = ZD_PVE_DIFFICULTIES[diff] || ZD_PVE_DIFFICULTIES.easy;
@@ -4838,6 +5047,83 @@ function applyLanguageToUI(){
         </button>`;
       }).join('');
 
+      // v3.0.0: 방어 카드 / 스킨 / 프로토콜 UI 데이터
+      zd.defense = zd.defense || { slots:3, cards:[], usesThisMatch:0 };
+      zd.skins = zd.skins || [];
+      zd.unlocks = zd.unlocks || {};
+      zd.activeSkin = zd.activeSkin || 'zero_shell';
+
+      const slotCount = zd.defense.slots || 3;
+      const slotCards = zd.defense.cards || [];
+
+      // 카드 슬롯 HTML
+      const slotsHtml = Array.from({length:5}).map((_, i) => {
+        const idx = i+1;
+        const enabled = idx <= slotCount;
+        const cardId = slotCards[i] || null;
+        const card = cardId ? ZD_DEFENSE_CARDS[cardId] : null;
+        const lockHtml = !enabled
+          ? `<span class="zd-slot-lock">🔒 ${ZD_SLOT_EXPAND_COST[idx] || '?'} OneDay</span>`
+          : '';
+        const cardHtml = card
+          ? `<strong>${getLang()==='en'?card.en:card.ko}</strong><span class="small">${getLang()==='en'?card.descEn:card.desc}</span>`
+          : `<span class="small zd-slot-empty">${getLang()==='en'?'(empty)':'(비어있음)'}</span>`;
+        return `<div class="zd-defense-slot ${enabled?'enabled':'locked'}" data-zd-slot="${idx}">
+          <div class="zd-slot-num">SLOT ${idx}</div>
+          ${enabled ? cardHtml : lockHtml}
+          ${enabled ? `<button type="button" data-zd-slot-edit="${idx}">${card ? (getLang()==='en'?'Change':'변경') : (getLang()==='en'?'Equip':'장착')}</button>` : `<button type="button" data-zd-slot-expand="${idx}">${getLang()==='en'?'Expand':'확장'}</button>`}
+        </div>`;
+      }).join('');
+
+      // 스킨 선택 HTML
+      const skinsHtml = Object.values(ZD_SKINS).map(skin => {
+        const owned = isZdSkinUnlocked(skin.id);
+        const active = zd.activeSkin === skin.id;
+        return `<div class="zd-skin-card ${active?'active':''} ${owned?'owned':'locked'}" data-zd-skin="${skin.id}">
+          <strong>${getLang()==='en'?skin.en:skin.ko}</strong>
+          <span class="small">${getLang()==='en'?skin.descEn:skin.desc}</span>
+          ${active
+            ? `<span class="zd-skin-badge">${getLang()==='en'?'ACTIVE':'사용 중'}</span>`
+            : owned
+              ? `<button type="button" data-zd-skin-equip="${skin.id}">${getLang()==='en'?'Equip':'장착'}</button>`
+              : `<span class="zd-skin-badge locked">${getLang()==='en'?'LOCKED':'미해금'}</span>`}
+        </div>`;
+      }).join('');
+
+      // 프로토콜 4종 HTML
+      const protocolsHtml = Object.values(ZD_PROTOCOLS).map(p => {
+        const unlocked = isZdProtocolUnlocked(p.id);
+        const prog = getZdProtocolProgress(p.id);
+        const condText = (() => {
+          switch (p.condition.type) {
+            case 'pveRuns': return getLang()==='en'?`PVE clears ${prog.current}/${prog.target}`:`PVE 클리어 ${prog.current}/${prog.target}`;
+            case 'pvpWins': return getLang()==='en'?`PVP wins ${prog.current}/${prog.target}`:`PVP 승리 ${prog.current}/${prog.target}`;
+            case 'lowDetectExtracts': return getLang()==='en'?`Low-detection extracts ${prog.current}/${prog.target}`:`저탐지 탈출 ${prog.current}/${prog.target}`;
+            case 'passTier': return getLang()==='en'?`PASS tier ${prog.current}/${prog.target}`:`PASS 티어 ${prog.current}/${prog.target}`;
+          }
+        })();
+        const canUnlock = !unlocked && prog.ok && (state.items[p.cost.currency] || 0) >= p.cost.amount;
+        return `<div class="zd-protocol-card ${unlocked?'unlocked':''}" data-zd-protocol="${p.id}">
+          <div class="zd-protocol-head">
+            <strong>${getLang()==='en'?p.en:p.ko}</strong>
+            ${unlocked ? `<span class="zd-protocol-badge">${getLang()==='en'?'UNLOCKED':'해금'}</span>` : ''}
+          </div>
+          <p class="small">${getLang()==='en'?p.descEn:p.descKo}</p>
+          <div class="zd-protocol-meta small">
+            <span>${condText}</span>
+            <span>${p.cost.amount} ${p.cost.currency.toUpperCase()}</span>
+          </div>
+          ${unlocked ? '' : `<button type="button" data-zd-protocol-unlock="${p.id}" ${canUnlock?'':'disabled'}>${getLang()==='en'?'Unlock':'해금'}</button>`}
+        </div>`;
+      }).join('');
+
+      // PVP 추천 조건 (기존 유지)
+      const cond1 = ['normal','hard','danger'].includes(state.stats.zeroDayBestExtractDiff || '');
+      const cond2 = (state.stats.zeroDayPveEscapeCount || 0) >= 1;
+      const cond3 = (state.stats.zeroDayLowDetectionExtracts || 0) >= 1;
+      const condsMet = [cond1, cond2, cond3].filter(Boolean).length;
+      const pvpReady = condsMet >= 2;
+
       el.innerHTML = `
         <div class="zd-lobby">
           <div class="zd-inventory-row">
@@ -4863,42 +5149,46 @@ function applyLanguageToUI(){
               : `⚠ ${check.reason}`
             }</span>
           </div>
+
+          <!-- v3.0.0: PVP 비동기 트레이닝 매치 -->
           <div class="zd-pvp-section">
             <h4>${getLang()==='en'?'PVP (Async)':'PVP (비동기)'}</h4>
-            ${(()=>{
-              // PVP 강추천 조건 3종
-              const cond1 = ['normal','hard','danger'].includes(state.stats.zeroDayBestExtractDiff || '');
-              const cond2 = (state.stats.zeroDayPveEscapeCount || 0) >= 1;
-              const cond3 = (state.stats.zeroDayLowDetectionExtracts || 0) >= 1;
-              const condsMet = [cond1, cond2, cond3].filter(Boolean).length;
-              const recommended = condsMet >= 2;
-              const checkMark = (ok) => ok ? '✓' : '✗';
-              return recommended
-                ? `<div class="zd-pvp-recommend recommended">
-                    <strong>${getLang()==='en'?'⚡ PVP Recommended!':'⚡ PVP 강추천!'}</strong>
-                    <ul>
-                      <li>${checkMark(cond1)} ${getLang()==='en'?'Normal+ PVE extract':'보통 이상 PVE 클리어'}</li>
-                      <li>${checkMark(cond2)} ${getLang()==='en'?'Clean exit experience':'정식 탈출 경험'}</li>
-                      <li>${checkMark(cond3)} ${getLang()==='en'?'Low-detection extract':'탐지율 50% 미만 탈출'}</li>
-                    </ul>
-                  </div>`
-                : `<div class="zd-pvp-recommend">
-                    <span class="small">${getLang()==='en'?`PVP conditions: ${condsMet}/3 met`:`PVP 준비도: ${condsMet}/3`}</span>
-                    <ul class="small">
-                      <li>${checkMark(cond1)} ${getLang()==='en'?'Normal+ PVE extract':'보통 이상 PVE 클리어'}</li>
-                      <li>${checkMark(cond2)} ${getLang()==='en'?'Clean exit experience':'정식 탈출 경험'}</li>
-                      <li>${checkMark(cond3)} ${getLang()==='en'?'Low-detection extract (<50%)':'탐지율 50% 미만 탈출'}</li>
-                    </ul>
-                  </div>`;
-            })()}
-            <p class="small">${getLang()==='en'?'Login required. Snapshot-based async PVP coming with cloud matchmaking.':'로그인 필요. 스냅샷 기반 비동기 PVP는 클라우드 매칭과 함께 제공됩니다.'}</p>
+            <p class="small">${getLang()==='en'?'Snapshot-based async duel against bot opponent (training mode). Cloud matchmaking expands later.':'스냅샷 기반 비동기 PVP — 봇 상대와 트레이닝 매치 (클라우드 매칭은 추후 확장).'}</p>
             <div class="zd-pvp-stats">
               <span>${getLang()==='en'?'Wins':'승'}: ${zd.pvp.seasonWins||0}</span>
               <span>${getLang()==='en'?'Losses':'패'}: ${zd.pvp.seasonLosses||0}</span>
               <span>${getLang()==='en'?'Rating':'레이팅'}: ${zd.pvp.rating||1000}</span>
+              <span>${getLang()==='en'?'Conds':'준비도'}: ${condsMet}/3</span>
             </div>
+            <button type="button" id="btnZdPvpMatch" ${pvpReady && (state.items.zeroDayVulnerability||0) >= 1 ? '' : 'disabled'}>
+              ${getLang()==='en'?'Match PVP (1 Vuln)':'PVP 매칭 (취약점 1)'}
+            </button>
+            ${!pvpReady ? `<span class="small">${getLang()==='en'?'Need 2+ readiness conditions':'준비도 2개 이상 필요'}</span>` : ''}
+          </div>
+
+          <!-- v3.0.0: 방어자 카드 슬롯 (3 기본 / 4슬롯 500 OneDay / 5슬롯 1500 OneDay) -->
+          <div class="zd-defense-section">
+            <h4>${getLang()==='en'?'Defense Loadout':'방어 로드아웃'}</h4>
+            <p class="small">${getLang()==='en'?`Slots ${slotCount}/5 — used in PVP defense. 3 uses per match, no duplicates.`:`슬롯 ${slotCount}/5 — PVP 방어에서 사용. 매치당 3회, 중복 불가.`}</p>
+            <div class="zd-defense-slots">${slotsHtml}</div>
+          </div>
+
+          <!-- v3.0.0: 스킨 선택 -->
+          <div class="zd-skin-section">
+            <h4>${getLang()==='en'?'Terminal Skin':'터미널 스킨'}</h4>
+            <div class="zd-skin-grid">${skinsHtml}</div>
+          </div>
+
+          <!-- v3.0.0: ZERO-DAY 프로토콜 4종 -->
+          <div class="zd-protocol-section">
+            <h4>${getLang()==='en'?'ZERO-DAY Protocols':'ZERO-DAY 프로토콜'}</h4>
+            <p class="small">${getLang()==='en'?'Unlock by meeting conditions and spending OneDay. Effects stack passively.':'조건 달성 + OneDay 소비로 해금. 효과는 패시브로 누적.'}</p>
+            <div class="zd-protocol-grid">${protocolsHtml}</div>
           </div>
         </div>`;
+
+      // 활성 스킨 적용
+      applyActiveZdSkin();
 
       document.getElementById('btnStartZdPve')?.addEventListener('click', startZdPve);
       document.getElementById('btnCraftVuln')?.addEventListener('click', () => {
@@ -4916,6 +5206,186 @@ function applyLanguageToUI(){
           saveGame(true);
         });
       });
+
+      // v3.0.0: 슬롯 확장 버튼
+      el.querySelectorAll('[data-zd-slot-expand]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const slot = Number(btn.dataset.zdSlotExpand);
+          const cost = ZD_SLOT_EXPAND_COST[slot];
+          if (!cost) return;
+          if ((state.items.oneDay || 0) < cost) {
+            showToast(getLang()==='en'?`Need ${cost} OneDay`:`OneDay ${cost} 필요`, 'warn');
+            return;
+          }
+          state.items.oneDay -= cost;
+          state.stats.oneDaySpentTotal = (state.stats.oneDaySpentTotal || 0) + cost;
+          state.stats.zeroDayOneDaySpentTotal = (state.stats.zeroDayOneDaySpentTotal || 0) + cost;
+          state.zeroDay.defense.slots = slot;
+          showToast(getLang()==='en'?`Slot ${slot} unlocked!`:`슬롯 ${slot} 해금!`, 'achievement');
+          renderZeroDayPanel();
+          saveGame(true);
+        });
+      });
+
+      // v3.0.0: 슬롯 카드 장착/변경 (간단한 cycle: 카드 5종 순환)
+      el.querySelectorAll('[data-zd-slot-edit]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const slot = Number(btn.dataset.zdSlotEdit);
+          const idx = slot - 1;
+          state.zeroDay.defense.cards = state.zeroDay.defense.cards || [];
+          const cardIds = Object.keys(ZD_DEFENSE_CARDS);
+          const current = state.zeroDay.defense.cards[idx];
+          // 다음 카드로 cycle (중복 슬롯 방지)
+          const used = new Set(state.zeroDay.defense.cards.filter((c,i) => i !== idx && c));
+          let nextIdx = current ? (cardIds.indexOf(current) + 1) % (cardIds.length + 1) : 0;
+          let attempt = 0;
+          let next = null;
+          while (attempt < cardIds.length + 1) {
+            if (nextIdx >= cardIds.length) { next = null; break; } // empty
+            const cand = cardIds[nextIdx];
+            if (!used.has(cand)) { next = cand; break; }
+            nextIdx = (nextIdx + 1) % (cardIds.length + 1);
+            attempt++;
+          }
+          state.zeroDay.defense.cards[idx] = next;
+          renderZeroDayPanel();
+          saveGame(true);
+        });
+      });
+
+      // v3.0.0: 스킨 장착
+      el.querySelectorAll('[data-zd-skin-equip]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const skinId = btn.dataset.zdSkinEquip;
+          if (!isZdSkinUnlocked(skinId)) return;
+          state.zeroDay.activeSkin = skinId;
+          renderZeroDayPanel();
+          saveGame(true);
+        });
+      });
+
+      // v3.0.0: 프로토콜 해금
+      el.querySelectorAll('[data-zd-protocol-unlock]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pid = btn.dataset.zdProtocolUnlock;
+          const result = tryUnlockZdProtocol(pid);
+          if (!result.ok) {
+            const msg = result.reason === 'currency' ? (getLang()==='en'?'Not enough OneDay':'OneDay 부족')
+              : result.reason === 'condition' ? (getLang()==='en'?'Condition not met':'조건 미충족')
+              : (getLang()==='en'?'Cannot unlock':'해금 불가');
+            showToast(msg, 'warn');
+            return;
+          }
+          updateStatsUI();
+          renderZeroDayPanel();
+          saveGame(true);
+        });
+      });
+
+      // v3.0.0: PVP 매칭 (트레이닝 봇 매치)
+      document.getElementById('btnZdPvpMatch')?.addEventListener('click', startZdPvpMatch);
+    }
+
+    // v3.0.0: ZERO-DAY PVP 봇 매치 (스냅샷 기반 시뮬레이션)
+    function getPvpSnapshot() {
+      const code = getActiveCodeInstance();
+      const codePower = code ? (code.power || code.basePower || 18) : 18;
+      const cpuTier = state.cpuTier || 1;
+      const gpuTier = state.gpuTier || 1;
+      const protocols = Object.keys(ZD_PROTOCOLS).filter(p => isZdProtocolUnlocked(p));
+      const defenseCards = (state.zeroDay.defense && state.zeroDay.defense.cards || []).filter(Boolean);
+      const rating = (state.zeroDay.pvp && state.zeroDay.pvp.rating) || 1000;
+      // 공격력: 코드파워 + cpu/gpu 티어 + 프로토콜 보너스 + 약간의 랜덤
+      const attackPower = codePower * 1.2 + cpuTier * 5 + gpuTier * 4 + protocols.length * 8;
+      // 방어력: 슬롯 수 × 12 + 장착 카드 수 × 8 + 프로토콜 보너스
+      const defensePower = (state.zeroDay.defense.slots || 3) * 12 + defenseCards.length * 8 + protocols.length * 6;
+      return { rating, attackPower, defensePower, protocols, defenseCards };
+    }
+
+    function generateBotSnapshot(playerRating) {
+      const variance = 200;
+      const botRating = Math.max(800, Math.min(1800, playerRating + (Math.random() * variance * 2 - variance)));
+      const tierFactor = botRating / 1000;
+      return {
+        rating: Math.round(botRating),
+        attackPower: 30 + tierFactor * 25 + Math.random() * 10,
+        defensePower: 30 + tierFactor * 22 + Math.random() * 10,
+        protocols: tierFactor > 1.2 ? ['protocol_phantom'] : [],
+        defenseCards: ['mask','delay'].slice(0, Math.floor(tierFactor * 2))
+      };
+    }
+
+    function simulatePvpDuel(player, bot) {
+      // 매치당 3턴 — 양쪽 모두 카드 사용 가능 (3회/매치, 중복 불가)
+      let pScore = 0, bScore = 0;
+      const playerUsed = new Set();
+      const botUsed = new Set();
+      for (let turn = 1; turn <= 3; turn++) {
+        // 플레이어 공격: 봇 방어와 비교
+        const pAtk = player.attackPower * (0.85 + Math.random() * 0.3);
+        const bDef = bot.defensePower * (0.9 + Math.random() * 0.2);
+        // 봇이 사용 가능한 방어 카드가 있으면 1개 사용 (랜덤)
+        let bCardBonus = 0;
+        const bAvail = bot.defenseCards.filter(c => !botUsed.has(c));
+        if (bAvail.length && Math.random() < 0.6) {
+          const useCard = bAvail[Math.floor(Math.random() * bAvail.length)];
+          botUsed.add(useCard);
+          bCardBonus = 12;
+        }
+        if (pAtk > bDef + bCardBonus) pScore++;
+        // 봇 공격
+        const botAtk = bot.attackPower * (0.85 + Math.random() * 0.3);
+        const pDef = player.defensePower * (0.9 + Math.random() * 0.2);
+        let pCardBonus = 0;
+        const pAvail = player.defenseCards.filter(c => !playerUsed.has(c));
+        if (pAvail.length && Math.random() < 0.7) {
+          const useCard = pAvail[Math.floor(Math.random() * pAvail.length)];
+          playerUsed.add(useCard);
+          pCardBonus = 14;
+        }
+        if (botAtk < pDef + pCardBonus) pScore++; // 방어 성공도 1점
+        else bScore++;
+      }
+      return { pScore, bScore, win: pScore > bScore };
+    }
+
+    function startZdPvpMatch() {
+      if ((state.items.zeroDayVulnerability || 0) < 1) {
+        showToast(getLang()==='en'?'Need 1 Vulnerability':'취약점 1개 필요', 'warn');
+        return;
+      }
+      // 비용
+      state.items.zeroDayVulnerability -= 1;
+      state.zeroDay.pvp.attacksTotal = (state.zeroDay.pvp.attacksTotal || 0) + 1;
+
+      const player = getPvpSnapshot();
+      const bot = generateBotSnapshot(player.rating);
+      const result = simulatePvpDuel(player, bot);
+
+      // ELO-like rating change
+      const expected = 1 / (1 + Math.pow(10, (bot.rating - player.rating) / 400));
+      const actual = result.win ? 1 : 0;
+      const ratingDelta = Math.round(32 * (actual - expected));
+      state.zeroDay.pvp.rating = Math.max(800, (state.zeroDay.pvp.rating || 1000) + ratingDelta);
+
+      if (result.win) {
+        state.zeroDay.pvp.seasonWins = (state.zeroDay.pvp.seasonWins || 0) + 1;
+        state.stats.zeroDayPvpAttackWinCount = (state.stats.zeroDayPvpAttackWinCount || 0) + 1;
+        // 보상 — OneDay
+        const oneDayReward = 60 + Math.round(Math.random() * 40);
+        state.items.oneDay = (state.items.oneDay || 0) + oneDayReward;
+        state.stats.zeroDayOneDayEarnedTotal = (state.stats.zeroDayOneDayEarnedTotal || 0) + oneDayReward;
+        showToast(`${getLang()==='en'?'PVP WIN':'PVP 승리'} (${result.pScore}-${result.bScore}) · OneDay +${oneDayReward} · ${ratingDelta>=0?'+':''}${ratingDelta} rating`, 'achievement');
+        log(`[ZD PVP] WIN ${result.pScore}-${result.bScore} vs bot R${bot.rating}, +${oneDayReward} OneDay, ${ratingDelta>=0?'+':''}${ratingDelta} rating → ${state.zeroDay.pvp.rating}`, 'system');
+      } else {
+        state.zeroDay.pvp.seasonLosses = (state.zeroDay.pvp.seasonLosses || 0) + 1;
+        showToast(`${getLang()==='en'?'PVP LOSS':'PVP 패배'} (${result.pScore}-${result.bScore}) · ${ratingDelta>=0?'+':''}${ratingDelta} rating`, 'shop');
+        log(`[ZD PVP] LOSS ${result.pScore}-${result.bScore} vs bot R${bot.rating}, ${ratingDelta>=0?'+':''}${ratingDelta} rating → ${state.zeroDay.pvp.rating}`, 'system');
+      }
+
+      updateStatsUI();
+      renderZeroDayPanel();
+      saveGame(true);
     }
 
     function zeroCopy(ko, en) {

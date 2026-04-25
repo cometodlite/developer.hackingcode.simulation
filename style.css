@@ -4182,6 +4182,219 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   list-style: none;
 }
 .zd-pvp-recommend ul li { margin-bottom: 2px; }
+
+/* v3.0.0: ZD 방어 카드 슬롯 */
+.zd-defense-section,
+.zd-skin-section,
+.zd-protocol-section,
+.zd-pvp-section {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid #1a2a1a;
+  border-radius: 6px;
+  background: rgba(7,13,9,.55);
+}
+.zd-defense-section h4,
+.zd-skin-section h4,
+.zd-protocol-section h4,
+.zd-pvp-section h4 {
+  font-size: 12px;
+  color: #44ff88;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px;
+}
+.zd-defense-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+}
+.zd-defense-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #1a2a1a;
+  border-radius: 5px;
+  background: #0a1409;
+  min-height: 78px;
+}
+.zd-defense-slot.locked {
+  opacity: 0.55;
+  background: #08100a;
+  border-style: dashed;
+}
+.zd-slot-num {
+  font-size: 10px;
+  color: #5eead4;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.zd-slot-empty,
+.zd-slot-lock {
+  color: #4a6856;
+  font-size: 10px;
+  flex: 1;
+}
+.zd-defense-slot strong {
+  font-size: 11px;
+  color: #ddd;
+  font-weight: 700;
+}
+.zd-defense-slot button {
+  margin-top: auto;
+  padding: 3px 8px;
+  font-size: 10px;
+  background: #0d2a0d;
+  border: 1px solid #1a3a1a;
+  color: #44ff88;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.zd-defense-slot button:hover { background: #1a3a1a; }
+
+/* v3.0.0: ZD 스킨 카드 */
+.zd-skin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+.zd-skin-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #1a2a1a;
+  border-radius: 5px;
+  background: #0a1409;
+}
+.zd-skin-card.active {
+  border-color: #44ff88;
+  background: #0e2a0e;
+  box-shadow: 0 0 8px rgba(68, 255, 136, 0.18);
+}
+.zd-skin-card.locked { opacity: 0.6; }
+.zd-skin-card strong { font-size: 11px; color: #ddd; }
+.zd-skin-card button {
+  padding: 3px 8px;
+  font-size: 10px;
+  background: #0d2a0d;
+  border: 1px solid #1a3a1a;
+  color: #44ff88;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 4px;
+  align-self: flex-start;
+}
+.zd-skin-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #0e2a0e;
+  color: #44ff88;
+  letter-spacing: 0.5px;
+  align-self: flex-start;
+}
+.zd-skin-badge.locked { background: #1a1a1a; color: #5a5a5a; }
+
+/* 스킨 효과 */
+.zd-skin-zero-shell { /* 기본 — 추가 스타일 없음 */ }
+.zd-skin-glass-console {
+  background: linear-gradient(135deg, rgba(20,40,30,.4), rgba(7,13,9,.85));
+  backdrop-filter: blur(2px);
+}
+.zd-skin-quartz-terminal {
+  background: linear-gradient(135deg, rgba(40,80,140,.18), rgba(15,25,40,.85));
+  border-color: #4488cc;
+  box-shadow: inset 0 0 12px rgba(68, 200, 255, 0.08);
+}
+.zd-skin-quartz-terminal .zd-defense-section h4,
+.zd-skin-quartz-terminal .zd-skin-section h4,
+.zd-skin-quartz-terminal .zd-protocol-section h4,
+.zd-skin-quartz-terminal .zd-pvp-section h4 {
+  color: #88ccff;
+}
+
+/* v3.0.0: ZD 프로토콜 카드 */
+.zd-protocol-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 6px;
+}
+.zd-protocol-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid #1a2a1a;
+  border-radius: 5px;
+  background: #0a1409;
+}
+.zd-protocol-card.unlocked {
+  border-color: #44ff88;
+  background: #0e2a0e;
+}
+.zd-protocol-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.zd-protocol-head strong {
+  font-size: 11px;
+  color: #5eead4;
+  letter-spacing: 1px;
+  font-family: 'Courier New', Courier, monospace;
+}
+.zd-protocol-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  background: #0d2a0d;
+  color: #44ff88;
+  border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+.zd-protocol-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #6b8a72;
+  font-size: 10px;
+}
+.zd-protocol-card button {
+  padding: 4px 10px;
+  font-size: 10px;
+  background: #0d2a0d;
+  border: 1px solid #1a3a1a;
+  color: #44ff88;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.zd-protocol-card button:disabled {
+  background: #0a1009;
+  color: #4a5856;
+  cursor: not-allowed;
+  border-color: #1a2a1a;
+}
+
+/* v3.0.0: PVP 매치 버튼 */
+#btnZdPvpMatch {
+  margin-top: 6px;
+  padding: 8px 14px;
+  background: #0d1a2a;
+  border: 1px solid #1a3a5a;
+  color: #7ecfff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+#btnZdPvpMatch:hover:not(:disabled) {
+  background: #1a2a4a;
+  border-color: #7ecfff;
+}
+#btnZdPvpMatch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .zd-cmd-groups {
   display: flex;
   flex-wrap: wrap;
