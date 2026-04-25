@@ -3704,6 +3704,18 @@ function applyLanguageToUI(){
       renderZeroDayPanel();
     }
 
+    function refreshProgressUiAndSave() {
+      updateStatsUI();
+      renderShop();
+      renderCodex();
+      renderCodeList();
+      renderCodeDetail();
+      renderStagePanel();
+      renderWeeklyPanel();
+      renderZeroDayPanel();
+      scheduleSilentSave();
+    }
+
     function getEnergyIntervalMs() {
       ensureModifierDefaults();
       return Math.round(ENERGY_INTERVAL_MS * (modifiers.fastRecoveryTicks > 0 ? 0.75 : 1));
@@ -3995,7 +4007,10 @@ function applyLanguageToUI(){
           selectCode();
           openCodeDetailModal(code.id);
         });
-        li.addEventListener('click', selectCode);
+        li.addEventListener('click', () => {
+          selectCode();
+          openCodeDetailModal(code.id);
+        });
         li.addEventListener('keydown', (event) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
@@ -4917,9 +4932,14 @@ function applyLanguageToUI(){
       const depth = run.depth || 0;
       const rewardCredits = extracted ? Math.round(def.baseScore * 0.8 + score * 0.5) : 0;
       // OneDay: 30–80 range for PVE (spec v3.0.0)
-      const rewardOneDay = extracted
+      let rewardOneDay = extracted
         ? Math.min(80, Math.max(30, Math.round(30 + 50 * (depth / Math.max(1, def.depthMax)))))
         : Math.round(depth * 2);
+      // v3.0.0: OVERLORD 프로토콜 — 탈출 시 OneDay +20%
+      const protoEff = getZdProtocolEffectSum();
+      if (extracted && protoEff.exitOneDayBonus > 0) {
+        rewardOneDay = Math.round(rewardOneDay * (1 + protoEff.exitOneDayBonus));
+      }
       state.zeroDay.pve.active = null;
       state.zeroDay.pve.bestDepth = Math.max(state.zeroDay.pve.bestDepth || 0, depth);
       state.zeroDay.pve.bestScore = Math.max(state.zeroDay.pve.bestScore || 0, score);
@@ -5295,10 +5315,19 @@ function applyLanguageToUI(){
       const protocols = Object.keys(ZD_PROTOCOLS).filter(p => isZdProtocolUnlocked(p));
       const defenseCards = (state.zeroDay.defense && state.zeroDay.defense.cards || []).filter(Boolean);
       const rating = (state.zeroDay.pvp && state.zeroDay.pvp.rating) || 1000;
+      // v3.0.0: 프로토콜 효과 적용
+      const protoEff = getZdProtocolEffectSum();
+      // BREAKER: 침투 +15% (공격에 적용)
+      // OVERLORD: 모든 효과 +10% (전체 적용)
+      const attackBonusMult = (1 + (protoEff.infiltrateSuccessBonus || 0)) * (1 + (protoEff.allCommandBonus || 0));
+      // SHROUD: extractionShield 1 (방어에 +실드)
+      // PHANTOM: 정찰 -25% 탐지 (방어 보너스로 변환)
+      const defenseBonusMult = (1 + (protoEff.allCommandBonus || 0));
+      const shieldBonus = (protoEff.extractionShield || 0) * 8;
       // 공격력: 코드파워 + cpu/gpu 티어 + 프로토콜 보너스 + 약간의 랜덤
-      const attackPower = codePower * 1.2 + cpuTier * 5 + gpuTier * 4 + protocols.length * 8;
-      // 방어력: 슬롯 수 × 12 + 장착 카드 수 × 8 + 프로토콜 보너스
-      const defensePower = (state.zeroDay.defense.slots || 3) * 12 + defenseCards.length * 8 + protocols.length * 6;
+      const attackPower = (codePower * 1.2 + cpuTier * 5 + gpuTier * 4 + protocols.length * 8) * attackBonusMult;
+      // 방어력: 슬롯 수 × 12 + 장착 카드 수 × 8 + 프로토콜 보너스 + 실드
+      const defensePower = ((state.zeroDay.defense.slots || 3) * 12 + defenseCards.length * 8 + protocols.length * 6 + shieldBonus) * defenseBonusMult;
       return { rating, attackPower, defensePower, protocols, defenseCards };
     }
 
@@ -5966,6 +5995,7 @@ function applyLanguageToUI(){
       renderCodeList();
       renderCodeDetail();
       renderStagePanel();
+      scheduleSilentSave();
     }
 
     function upgradeSelectedCode() {
@@ -5991,6 +6021,7 @@ function applyLanguageToUI(){
       renderCodeDetail();
       renderStagePanel();
       checkMissions('general');
+      scheduleSilentSave();
     }
 
     function evolveSelectedCode() {
@@ -6028,6 +6059,7 @@ function applyLanguageToUI(){
       renderCodeDetail();
       renderStagePanel();
       checkMissions('general');
+      scheduleSilentSave();
     }
 
     function shardEnhanceSelectedCode() {
@@ -6486,6 +6518,10 @@ function applyLanguageToUI(){
 
     function runScanAnimation(totalDuration, onDone) {
       if (scanRunning) return;
+      if (!scanOverlay || !scanProgressInner || !scanText) {
+        onDone && onDone();
+        return;
+      }
       scanRunning = true;
       scanOverlay.classList.add('active');
       scanText.textContent = '';
@@ -6660,7 +6696,7 @@ function applyLanguageToUI(){
           }
         }
 
-        renderStagePanel();
+        refreshProgressUiAndSave();
       });
     }
 
@@ -6885,6 +6921,7 @@ function applyLanguageToUI(){
 
       checkAchievements('hack');
       checkMissions('general');
+      refreshProgressUiAndSave();
     }
 
     function upgradeCpu() {
@@ -8509,12 +8546,7 @@ function applyLanguageToUI(){
       try { claimPassTierReward(tier); } catch(ex) { console.warn('[Pass]', ex); }
     });
 
-    // Season shop buy delegation
-    bind(document, 'click', (e) => {
-      const btn = e.target.closest && e.target.closest('[data-season-buy]');
-      if (!btn) return;
-      try { buySeasonShopItem(btn.dataset.seasonBuy); } catch(ex) { console.warn('[SeasonShop]', ex); }
-    });
+    // v3.0.0: Season shop buy delegation 제거됨 (시즌 상점 → COIN 상점으로 통합)
 
     // OPS shop buy delegation
     bind(document, 'click', (e) => {

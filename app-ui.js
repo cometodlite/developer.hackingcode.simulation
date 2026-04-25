@@ -275,6 +275,7 @@
   const statusTitle = document.getElementById('titleStatus');
   const statusBox = statusTitle ? statusTitle.nextElementSibling : left.querySelector('.stat-box');
   const shopTitle = document.getElementById('titleShop');
+  const shopTypeTabs = document.getElementById('shopTypeTabs');
   const shopSortRow = left.querySelector('.shop-sort-row');
   const shopList = document.getElementById('shopList');
   const actionBox = document.getElementById('titleActions') ? document.getElementById('titleActions').closest('.stat-box') : centerInner.querySelector('.stat-box');
@@ -313,7 +314,7 @@
       `);
     }
   }
-  [shopTitle, shopSortRow, shopList].forEach(el => {
+  [shopTitle, shopTypeTabs, shopSortRow, shopList].forEach(el => {
     if(el && el.parentElement !== views.shop) views.shop.appendChild(el);
   });
   if(codeRow){
