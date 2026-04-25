@@ -2696,30 +2696,35 @@ function applyLanguageToUI(){
     }
 
     // PROGRESS 난이도 4종 정의
+    // v3.0.0: PROGRESS 난이도 — 스펙 기준 picks 3/4/5/6, 보상 배율 0.75/1.0/1.25/1.5
     const PROGRESS_TIERS = {
       foundation: {
         id: 'foundation', ko: '기초', en: 'Foundation',
         desc: '입문용 구성. 쉬운 목표 위주로 주간 루틴을 익힙니다.',
         descEn: 'Beginner config. Focus on easy goals to learn the weekly routine.',
-        picks: { normal: 3, medium: 1, hard: 0 }
+        picks: { normal: 3, medium: 0, hard: 0 }, // 총 3개
+        rewardMult: 0.75
       },
       apprentice: {
         id: 'apprentice', ko: '견습', en: 'Apprentice',
         desc: '기본+중급 혼합. 균형 잡힌 주간 도전입니다.',
         descEn: 'Normal+Medium mix. A balanced weekly challenge.',
-        picks: { normal: 2, medium: 2, hard: 0 }
+        picks: { normal: 2, medium: 2, hard: 0 }, // 총 4개
+        rewardMult: 1.0
       },
       advanced: {
         id: 'advanced', ko: '심화', en: 'Advanced',
         desc: '중급+고급 위주. 고점수를 노릴 수 있습니다.',
         descEn: 'Medium+Hard focus. Aim for higher scores.',
-        picks: { normal: 1, medium: 2, hard: 2 }
+        picks: { normal: 1, medium: 2, hard: 2 }, // 총 5개
+        rewardMult: 1.25
       },
       expert: {
         id: 'expert', ko: '전문가', en: 'Expert',
         desc: '전문가 구성. 고급 목표 중심의 고난도 주간 도전.',
         descEn: 'Expert config. Hard-goal-heavy weekly challenge.',
-        picks: { normal: 0, medium: 2, hard: 3 }
+        picks: { normal: 0, medium: 3, hard: 3 }, // 총 6개
+        rewardMult: 1.5
       }
     };
 
@@ -2856,22 +2861,37 @@ function applyLanguageToUI(){
       return `${days}일 ${hours}시간 ${mins}분`;
     }
 
+    // v3.0.0: pool 기준 패스 포인트 (스펙: 일반 80, 중간 140, 어려움 240)
+    const WEEKLY_PASS_POINTS_BY_POOL = { normal: 80, medium: 140, hard: 240 };
+
     function claimWeeklyGoal(goalId) {
       ensureWeeklyChallengeDefaults();
       const def = getSelectedWeeklyGoal(goalId);
       if (!def || state.weeklyChallenge.claimed[def.id] || !isWeeklyGoalComplete(def)) return;
       state.weeklyChallenge.claimed[def.id] = true;
-      state.weeklyChallenge.score = (state.weeklyChallenge.score || 0) + def.score;
-      state.credits += def.credits;
-      state.stats.creditsEarnedTotal = (state.stats.creditsEarnedTotal || 0) + def.credits;
-      state.items.weeklyToken = (state.items.weeklyToken || 0) + def.tokens;
-        addPassPoints(def.passPoints || 80);
-        state.stats.weeklyGoalClaimCount = (state.stats.weeklyGoalClaimCount || 0) + 1;
+
+      // v3.0.0: PROGRESS 난이도 보상 배율 적용
+      const tier = getProgressTier();
+      const mult = tier.rewardMult || 1.0;
+
+      const credits = Math.max(1, Math.round((def.credits || 0) * mult));
+      const tokens  = Math.max(0, Math.round((def.tokens || 0) * mult));
+      const score   = Math.max(0, Math.round((def.score || 0) * mult));
+      // pool 기준 패스 포인트 × 난이도 배율
+      const basePP  = def.passPoints || WEEKLY_PASS_POINTS_BY_POOL[def.pool] || 80;
+      const pp      = Math.max(1, Math.round(basePP * mult));
+
+      state.weeklyChallenge.score = (state.weeklyChallenge.score || 0) + score;
+      state.credits += credits;
+      state.stats.creditsEarnedTotal = (state.stats.creditsEarnedTotal || 0) + credits;
+      state.items.weeklyToken = (state.items.weeklyToken || 0) + tokens;
+      addPassPoints(pp);
+      state.stats.weeklyGoalClaimCount = (state.stats.weeklyGoalClaimCount || 0) + 1;
       playSfx('achievement');
       const title = localizeWeekly(def, 'title');
-      log(`[WEEKLY CLAIM] ${title} (+${def.score} score, +${def.tokens} token, +${def.credits} credits)`, 'system');
+      log(`[WEEKLY CLAIM] ${title} (+${score} score, +${tokens} token, +${credits} credits, +${pp}pp · ${tier.ko || tier.id} ×${mult})`, 'system');
       showToast(`WEEKLY CLAIM: ${title}`, 'achievement');
-      emitActivity('weekly_goal_claimed', { value: def.score, refId: def.id });
+      emitActivity('weekly_goal_claimed', { value: score, refId: def.id });
       renderWeeklyPanel();
       updateStatsUI();
       saveGame(true);
@@ -2884,18 +2904,26 @@ function applyLanguageToUI(){
       if (!allClaimed || state.weeklyChallenge.bonusClaimed) return;
       const weekKey = state.weeklyChallenge.weekKey;
       state.weeklyChallenge.bonusClaimed = true;
-      state.weeklyChallenge.score = (state.weeklyChallenge.score || 0) + 700;
+
+      // v3.0.0: 올클리어 보너스 — 400pp + PROGRESS 난이도 배율
+      const tier = getProgressTier();
+      const mult = tier.rewardMult || 1.0;
+      const score = Math.max(0, Math.round(700 * mult));
+      const tokens = Math.max(1, Math.round(5 * mult));
+      const pp = Math.max(1, Math.round(400 * mult));
+
+      state.weeklyChallenge.score = (state.weeklyChallenge.score || 0) + score;
       state.weeklyChallenge.badges[weekKey] = {
         id: `weekly-${weekKey}`,
         title: `WEEKLY OPS ${weekKey}`,
         claimedAt: Date.now()
       };
       state.stats.weeklyAllClearCount = (state.stats.weeklyAllClearCount || 0) + 1;
-      state.items.weeklyToken = (state.items.weeklyToken || 0) + 5;
-        addPassPoints(200);
-        state.stats.weeklyGoalClaimCount = (state.stats.weeklyGoalClaimCount || 0) + 1;
+      state.items.weeklyToken = (state.items.weeklyToken || 0) + tokens;
+      addPassPoints(pp);
+      state.stats.weeklyGoalClaimCount = (state.stats.weeklyGoalClaimCount || 0) + 1;
       playSfx('achievement');
-      log(`[WEEKLY ALL CLEAR] ${weekKey} (+700 score, Weekly Token +5)`, 'system');
+      log(`[WEEKLY ALL CLEAR] ${weekKey} (+${score} score, Weekly Token +${tokens}, +${pp}pp · ${tier.ko || tier.id} ×${mult})`, 'system');
       showToast(getLang() === 'en' ? 'Weekly all clear badge acquired' : '주간 올클리어 배지 획득', 'achievement');
       emitActivity('weekly_all_clear', { value: 700, refId: weekKey });
       renderWeeklyPanel();
@@ -2915,14 +2943,16 @@ function applyLanguageToUI(){
           <span class="progress-tier-note">${isEn ? '(applied next reset)' : '(다음 리셋 시 적용)'}</span>
         </div>
         <div class="progress-tier-grid">
-          ${Object.values(PROGRESS_TIERS).map(tier => `
+          ${Object.values(PROGRESS_TIERS).map(tier => {
+            const totalPicks = (tier.picks.normal||0) + (tier.picks.medium||0) + (tier.picks.hard||0);
+            return `
             <button type="button" class="progress-tier-btn ${tier.id === currentTier.id ? 'active' : ''}"
               data-progress-tier="${tier.id}">
               <strong>${isEn ? tier.en : tier.ko}</strong>
               <span>${isEn ? tier.descEn : tier.desc}</span>
-              <span class="progress-tier-picks">N:${tier.picks.normal} M:${tier.picks.medium} H:${tier.picks.hard}</span>
+              <span class="progress-tier-picks">${isEn ? 'Goals' : '목표'} ${totalPicks} · ${isEn ? 'Reward' : '보상'} ×${tier.rewardMult || 1.0}</span>
             </button>
-          `).join('')}
+          `;}).join('')}
         </div>
       `;
     }

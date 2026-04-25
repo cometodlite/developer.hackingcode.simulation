@@ -1,9 +1,13 @@
 (function(){
   const CLOUD_COLLECTION = 'saves';
   const USERS_COLLECTION = 'users';
+  // v3.0.0: 클라우드 쓰기 throttle (Firebase 비용/할당량 보호)
+  const CLOUD_SAVE_THROTTLE_MS = 30000; // 30초
   let authUser = null;
   let bridgeReady = false;
   let pendingInitialSync = false;
+  let lastCloudSaveAt = 0;
+  let pendingCloudSaveTimer = null;
 
   function bridge(){ return window.HCSIG_BRIDGE; }
   function auth(){ return window.HCSIG_AUTH; }
@@ -184,13 +188,62 @@
     }
   });
 
+  // v3.0.0: 클라우드 저장 throttle 헬퍼
+  // - silent autosave는 30초 throttle (할당량 보호)
+  // - 수동/중요 저장은 즉시 실행
+  async function throttledCloudSave(reason, isCritical){
+    if (!canUseCloud()) return;
+    const now = Date.now();
+
+    // 중요 저장: 즉시 실행
+    if (isCritical) {
+      if (pendingCloudSaveTimer) {
+        clearTimeout(pendingCloudSaveTimer);
+        pendingCloudSaveTimer = null;
+      }
+      try {
+        await saveCloud(reason);
+        lastCloudSaveAt = Date.now();
+      } catch (err) {
+        auth().setStatus('클라우드 저장 실패: ' + (err.message || err));
+      }
+      return;
+    }
+
+    // 일반 autosave: throttle
+    const elapsed = now - lastCloudSaveAt;
+    if (elapsed >= CLOUD_SAVE_THROTTLE_MS) {
+      // throttle 통과 — 즉시 저장
+      try {
+        await saveCloud(reason);
+        lastCloudSaveAt = Date.now();
+      } catch (err) {
+        auth().setStatus('자동 클라우드 저장 실패: ' + (err.message || err));
+      }
+    } else {
+      // throttle 안 됨 — 다음 쓰기 가능 시점에 한 번만 예약
+      if (pendingCloudSaveTimer) return; // 이미 예약된 게 있으면 무시
+      const waitMs = CLOUD_SAVE_THROTTLE_MS - elapsed;
+      pendingCloudSaveTimer = setTimeout(async () => {
+        pendingCloudSaveTimer = null;
+        if (!canUseCloud()) return;
+        try {
+          await saveCloud('autosave-throttled');
+          lastCloudSaveAt = Date.now();
+        } catch (err) {
+          auth().setStatus('지연 클라우드 저장 실패: ' + (err.message || err));
+        }
+      }, waitMs);
+    }
+  }
+
   window.addEventListener('hcsig:save', async (event)=>{
     if (!canUseCloud()) return;
-    try {
-      await saveCloud(event.detail && event.detail.silent ? 'autosave' : 'local-save');
-    } catch (err) {
-      auth().setStatus('자동 클라우드 저장 실패: ' + (err.message || err));
-    }
+    const isSilent = !!(event.detail && event.detail.silent);
+    const isCritical = !!(event.detail && event.detail.critical);
+    const reason = isSilent ? 'autosave' : 'local-save';
+    // 수동(non-silent) 저장이거나 critical 플래그가 있으면 즉시
+    await throttledCloudSave(reason, isCritical || !isSilent);
   });
 
   if (document.readyState === 'loading') {
