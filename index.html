@@ -542,11 +542,9 @@
             <button id="btnExportSave" title="현재 저장 데이터를 JSON 파일로 내보냅니다.">내보내기</button>
             <button id="btnImportSaveFile" title="JSON 저장 파일을 불러옵니다.">파일 불러오기</button>
           </div>
-          <div style="margin-top:8px;">
-            <div class="small" id="importTextTitle">텍스트로 불러오기</div>
-            <textarea id="importSaveText" rows="3" style="width:100%; font-size:11px; margin-top:4px;" placeholder="여기에 JSON을 붙여넣고 불러오기를 누르세요."></textarea>
-            <button id="btnImportSaveText" type="button" style="margin-top:4px;">텍스트 불러오기</button>
-          </div>
+          <!-- 텍스트 붙여넣기 불러오기 — v3.0.0 제거됨. 파일 불러오기 사용 -->
+          <textarea id="importSaveText" hidden></textarea>
+          <button id="btnImportSaveText" type="button" hidden></button>
           <div class="small" style="margin-top:6px;" id="saveHelp">
             · 저장 위치: 클라우드 계정<br/>
             · 브라우저 내부 저장은 자동 캐시와 기존 세이브 이전에만 사용됩니다.

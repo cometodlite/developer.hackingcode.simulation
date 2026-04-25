@@ -362,49 +362,7 @@
 		        <div class="stage-chapter-list" id="stageChapterList" aria-label="Data Tower chapters"></div>
 		      </section>
 	      <section class="lab-panel" data-lab-panel="zero">
-	        <span class="badge">LIVE MODE</span>
-	        <h3>ZERO-DAY</h3>
-	        <p>정식 침투 엔진이 열렸습니다. 탐지 게이지가 100%에 닿기 전에 핵심 노드를 돌파하고 신호를 회수하세요.</p>
-	        <div class="zero-day-flow">
-	          <article><strong>준비</strong><span>코드 빌드와 CPU/GPU 성향을 맞춥니다.</span></article>
-	          <article><strong>침투</strong><span>탐지 게이지가 오르기 전 핵심 노드를 돌파합니다.</span></article>
-	          <article><strong>탈출</strong><span>획득한 신호를 정리하고 보상을 회수합니다.</span></article>
-	        </div>
-	        <div class="zero-day-summary" id="zeroDaySummary">
-	          <div><span>BEST DEPTH</span><strong>0 / 12</strong></div>
-	          <div><span>BEST SCORE</span><strong>0</strong></div>
-	          <div><span>RUNS</span><strong>0</strong></div>
-	          <div><span>SIGNAL</span><strong>0</strong></div>
-	        </div>
-	        <div class="zero-day-mode-grid" id="zeroDayModeGrid" aria-label="Zero-day modes">
-	          <article class="zero-day-mode-card" data-zero-day-mode-card="single">
-	            <div class="zero-day-mode-head">
-	              <span class="badge">SINGLE</span>
-	              <strong>싱글모드</strong>
-	            </div>
-	            <p>안정적인 단독 침투입니다. 기본 흐름을 익히고 개인 기록과 보상 회수에 집중합니다.</p>
-	            <div class="zero-day-mode-meta">
-	              <span>개인 기록 중심</span>
-	              <span>최고 깊이</span>
-	              <span>최대 보상</span>
-	            </div>
-	            <button type="button" data-zero-day-start="single">싱글 침투 시작</button>
-	          </article>
-	          <article class="zero-day-mode-card" data-zero-day-mode-card="compete">
-	            <div class="zero-day-mode-head">
-	              <span class="badge">COMPETE</span>
-	              <strong>경쟁모드</strong>
-	            </div>
-	            <p>점수형 침투입니다. 탐지 압박이 높지만 깊이, 속도, 회수 신호가 더 큰 점수로 환산됩니다.</p>
-	            <div class="zero-day-mode-meta">
-	              <span>점수 경쟁</span>
-	              <span>탐지 압박 증가</span>
-	              <span>고효율 회수</span>
-	            </div>
-	            <button type="button" data-zero-day-start="compete">경쟁 침투 시작</button>
-	          </article>
-	        </div>
-	        <div class="zero-day-run-panel" id="zeroDayRunPanel"></div>
+	        <div id="zeroDayPanel"></div>
 	      </section>
 	      <section class="lab-panel" data-lab-panel="coming">
 	        <span class="badge">ROADMAP</span>
@@ -425,6 +383,10 @@
         const tab = btn.dataset.labTab || 'stage';
         labTabs.forEach(item => item.classList.toggle('active', item === btn));
         labPanels.forEach(panel => panel.classList.toggle('active', panel.dataset.labPanel === tab));
+        // Notify app-core to re-render the ZD panel when zero tab is selected
+        if (tab === 'zero') {
+          try { document.dispatchEvent(new CustomEvent('hcsig:zd-tab-open')); } catch(e) {}
+        }
       });
     });
   }

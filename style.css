@@ -1930,7 +1930,10 @@ body.app-shell-ui button:active{
   font-size:12px;
 }
 .app-codes-layout > .stat-box.resizable-box{
-  display:none;
+  /* detail panel — always visible in codes view */
+  display:flex;
+  flex-direction:column;
+  min-width:0;
 }
 .app-codes-layout{
   align-items:stretch;

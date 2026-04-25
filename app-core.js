@@ -2202,6 +2202,8 @@ function applyLanguageToUI(){
     const tabLogs = document.getElementById('tabLogs');
     const tabSettings = document.getElementById('tabSettings');
     const tabSave = document.getElementById('tabSave');
+    const tabCredits = document.getElementById('tabCredits');
+    const tabManual = document.getElementById('tabManual');
 
     const updateVersionTitle = document.getElementById('updateVersionTitle');
     const updateLinesList = document.getElementById('updateLinesList');
@@ -6676,7 +6678,9 @@ function applyLanguageToUI(){
         live: tabLiveNet,
         rank: tabRank,
         settings: tabSettings,
-        save: tabSave
+        save: tabSave,
+        credits: tabCredits,
+        manual: tabManual
       };
       const activeTab = panelMap[tabName] ? tabName : 'codex';
       Object.keys(panelMap).forEach(name => {
@@ -7493,6 +7497,9 @@ function applyLanguageToUI(){
     bind(document, 'hcsig:lab-ready', () => {
       renderStagePanel();
       renderWeeklyPanel();
+      renderZeroDayPanel();
+    });
+    bind(document, 'hcsig:zd-tab-open', () => {
       renderZeroDayPanel();
     });
     bind(window, 'hcsig:language-applied', () => {
