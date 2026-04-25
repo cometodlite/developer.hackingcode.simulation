@@ -3356,6 +3356,11 @@ function applyLanguageToUI(){
       if (state.energy <= 0) {
         state.energy = 0;
         unlockAchievement('energy_zero');
+        // 방전 습관 / 한계 돌파 미션용 플래그 기록
+        state.missionProgress.weekly.energy0Reached = true;
+        state.missionProgress.month.energy0Reached  = true;
+        checkMissions('weekly');
+        checkMissions('month');
       }
 
       if (state.energy < state.energyMax && state.energyTimerMs <= 0) {
@@ -5854,8 +5859,13 @@ function applyLanguageToUI(){
         state.missionProgress.weekly.extremeHackSuccess = 0;
         state.missionProgress.weekly.shopPurchases = 0;
         state.missionProgress.weekly.energySpent = 0;
+        state.missionProgress.weekly.energy0Reached = false;
         state.missionProgress.weekly.levelReached = state.level;
         state.missionProgress.weekly.completed = {};
+      }
+      // 기존 세이브에 energy0Reached 누락 시 기본값 보장
+      if (state.missionProgress.weekly.energy0Reached === undefined) {
+        state.missionProgress.weekly.energy0Reached = false;
       }
 
       if (state.missionProgress.month.lastResetMonth !== monthKey) {
@@ -5867,8 +5877,12 @@ function applyLanguageToUI(){
         state.missionProgress.month.extremeHackSuccess = 0;
         state.missionProgress.month.shopPurchases = 0;
         state.missionProgress.month.energySpent = 0;
+        state.missionProgress.month.energy0Reached = false;
         state.missionProgress.month.levelReached = state.level;
         state.missionProgress.month.completed = {};
+      }
+      if (state.missionProgress.month.energy0Reached === undefined) {
+        state.missionProgress.month.energy0Reached = false;
       }
 
       if (!state.missionProgress.general) {
@@ -5893,6 +5907,7 @@ function applyLanguageToUI(){
         if (type === 'extremeHackSuccess') return prog.extremeHackSuccess || 0;
         if (type === 'shopPurchases') return prog.shopPurchases || 0;
         if (type === 'creditsEarnedTotal') return state.stats.creditsEarnedTotal || 0;
+        if (type === 'energy0Flag') return prog.energy0Reached ? 1 : 0;
         return 0;
       }
 
@@ -5928,21 +5943,7 @@ function applyLanguageToUI(){
       defs.forEach(def => {
         if (prog.completed[def.id]) return;
 
-        if (scope === 'month' && def.type === 'energy0Flag') {
-          if (state.energy === 0) {
-            prog.completed[def.id] = true;
-            state.credits += def.rewardCredits;
-            state.stats.creditsEarnedTotal += def.rewardCredits;
-            state.stats.missionsCompletedTotal++;
-            log(
-              `[미션 완료] MONTH - ${def.name} (보상: 크레딧 +${def.rewardCredits})`,
-              'system'
-            );
-          
-            showToast(t('missionDoneToast', { name: localizeMissionName(def), reward: t('missionDoneCredits', { v: def.rewardCredits }) }), 'mission');
-}
-          return;
-        }
+        // energy0Flag는 getMissionProgressValue에서 통합 처리 (prog.energy0Reached 플래그 사용)
 
         const value = getMissionProgressValue(scope, def.type);
         if (value >= def.target) {
