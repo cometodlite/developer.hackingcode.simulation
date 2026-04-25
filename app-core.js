@@ -899,6 +899,8 @@ function applyLanguageToUI(){
         zeroDayOneDaySpentTotal: 0,
         coinEarnedTotal: 0,
         coinSpentTotal: 0,
+        oneDaySpentTotal: 0,
+        oneDayBoostsUsed: 0,
         passTierReached: 0,
         gpuUpgradeCount: 0,
         weeklyAllClearCount: 0,
@@ -1616,6 +1618,113 @@ function applyLanguageToUI(){
         category: 'UTILITY',
         buy: () => {
           levelUp();
+        }
+      }
+    ];
+
+    // COIN SHOP 아이템 (시즌 보상, 희귀 아이템)
+    const coinShopItems = [
+      {
+        id: 'coin_seasonal_bundle_1',
+        name: '시즌 번들 I',
+        desc: '경험치 +200, 토큰 +5. 시즌 종료 시 교환 가능한 시즌 전용 패키지.',
+        cost: 150,
+        rarity: 'RARE',
+        category: 'ECONOMY',
+        buy: () => {
+          state.exp = (state.exp || 0) + 200;
+          state.items.weeklyToken = (state.items.weeklyToken || 0) + 5;
+          state.stats.expTotal = (state.stats.expTotal || 0) + 200;
+        }
+      },
+      {
+        id: 'coin_seasonal_bundle_2',
+        name: '시즌 번들 II',
+        desc: '경험치 +500, 토큰 +12, 크레딧 +1000. 상위 시즌 패키지.',
+        cost: 350,
+        rarity: 'EPIC',
+        category: 'ECONOMY',
+        buy: () => {
+          state.exp = (state.exp || 0) + 500;
+          state.items.weeklyToken = (state.items.weeklyToken || 0) + 12;
+          state.credits = (state.credits || 0) + 1000;
+          state.stats.expTotal = (state.stats.expTotal || 0) + 500;
+        }
+      },
+      {
+        id: 'coin_code_shard_boost',
+        name: '코드 조각 부스터',
+        desc: '코드 조각 +50. 코드 강화에 필요한 조각을 빠르게 모을 수 있습니다.',
+        cost: 200,
+        rarity: 'EPIC',
+        category: 'SYSTEM',
+        buy: () => {
+          state.codeShardsStored = (state.codeShardsStored || 0) + 50;
+          state.stats.codeShardsTotal = (state.stats.codeShardsTotal || 0) + 50;
+        }
+      },
+      {
+        id: 'coin_prestige_reset',
+        name: '프레스티지 리셋',
+        desc: 'ZERO-DAY 취약점 +3, 모든 진행도 초기화(크레딧/경험치 보상).',
+        cost: 100,
+        rarity: 'LEGENDARY',
+        category: 'SYSTEM',
+        once: true,
+        buy: () => {
+          state.items.zeroDayVulnerability = (state.items.zeroDayVulnerability || 0) + 3;
+          // 프레스티지 리셋 로직은 별도 구현 필요
+          showToast(getLang() === 'en' ? 'Prestige reset unlocked (feature coming)' : '프레스티지 기능 준비 중입니다.', 'shop');
+        }
+      }
+    ];
+
+    // ONEDAY SHOP 아이템 (ZERO-DAY 성장 관련)
+    const oneDayShopItems = [
+      {
+        id: 'oneday_vuln_shard_x5',
+        name: '취약점 조각 x5',
+        desc: '취약점 조각 +5. 취약점 제작에 필요한 조각입니다.',
+        cost: 40,
+        rarity: 'COMMON',
+        category: 'SYSTEM',
+        buy: () => {
+          state.items.zeroDayVulnerabilityShard = (state.items.zeroDayVulnerabilityShard || 0) + 5;
+        }
+      },
+      {
+        id: 'oneday_vuln_shard_x10',
+        name: '취약점 조각 x10',
+        desc: '취약점 조각 +10. 대량 구매 옵션.',
+        cost: 75,
+        rarity: 'UNCOMMON',
+        category: 'SYSTEM',
+        buy: () => {
+          state.items.zeroDayVulnerabilityShard = (state.items.zeroDayVulnerabilityShard || 0) + 10;
+        }
+      },
+      {
+        id: 'oneday_node_scan_boost',
+        name: '노드 스캔 부스터',
+        desc: 'ZERO-DAY 노드 스캔 정확도 +20%. 다음 PVE 런에서만 적용됩니다.',
+        cost: 25,
+        rarity: 'COMMON',
+        category: 'SYSTEM',
+        buy: () => {
+          modifiers.zdNodeScanAccuracy = (modifiers.zdNodeScanAccuracy || 1.0) + 0.2;
+          state.stats.oneDayBoostsUsed = (state.stats.oneDayBoostsUsed || 0) + 1;
+        }
+      },
+      {
+        id: 'oneday_extraction_shield',
+        name: '추출 보호막',
+        desc: '추출 시 탐지 +30% 감소. 스팀 상태에서 데이터를 더 안전하게 추출합니다.',
+        cost: 35,
+        rarity: 'UNCOMMON',
+        category: 'SYSTEM',
+        buy: () => {
+          modifiers.zdExtractionDetectionReduction = (modifiers.zdExtractionDetectionReduction || 0) + 0.3;
+          state.stats.oneDayBoostsUsed = (state.stats.oneDayBoostsUsed || 0) + 1;
         }
       }
     ];
@@ -2588,6 +2697,8 @@ function applyLanguageToUI(){
       state.items = state.items || {};
       state.items.energyPack = state.items.energyPack || 0;
       state.items.weeklyToken = state.items.weeklyToken || 0;
+      state.items.coin = state.items.coin || 0;
+      state.items.oneDay = state.items.oneDay || 0;
       state.weeklyChallenge = state.weeklyChallenge || {};
       const wc = state.weeklyChallenge;
       wc.progress = wc.progress && typeof wc.progress === 'object' ? wc.progress : {};
@@ -5488,8 +5599,24 @@ function applyLanguageToUI(){
         LEGENDARY: 5
       };
 
+      // SHOP TYPE 선택 (credits/coin/oneday)
+      state.ui = state.ui || {};
+      const shopType = state.ui.shopType || 'credits';
+      let currentShopItems = shopItems;
+      let currencySymbol = '💰';
+      let currencyName = 'Credits';
+      if (shopType === 'coin') {
+        currentShopItems = coinShopItems;
+        currencySymbol = '🪙';
+        currencyName = 'COIN';
+      } else if (shopType === 'oneday') {
+        currentShopItems = oneDayShopItems;
+        currencySymbol = '⏰';
+        currencyName = 'OneDay';
+      }
+
       const baseOrder = new Map();
-      shopItems.forEach((it, idx) => baseOrder.set(it.id, idx));
+      currentShopItems.forEach((it, idx) => baseOrder.set(it.id, idx));
 
       const mode = (state.ui && state.ui.shopSortMode) ? state.ui.shopSortMode : 'update';
       const categoryMode = (state.ui && state.ui.shopCategory) ? state.ui.shopCategory : 'all';
@@ -5505,10 +5632,17 @@ function applyLanguageToUI(){
         }
       }
 
+      // SHOP TYPE 탭 업데이트
+      const shopTypeTabButtons = document.querySelectorAll('.shop-type-tab');
+      if (shopTypeTabButtons && shopTypeTabButtons.length) {
+        shopTypeTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.shopType === shopType));
+      }
+
+      // 카테고리 탭 업데이트
       if (shopCategoryTabButtons && shopCategoryTabButtons.length) {
         shopCategoryTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.category === categoryMode));
       }
-      const items = shopItems.filter(item => categoryMode === 'all' ? true : item.category === categoryMode);
+      const items = currentShopItems.filter(item => categoryMode === 'all' ? true : item.category === categoryMode);
 
       if (mode === 'rarity') {
         items.sort((a, b) => {
@@ -5567,13 +5701,13 @@ function applyLanguageToUI(){
 
         const costSpan = document.createElement('span');
         costSpan.className = 'shop-cost';
-        costSpan.textContent = `💰 ${item.cost}`;
+        costSpan.textContent = `${currencySymbol} ${item.cost}`;
         // limit badge (daily/once)
         const lim = getShopRemaining(item.id);
         if (lim) {
           const badge = document.createElement('span');
           badge.className = 'shop-limit-badge';
-          badge.textContent = `${lim.used}/${lim.limit} (${localizeShopLimitLabel(lim)})`; 
+          badge.textContent = `${lim.used}/${lim.limit} (${localizeShopLimitLabel(lim)})`;
           badge.style.marginLeft = '8px';
           badge.style.opacity = '0.85';
           costSpan.appendChild(badge);
@@ -5607,18 +5741,53 @@ function applyLanguageToUI(){
             return;
           }
 
-          if (state.credits < item.cost) {
-            log(t('shopLog', { msg: `${t('notEnoughCredits')} (${getLang()==='en' ? 'Need' : '필요'}: ${item.cost})` }), 'shop');
-            showToast(t('notEnoughCredits'), 'shop');
-            return;
+          // 통화별 확인
+          let hasEnoughCurrency = false;
+          if (shopType === 'credits') {
+            hasEnoughCurrency = state.credits >= item.cost;
+            if (!hasEnoughCurrency) {
+              log(t('shopLog', { msg: `${t('notEnoughCredits')} (${getLang()==='en' ? 'Need' : '필요'}: ${item.cost})` }), 'shop');
+              showToast(t('notEnoughCredits'), 'shop');
+              return;
+            }
+          } else if (shopType === 'coin') {
+            const coinBalance = state.items.coin || 0;
+            hasEnoughCurrency = coinBalance >= item.cost;
+            if (!hasEnoughCurrency) {
+              const notEnoughMsg = getLang() === 'en' ? `Not enough COIN (Need: ${item.cost})` : `COIN이 부족합니다 (필요: ${item.cost})`;
+              log(t('shopLog', { msg: notEnoughMsg }), 'shop');
+              showToast(notEnoughMsg, 'shop');
+              return;
+            }
+          } else if (shopType === 'oneday') {
+            const oneDayBalance = state.items.oneDay || 0;
+            hasEnoughCurrency = oneDayBalance >= item.cost;
+            if (!hasEnoughCurrency) {
+              const notEnoughMsg = getLang() === 'en' ? `Not enough OneDay (Need: ${item.cost})` : `OneDay가 부족합니다 (필요: ${item.cost})`;
+              log(t('shopLog', { msg: notEnoughMsg }), 'shop');
+              showToast(notEnoughMsg, 'shop');
+              return;
+            }
           }
+
           // 고가/고희귀 구매 확인
           const rr = rarityRank[item.rarity] || 0;
           if (rr >= 4) {
-            const ok = window.confirm(`${itemName} (${item.rarity})\n💰 ${item.cost}`);
+            const ok = window.confirm(`${itemName} (${item.rarity})\n${currencySymbol} ${item.cost}`);
             if (!ok) return;
           }
-          state.credits -= item.cost;
+
+          // 통화 차감
+          if (shopType === 'credits') {
+            state.credits -= item.cost;
+          } else if (shopType === 'coin') {
+            state.items.coin = (state.items.coin || 0) - item.cost;
+            state.stats.coinSpentTotal = (state.stats.coinSpentTotal || 0) + item.cost;
+          } else if (shopType === 'oneday') {
+            state.items.oneDay = (state.items.oneDay || 0) - item.cost;
+            state.stats.oneDaySpentTotal = (state.stats.oneDaySpentTotal || 0) + item.cost;
+          }
+
           item.buy?.();
           ensureModifierDefaults();
           // mark cap usage
@@ -7312,6 +7481,21 @@ function applyLanguageToUI(){
         state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', codeSortMode: 'recent' };
         state.ui.shopSortMode = shopSortSelect.value;
         renderShop();
+      });
+    }
+
+    // SHOP TYPE TABS (CREDITS / COIN / ONEDAY)
+    const shopTypeTabButtons = document.querySelectorAll('.shop-type-tab');
+    if (shopTypeTabButtons && shopTypeTabButtons.length) {
+      shopTypeTabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const nextType = btn.dataset.shopType || 'credits';
+          state.ui = state.ui || { shopSortMode: 'update', shopCategory: 'all', shopType: 'credits' };
+          state.ui.shopType = nextType;
+          shopTypeTabButtons.forEach(tab => tab.classList.toggle('active', tab === btn));
+          renderShop();
+          scheduleSilentSave();
+        });
       });
     }
 

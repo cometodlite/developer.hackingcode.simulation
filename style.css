@@ -1317,6 +1317,34 @@ body.tutorial-open.tutorial-interactive{ overflow:auto; }
 
 
 /* v1.6.13(k1) shop tabs + codex */
+/* SHOP Type Tabs (CREDITS / COIN / ONEDAY) */
+.shop-type-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #243145;
+}
+.shop-type-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  margin-bottom: -2px;
+}
+.shop-type-tab:hover {
+  color: #cbd5e1;
+}
+.shop-type-tab.active {
+  color: #7ecfff;
+  border-bottom-color: #7ecfff;
+}
+
 .shop-category-tabs{
   display:flex;
   flex-wrap:wrap;
