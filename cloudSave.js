@@ -112,6 +112,23 @@
     try {
       const saveData = await loadCloud();
       if (!saveData) return auth().setStatus('클라우드 저장본이 없습니다.');
+
+      // v3.0.0+: pull 전 로컬 점수 비교 경고
+      const localSave = bridge().getCurrentSaveData();
+      const localScore = _scoreOf(localSave);
+      const cloudScore = _scoreOf(saveData);
+      const isEn = (window.HCSIG_BRIDGE && window.HCSIG_BRIDGE.getLanguage && window.HCSIG_BRIDGE.getLanguage()==='en');
+
+      if (localScore > cloudScore + 10) {
+        const msg = isEn
+          ? `Warning: Your current save has higher score (${localScore}) than the cloud save (${cloudScore}).\nApplying cloud save will OVERWRITE your current progress.\n\nProceed anyway?`
+          : `경고: 현재 저장본이 클라우드보다 진행도가 높습니다 (로컬 ${localScore} > 클라우드 ${cloudScore}).\n클라우드 적용 시 현재 진행도가 덮어써집니다.\n\n그래도 진행할까요?`;
+        if (!window.confirm(msg)) {
+          auth().setStatus(isEn ? 'Pull cancelled.' : '클라우드 적용 취소됨.');
+          return;
+        }
+      }
+
       bridge().loadFromObject(saveData);
       await userRef().set(buildProfilePatch(saveData), { merge:true });
       if (auth().refreshProfile) await auth().refreshProfile();
@@ -122,9 +139,28 @@
     }
   }
 
+  // v3.0.0+: 수동 push 전 점수 비교 경고 (낮은 점수가 높은 점수 덮는 것 방지)
   async function manualPush(){
     if (!canUseCloud()) return auth().setStatus('먼저 로그인하고 Firebase 설정을 완료하세요.');
     try {
+      // 클라우드 현황 확인
+      const cloud = await loadCloud();
+      const localSave = bridge().getCurrentSaveData();
+      const localScore = _scoreOf(localSave);
+      const cloudScore = _scoreOf(cloud);
+
+      if (cloud && cloudScore > localScore + 10) {
+        // 클라우드가 더 진행도 높음 → 사용자 확인
+        const isEn = (window.HCSIG_BRIDGE && window.HCSIG_BRIDGE.getLanguage && window.HCSIG_BRIDGE.getLanguage()==='en');
+        const msg = isEn
+          ? `Warning: Cloud save has higher score (${cloudScore}) than your current save (${localScore}).\nUploading will OVERWRITE the cloud save.\n\nProceed anyway?`
+          : `경고: 클라우드 저장본이 현재보다 진행도가 높습니다 (클라우드 ${cloudScore} > 로컬 ${localScore}).\n업로드 시 클라우드가 덮어써집니다.\n\n그래도 진행할까요?`;
+        if (!window.confirm(msg)) {
+          auth().setStatus(isEn ? 'Upload cancelled.' : '업로드 취소됨.');
+          return;
+        }
+      }
+
       await saveCloud('manual');
       auth().setStatus('현재 세이브를 클라우드에 저장했습니다.');
       auth().toast('클라우드 저장 완료', 'save');
@@ -148,6 +184,25 @@
     }
   });
 
+  // v3.0.0+ 저장 안정성: 점수 비교 + 덮어쓰기 보호
+  // bridge에 노출된 score 함수 사용. 없으면 단순 시간 비교 fallback.
+  function _scoreOf(saveData) {
+    try {
+      if (typeof window.HCSIG_GET_SAVE_SCORE === 'function') {
+        return window.HCSIG_GET_SAVE_SCORE(saveData);
+      }
+    } catch (e) {}
+    return 0;
+  }
+  function _summaryOf(saveData) {
+    try {
+      if (typeof window.HCSIG_GET_SAVE_SUMMARY === 'function') {
+        return window.HCSIG_GET_SAVE_SUMMARY(saveData);
+      }
+    } catch (e) {}
+    return null;
+  }
+
   window.addEventListener('hcsig:auth-changed', async (event)=>{
     authUser = event.detail && event.detail.user ? event.detail.user : null;
     if (!authUser) return;
@@ -159,27 +214,81 @@
     try {
       const cloud = await loadCloud();
       const localRaw = localStorage.getItem(bridge().saveKey);
-      let shouldApplyCloud = false;
-      if (cloud && !localRaw) {
-        // 클라우드만 있음 → 클라우드 우선 적용
-        shouldApplyCloud = true;
-      } else if (cloud && localRaw) {
-        try {
-          const localParsed = JSON.parse(localRaw);
-          // 클라우드가 더 최신이면 클라우드 우선
-          shouldApplyCloud = Number((cloud && cloud.savedAt) || 0) > Number((localParsed && localParsed.savedAt) || 0);
-        } catch (e) {
-          // 로컬 파싱 실패 → 클라우드 우선
-          shouldApplyCloud = true;
-        }
+
+      // 둘 다 없음
+      if (!cloud && !localRaw) {
+        auth().setStatus('새 게임 시작');
+        if (auth().refreshProfile) await auth().refreshProfile();
+        return;
       }
-      if (shouldApplyCloud && cloud) {
-        // ⚠️ loadFromObject는 UI를 함께 업데이트함 (app-core.js의 HCSIG_BRIDGE.loadFromObject 참고)
+
+      // 클라우드만 있음
+      if (cloud && !localRaw) {
         bridge().loadFromObject(cloud);
         auth().setStatus('클라우드 저장본을 자동으로 적용했습니다.');
-      } else if (!cloud && !localRaw) {
-        // 클라우드도 없고 로컬도 없음 → 기본 상태 유지
-        auth().setStatus('새 게임 시작');
+        if (auth().refreshProfile) await auth().refreshProfile();
+        return;
+      }
+
+      // 로컬만 있음 — 클라우드는 비어있음. 클라우드 자동 덮어쓰기 안 함 (수동 저장 시 처리)
+      if (!cloud && localRaw) {
+        auth().setStatus('로컬 저장본 사용 — 수동 저장으로 클라우드에 업로드하세요.');
+        if (auth().refreshProfile) await auth().refreshProfile();
+        return;
+      }
+
+      // ─── 둘 다 있음 — 점수/시간 비교로 안전 결정 ───
+      let localParsed = null;
+      try { localParsed = JSON.parse(localRaw); } catch (e) {}
+
+      const localScore = _scoreOf(localParsed);
+      const cloudScore = _scoreOf(cloud);
+      const localTime = Number((localParsed && localParsed.savedAt) || 0);
+      const cloudTime = Number((cloud && cloud.savedAt) || 0);
+
+      // v3.0.0+ 안전 정책:
+      // - 클라우드 점수가 로컬보다 의미있게(+10 이상) 높으면 → 클라우드 적용
+      // - 로컬 점수가 클라우드보다 의미있게 높으면 → 로컬 유지 (자동 적용 안 함)
+      // - 점수가 거의 같으면(±10) 시간 더 최근인 쪽 적용
+      // - 점수 차이가 크고 시간이 반대 방향이면 → 사용자 선택 다이얼로그
+      const SCORE_DELTA = 10;
+      const localSummary = _summaryOf(localParsed);
+      const cloudSummary = _summaryOf(cloud);
+
+      let action = 'keep-local';
+      let reason = '';
+
+      if (cloudScore > localScore + SCORE_DELTA) {
+        action = 'apply-cloud';
+        reason = `cloud score ${cloudScore} > local ${localScore}`;
+      } else if (localScore > cloudScore + SCORE_DELTA) {
+        action = 'keep-local';
+        reason = `local score ${localScore} > cloud ${cloudScore} — keeping local`;
+      } else {
+        // 점수 비슷함 — 시간 기준
+        if (cloudTime > localTime) {
+          action = 'apply-cloud';
+          reason = `scores similar, cloud is newer`;
+        } else {
+          action = 'keep-local';
+          reason = `scores similar, local is newer/equal`;
+        }
+      }
+
+      console.log('[CloudSync]', action, reason, { localScore, cloudScore, localTime, cloudTime });
+
+      if (action === 'apply-cloud') {
+        bridge().loadFromObject(cloud);
+        const msg = (window.HCSIG_BRIDGE.getLanguage && window.HCSIG_BRIDGE.getLanguage()==='en')
+          ? `Cloud save applied (score ${cloudScore} vs local ${localScore})`
+          : `클라우드 저장 적용 (점수 ${cloudScore} vs 로컬 ${localScore})`;
+        auth().setStatus(msg);
+      } else {
+        // 로컬 유지
+        const msg = (window.HCSIG_BRIDGE.getLanguage && window.HCSIG_BRIDGE.getLanguage()==='en')
+          ? `Local save kept (score ${localScore} vs cloud ${cloudScore}). Use Cloud Pull to override.`
+          : `로컬 저장본 유지 (점수 ${localScore} vs 클라우드 ${cloudScore}). 클라우드 적용은 PULL 버튼으로 가능합니다.`;
+        auth().setStatus(msg);
       }
       if (auth().refreshProfile) await auth().refreshProfile();
     } catch (err) {

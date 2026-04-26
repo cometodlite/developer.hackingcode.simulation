@@ -490,6 +490,183 @@ function applyLanguageToUI(){
 }
     const OLD_SAVE_KEY = 'HCSiG_SAVE_v16';
     const LAST_SEEN_VERSION_KEY = 'HCSiG_LAST_SEEN_VERSION';
+    // v3.0.0+: 저장 안정성 패치 — 백업/메타 키
+    // SAVE_KEY는 절대 변경 금지 (사용자 데이터 키 호환성)
+    const SAVE_BACKUP_KEY = 'HCSiG_SAVE_BACKUP';      // 마이그레이션 전 마지막 raw 백업
+    const SAVE_BACKUP_PREV_KEY = 'HCSiG_SAVE_BACKUP_PREV'; // 백업의 백업 (1단계 더)
+    const SAVE_META_KEY = 'HCSiG_SAVE_META';          // 마이그레이션 메타데이터
+
+    // ── v3.0.0+: 저장 데이터 진행도 점수 계산 ──
+    // 더 진행한 save가 덜 진행한 save를 자동으로 덮지 못하도록 비교 기준 제공
+    function getSaveScore(saveData) {
+      try {
+        if (!saveData || typeof saveData !== 'object') return 0;
+        const s = saveData.state || {};
+        const codes = Array.isArray(saveData.ownedCodes) ? saveData.ownedCodes : [];
+        const stats = s.stats || {};
+        let score = 0;
+        // 보유 코드 수 (각 5점)
+        score += codes.length * 5;
+        // OPERATION/LEGENDARY 보유 (각 100점)
+        codes.forEach(c => {
+          if (!c) return;
+          if (c.rarity === 'OPERATION') score += 100;
+          else if (c.rarity === 'LEGENDARY') score += 50;
+          else if (c.rarity === 'EPIC') score += 25;
+          else if (c.rarity === 'RARE') score += 10;
+          // 코드 레벨/sync도 가중치
+          score += Math.max(0, Number(c.level || 0)) * 2;
+          score += Math.max(0, Number(c.syncLevel || 0)) * 3;
+          score += Math.max(0, Number(c.shards || 0)) * 0.2;
+        });
+        // 도감 발견 수 (각 3점)
+        const codex = s.codexFound || stats.codexFound || {};
+        const codexCount = (codex && typeof codex === 'object') ? Object.keys(codex).length : 0;
+        score += codexCount * 3;
+        // 진행도 지표
+        score += Math.max(0, Number(s.level || 0)) * 5;
+        score += Math.max(0, Number(s.exp || 0)) * 0.05;
+        score += Math.max(0, Number(s.credits || 0)) * 0.01;
+        score += Math.max(0, Number(stats.creditsEarnedTotal || 0)) * 0.005;
+        score += Math.max(0, Number(stats.hackSuccessCount || 0)) * 0.5;
+        score += Math.max(0, Number(stats.scanCount || 0)) * 0.2;
+        score += Math.max(0, Number(stats.stageClearCount || 0)) * 2;
+        score += Math.max(0, Number((s.stage && s.stage.highestCleared) || 0)) * 5;
+        // 업적 수
+        const achievements = s.achievements || {};
+        const achievementCount = (achievements && typeof achievements === 'object') ? Object.keys(achievements).length : 0;
+        score += achievementCount * 4;
+        // 재화
+        const items = s.items || {};
+        score += Math.max(0, Number(items.energyPack || 0)) * 0.5;
+        score += Math.max(0, Number(items.coin || 0)) * 0.3;
+        score += Math.max(0, Number(items.oneDay || 0)) * 0.05;
+        score += Math.max(0, Number(items.zeroDayVulnerability || 0)) * 8;
+        score += Math.max(0, Number(items.zeroDayVulnerabilityShard || 0)) * 0.4;
+        score += Math.max(0, Number(items.weeklyToken || 0)) * 0.6;
+        // ZERO-DAY 진행도
+        const zd = s.zeroDay || {};
+        if (zd.onboardingCompleted) score += 10;
+        score += Math.max(0, Number((zd.pve && zd.pve.runs) || 0)) * 1;
+        score += Math.max(0, Number((zd.pve && zd.pve.bestDepth) || 0)) * 2;
+        score += Math.max(0, Number((zd.pve && zd.pve.extracts) || 0)) * 3;
+        score += Math.max(0, Number((zd.pvp && zd.pvp.seasonWins) || 0)) * 4;
+        score += Math.max(0, Number((zd.skins && zd.skins.length) || 0)) * 30;
+        score += Math.max(0, Object.keys(zd.unlocks || {}).length) * 50; // 프로토콜
+        // PASS 진행도
+        const season = s.season || {};
+        score += Math.max(0, Number(season.passTier || 0)) * 8;
+        score += Math.max(0, Number(season.passPoints || 0)) * 0.05;
+        return Math.round(score);
+      } catch (e) {
+        console.warn('[SaveScore] failed:', e);
+        return 0;
+      }
+    }
+
+    // 사람이 읽을 수 있는 요약
+    function getSaveSummary(saveData) {
+      try {
+        const s = (saveData && saveData.state) || {};
+        const codes = (saveData && Array.isArray(saveData.ownedCodes)) ? saveData.ownedCodes : [];
+        const opCount = codes.filter(c => c && c.rarity === 'OPERATION').length;
+        const legCount = codes.filter(c => c && c.rarity === 'LEGENDARY').length;
+        return {
+          score: getSaveScore(saveData),
+          savedAt: saveData && saveData.savedAt ? new Date(saveData.savedAt).toLocaleString() : '-',
+          version: saveData && saveData.version ? saveData.version : '?',
+          level: s.level || 0,
+          credits: s.credits || 0,
+          codeCount: codes.length,
+          operationCount: opCount,
+          legendaryCount: legCount,
+          stageHighest: (s.stage && s.stage.highestCleared) || 0,
+          oneDay: (s.items && s.items.oneDay) || 0,
+          coin: (s.items && s.items.coin) || 0,
+          vuln: (s.items && s.items.zeroDayVulnerability) || 0
+        };
+      } catch (e) { return { score: 0, version: '?' }; }
+    }
+
+    // ── v3.0.0+: 마이그레이션 함수 ──
+    // 1.x / 2.x / 이전 3.0.0 데이터를 현재 구조로 변환. 누락된 필드만 default merge.
+    // 기존 획득/진행 데이터는 절대 삭제하지 않음.
+    function migrateSave(rawSave) {
+      if (!rawSave || typeof rawSave !== 'string') return null;
+      let parsed;
+      try {
+        parsed = JSON.parse(rawSave);
+      } catch (e) {
+        console.warn('[Migrate] parse failed:', e);
+        return null;
+      }
+      if (!parsed || typeof parsed !== 'object') return null;
+
+      // 마이그레이션 표시
+      const fromVersion = parsed.version || parsed.saveVersion || 'unknown';
+
+      // 구조 보정 — state 객체가 없으면 기존 데이터를 state로 감쌈 (legacy)
+      if (!parsed.state && parsed.level !== undefined) {
+        // 매우 오래된 flat 구조 — wrap
+        parsed = {
+          version: fromVersion,
+          savedAt: parsed.savedAt || Date.now(),
+          state: parsed,
+          ownedCodes: parsed.ownedCodes || [],
+          modifiers: parsed.modifiers || {}
+        };
+      }
+
+      // ownedCodes 무결성 — legacy ID mapping
+      // OPERATION 코드 ID가 안 바뀌었지만 안전망으로 매핑 테이블 둠
+      const LEGACY_CODE_ID_MAP = {
+        // 'old_id': 'new_id'
+        'op_meridian': 'operation_meridian',
+        'op_blackout': 'operation_blackout',
+        'OPERATION_MERIDIAN': 'operation_meridian',
+        'OPERATION_BLACKOUT': 'operation_blackout'
+      };
+      if (Array.isArray(parsed.ownedCodes)) {
+        parsed.ownedCodes = parsed.ownedCodes.map(c => {
+          if (!c) return c;
+          if (LEGACY_CODE_ID_MAP[c.id]) {
+            return Object.assign({}, c, { id: LEGACY_CODE_ID_MAP[c.id] });
+          }
+          return c;
+        }).filter(c => c && c.id); // null/invalid 제거
+      }
+
+      // saveVersion 갱신 (내용은 유지)
+      parsed.saveVersion = CURRENT_VERSION;
+
+      return parsed;
+    }
+
+    // ── v3.0.0+: 백업 저장 ──
+    // 마이그레이션 전 raw save를 백업. 이전 백업은 한 단계 더 보관.
+    function pushSaveBackup(rawSave) {
+      if (!rawSave) return;
+      try {
+        const prev = localStorage.getItem(SAVE_BACKUP_KEY);
+        if (prev) {
+          localStorage.setItem(SAVE_BACKUP_PREV_KEY, prev);
+        }
+        localStorage.setItem(SAVE_BACKUP_KEY, rawSave);
+        localStorage.setItem(SAVE_META_KEY, JSON.stringify({
+          backupAt: Date.now(),
+          version: CURRENT_VERSION
+        }));
+      } catch (e) {
+        console.warn('[SaveBackup] failed:', e);
+      }
+    }
+
+    function getSaveBackup() {
+      return localStorage.getItem(SAVE_BACKUP_KEY) || null;
+    }
+    function getSaveBackupPrev() {
+      return localStorage.getItem(SAVE_BACKUP_PREV_KEY) || null;
+    }
 
     // 업데이트 로그
     const updateLogs = [
@@ -7949,19 +8126,40 @@ function applyLanguageToUI(){
 
     function loadGame(rawOverride = null) {
       let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
+      let source = 'main';
       // v1.5.x 저장 데이터 자동 마이그레이션
       if (!raw) {
         raw = localStorage.getItem(OLD_SAVE_KEY);
         if (raw) {
+          // v3.0.0+: 변환 전 backup
+          pushSaveBackup(raw);
           localStorage.setItem(SAVE_KEY, raw);
+          source = 'old-key';
+        }
+      }
+      // v3.0.0+: SAVE_KEY/OLD_SAVE_KEY 모두 없으면 backup에서 복구 시도
+      if (!raw) {
+        const backup = getSaveBackup();
+        if (backup) {
+          console.warn('[LoadGame] main save missing — restoring from backup');
+          raw = backup;
+          localStorage.setItem(SAVE_KEY, raw);
+          source = 'backup';
+          try { showToast(getLang()==='en'?'Save restored from backup.':'백업에서 저장 복구됨.', 'system'); } catch(e) {}
         }
       }
       if (!raw) {
+        // v3.0.0+: default state 로 자동 저장하지 않음 (사용자 행동 후에만 save)
         log(t('noSavedData'), 'system');
         return;
       }
       try {
-        const data = JSON.parse(raw);
+        // v3.0.0+: 마이그레이션 적용 — 기존 raw도 백업 유지
+        const data = migrateSave(raw) || JSON.parse(raw);
+        if (source !== 'backup') {
+          // 정상 로드 — 마지막으로 성공한 raw를 백업
+          try { pushSaveBackup(raw); } catch(e) {}
+        }
         if (data.savedAt) state.lastSavedAt = data.savedAt;
         if (data.state) {
           Object.assign(state, state, data.state);
@@ -8409,8 +8607,22 @@ function applyLanguageToUI(){
     // 내보내기 / 불러오기
     function exportSaveFile() {
       try {
-        const raw = localStorage.getItem(SAVE_KEY);
-        const data = raw ? raw : JSON.stringify({ version: CURRENT_VERSION, state, ownedCodes, modifiers });
+        // v3.0.0+: 현재 state 우선, 없으면 SAVE_KEY raw
+        const live = {
+          version: CURRENT_VERSION,
+          saveVersion: CURRENT_VERSION,
+          savedAt: state.lastSavedAt || Date.now(),
+          state: JSON.parse(JSON.stringify(state)),
+          ownedCodes: JSON.parse(JSON.stringify(ownedCodes)),
+          modifiers: JSON.parse(JSON.stringify(modifiers))
+        };
+        // 요약 메타 포함 (사람이 읽기 위함)
+        live.exportMeta = {
+          summary: getSaveSummary(live),
+          exportedAt: new Date().toISOString(),
+          exportedFrom: navigator.userAgent.slice(0, 80)
+        };
+        const data = JSON.stringify(live, null, 2);
         const blob = new Blob([data], { type: 'application/json;charset=utf-8' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -8418,12 +8630,13 @@ function applyLanguageToUI(){
         const yyyy = d.getFullYear();
         const mm = String(d.getMonth()+1).padStart(2,'0');
         const dd = String(d.getDate()).padStart(2,'0');
-        a.download = `HCSiG_save_${yyyy}${mm}${dd}_${CURRENT_VERSION}.json`;
+        const score = live.exportMeta.summary.score;
+        a.download = `HCSiG_save_${yyyy}${mm}${dd}_v${CURRENT_VERSION}_s${score}.json`;
         document.body.appendChild(a);
         a.click();
         a.remove();
         URL.revokeObjectURL(a.href);
-        showToast(t('exportDone'), 'save');
+        showToast(t('exportDone') + ' · score ' + score, 'save');
       } catch (e) {
         console.error(e);
         showToast(t('exportFail'), 'warn');
@@ -8433,9 +8646,33 @@ function applyLanguageToUI(){
     function importSaveFromText(text) {
       try {
         const obj = JSON.parse(text);
+        // v3.0.0+: 점수 비교 후 import — 현재보다 낮으면 경고
+        const localSummary = getSaveSummary({
+          version: CURRENT_VERSION,
+          state: state,
+          ownedCodes: ownedCodes,
+          modifiers: modifiers
+        });
+        const importSummary = getSaveSummary(obj);
+        const localScore = localSummary.score;
+        const importScore = importSummary.score;
+        if (localScore > importScore + 10) {
+          const isEn = getLang() === 'en';
+          const msg = isEn
+            ? `Warning: Imported save has lower score (${importScore}) than current (${localScore}).\nImporting will OVERWRITE current progress.\n\nProceed?`
+            : `경고: 불러올 데이터 진행도가 현재보다 낮습니다 (불러오기 ${importScore} < 현재 ${localScore}).\n현재 진행도가 덮어써집니다.\n\n그래도 진행할까요?`;
+          if (!window.confirm(msg)) {
+            showToast(isEn ? 'Import cancelled.' : '불러오기 취소됨.', 'system');
+            return;
+          }
+        }
+        // 백업 후 적용
+        const currentRaw = localStorage.getItem(SAVE_KEY);
+        if (currentRaw) pushSaveBackup(currentRaw);
         localStorage.setItem(SAVE_KEY, JSON.stringify(obj));
         loadGame();
-        showToast(t('importDone'), 'save');
+        refreshUiAfterStateRestore();
+        showToast(t('importDone') + ' · score ' + importScore, 'save');
       } catch (e) {
         console.error(e);
         showToast(t('importFail'), 'warn');
@@ -8733,6 +8970,14 @@ function applyLanguageToUI(){
       try { ensureSeasonState(); } catch(e) { console.warn('[Season] init error:', e); }
 
       // ① HCSIG_BRIDGE를 먼저 설정 (cloudSave.js가 대기 중)
+      // v3.0.0+ 저장 안정성: score 함수 글로벌 노출 (cloudSave.js에서 점수 비교 사용)
+      try {
+        window.HCSIG_GET_SAVE_SCORE = getSaveScore;
+        window.HCSIG_GET_SAVE_SUMMARY = getSaveSummary;
+        window.HCSIG_MIGRATE_SAVE = migrateSave;
+        window.HCSIG_GET_BACKUP = getSaveBackup;
+        window.HCSIG_GET_BACKUP_PREV = getSaveBackupPrev;
+      } catch(e) {}
       try {
         window.HCSIG_BRIDGE = {
           version: CURRENT_VERSION,
@@ -8788,12 +9033,22 @@ function applyLanguageToUI(){
         if (authInitialized || Date.now() - authWaitStart > 3000) {
           clearInterval(authCheckInterval);
 
-          // ④ 로컬 또는 클라우드 세이브 로드
-          if (localStorage.getItem(SAVE_KEY)) {
+          // v3.0.0+: 백업 우선 점검 — main save가 비어있는데 backup이 있으면 자동 복구 안 하고 사용자에게 보여줌
+          const mainRaw = localStorage.getItem(SAVE_KEY);
+          const oldRaw  = localStorage.getItem(OLD_SAVE_KEY);
+          const backupRaw = getSaveBackup();
+
+          // ④ 로컬 또는 백업 세이브 로드 — default state 자동 저장 절대 금지
+          if (mainRaw || oldRaw) {
             loadGame();
+          } else if (backupRaw) {
+            // main이 없는데 backup이 있는 비상 상황 → 자동 복구
+            console.warn('[Init] main save missing, backup found — auto-restoring');
+            loadGame(); // loadGame 내부에서 backup 처리
           } else {
             state.lastSeenAt = Date.now();
-            // 기본 상태는 유지
+            // v3.0.0+: 기본 상태는 유지하되 자동 저장 안 함
+            // (사용자가 행동/저장할 때까지 localStorage 건드리지 않음)
           }
 
           // ⑤ UI 렌더
