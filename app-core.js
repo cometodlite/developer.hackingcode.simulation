@@ -4670,29 +4670,6 @@ function applyLanguageToUI(){
       { id: 'ops_op_rotation', nameKo: 'OPERATION 코드 로테이션', nameEn: 'OPERATION Code Rotation', tokenCost: 5, scoreGate: 600, desc: 'OPERATION 코드 스캔 1회 보장 (희소)', descEn: 'Guaranteed OPERATION code scan ×1 (rare)' }
     ];
 
-    function renderOpsShopHTML() {
-      const token = state.items.weeklyToken || 0;
-      const score = state.weeklyChallenge ? (state.weeklyChallenge.score || 0) : 0;
-      return `<div class="ops-shop">
-        <h4 class="section-title">${getLang()==='en' ? 'OPS Shop' : 'OPS 상점'}</h4>
-        <p class="small">${getLang()==='en' ? `TOKEN: ${token} · SCORE: ${score}` : `TOKEN: ${token} · SCORE: ${score}`}</p>
-        <div class="ops-shop-list">
-          ${opsShopDefs.map(item => {
-            const locked  = score < item.scoreGate;
-            const noToken = token < item.tokenCost;
-            const name = getLang()==='en' ? item.nameEn : item.nameKo;
-            const desc = getLang()==='en' ? item.descEn : item.desc;
-            return `<div class="ops-shop-item ${locked ? 'locked' : ''}">
-              <span class="item-name">${name}</span>
-              <span class="item-cost">${item.tokenCost} TOKEN${item.scoreGate > 0 ? ` · SCORE ${item.scoreGate}+` : ''}</span>
-              <span class="item-desc small">${desc}</span>
-              <button type="button" data-ops-buy="${item.id}" ${(locked || noToken) ? 'disabled' : ''}>${locked ? (getLang()==='en' ? `Score ${item.scoreGate}+ needed` : `SCORE ${item.scoreGate}+ 필요`) : (getLang()==='en' ? 'Buy' : '구매')}</button>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>`;
-    }
-
     function buyOpsShopItem(id) {
       const def = opsShopDefs.find(d => d.id === id);
       if (!def) return;
@@ -4870,27 +4847,6 @@ function applyLanguageToUI(){
       if (detection >= 0.26) return { id:'CAUTION',  label:'CAUTION',  ko:'경계',  color:'#ffee00' };
       return                         { id:'SAFE',     label:'SAFE',     ko:'안전',  color:'#00ff88' };
     }
-
-    // ── Code ZD Tags (5종 분류) ──────────────────────────────────────────
-    const CODE_ZD_TAGS = {
-      basic:'정찰',         port_scanner:'침투',     pulse_ping:'정찰',
-      cache_sniffer:'정찰', shield_bypass:'침투',    stack_tracer:'침투',
-      credit_siphon:'교란', fallback_node:'방어',    data_phantom:'침투',
-      auto_patch:'방어',    trace_scrambler:'은폐',  null_rewriter:'교란',
-      rapid_exploit:'침투', overflow_inject:'교란',  fortress_breaker:'침투',
-      quantum_splice:'침투',ghost_script:'은폐',     singularity_root:'침투',
-      scan_cache:'정찰',    rarity_lens:'정찰',      shard_magnet:'정찰',
-      deep_indexer:'정찰',  prism_crawler:'정찰',    oracle_spider:'정찰',
-      signal_anchor:'침투', kernel_probe:'침투',     handshake_forge:'침투',
-      exploit_router:'침투',zero_day_seed:'침투',    root_oracle:'침투',
-      coin_tap:'교란',      bounty_hook:'교란',      exp_stream:'교란',
-      vault_siphon:'교란',  reward_kernel:'교란',    jackpot_daemon:'교란',
-      risk_buffer:'방어',   trace_anchor:'방어',     extreme_buffer:'방어',
-      overclock_guard:'방어',abyss_contract:'침투',  singular_gambit:'침투',
-      stage_marker:'침투',  chapter_key:'침투',      trial_compass:'침투',
-      boss_keygen:'침투',   repeat_engine:'침투',    stage_sovereign:'침투',
-      operation_meridian:'침투', operation_blackout:'교란'
-    };
 
     const ZD_PVE_DIFFICULTIES = {
       intro:  { label: '입문', labelEn: 'Intro',  depthMax: 6,  detectionRate: 0.08, signalPerNode: 8,  baseScore: 50,  free: true },
@@ -5813,14 +5769,6 @@ function applyLanguageToUI(){
       updateStatsUI();
       renderZeroDayPanel();
       saveGame(true);
-    }
-
-    function zeroCopy(ko, en) {
-      return getLang() === 'en' ? en : ko;
-    }
-
-    function clampNumber(value, min, max) {
-      return Math.max(min, Math.min(max, Number(value) || 0));
     }
 
     const stageChapters = [
@@ -8364,7 +8312,7 @@ function applyLanguageToUI(){
         const data = migrateSave(raw) || JSON.parse(raw);
         if (source !== 'backup') {
           // 정상 로드 — 마지막으로 성공한 raw를 백업
-          try { pushSaveBackup(raw); } catch(e) {}
+          try { pushSaveBackup(raw); } catch(e) { console.warn('[SaveBackup] pre-load backup failed:', e); }
         }
         if (data.savedAt) state.lastSavedAt = data.savedAt;
         if (data.state) {
@@ -8682,16 +8630,6 @@ function applyLanguageToUI(){
           renderShop();
         });
       });
-    }
-
-    // 설정 적용
-    function isChristmasSeason(d = new Date()) {
-      // 로컬 기준: 12/1 ~ 1/7 (대략적인 시즌)
-      const m = d.getMonth() + 1;
-      const day = d.getDate();
-      if (m === 12) return day >= 1;
-      if (m === 1) return day <= 7;
-      return false;
     }
 
     function applySettings() {
@@ -9186,7 +9124,7 @@ function applyLanguageToUI(){
         window.HCSIG_MIGRATE_SAVE = migrateSave;
         window.HCSIG_GET_BACKUP = getSaveBackup;
         window.HCSIG_GET_BACKUP_PREV = getSaveBackupPrev;
-      } catch(e) {}
+      } catch(e) { console.warn('[HCSIG] Global bridge setup failed:', e); }
       try {
         window.HCSIG_BRIDGE = {
           version: CURRENT_VERSION,
