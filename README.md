@@ -120,3 +120,8 @@
 - Fixed the More modal top tab/toolbar clipping where the tab row could collapse into a thin green bar.
 - Reworked LIST / EVENT / More modal CSS so header and toolbar areas remain in the layout while only long content lists scroll.
 - Protected CODEX, Mission/Achievement, and WEEKLY/PASS scroll areas from overlapping the modal toolbar.
+
+### v3.0.0 More modal tab isolation hotfix
+- 더보기 모달에서 CODEX 목록이 LIVE NET / RANK / 설정 / 클라우드 계정 / CREDITS / 설명서 탭 뒤에 계속 남아 보이는 문제를 수정했습니다.
+- More 탭 전환 시 모든 패널에 `active`, `hidden`, `display`, `aria-hidden` 상태를 명시적으로 적용하여 한 번에 하나의 패널만 렌더링되도록 보강했습니다.
+- CSS에서 비활성 `.more-tab-panel`을 강제로 숨겨 CODEX 리스트와 하위 탭 콘텐츠가 겹치는 현상을 방지했습니다.

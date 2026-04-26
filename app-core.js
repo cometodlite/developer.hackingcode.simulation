@@ -8012,12 +8012,23 @@ function applyLanguageToUI(){
         manual: tabManual
       };
       const activeTab = panelMap[tabName] ? tabName : 'codex';
+
+      // v3.0.0 hotfix3: class-only switching could leave CODEX rendered
+      // behind LIVE/RANK/SETTINGS/SAVE/CREDITS/MANUAL after modal scroll fixes.
+      // Apply explicit display + hidden state so exactly one panel is visible.
       Object.keys(panelMap).forEach(name => {
-        if (!panelMap[name]) return;
-        panelMap[name].classList.toggle('active', name === activeTab);
+        const panel = panelMap[name];
+        if (!panel) return;
+        const isActive = name === activeTab;
+        panel.classList.toggle('active', isActive);
+        panel.hidden = !isActive;
+        panel.style.display = isActive ? 'flex' : 'none';
+        panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
       });
       moreTabButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === activeTab);
+        const isActive = btn.dataset.tab === activeTab;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
       });
       try {
         document.dispatchEvent(new CustomEvent('hcsig:more-tab', {

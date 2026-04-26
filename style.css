@@ -5270,3 +5270,19 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
     min-height: 40px;
   }
 }
+
+/* v3.0.0 hotfix3: More modal tab isolation
+   Ensure CODEX does not remain rendered behind LIVE/RANK/SETTINGS/SAVE/CREDITS/MANUAL. */
+#moreModalBody > .more-tab-panel:not(.active),
+#moreModalBody > .more-tab-panel[hidden] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#moreModalBody > .more-tab-panel.active {
+  display: flex !important;
+  flex-direction: column;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
