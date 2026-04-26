@@ -3406,8 +3406,27 @@ function applyLanguageToUI(){
     }
 
 
+    // v3.0.0 fix: 같은 WARN/메시지 중복 토스트 방지 (1.2초 윈도우)
+    const _recentToasts = new Map(); // key: kind+msg, value: timestamp
+    const TOAST_DEDUP_MS = 1200;
+
     function showToast(message, kind = 'info') {
       if (!toastContainer) return;
+      // 동일 메시지가 최근 1.2초 안에 표시됐으면 무시
+      const dedupKey = String(kind) + '|' + String(message);
+      const lastShown = _recentToasts.get(dedupKey);
+      const now = Date.now();
+      if (lastShown && now - lastShown < TOAST_DEDUP_MS) {
+        return; // 중복 — 스킵
+      }
+      _recentToasts.set(dedupKey, now);
+      // 메모리 누적 방지: 5초 이상 된 항목 제거
+      if (_recentToasts.size > 50) {
+        for (const [k, t] of _recentToasts) {
+          if (now - t > 5000) _recentToasts.delete(k);
+        }
+      }
+
       const toast = document.createElement('div');
       toast.className = 'toast';
 
@@ -4496,10 +4515,30 @@ function applyLanguageToUI(){
       state.zeroDay.tier = state.zeroDay.tier || 1;
       state.zeroDay.skins = state.zeroDay.skins || [];
       state.zeroDay.activeSkin = state.zeroDay.activeSkin || 'zero_shell';
+      // v3.0.0 fix: 취약점 재화 키를 ensureZeroDayDefaults에서도 보장 (단일 진실)
+      state.items = state.items || {};
+      state.items.zeroDayVulnerability = Number(state.items.zeroDayVulnerability || 0);
+      state.items.zeroDayVulnerabilityShard = Number(state.items.zeroDayVulnerabilityShard || 0);
+      state.items.oneDay = Number(state.items.oneDay || 0);
       state.stats = state.stats || {};
       state.stats.zeroDayPveClearCount = state.stats.zeroDayPveClearCount || 0;
       state.stats.zeroDayPveEscapeCount = state.stats.zeroDayPveEscapeCount || 0;
       state.stats.zeroDayPvpAttackWinCount = state.stats.zeroDayPvpAttackWinCount || 0;
+    }
+
+    // v3.0.0 fix: 취약점 단일 게터 — 표시/검사/차감 모두 이 함수를 통해 일관된 값 보장
+    function getZdVulnCount() {
+      return Number((state.items && state.items.zeroDayVulnerability) || 0);
+    }
+    function setZdVulnCount(n) {
+      state.items = state.items || {};
+      state.items.zeroDayVulnerability = Math.max(0, Number(n) || 0);
+    }
+    function consumeZdVuln(n = 1) {
+      const cur = getZdVulnCount();
+      if (cur < n) return false;
+      setZdVulnCount(cur - n);
+      return true;
     }
 
     // ── ZD Node Types (12종) ─────────────────────────────────────────────
@@ -4780,7 +4819,8 @@ function applyLanguageToUI(){
         }
         return { ok: true };
       }
-      if ((state.items.zeroDayVulnerability || 0) < 1) {
+      // v3.0.0 fix: 단일 게터 사용 (UI/검사 일관성 보장)
+      if (getZdVulnCount() < 1) {
         return { ok: false, reason: getLang()==='en' ? 'Need 1 Vulnerability to start PVE.' : 'PVE 시작에 취약점 1개가 필요합니다.' };
       }
       return { ok: true };
@@ -4797,24 +4837,40 @@ function applyLanguageToUI(){
       if (!check.ok) { showToast(check.reason, 'warn'); return; }
       const diff = (state.zeroDay.pve && state.zeroDay.pve.difficulty) || 'easy';
       const def  = ZD_PVE_DIFFICULTIES[diff];
-      // consume vulnerability
+      // v3.0.0 fix: run 객체를 먼저 빌드, 성공 후 차감 (실패 시 차감 롤백)
+      let nodeSeq, runActive;
+      try {
+        nodeSeq = generateZdNodeSequence(diff);
+        if (!nodeSeq || !nodeSeq.length) throw new Error('empty node sequence');
+        runActive = {
+          diff,
+          depth: 0,
+          detection: 0,
+          signal: 0,
+          score: 0,
+          nodes: nodeSeq,
+          log: [`root@zeroday:~# info: ${getLang()==='en' ? 'Run started' : '런 시작'} · ${def.labelEn} · depth 0/${def.depthMax} · node: ${nodeSeq[0]}`],
+          startedAt: Date.now()
+        };
+      } catch (err) {
+        console.error('[ZD PVE] Failed to build run:', err);
+        showToast(getLang()==='en' ? 'PVE start failed. Try again.' : 'PVE 시작 실패 — 다시 시도하세요.', 'warn');
+        return; // ← 차감 안 함
+      }
+
+      // v3.0.0 fix: run 빌드 성공 → 이제 차감 (실패 시 vuln 보호)
       if (def.free) {
         const todayKey = new Date().toISOString().slice(0,10);
         state.zeroDay.pve.introDailyKey = todayKey;
       } else {
-        state.items.zeroDayVulnerability = (state.items.zeroDayVulnerability || 0) - 1;
+        if (!consumeZdVuln(1)) {
+          showToast(getLang()==='en' ? 'Vulnerability count out of sync. Refreshing...' : '취약점 수가 일치하지 않습니다. 갱신 중...', 'warn');
+          renderZeroDayPanel();
+          return;
+        }
       }
-      const nodeSeq = generateZdNodeSequence(diff);
-      state.zeroDay.pve.active = {
-        diff,
-        depth: 0,
-        detection: 0,
-        signal: 0,
-        score: 0,
-        nodes: nodeSeq,
-        log: [`root@zeroday:~# info: ${getLang()==='en' ? 'Run started' : '런 시작'} · ${def.labelEn} · depth 0/${def.depthMax} · node: ${nodeSeq[0]}`],
-        startedAt: Date.now()
-      };
+
+      state.zeroDay.pve.active = runActive;
       state.zeroDay.pve.runs = (state.zeroDay.pve.runs || 0) + 1;
       state.stats.zeroDayRunCount = (state.stats.zeroDayRunCount || 0) + 1;
       // Track in weekly/monthly mission progress
@@ -4989,7 +5045,8 @@ function applyLanguageToUI(){
       const el = document.getElementById('zeroDayPanel');
       if (!el) return;
       const zd = state.zeroDay;
-      const vuln = state.items.zeroDayVulnerability || 0;
+      // v3.0.0 fix: 단일 게터 — 표시값과 검사값 동일 보장
+      const vuln = getZdVulnCount();
       const shards = state.items.zeroDayVulnerabilityShard || 0;
       const oneDay = state.items.oneDay || 0;
 
@@ -5180,7 +5237,7 @@ function applyLanguageToUI(){
               <span>${getLang()==='en'?'Rating':'레이팅'}: ${zd.pvp.rating||1000}</span>
               <span>${getLang()==='en'?'Conds':'준비도'}: ${condsMet}/3</span>
             </div>
-            <button type="button" id="btnZdPvpMatch" ${pvpReady && (state.items.zeroDayVulnerability||0) >= 1 ? '' : 'disabled'}>
+            <button type="button" id="btnZdPvpMatch" ${pvpReady && getZdVulnCount() >= 1 ? '' : 'disabled'}>
               ${getLang()==='en'?'Match PVP (1 Vuln)':'PVP 매칭 (취약점 1)'}
             </button>
             ${!pvpReady ? `<span class="small">${getLang()==='en'?'Need 2+ readiness conditions':'준비도 2개 이상 필요'}</span>` : ''}
@@ -5379,12 +5436,18 @@ function applyLanguageToUI(){
     }
 
     function startZdPvpMatch() {
-      if ((state.items.zeroDayVulnerability || 0) < 1) {
+      ensureZeroDayDefaults();
+      // v3.0.0 fix: 단일 게터로 일관성 보장
+      if (getZdVulnCount() < 1) {
         showToast(getLang()==='en'?'Need 1 Vulnerability':'취약점 1개 필요', 'warn');
         return;
       }
-      // 비용
-      state.items.zeroDayVulnerability -= 1;
+      // 비용 차감 (실패 시 차감 안 됨)
+      if (!consumeZdVuln(1)) {
+        showToast(getLang()==='en'?'Vulnerability count out of sync.':'취약점 수가 일치하지 않습니다.', 'warn');
+        renderZeroDayPanel();
+        return;
+      }
       state.zeroDay.pvp.attacksTotal = (state.zeroDay.pvp.attacksTotal || 0) + 1;
 
       const player = getPvpSnapshot();
@@ -5795,14 +5858,64 @@ function applyLanguageToUI(){
     }
 
     function startStageBattle() {
+      // v3.0.0 fix: 조건 검사 → activeBattle 생성 → 에너지 차감 → state 적용 → UI 갱신 → 저장
+      // run 생성 실패 시 에너지 차감 금지 (에너지 보호)
       ensureStageDefaults();
       const stage = getStageById(state.stage.selectedId);
       const code  = getActiveCodeInstance();
+
+      // 이미 진행 중인 전투면 무시 (중복 클릭 방지)
+      if (state.stage.activeBattle && !state.stage.activeBattle.over) {
+        renderStagePanel();
+        return;
+      }
+
+      // 1. 조건 검사 (에너지 차감 전)
       if (!code) {
         showToast(t('noOwnedCodes'), 'warn');
         renderStagePanel();
         return;
       }
+      if (!stage) {
+        const msg = stageCopy('스테이지 정보를 찾을 수 없습니다.', 'Stage data not found.');
+        showToast(msg, 'warn');
+        return;
+      }
+      if (state.energy < stage.energyCost) {
+        const msg = stageCopy('에너지가 부족해 데이터 타워를 시작할 수 없습니다.', 'Not enough energy to start Data Tower.');
+        log(msg, 'hack');
+        showToast(msg, 'warn');
+        renderStagePanel();
+        return;
+      }
+
+      // 2. activeBattle 객체 미리 빌드 (에너지 차감 전 — 실패 시 에너지 보존)
+      let activeBattle;
+      try {
+        const stats = getStageBattleStats(stage, code);
+        if (!stats || !stats.playerMax || !stats.enemyMax) throw new Error('invalid stats');
+        activeBattle = {
+          stageId: stage.id,
+          codeId: code.id,
+          playerHp: stats.playerMax,
+          playerMaxHp: stats.playerMax,
+          enemyHp: stats.enemyMax,
+          enemyMaxHp: stats.enemyMax,
+          turn: 1,
+          focusActive: false,
+          shieldActive: false,
+          log: [],
+          over: false,
+          win: false
+        };
+      } catch (err) {
+        console.error('[StageBattle] Failed to build activeBattle:', err);
+        const msg = stageCopy('데이터 타워 시작 실패 — 다시 시도하세요.', 'Failed to start Data Tower. Try again.');
+        showToast(msg, 'warn');
+        return; // ← 에너지 차감 안 함
+      }
+
+      // 3. 에너지 차감 (run이 정상 빌드된 경우에만)
       if (!consumeEnergy(stage.energyCost)) {
         const msg = stageCopy('에너지가 부족해 데이터 타워를 시작할 수 없습니다.', 'Not enough energy to start Data Tower.');
         log(msg, 'hack');
@@ -5810,23 +5923,13 @@ function applyLanguageToUI(){
         renderStagePanel();
         return;
       }
-      const stats = getStageBattleStats(stage, code);
-      state.stage.activeBattle = {
-        stageId: stage.id,
-        codeId: code.id,
-        playerHp: stats.playerMax,
-        playerMaxHp: stats.playerMax,
-        enemyHp: stats.enemyMax,
-        enemyMaxHp: stats.enemyMax,
-        turn: 1,
-        focusActive: false,
-        shieldActive: false,
-        log: [],
-        over: false,
-        win: false
-      };
+
+      // 4. state 적용
+      state.stage.activeBattle = activeBattle;
       state.stats.stageAttemptCount = (state.stats.stageAttemptCount || 0) + 1;
       code.usage = (code.usage || 0) + 1;
+
+      // 5. UI 갱신 + 저장
       renderStagePanel();
       saveGame(true);
     }

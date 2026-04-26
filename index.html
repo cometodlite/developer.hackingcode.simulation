@@ -356,10 +356,12 @@
 
     <!-- 코드 도감 탭 -->
     <div class="more-tab-panel active" id="tabCodex">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-        <div><span class="badge">CODEX</span><span id="codexTabTitle">코드 도감</span></div>
+      <!-- v3.0.0 fix: 중복 제목 제거. 발견 카운트만 우측 정렬로 표시 -->
+      <div class="codex-summary-bar">
         <div class="small" id="codexSummary">발견 0 / 0</div>
       </div>
+      <!-- 호환용 hidden 노드 (i18n 로직이 참조함) -->
+      <span hidden id="codexTabTitle">코드 도감</span>
       <div class="stat-box" id="codexList"></div>
     </div>
 
