@@ -5238,7 +5238,19 @@ function applyLanguageToUI(){
             </div>
             <button type="button" id="btnZdOnboarding" class="btn-primary">${getLang()==='en' ? 'Start Onboarding' : '온보딩 시작'}</button>
           </div>`;
-        document.getElementById('btnZdOnboarding')?.addEventListener('click', completeZdOnboarding);
+        // v3.0.0+ fix: 견고한 클릭 등록 (el.querySelector + bind 폴백)
+        const btnOnboard = el.querySelector('#btnZdOnboarding') || document.getElementById('btnZdOnboarding');
+        if (btnOnboard) {
+          // 기존 핸들러 제거를 위해 새 button으로 replace 후 등록 (중복 클릭 방지)
+          btnOnboard.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('[ZD Onboarding] Button clicked');
+            completeZdOnboarding();
+          });
+        } else {
+          console.warn('[ZD] Onboarding button not found in DOM');
+        }
         return;
       }
 
@@ -6084,10 +6096,10 @@ function applyLanguageToUI(){
       const stage = getStageById(state.stage.selectedId);
       const code  = getActiveCodeInstance();
 
-      // 이미 진행 중인 전투면 무시 (중복 클릭 방지)
+      // v3.0.0+ fix: 잠긴 battle이 있어도 자동 클리어 후 새로 시작 (이전 가드는 stale battle 복구 시 새 도전을 막아버림)
       if (state.stage.activeBattle && !state.stage.activeBattle.over) {
-        renderStagePanel();
-        return;
+        console.warn('[StageBattle] Stale battle cleared on new attempt');
+        state.stage.activeBattle = null;
       }
 
       // 1. 조건 검사 (에너지 차감 전)
@@ -8399,7 +8411,19 @@ function applyLanguageToUI(){
         state.zeroDay.pve = state.zeroDay.pve || { active: null, bestDepth: 0, bestScore: 0, runs: 0, extracts: 0, difficulty: 'easy' };
         state.zeroDay.pvp = state.zeroDay.pvp || { active: null, rating: 1000, seasonWins: 0, seasonLosses: 0, attacksTotal: 0, defensesTotal: 0 };
         state.zeroDay.defense = state.zeroDay.defense || { slots: 3, cards: [], usesThisMatch: 0 };
-        state.stage.activeBattle = state.stage.activeBattle || null;
+        // v3.0.0+ fix: 잠긴 진행 중 battle/run 자동 정리 — 사용자가 EXIT 안 하고 페이지 닫은 경우
+        // 다음 세션에서 새 도전을 시작할 수 있도록 stale 상태 클리어
+        state.stage = state.stage || {};
+        if (state.stage.activeBattle && !state.stage.activeBattle.over) {
+          console.warn('[Load] Clearing stale Data Tower battle (over=false)');
+          state.stage.activeBattle = null;
+        } else {
+          state.stage.activeBattle = state.stage.activeBattle || null;
+        }
+        if (state.zeroDay.pve && state.zeroDay.pve.active) {
+          console.warn('[Load] Clearing stale ZERO-DAY PVE run');
+          state.zeroDay.pve.active = null;
+        }
 
         ensureTutorialDefaults();
         ensureStageDefaults();
