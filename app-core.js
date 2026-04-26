@@ -1,3 +1,13 @@
+/** * Fixed: global translation helper for app-ui.js 
+ */
+window.t = function(key) {
+    const lang = (typeof state !== 'undefined' && state.language) ? state.language : 'ko';
+    if (typeof I18N !== 'undefined' && I18N[lang] && I18N[lang][key]) {
+        return I18N[lang][key];
+    }
+    return key;
+};
+
 const CURRENT_VERSION = '3.0.0';
 const TUTORIAL_VERSION = 6;
     const ENERGY_INTERVAL_MS = 60000; // 에너지 1칸당 60초

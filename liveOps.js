@@ -96,7 +96,7 @@
   }
 
   function escapeHtml(value){
-    return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
+    return String(value === null || value === undefined ? '' : value).replace(/[&<>"']/g, ch => ({
       '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
     }[ch]));
   }

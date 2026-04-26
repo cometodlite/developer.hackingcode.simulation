@@ -252,8 +252,6 @@
       // - 점수가 거의 같으면(±10) 시간 더 최근인 쪽 적용
       // - 점수 차이가 크고 시간이 반대 방향이면 → 사용자 선택 다이얼로그
       const SCORE_DELTA = 10;
-      const localSummary = _summaryOf(localParsed);
-      const cloudSummary = _summaryOf(cloud);
 
       let action = 'keep-local';
       let reason = '';
