@@ -5098,3 +5098,48 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   .progress-tier-note { flex-basis: 100%; margin-left: 0; }
   .progress-tier-btn span { word-break: keep-all; }
 }
+
+/* v3.0.0 PC stability hotfix: keep modal toolbars out of the scrolling list layer */
+#listModalBody,
+#moreModalBody,
+#eventModalBody {
+  min-height: 0;
+  max-height: calc(85dvh - 58px);
+  overscroll-behavior: contain;
+}
+
+#listModalBody > .list-tabs,
+#moreModalBody > .more-tabs,
+#eventModalBody > .event-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #020617;
+  box-shadow: 0 1px 0 #111827, 0 8px 12px rgba(2,6,23,.92);
+}
+
+#tabMission.active > .mission-scope-tabs,
+#tabAchievement.active > .achievement-toolbar,
+#eventTabWeekly.active > .weekly-filter,
+#eventTabWeekly.active > #progressTierSelector,
+#tabCodex.active > .codex-summary-bar {
+  position: sticky;
+  top: 36px;
+  z-index: 19;
+  background: #020617;
+  box-shadow: 0 1px 0 #111827, 0 8px 12px rgba(2,6,23,.88);
+}
+
+#missionList,
+#achievementList,
+#codexList,
+#weeklyGoalList,
+#passPanel {
+  position: relative;
+  z-index: 1;
+}
+
+#moreModalBody > .more-tabs,
+#listModalBody > .list-tabs {
+  padding-top: 2px;
+}

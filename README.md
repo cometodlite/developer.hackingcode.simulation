@@ -103,3 +103,14 @@
 ---
 
 © 2025–2026 COMET. 개발: COMET DEVELOPS / COMETODLITE
+
+## v3.0.0 PC stability hotfix - 2026-04-26
+
+- Fixed server dropdown placeholder leakage where `{name}`, `{sec}`, `{lv}` could appear instead of real server labels.
+- Fixed CODES detail/CODEX placeholder leakage where `{v}`, `{cost}`, `{b}`, `{lv}`, `{pwr}` could appear in code detail panels.
+- Removed the legacy ZERO-DAY click handler that called undefined `startZeroDay()` / `runZeroDayAction()` and kept the newer `data-zd-*` handler path.
+- Split achievement hard difficulty i18n key from weekly challenge difficulty key to remove duplicated `difficultyHard` entries.
+- Corrected the English energy recovery description from 120 seconds to 60 seconds.
+- Added modal toolbar layering CSS so LIST / EVENT / More top controls stay visible while long lists scroll.
+- Strengthened save loading to compare v17, v16, and backup save candidates by progress score before choosing the source save.
+

@@ -73,7 +73,7 @@ const I18N = {
     shopSortUpdate:'업데이트순', shopSortNew:'신규 우선', shopSortRarity:'희귀도순', shopSortPrice:'가격순', shopSortName:'이름순', codeSortRecent:'최신', codeSortRarity:'희귀도', codeSortPower:'파워', codeSortLevel:'레벨', codeSortName:'이름',
     codexSummary:'발견 {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'기본 파워', ownedLvPwr:'보유 Lv.{lv} / PWR {pwr}', undiscoveredCode:'미발견 코드', undiscoveredDesc:'아직 발견하지 못한 코드입니다. 코드 스캔으로 해제하세요.', noCodes:'보유 코드 없음. [코드 스캔]으로 코드를 얻으세요.', selectCode:'보유 중인 코드를 선택하면 상세 정보가 표시됩니다.',
     levelLabel:'레벨: Lv.{v}', powerLabel:'파워: {v}', usageLabel:'사용 횟수: {v}', shardsLabel:'중복 조각: {v}', syncLabel:'동기화 단계: {v}', nextUpgrade:'다음 강화 비용: {v} 크레딧', nextSync:'다음 동기화 비용: 조각 {a} / 예상 성공률 보정 +{b}%', evolveReady:'진화 조건: 충족', evolveNeed:'진화 조건: Lv.5 이상 필요', ability:'능력', noDesc:'설명 없음.',
-    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'보상', none:'없음', complete:'완료', incomplete:'미완', achieved:'달성', notYet:'미달', hiddenAchievement:'히든 업적입니다. 달성 시 공개됩니다.', difficultyEasy:'일반', difficultyNormal:'보통', difficultyHard:'어려움', hidden:'HIDDEN', achievementAll:'전체', achievementIncomplete:'미완료', achievementComplete:'완료', achievementShowHidden:'숨김 포함',
+    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'보상', none:'없음', complete:'완료', incomplete:'미완', achieved:'달성', notYet:'미달', hiddenAchievement:'히든 업적입니다. 달성 시 공개됩니다.', difficultyEasy:'일반', difficultyNormal:'보통', achievementDifficultyHard:'어려움', hidden:'HIDDEN', achievementAll:'전체', achievementIncomplete:'미완료', achievementComplete:'완료', achievementShowHidden:'숨김 포함',
     full:'FULL', seconds:'초', minutes:'분', visible:'표시', on:'ON', off:'OFF',
     saveStateSaved:'게임 상태가 클라우드 캐시에 저장되었습니다.', saveComplete:'클라우드 캐시 저장 완료', autosaveComplete:'✅ 자동 캐시 저장 완료', noSavedData:'저장된 데이터가 없습니다.', saveLoaded:'저장된 데이터를 불러왔습니다.', saveLoadError:'저장 데이터를 불러오는 중 오류가 발생했습니다.', saveDeleted:'저장 데이터가 삭제되었습니다.', exportFail:'내보내기 실패 (콘솔 확인)', hackModeLog:'해킹 모드: {mode}', riskPenaltyLog:'RISK 실패 페널티: 에너지가 추가로 1 소모되었습니다.', extremePenaltyLog:'EXTREME 실패 페널티: 에너지가 추가로 2 소모되었습니다.', gpuUpgradeLog:'GPU 업그레이드 완료! 현재 티어: {tier} (소모 크레딧 {cost})', gpuUpgradeFail:'GPU 업그레이드 실패: 크레딧이 부족합니다. (필요: {cost})', loadoutSaved:'로드아웃 슬롯 {slot}에 현재 설정을 저장했습니다.', loadoutEmpty:'로드아웃 슬롯 {slot}에 저장된 설정이 없습니다.', loadoutLoaded:'로드아웃 슬롯 {slot}을 불러왔습니다.',
     toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +50 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
@@ -84,7 +84,7 @@ const I18N = {
     appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'LIST', listTitle:'LIST', event:'EVENT', eventTitle:'EVENT', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
     level:'Level', exp:'EXP', credits:'Credits', cpuTier:'CPU Tier', gpuTier:'GPU Tier', energy:'Energy', nextRecovery:'Next Recovery', energyPack:'Energy Pack', lastSave:'Last Save', use:'Use', sort:'Sort', category:'Category', all:'All', system:'System', economy:'Economy', utility:'Utility',
     codeScan:'Scan Code', serverHack:'Hack Server', cpuUpgrade:'Upgrade CPU', gpuUpgrade:'Upgrade GPU', targetServer:'Target Server', loadout:'Loadout', saveSlot:'Save Slot', loadSlot:'Load Slot', hackMode:'Hack Mode',
-    actionsDesc1:'· 1 energy = 120 seconds, shown with 0.1-second countdown', actionsDesc2:'· Scan Code: costs 1 energy and grants scan EXP', actionsDesc3:'· Hack Server: choose NORMAL / RISK / EXTREME difficulty', actionsDesc4:'· CPU stabilizes success, GPU amplifies repeat/challenge rewards.',
+    actionsDesc1:'· 1 energy = 60 seconds, shown with 0.1-second countdown', actionsDesc2:'· Scan Code: costs 1 energy and grants scan EXP', actionsDesc3:'· Hack Server: choose NORMAL / RISK / EXTREME difficulty', actionsDesc4:'· CPU stabilizes success, GPU amplifies repeat/challenge rewards.',
     codeUpgrade:'Upgrade Code', codeSync:'Sync Code', codeEvolve:'Evolve Code', shardEnhance:'Shard Boost', codeDesc1:'· Upgrade: costs credits based on code level and raises power (no destruction).', codeDesc2:'· Sync: spend duplicate shards to raise success bonus and power together.', codeDesc3:'· Evolve: rank up at a required level (COMMON → UNCOMMON → … → LEGENDARY).',
     mission:'Mission', achievement:'Achievements', codex:'Code Codex', logs:'Logs', liveNet:'LIVE NET', rank:'RANK', settings:'Settings', data:'Cloud Account', quest:'Quests', records:'Records', liveNetRecords:'Network Control', softRank:'Soft Ranking', envSettings:'Settings', dataManage:'Cloud Account', close:'Close',
     logSearchHelp:'Search logs (click a log entry to pin/unpin)', searchPlaceholder:'Type to search...', clearLogs:'Clear Logs', hideLogs:'Hide Logs', showLogs:'Show Logs', logFilter:'Log Filter',
@@ -93,7 +93,7 @@ const I18N = {
     shopSortUpdate:'By Update', shopSortNew:'Newest First', shopSortRarity:'By Rarity', shopSortPrice:'By Price', shopSortName:'By Name', codeSortRecent:'Recent', codeSortRarity:'Rarity', codeSortPower:'Power', codeSortLevel:'Level', codeSortName:'Name',
     codexSummary:'Discovered {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'Base Power', ownedLvPwr:'Owned Lv.{lv} / PWR {pwr}', undiscoveredCode:'Undiscovered Code', undiscoveredDesc:'You have not discovered this code yet. Unlock it by scanning codes.', noCodes:'No codes owned. Use [Scan Code] to get one.', selectCode:'Select an owned code to view details.',
     levelLabel:'Level: Lv.{v}', powerLabel:'Power: {v}', usageLabel:'Uses: {v}', shardsLabel:'Duplicate Shards: {v}', syncLabel:'Sync Level: {v}', nextUpgrade:'Next upgrade cost: {v} credits', nextSync:'Next sync cost: {a} shards / expected success bonus +{b}%', evolveReady:'Evolution requirement: Met', evolveNeed:'Evolution requirement: Need Lv.5+', ability:'Ability', noDesc:'No description.',
-    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'Reward', none:'None', complete:'Complete', incomplete:'Incomplete', achieved:'Achieved', notYet:'Not Yet', hiddenAchievement:'This is a hidden achievement. It will be revealed when completed.', difficultyEasy:'Easy', difficultyNormal:'Normal', difficultyHard:'Hard', hidden:'HIDDEN', achievementAll:'All', achievementIncomplete:'Incomplete', achievementComplete:'Complete', achievementShowHidden:'Include Hidden',
+    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'Reward', none:'None', complete:'Complete', incomplete:'Incomplete', achieved:'Achieved', notYet:'Not Yet', hiddenAchievement:'This is a hidden achievement. It will be revealed when completed.', difficultyEasy:'Easy', difficultyNormal:'Normal', achievementDifficultyHard:'Hard', hidden:'HIDDEN', achievementAll:'All', achievementIncomplete:'Incomplete', achievementComplete:'Complete', achievementShowHidden:'Include Hidden',
     full:'FULL', seconds:'sec', minutes:'min', visible:'Visible', on:'ON', off:'OFF',
     saveStateSaved:'Game state saved to cloud cache.', saveComplete:'Cloud cache saved', autosaveComplete:'✅ Autosave cache complete', noSavedData:'No saved data found.', saveLoaded:'Saved data loaded.', saveLoadError:'An error occurred while loading save data.', saveDeleted:'Save data deleted.', exportFail:'Export failed (check console)', hackModeLog:'Hack Mode: {mode}', riskPenaltyLog:'RISK failure penalty consumed 1 additional energy.', extremePenaltyLog:'EXTREME failure penalty consumed 2 additional energy.', gpuUpgradeLog:'GPU upgrade complete! Current tier: {tier} (Credits -{cost})', gpuUpgradeFail:'GPU upgrade failed: not enough credits. (Need: {cost})', loadoutSaved:'Saved current setup to loadout slot {slot}.', loadoutEmpty:'There is no saved setup in loadout slot {slot}.', loadoutLoaded:'Loaded loadout slot {slot}.',
     toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +50.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
@@ -114,7 +114,7 @@ const I18N = {
     shopSortUpdate:'更新順', shopSortNew:'新着優先', shopSortRarity:'レアリティ順', shopSortPrice:'価格順', shopSortName:'名前順', codeSortRecent:'最新', codeSortRarity:'レアリティ', codeSortPower:'パワー', codeSortLevel:'レベル', codeSortName:'名前',
     codexSummary:'発見 {a} / {b}', discovered:'DISCOVERED', locked:'LOCKED', basePower:'基本パワー', ownedLvPwr:'所持 Lv.{lv} / PWR {pwr}', undiscoveredCode:'未発見コード', undiscoveredDesc:'まだ発見していないコードです。コードスキャンで解放してください。', noCodes:'所持コード無し。[コードスキャン] でコードを取得してください。', selectCode:'所持コードを選択すると詳細が表示されます。',
     levelLabel:'レベル: Lv.{v}', powerLabel:'パワー: {v}', usageLabel:'使用回数: {v}', shardsLabel:'重複シャード: {v}', syncLabel:'同期段階: {v}', nextUpgrade:'次の強化コスト: {v} クレジット', nextSync:'次の同期コスト: シャード {a} / 予想成功率補正 +{b}%', evolveReady:'進化条件: 達成', evolveNeed:'進化条件: Lv.5以上が必要', ability:'能力', noDesc:'説明なし。',
-    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'報酬', none:'なし', complete:'完了', incomplete:'未完了', achieved:'達成', notYet:'未達', hiddenAchievement:'隠し実績です。達成時に公開されます。', difficultyEasy:'一般', difficultyNormal:'普通', difficultyHard:'難しい', hidden:'HIDDEN', achievementAll:'全て', achievementIncomplete:'未完了', achievementComplete:'完了', achievementShowHidden:'隠し含む',
+    missionHeaderDaily:'DAILY QUEST', missionHeaderWeekly:'WEEKLY QUEST', missionHeaderMonth:'MONTH QUEST', missionHeaderGeneral:'GENERAL QUEST', reward:'報酬', none:'なし', complete:'完了', incomplete:'未完了', achieved:'達成', notYet:'未達', hiddenAchievement:'隠し実績です。達成時に公開されます。', difficultyEasy:'一般', difficultyNormal:'普通', achievementDifficultyHard:'難しい', hidden:'HIDDEN', achievementAll:'全て', achievementIncomplete:'未完了', achievementComplete:'完了', achievementShowHidden:'隠し含む',
     full:'FULL', seconds:'秒', minutes:'分', visible:'表示', on:'ON', off:'OFF',
     saveStateSaved:'ゲーム状態がクラウドキャッシュに保存されました。', saveComplete:'クラウドキャッシュ保存完了', autosaveComplete:'✅ 自動キャッシュ保存完了', noSavedData:'保存データがありません。', saveLoaded:'保存データを読み込みました。', saveLoadError:'保存データの読み込み中にエラーが発生しました。', saveDeleted:'保存データを削除しました。', exportFail:'エクスポート失敗 (コンソール確認)', hackModeLog:'ハッキングモード: {mode}', riskPenaltyLog:'RISK失敗ペナルティ: エネルギーが追加で1消費されました。', extremePenaltyLog:'EXTREME失敗ペナルティ: エネルギーが追加で2消費されました。', gpuUpgradeLog:'GPUアップグレード完了！ 現在のティア: {tier} (消費クレジット {cost})', gpuUpgradeFail:'GPUアップグレード失敗: クレジットが不足しています。 (必要: {cost})', loadoutSaved:'ロードアウトスロット {slot} に現在の設定を保存しました。', loadoutEmpty:'ロードアウトスロット {slot} に保存された設定がありません。', loadoutLoaded:'ロードアウトスロット {slot} を読み込みました。',
     toastAchievement:'実績達成: {name}', achievementLog:'[実績達成] {name}', activeCode:'アクティブコード変更: {name}', levelUpLog:'レベルアップ！ Lv.{lv} 達成。 クレジット +50 付与。', noEnergyPack:'エネルギーパックがありません。', energyFull:'すでにエネルギーが満タンです。', usedEnergyPack:'エネルギーパックを1個使用してエネルギーを最大まで回復しました。',
@@ -4131,9 +4131,16 @@ function applyLanguageToUI(){
         title.textContent = owned ? def.name : '???';
         const meta = document.createElement('div');
         meta.className = 'small';
-        meta.textContent = owned
-          ? `[${localizeRarityLabel(def.rarity)}] ${t('basePower')} ${def.basePower} · ${t('ownedLvPwr', { lv: owned.level, pwr: owned.power })}`
-          : `[${localizeRarityLabel(def.rarity)}] ${t('undiscoveredCode')}`;
+        if (owned) {
+          const ownedText = getLang() === 'en'
+            ? `Owned Lv.${owned.level} / PWR ${owned.power}`
+            : getLang() === 'ja'
+              ? `所持 Lv.${owned.level} / PWR ${owned.power}`
+              : `보유 Lv.${owned.level} / PWR ${owned.power}`;
+          meta.textContent = `[${localizeRarityLabel(def.rarity)}] ${t('basePower')} ${def.basePower} · ${ownedText}`;
+        } else {
+          meta.textContent = `[${localizeRarityLabel(def.rarity)}] ${t('undiscoveredCode')}`;
+        }
         nameWrap.appendChild(title);
         nameWrap.appendChild(meta);
 
@@ -4295,26 +4302,65 @@ function applyLanguageToUI(){
       const evolveReady = code.level >= 5;
       const syncBonusText = Math.round((getSyncSuccessBonus(syncLevel + 1) - getSyncSuccessBonus(syncLevel)) * 100);
       const shardBoostCost = getShardEnhanceCost(code);
+      const lang = getLang();
+      const labels = lang === 'en'
+        ? {
+          level: `Level: Lv.${code.level}`,
+          power: `Power: ${code.power}`,
+          usage: `Uses: ${usage}`,
+          shards: `Duplicate Shards: ${shardCount}`,
+          sync: `Sync Level: ${syncLevel}`,
+          upgrade: `Next upgrade cost: ${upgradeCost} credits`,
+          syncCost: `Next sync cost: ${syncCost} shards / expected success bonus +${syncBonusText}%`,
+          shard: `Shard boost cost: ${shardBoostCost} shards / PWR +2`,
+          evolve: evolveReady ? 'Evolution requirement: Met' : 'Evolution requirement: Need Lv.5+',
+          ability: 'Ability'
+        }
+        : lang === 'ja'
+          ? {
+            level: `レベル: Lv.${code.level}`,
+            power: `パワー: ${code.power}`,
+            usage: `使用回数: ${usage}`,
+            shards: `重複シャード: ${shardCount}`,
+            sync: `同期段階: ${syncLevel}`,
+            upgrade: `次の強化コスト: ${upgradeCost} クレジット`,
+            syncCost: `次の同期コスト: シャード ${syncCost} / 予想成功率補正 +${syncBonusText}%`,
+            shard: `シャード強化コスト: シャード ${shardBoostCost} / PWR +2`,
+            evolve: evolveReady ? '進化条件: 達成' : '進化条件: Lv.5以上必要',
+            ability: '能力'
+          }
+          : {
+            level: `레벨: Lv.${code.level}`,
+            power: `파워: ${code.power}`,
+            usage: `사용 횟수: ${usage}`,
+            shards: `중복 조각: ${shardCount}`,
+            sync: `동기화 단계: ${syncLevel}`,
+            upgrade: `다음 강화 비용: ${upgradeCost} 크레딧`,
+            syncCost: `다음 동기화 비용: 조각 ${syncCost} / 예상 성공률 보정 +${syncBonusText}%`,
+            shard: `조각 강화 비용: 조각 ${shardBoostCost} / PWR +2`,
+            evolve: evolveReady ? '진화 조건: 충족' : '진화 조건: Lv.5 이상 필요',
+            ability: '능력'
+          };
       return `
         <div class="code-modal-identity">
           <strong class="${rarityClass}">${code.name}</strong>
           <span class="rarity-tag ${rarityClass}">[${localizeRarityLabel(code.rarity)}]</span>
         </div>
         <div class="code-modal-stat-grid">
-          <div class="small">${t('levelLabel', { v: code.level })}</div>
-          <div class="small">${t('powerLabel', { v: code.power })}</div>
-          <div class="small">${t('usageLabel', { v: usage })}</div>
-          <div class="small">${t('shardsLabel', { v: shardCount })}</div>
-          <div class="small">${t('syncLabel', { v: syncLevel })}</div>
+          <div class="small">${labels.level}</div>
+          <div class="small">${labels.power}</div>
+          <div class="small">${labels.usage}</div>
+          <div class="small">${labels.shards}</div>
+          <div class="small">${labels.sync}</div>
         </div>
         <div class="code-modal-cost-grid">
-          <div class="small code-next-meta">${t('nextUpgrade', { v: upgradeCost })}</div>
-          <div class="small code-next-meta">${t('nextSync', { a: syncCost, b: syncBonusText })}</div>
-          <div class="small code-next-meta">${t('shardEnhanceCost', { cost: shardBoostCost })}</div>
-          <div class="small code-next-meta">${evolveReady ? t('evolveReady') : t('evolveNeed')}</div>
+          <div class="small code-next-meta">${labels.upgrade}</div>
+          <div class="small code-next-meta">${labels.syncCost}</div>
+          <div class="small code-next-meta">${labels.shard}</div>
+          <div class="small code-next-meta">${labels.evolve}</div>
         </div>
         <div class="code-modal-ability">
-          <div class="small">${t('ability')}</div>
+          <div class="small">${labels.ability}</div>
           <p class="small">${ability}</p>
         </div>
       `;
@@ -6501,7 +6547,14 @@ function applyLanguageToUI(){
       servers.forEach(s => {
         const option = document.createElement('option');
         option.value = s.id;
-        option.textContent = t('serverOption', { name: localizeServerName(s), sec: s.security, lv: s.minLevel });
+        const serverName = localizeServerName(s);
+        const serverSec = Number(s.security || s.sec || 0);
+        const serverLv = Number(s.minLevel || s.lv || 1);
+        option.textContent = getLang() === 'en'
+          ? `${serverName} (Security ${serverSec}, Lv${serverLv}+)`
+          : getLang() === 'ja'
+            ? `${serverName} (セキュリティ ${serverSec}, Lv${serverLv}+)`
+            : `${serverName} (보안 ${serverSec}, Lv${serverLv}+)`;
         serverSelect.appendChild(option);
       });
       // 저장된 서버 선택 복원
@@ -7801,7 +7854,7 @@ function applyLanguageToUI(){
         intro:      t('difficultyIntro'),       // 입문
         easy:       t('difficultyEasy'),         // 일반
         normal:     t('difficultyNormal'),       // 보통
-        hard:       t('difficultyHard'),         // 어려움
+        hard:       t('achievementDifficultyHard'), // 업적 난이도: 어려움
         chaos:      t('difficultyChaos'),        // 혼돈
         impossible: t('difficultyImpossible')    // 불가능
       };
@@ -8252,29 +8305,44 @@ function applyLanguageToUI(){
     }
 
     function loadGame(rawOverride = null) {
-      let raw = typeof rawOverride === 'string' ? rawOverride : localStorage.getItem(SAVE_KEY);
+      let raw = null;
       let source = 'main';
-      // v1.5.x 저장 데이터 자동 마이그레이션
-      if (!raw) {
-        raw = localStorage.getItem(OLD_SAVE_KEY);
-        if (raw) {
-          // v3.0.0+: 변환 전 backup
-          pushSaveBackup(raw);
-          localStorage.setItem(SAVE_KEY, raw);
-          source = 'old-key';
+      if (typeof rawOverride === 'string') {
+        raw = rawOverride;
+        source = 'override';
+      } else {
+        // v3.0.0 PC stability hotfix: choose the highest-progress save candidate.
+        // This prevents a freshly-created low-progress v17 save from hiding a richer v16/backup save.
+        const candidates = [
+          { key: SAVE_KEY, source: 'main', raw: localStorage.getItem(SAVE_KEY) },
+          { key: OLD_SAVE_KEY, source: 'old-key', raw: localStorage.getItem(OLD_SAVE_KEY) },
+          { key: SAVE_BACKUP_KEY, source: 'backup', raw: getSaveBackup() },
+          { key: SAVE_BACKUP_PREV_KEY, source: 'backup-prev', raw: getSaveBackupPrev() }
+        ].filter(c => !!c.raw).map(c => {
+          const migrated = migrateSave(c.raw);
+          let parsed = migrated;
+          if (!parsed) {
+            try { parsed = JSON.parse(c.raw); } catch (e) { parsed = null; }
+          }
+          return Object.assign(c, { parsed, score: parsed ? getSaveScore(parsed) : -1 });
+        }).filter(c => c.parsed);
+
+        if (candidates.length) {
+          candidates.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return Number((b.parsed && b.parsed.savedAt) || 0) - Number((a.parsed && a.parsed.savedAt) || 0);
+          });
+          const best = candidates[0];
+          raw = best.raw;
+          source = best.source;
+          if (best.key !== SAVE_KEY) {
+            pushSaveBackup(raw);
+            localStorage.setItem(SAVE_KEY, raw);
+            console.warn(`[LoadGame] selected ${best.source} save by progress score (${best.score})`);
+          }
         }
       }
-      // v3.0.0+: SAVE_KEY/OLD_SAVE_KEY 모두 없으면 backup에서 복구 시도
-      if (!raw) {
-        const backup = getSaveBackup();
-        if (backup) {
-          console.warn('[LoadGame] main save missing — restoring from backup');
-          raw = backup;
-          localStorage.setItem(SAVE_KEY, raw);
-          source = 'backup';
-          try { showToast(getLang()==='en'?'Save restored from backup.':'백업에서 저장 복구됨.', 'system'); } catch(e) {}
-        }
-      }
+      // v3.0.0+: no save candidates -> do not write default state automatically.
       if (!raw) {
         // v3.0.0+: default state 로 자동 저장하지 않음 (사용자 행동 후에만 save)
         log(t('noSavedData'), 'system');
@@ -8880,16 +8948,7 @@ function applyLanguageToUI(){
       renderWeeklyPanel();
       scheduleSilentSave();
     });
-    bind(document, 'click', (event) => {
-      const startBtn = event.target.closest && event.target.closest('[data-zero-day-start]');
-      if (startBtn) {
-        startZeroDay(startBtn.dataset.zeroDayStart || 'single');
-        return;
-      }
-      const actionBtn = event.target.closest && event.target.closest('[data-zero-day-action]');
-      if (!actionBtn) return;
-      runZeroDayAction(actionBtn.dataset.zeroDayAction || '');
-    });
+    // v3.0.0 hotfix: removed legacy [data-zero-day-*] handler that called undefined startZeroDay/runZeroDayAction.
     setInterval(() => {
       if (document.body.classList.contains('app-view-lab') || (eventModalBackdrop && eventModalBackdrop.classList.contains('active'))) renderWeeklyPanel();
     }, 30000);
