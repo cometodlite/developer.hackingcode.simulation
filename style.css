@@ -5286,3 +5286,57 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   visibility: visible !important;
   pointer-events: auto !important;
 }
+
+/* v3.0.0 hotfix4: EVENT WEEKLY/PASS scroll unlock
+   EVENT panels have long content (weekly summary + difficulty + bonus + goal list).
+   Do not make only #weeklyGoalList scroll; the whole active EVENT panel must scroll
+   so BONUS/CLAIM/OPS sections after the goal list remain reachable. */
+#eventModalBody > .event-tab-panel.active {
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  padding-bottom: 28px !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+#eventTabWeekly.active,
+#eventTabPass.active {
+  display: block !important;
+}
+
+#eventTabWeekly.active > .event-intro,
+#eventTabWeekly.active > .weekly-head,
+#eventTabWeekly.active > .weekly-event-node,
+#eventTabWeekly.active > .weekly-filter,
+#eventTabWeekly.active > #progressTierSelector,
+#eventTabWeekly.active > #weeklyGoalList,
+#eventTabWeekly.active > #weeklyBonusCard,
+#eventTabWeekly.active > #opsShopMount,
+#eventTabPass.active > #passPanel {
+  flex: 0 0 auto !important;
+}
+
+#eventTabWeekly.active > #weeklyGoalList,
+#eventTabWeekly.active > #weeklyBonusCard,
+#eventTabWeekly.active > #opsShopMount,
+#eventTabPass.active > #passPanel {
+  min-height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#eventTabWeekly.active > .weekly-filter,
+#eventTabWeekly.active > #progressTierSelector {
+  position: relative !important;
+  top: auto !important;
+  z-index: 1 !important;
+}
+
+/* Keep the EVENT tab bar visible while the selected panel scrolls. */
+#eventModalBody > .event-tabs {
+  flex: 0 0 auto !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
