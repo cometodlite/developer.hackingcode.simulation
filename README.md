@@ -114,3 +114,9 @@
 - Added modal toolbar layering CSS so LIST / EVENT / More top controls stay visible while long lists scroll.
 - Strengthened save loading to compare v17, v16, and backup save candidates by progress score before choosing the source save.
 
+
+## v3.0.0 modal toolbar clipping hotfix - 2026-04-26
+
+- Fixed the More modal top tab/toolbar clipping where the tab row could collapse into a thin green bar.
+- Reworked LIST / EVENT / More modal CSS so header and toolbar areas remain in the layout while only long content lists scroll.
+- Protected CODEX, Mission/Achievement, and WEEKLY/PASS scroll areas from overlapping the modal toolbar.

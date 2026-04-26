@@ -5143,3 +5143,130 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 #listModalBody > .list-tabs {
   padding-top: 2px;
 }
+
+/* v3.0.0+ modal scroll architecture fix
+   Keep modal title/toolbars in the normal layout and scroll only the active content list.
+   This fixes LIST/More tabs being clipped into a thin bar when long lists are scrolled. */
+#moreModal,
+#listModal,
+#eventModal {
+  max-height: calc(100dvh - 96px);
+  overflow: hidden;
+}
+
+#moreModalBody,
+#listModalBody,
+#eventModalBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden !important;
+  display: flex;
+  flex-direction: column;
+}
+
+#moreModalBody > .more-tabs,
+#listModalBody > .list-tabs,
+#eventModalBody > .event-tabs {
+  position: relative !important;
+  top: auto !important;
+  z-index: 30;
+  flex: 0 0 auto;
+  min-height: 42px;
+  height: auto !important;
+  max-height: none !important;
+  padding: 8px !important;
+  margin: 0 0 8px !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: visible !important;
+  background: rgba(7, 10, 9, .98);
+  border: 1px solid rgba(94, 234, 212, .18);
+  border-radius: 8px;
+  box-shadow: none !important;
+}
+
+#moreModalBody .more-tab-button,
+#listModalBody .list-tab-button,
+#eventModalBody .event-tab-btn {
+  flex: 0 0 auto;
+  min-height: 28px;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+#moreModalBody > .more-tab-panel,
+#listModalBody > .list-tab-panel,
+#eventModalBody > .event-tab-panel {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+#moreModalBody > .more-tab-panel.active,
+#listModalBody > .list-tab-panel.active,
+#eventModalBody > .event-tab-panel.active {
+  display: flex !important;
+  flex-direction: column;
+}
+
+#tabCodex.active,
+#tabMission.active,
+#tabAchievement.active,
+#eventTabWeekly.active,
+#eventTabPass.active {
+  min-height: 0;
+}
+
+#tabCodex.active > .codex-summary-bar,
+#tabMission.active > .mission-scope-tabs,
+#tabAchievement.active > .achievement-toolbar,
+#eventTabWeekly.active > .weekly-filter,
+#eventTabWeekly.active > #progressTierSelector {
+  position: relative !important;
+  top: auto !important;
+  z-index: 20;
+  flex: 0 0 auto;
+  background: rgba(7, 10, 9, .98);
+  box-shadow: none !important;
+}
+
+#tabMission.active > .mission-scope-tabs,
+#tabAchievement.active > .achievement-toolbar,
+#eventTabWeekly.active > .weekly-filter {
+  padding: 6px 0;
+  margin-bottom: 6px;
+}
+
+#codexList,
+#missionList,
+#achievementList,
+#weeklyGoalList,
+#passPanel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+#weeklyGoalList {
+  padding-right: 2px;
+}
+
+@media (max-width: 720px) {
+  #moreModal,
+  #listModal,
+  #eventModal {
+    max-height: calc(100dvh - 72px);
+  }
+  #moreModalBody > .more-tabs,
+  #listModalBody > .list-tabs,
+  #eventModalBody > .event-tabs {
+    min-height: 40px;
+  }
+}
