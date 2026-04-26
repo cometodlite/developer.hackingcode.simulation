@@ -5404,27 +5404,70 @@ function applyLanguageToUI(){
             }</span>
           </div>
 
-          <!-- v3.0.0: PVP 비동기 트레이닝 매치 -->
+          <!-- v3.0.0+: PVP 비동기 트레이닝 매치 — 준비도 조건 명시 -->
           <div class="zd-pvp-section">
             <h4>${getLang()==='en'?'PVP (Async)':'PVP (비동기)'}</h4>
-            <p class="small">${getLang()==='en'?'Snapshot-based async duel against bot opponent (training mode). Cloud matchmaking expands later.':'스냅샷 기반 비동기 PVP — 봇 상대와 트레이닝 매치 (클라우드 매칭은 추후 확장).'}</p>
+            <p class="small">${getLang()==='en'?'Snapshot-based async duel against a bot opponent (training mode). Cloud matchmaking expands later. Each match costs 1 Vulnerability.':'스냅샷 기반 비동기 PVP — 봇 상대 트레이닝 매치 (클라우드 매칭은 추후 확장). 매치당 취약점 1개를 소모합니다.'}</p>
+            <div class="zd-pvp-readiness">
+              <div class="zd-readiness-head">
+                <strong>${getLang()==='en'?`Readiness ${condsMet}/3`:`준비도 ${condsMet}/3`}</strong>
+                <span class="small">${getLang()==='en'?'Meet 2 of 3 to enable PVP. Conditions ensure you have practical PVE experience.':'3개 중 2개를 충족하면 PVP가 활성화됩니다. 실제 PVE 경험이 있는지 검증합니다.'}</span>
+              </div>
+              <ul class="zd-readiness-list">
+                <li class="${cond1?'met':''}">
+                  <span class="zd-cond-mark">${cond1?'✓':'✗'}</span>
+                  <span class="zd-cond-text">
+                    <strong>${getLang()==='en'?'Hard PVE clear':'보통 이상 PVE 클리어'}</strong>
+                    <em class="small">${getLang()==='en'?'Extract from Normal/Hard/Danger difficulty at least once. Confirms you can handle real attack scenarios.':'보통/어려움/위험 난이도에서 1회 이상 탈출. 공격 시나리오를 다룰 수 있는지 확인합니다.'}</em>
+                  </span>
+                </li>
+                <li class="${cond2?'met':''}">
+                  <span class="zd-cond-mark">${cond2?'✓':'✗'}</span>
+                  <span class="zd-cond-text">
+                    <strong>${getLang()==='en'?'Clean exit experience':'정식 탈출 경험'}</strong>
+                    <em class="small">${getLang()==='en'?'Exit at least 1 PVE run via exfil/exit/disconnect (not lockdown).':'1회 이상 PVE 런을 정식 탈출 명령으로 종료 (봉쇄로 강제 종료 X).'}</em>
+                  </span>
+                </li>
+                <li class="${cond3?'met':''}">
+                  <span class="zd-cond-mark">${cond3?'✓':'✗'}</span>
+                  <span class="zd-cond-text">
+                    <strong>${getLang()==='en'?'Low-detection extract':'저탐지 탈출'}</strong>
+                    <em class="small">${getLang()==='en'?'Extract with detection below 50% at least once. Proves stealth ability.':'탐지율 50% 미만으로 1회 이상 탈출 — 은폐 능력 입증.'}</em>
+                  </span>
+                </li>
+              </ul>
+            </div>
             <div class="zd-pvp-stats">
               <span>${getLang()==='en'?'Wins':'승'}: ${zd.pvp.seasonWins||0}</span>
               <span>${getLang()==='en'?'Losses':'패'}: ${zd.pvp.seasonLosses||0}</span>
               <span>${getLang()==='en'?'Rating':'레이팅'}: ${zd.pvp.rating||1000}</span>
-              <span>${getLang()==='en'?'Conds':'준비도'}: ${condsMet}/3</span>
             </div>
             <button type="button" id="btnZdPvpMatch" ${pvpReady && getZdVulnCount() >= 1 ? '' : 'disabled'}>
               ${getLang()==='en'?'Match PVP (1 Vuln)':'PVP 매칭 (취약점 1)'}
             </button>
-            ${!pvpReady ? `<span class="small">${getLang()==='en'?'Need 2+ readiness conditions':'준비도 2개 이상 필요'}</span>` : ''}
+            ${!pvpReady ? `<span class="small zd-pvp-block-hint">⚠ ${getLang()==='en'?'Need 2 readiness conditions met (above)':'위 준비도 조건 중 2개 이상 충족 필요'}</span>` : ''}
+            ${pvpReady && getZdVulnCount() < 1 ? `<span class="small zd-pvp-block-hint">⚠ ${getLang()==='en'?'Need at least 1 Vulnerability':'취약점 1개 이상 필요'}</span>` : ''}
           </div>
 
           <!-- v3.0.0: 방어자 카드 슬롯 (3 기본 / 4슬롯 500 OneDay / 5슬롯 1500 OneDay) -->
           <div class="zd-defense-section">
             <h4>${getLang()==='en'?'Defense Loadout':'방어 로드아웃'}</h4>
-            <p class="small">${getLang()==='en'?`Slots ${slotCount}/5 — used in PVP defense. 3 uses per match, no duplicates.`:`슬롯 ${slotCount}/5 — PVP 방어에서 사용. 매치당 3회, 중복 불가.`}</p>
+            <p class="small">${getLang()==='en'?`Slots ${slotCount}/5 — equipped cards trigger automatically when defending in PVP. 3 uses per match, no duplicates.`:`슬롯 ${slotCount}/5 — 장착한 카드는 PVP 방어 시 자동 발동됩니다. 매치당 3회, 중복 불가.`}</p>
+            <div class="zd-defense-help small">
+              <span>${getLang()==='en'?'💡 Click "Equip" to add a card. Click "Change" to cycle through cards. The cycle ensures no duplicate slots.':'💡 "장착" 클릭으로 카드를 추가, "변경" 클릭으로 카드 순환. 같은 카드가 두 슬롯에 들어가지 않도록 자동 회피합니다.'}</span>
+            </div>
             <div class="zd-defense-slots">${slotsHtml}</div>
+            ${slotCards.filter(Boolean).length > 0 ? `
+            <div class="zd-defense-summary small">
+              <strong>${getLang()==='en'?'Equipped:':'장착 중:'}</strong>
+              ${slotCards.filter(Boolean).map(cid => {
+                const c = ZD_DEFENSE_CARDS[cid];
+                return `<span class="zd-eq-pill">${getLang()==='en'?c.en:c.ko}</span>`;
+              }).join(' ')}
+            </div>` : `
+            <div class="zd-defense-summary small empty">
+              <em>${getLang()==='en'?'No cards equipped. Empty defense — opponents pass through unopposed.':'장착된 카드 없음. 방어 무방비 — 상대 행동을 그대로 받게 됩니다.'}</em>
+            </div>`}
           </div>
 
           <!-- v3.0.0: 스킨 선택 -->
@@ -6249,6 +6292,7 @@ function applyLanguageToUI(){
       const code = getActiveCodeInstance();
       if (!code) {
         log(t('noCodeSync'), 'system');
+        showToast(t('noCodeSync'), 'warn');
         return;
       }
 
@@ -6258,6 +6302,7 @@ function applyLanguageToUI(){
       const shardCost = getSyncShardCost(code.syncLevel);
       if (code.shards < shardCost) {
         log(t('syncFailShards', { need: shardCost, have: code.shards }), 'system');
+        showToast(t('syncFailShards', { need: shardCost, have: code.shards }), 'warn');
         return;
       }
 
@@ -6270,7 +6315,9 @@ function applyLanguageToUI(){
 
       playSfx('upgrade');
       log(t('syncDone', { name: code.name, lv: code.syncLevel, pwr: powerBonus, rate: Math.round(getSyncSuccessBonus(code.syncLevel) * 100) }), 'system');
-      showToast(t('syncToast', { name: code.name, lv: code.syncLevel }), 'system');
+      // v3.0.0+: 동기화 결과 피드 (의미 있는 정보 포함)
+      const rateBonus = Math.round(getSyncSuccessBonus(code.syncLevel) * 100);
+      showToast(`${getLang()==='en'?'⟳ Sync':'⟳ 동기화'}: ${code.name} Lv.${code.syncLevel} (+${powerBonus} PWR / +${rateBonus}% rate)`, 'achievement');
       updateStatsUI();
       renderCodeList();
       renderCodeDetail();
@@ -6282,11 +6329,13 @@ function applyLanguageToUI(){
       const code = getActiveCodeInstance();
       if (!code) {
         log(t('noCodeUpgrade'), 'system');
+        showToast(t('noCodeUpgrade'), 'warn');
         return;
       }
       const cost = 100 * code.level;
       if (state.credits < cost) {
         log(t('upgradeFailCredits', { cost }), 'system');
+        showToast(t('upgradeFailCredits', { cost }), 'warn');
         return;
       }
       state.credits -= cost;
@@ -6296,6 +6345,8 @@ function applyLanguageToUI(){
 	      trackWeeklyChallenge('code_upgrade', { codeId: code.id });
       playSfx('upgrade');
       log(t('upgradeDone', { name: code.name, lv: code.level, pwr: code.power, cost }), 'system');
+      // v3.0.0+: 강화 결과 피드 (토스트)
+      showToast(`${getLang()==='en'?'⬆ Upgrade':'⬆ 강화'}: ${code.name} Lv.${code.level} (+5 PWR → ${code.power})`, 'achievement');
       updateStatsUI();
       renderCodeList();
       renderCodeDetail();
@@ -6308,19 +6359,23 @@ function applyLanguageToUI(){
       const code = getActiveCodeInstance();
       if (!code) {
         log(t('noCodeEvolve'), 'system');
+        showToast(t('noCodeEvolve'), 'warn');
         return;
       }
       if (code.rarity === 'LEGENDARY') {
         log(t('maxRarity'), 'system');
+        showToast(t('maxRarity'), 'warn');
         return;
       }
       if (code.level < 5) {
         log(t('evolveNeedLv'), 'system');
+        showToast(t('evolveNeedLv'), 'warn');
         return;
       }
       const idx = rarityOrder.indexOf(code.rarity);
       if (idx === -1 || idx === rarityOrder.length - 1) {
         log(t('evolveCannot'), 'system');
+        showToast(t('evolveCannot'), 'warn');
         return;
       }
       const nextRarity = rarityOrder[idx + 1];
@@ -6330,6 +6385,8 @@ function applyLanguageToUI(){
 	      trackWeeklyChallenge('code_evolve', { codeId: code.id, rarity: nextRarity });
       playSfx('upgrade');
       log(t('evolveDone', { name: code.name, rarity: nextRarity, pwr: code.power }), 'system');
+      // v3.0.0+: 진화 결과 피드 (희귀도 변동은 강조)
+      showToast(`${getLang()==='en'?'★ Evolution':'★ 진화'}: ${code.name} → ${localizeRarityLabel(nextRarity)} (+10 PWR → ${code.power})`, 'achievement');
 
       if (nextRarity === 'EPIC' || nextRarity === 'LEGENDARY') {
         unlockAchievement('get_epic_code');
@@ -6360,7 +6417,8 @@ function applyLanguageToUI(){
       state.stats.codeShardsSpentTotal = (state.stats.codeShardsSpentTotal || 0) + cost;
       playSfx('upgrade');
       log(t('shardEnhanceDone', { name: code.name, pwr: code.power, cost }), 'system');
-      showToast(t('shardEnhanceDone', { name: code.name, pwr: code.power, cost }), 'system');
+      // v3.0.0+: 조각 강화 결과 피드 (조각 잔량 포함)
+      showToast(`${getLang()==='en'?'◇ Shard':'◇ 조각'}: ${code.name} +2 PWR → ${code.power} (-${cost}, ${code.shards}${getLang()==='en'?' left':' 남음'})`, 'achievement');
       renderCodeList();
       renderCodeDetail();
       updateStatsUI();

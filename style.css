@@ -322,33 +322,64 @@ button:hover {
       touch-action: manipulation;
     }
 
+    /* v3.0.0+: SHOP 카드 배치 개선 — 각 카드를 독립 카드로 시각화, 정보 밀도 향상 */
     .shop-item {
-      border-bottom: 1px solid #111;
-      padding: 6px 0;
+      border: 1px solid #1a2030;
+      border-radius: 8px;
+      background: rgba(11, 18, 32, 0.55);
+      padding: 10px 12px;
       font-size: 12px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 6px;
+      margin-bottom: 8px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .shop-item:hover {
+      border-color: #2a3a55;
+      background: rgba(15, 25, 40, 0.65);
     }
 
     .shop-head {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      gap: 6px;
+      align-items: flex-start;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .shop-name {
       font-weight: 600;
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
     }
 
     .shop-cost {
-      font-size: 11px;
-      opacity: 0.8;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffd166;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .shop-limit-badge {
+      font-size: 9px !important;
+      color: #88a;
+      margin-left: 0 !important;
+      opacity: 0.95 !important;
     }
 
     .shop-desc {
       opacity: 0.8;
+      line-height: 1.45;
+      color: #b9c9d4;
     }
 
     .shop-meta {
@@ -356,9 +387,31 @@ button:hover {
       opacity: 0.85;
     }
 
-    .shop-item button {
-      align-self: flex-start;
-      margin-top: 2px;
+    /* 구매 버튼은 카드 우하단으로 정렬 */
+    .shop-foot {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+    .shop-item button.shop-buy {
+      padding: 5px 14px;
+      background: #0e1f3a;
+      border: 1px solid #2a4a7a;
+      color: #7ecfff;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      margin-top: 0;
+    }
+    .shop-item button.shop-buy:hover:not(:disabled) {
+      background: #1a3a5a;
+      border-color: #7ecfff;
+    }
+    .shop-item button.shop-buy:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     .center-inner {
@@ -2102,6 +2155,24 @@ body.app-shell-ui .list-tabs{
   background:rgba(7,10,9,.96);
   backdrop-filter:blur(12px);
   margin-bottom:6px;
+}
+/* v3.0.0+ fix: EVENT 모달 내부 weekly-filter도 sticky (필터 바 가림 방지) */
+#eventModalBody .weekly-filter{
+  position:sticky;
+  top:54px;
+  z-index:5;
+  padding:6px 0;
+  background:rgba(7,10,9,.96);
+  backdrop-filter:blur(8px);
+  margin-bottom:6px;
+}
+/* EVENT 모달 본문은 탭 아래에서 분리된 스크롤 — body 자체 스크롤만 사용 */
+#eventModalBody .weekly-goal-list,
+#eventModalBody .weekly-bonus-card,
+#eventModalBody #opsShopMount,
+#eventModalBody .pass-tier-list{
+  position:relative;
+  z-index:1;
 }
 /* 미션 / 업적 탭의 두 번째 줄 (DAILY/WEEKLY 등 또는 필터) */
 #listModalBody .mission-scope-tabs,
@@ -4227,6 +4298,83 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 }
 .zd-pvp-recommend ul li { margin-bottom: 2px; }
 
+/* v3.0.0+: PVP 준비도 조건 리스트 (각 조건의 의미를 명시) */
+.zd-pvp-readiness {
+  margin: 8px 0;
+  padding: 10px;
+  background: rgba(7, 18, 28, 0.55);
+  border: 1px solid rgba(94, 234, 212, 0.2);
+  border-radius: 6px;
+}
+.zd-readiness-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.zd-readiness-head strong {
+  font-size: 12px;
+  color: #5eead4;
+  letter-spacing: 0.5px;
+}
+.zd-readiness-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.zd-readiness-list li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px;
+  border-radius: 4px;
+  background: rgba(15, 25, 22, 0.4);
+  border: 1px solid rgba(94, 234, 212, 0.08);
+  opacity: 0.7;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+.zd-readiness-list li.met {
+  opacity: 1;
+  border-color: rgba(94, 234, 212, 0.4);
+  background: rgba(20, 60, 40, 0.3);
+}
+.zd-cond-mark {
+  font-size: 14px;
+  font-weight: 700;
+  color: #d65a5a;
+  min-width: 16px;
+  text-align: center;
+}
+.zd-readiness-list li.met .zd-cond-mark {
+  color: #44ff88;
+}
+.zd-cond-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.zd-cond-text strong {
+  font-size: 11px;
+  color: #ddd;
+}
+.zd-cond-text em {
+  font-style: normal;
+  color: #889;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.zd-pvp-block-hint {
+  display: block;
+  margin-top: 6px;
+  color: #ffaa66;
+  padding: 4px 0;
+}
+
 /* v3.0.0: ZD 방어 카드 슬롯 */
 .zd-defense-section,
 .zd-skin-section,
@@ -4295,6 +4443,41 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   cursor: pointer;
 }
 .zd-defense-slot button:hover { background: #1a3a1a; }
+
+/* v3.0.0+: 방어 로드아웃 도움말 + 장착 요약 */
+.zd-defense-help {
+  margin: 4px 0 8px;
+  color: #6b8a72;
+  font-size: 10px;
+  line-height: 1.5;
+  padding: 6px 8px;
+  background: rgba(15, 25, 22, 0.4);
+  border-left: 2px solid #2a5a3a;
+  border-radius: 3px;
+}
+.zd-defense-summary {
+  margin-top: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: rgba(20, 40, 30, 0.4);
+  border: 1px solid rgba(94, 234, 212, 0.18);
+}
+.zd-defense-summary.empty {
+  background: rgba(40, 25, 20, 0.4);
+  border-color: rgba(255, 100, 100, 0.18);
+  color: #aa8866;
+}
+.zd-eq-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px 2px;
+  background: #0e2a0e;
+  border: 1px solid #44ff88;
+  color: #44ff88;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+}
 
 /* v3.0.0: ZD 스킨 카드 */
 .zd-skin-grid {
