@@ -1,12 +1,28 @@
-/** * Fixed: global translation helper for app-ui.js 
- */
+
+/* --- 통합 오류 수정 패치 --- */
 window.t = function(key) {
     const lang = (typeof state !== 'undefined' && state.language) ? state.language : 'ko';
-    if (typeof I18N !== 'undefined' && I18N[lang] && I18N[lang][key]) {
-        return I18N[lang][key];
-    }
-    return key;
+    return (typeof I18N !== 'undefined' && I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : key;
 };
+
+window.escapeHtml = function(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+};
+
+(function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .mission-list-container, .achievement-list-container, .list-content-area {
+            max-height: calc(100vh - 200px) !important;
+            overflow-y: auto !important;
+            padding-bottom: 120px !important;
+            box-sizing: border-box !important;
+        }
+    `;
+    document.head.appendChild(style);
+})();
+/* ------------------------ */
 
 const CURRENT_VERSION = '3.0.0';
 const TUTORIAL_VERSION = 6;
