@@ -208,10 +208,25 @@
     ];
   }
 
+  // v3.0.1 Foundation Prep 고정 공지 (Firebase 여부 무관하게 항상 상단 표시)
+  const PINNED_ANNOUNCEMENTS = [
+    {
+      id: 'foundation-prep-301',
+      title: text('HCSiG v3.0.1 — Foundation Prep Update', 'HCSiG v3.0.1 — Foundation Prep Update'),
+      body: text(
+        'HOME에 "오늘 할 일" 요약이 추가되었습니다. CODES 탭이 INVENTORY로 개편되어 CODES / ITEMS 두 패널로 분리되었습니다. DAILY 미션 완료 상태 저장이 강화되었습니다. 이번 업데이트는 3.0.0의 심화 시스템을 안정적으로 받기 위한 기반 패치입니다.',
+        '"Today" summary added to HOME. CODES tab renamed to INVENTORY with CODES / ITEMS panels. Daily mission save stability improved. This update is a foundation patch preparing for future 3.0.x deep systems.'
+      ),
+      createdAt: 1745712000000, // 2026-04-27
+      level: 'UPDATE'
+    }
+  ];
+
   function fallbackAnnouncements(status){
     const liveStatus = normalizeStatus(status || 'LOCAL MIRROR');
     if (liveStatus === 'ONLINE') {
       return [
+        ...PINNED_ANNOUNCEMENTS,
         {
           id:'online-brief',
 	          title:'WEEKLY OPS ACTIVE',
@@ -223,6 +238,7 @@
     }
     if (liveStatus === 'DEGRADED') {
       return [
+        ...PINNED_ANNOUNCEMENTS,
         {
           id:'degraded-brief',
           title:'Route Degraded',
@@ -234,6 +250,7 @@
     }
     if (liveStatus === 'MAINTENANCE') {
       return [
+        ...PINNED_ANNOUNCEMENTS,
         {
           id:'maintenance-brief',
           title:'Maintenance Window',
@@ -244,6 +261,7 @@
       ];
     }
     return [
+      ...PINNED_ANNOUNCEMENTS,
       {
         id:'local-brief',
         title:'LOCAL MIRROR',
@@ -454,8 +472,10 @@
   }
 
   function getAnnouncementItems(status){
-    const items = (state.announcements || []).filter(item => item && item.active !== false);
-    return items.length ? items : fallbackAnnouncements(status || getLiveStatus());
+    const firebase = (state.announcements || []).filter(item => item && item.active !== false);
+    // v3.0.1: PINNED 항목은 Firebase 공지보다 항상 앞에 표시
+    const pinned = PINNED_ANNOUNCEMENTS.filter(p => !firebase.some(f => f.id === p.id));
+    return firebase.length ? [...pinned, ...firebase] : fallbackAnnouncements(status || getLiveStatus());
   }
 
   function renderRankTabs(){

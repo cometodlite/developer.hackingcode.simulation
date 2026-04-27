@@ -298,6 +298,21 @@
   });
   if(scanOverlay && scanOverlay.parentElement !== views.home) views.home.appendChild(scanOverlay);
   if(statusBox) statusBox.classList.add('home-status-grid');
+
+  // v3.0.1: "오늘 할 일" 요약 카드
+  if(!document.getElementById('todaySummaryBox')){
+    const todayBox = document.createElement('div');
+    todayBox.id = 'todaySummaryBox';
+    todayBox.className = 'today-summary-box stat-box';
+    todayBox.innerHTML = `
+      <div class="today-summary-header">
+        <span class="badge">TODAY</span>
+        <span class="today-summary-title" id="todaySummaryTitle">${label('todayTitle','오늘 할 일')}</span>
+      </div>
+      <div id="todaySummaryContent" class="today-summary-content"></div>
+    `;
+    homeCockpit.appendChild(todayBox);
+  }
   if(actionBox) {
     actionBox.classList.add('home-actions-box');
     const loadoutLabel = document.getElementById('labelLoadout');
@@ -321,6 +336,60 @@
     codeRow.classList.add('app-codes-layout');
     if(codeRow.parentElement !== views.codes) views.codes.appendChild(codeRow);
   }
+
+  // v3.0.1: INVENTORY 서브탭 (CODES / ITEMS) 삽입
+  if(!document.getElementById('inventorySubtabs')){
+    const subtabs = document.createElement('div');
+    subtabs.id = 'inventorySubtabs';
+    subtabs.className = 'inventory-subtabs';
+    subtabs.innerHTML = `
+      <button type="button" class="inventory-subtab active" data-inv-tab="codes">${label('inventoryCodesTab','CODES')}</button>
+      <button type="button" class="inventory-subtab" data-inv-tab="items">${label('inventoryItemsTab','ITEMS')}</button>
+    `;
+    views.codes.insertBefore(subtabs, views.codes.firstChild);
+  }
+
+  if(!document.getElementById('inventoryItemsPanel')){
+    const itemsPanel = document.createElement('div');
+    itemsPanel.id = 'inventoryItemsPanel';
+    itemsPanel.className = 'inventory-panel inventory-items-panel';
+    itemsPanel.setAttribute('aria-hidden', 'true');
+    itemsPanel.style.display = 'none';
+    itemsPanel.innerHTML = `<div id="itemsContent" class="items-content"></div>`;
+    views.codes.appendChild(itemsPanel);
+  }
+
+  // 서브탭 클릭 핸들러
+  (function(){
+    function setInvTab(tab){
+      const subtabsEl = document.getElementById('inventorySubtabs');
+      const itemsEl = document.getElementById('inventoryItemsPanel');
+      const codesEl = codeRow;
+      if(!subtabsEl) return;
+      subtabsEl.querySelectorAll('[data-inv-tab]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.invTab === tab);
+      });
+      if(codesEl){
+        codesEl.style.display = tab === 'codes' ? '' : 'none';
+        codesEl.setAttribute('aria-hidden', tab !== 'codes' ? 'true' : 'false');
+      }
+      if(itemsEl){
+        itemsEl.style.display = tab === 'items' ? '' : 'none';
+        itemsEl.setAttribute('aria-hidden', tab !== 'items' ? 'true' : 'false');
+      }
+      // ITEMS 패널 렌더
+      if(tab === 'items'){
+        try{ document.dispatchEvent(new CustomEvent('hcsig:render-items')); }catch(e){}
+      }
+    }
+    document.addEventListener('click', function(e){
+      const btn = e.target.closest('[data-inv-tab]');
+      if(!btn) return;
+      setInvTab(btn.dataset.invTab);
+    });
+    // 초기 상태: CODES 탭
+    setInvTab('codes');
+  })();
   if(moreModal && moreModalBackdrop && moreModal.parentElement !== moreModalBackdrop){
     moreModalBackdrop.appendChild(moreModal);
   }
@@ -425,7 +494,7 @@
   nav.className = 'mobile-tabs app-main-tabs';
   nav.innerHTML = `
     <button type="button" data-main-view="shop">${label('mobileShop', 'SHOP')}</button>
-    <button type="button" data-main-view="codes">${label('mobileCodes', 'CODES')}</button>
+    <button type="button" data-main-view="codes">${label('mobileInventory', 'INVENTORY')}</button>
     <button type="button" data-main-view="home">${label('mobileHome', 'HOME')}</button>
     <button type="button" data-main-view="lab">${label('mobileLab', 'LAB')}</button>
     <button type="button" data-main-view="coming" data-nav-coming="1">${label('mobileComing', 'COMING SOON')}</button>
@@ -492,10 +561,22 @@
 
   function syncLabels(){
     nav.querySelector('[data-main-view="shop"]').textContent = label('mobileShop', 'SHOP');
-    nav.querySelector('[data-main-view="codes"]').textContent = label('mobileCodes', 'CODES');
+    nav.querySelector('[data-main-view="codes"]').textContent = label('mobileInventory', 'INVENTORY');
     nav.querySelector('[data-main-view="home"]').textContent = label('mobileHome', 'HOME');
     nav.querySelector('[data-main-view="lab"]').textContent = label('mobileLab', 'LAB');
     nav.querySelector('[data-main-view="coming"]').textContent = label('mobileComing', 'COMING SOON');
+    // 서브탭 라벨 동기화
+    try {
+      const subtabsEl = document.getElementById('inventorySubtabs');
+      if(subtabsEl){
+        const cBtn = subtabsEl.querySelector('[data-inv-tab="codes"]');
+        const iBtn = subtabsEl.querySelector('[data-inv-tab="items"]');
+        if(cBtn) cBtn.textContent = label('inventoryCodesTab','CODES');
+        if(iBtn) iBtn.textContent = label('inventoryItemsTab','ITEMS');
+      }
+      const tTitle = document.getElementById('todaySummaryTitle');
+      if(tTitle) tTitle.textContent = label('todayTitle','오늘 할 일');
+    } catch(e) {}
   }
   window.addEventListener('hcsig:language-applied', syncLabels);
   window.addEventListener('resize', syncTabsHeight, {passive:true});
@@ -515,7 +596,7 @@
     try {
       if (typeof t !== 'function') return;
       document.querySelectorAll('[data-main-view="shop"]').forEach(el => { el.textContent = t('mobileShop'); });
-      document.querySelectorAll('[data-main-view="codes"]').forEach(el => { el.textContent = t('mobileCodes'); });
+      document.querySelectorAll('[data-main-view="codes"]').forEach(el => { el.textContent = t('mobileInventory'); });
       document.querySelectorAll('[data-main-view="home"]').forEach(el => { el.textContent = t('mobileHome'); });
       document.querySelectorAll('[data-main-view="lab"]').forEach(el => { el.textContent = t('mobileLab'); });
       document.querySelectorAll('[data-main-view="coming"]').forEach(el => { el.textContent = t('mobileComing'); });
