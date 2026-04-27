@@ -4351,22 +4351,30 @@ function applyLanguageToUI(){
           </div>
         `;
 
-        // 계정 ID 표시
+        // 계정 ID 표시 — window.HCSIG_CURRENT_USER 는 auth.js의 onAuthStateChanged 에서 설정
         const idEl = el.querySelector('#supportIdValue');
         if (idEl) {
           try {
-            const uid = window._hcsigUid || null;
-            const nick = (state.ui && state.ui.nickname) || null;
-            idEl.textContent = uid ? uid : (nick || (lang === 'en' ? '(not logged in)' : '(로그인 전)'));
+            const cu = window.HCSIG_CURRENT_USER || null;
+            if (cu) {
+              // 이메일 있으면 이메일, 없으면 UID 표시
+              idEl.textContent = cu.email || cu.uid;
+            } else {
+              idEl.textContent = lang === 'en' ? '(not logged in)' : '(로그인 전)';
+            }
           } catch(e) { idEl.textContent = '—'; }
         }
 
-        // 복사 버튼
+        // 복사 버튼 — 표시값(이메일) + UID를 함께 복사
         const copyBtn = el.querySelector('#btnSupportCopyId');
         if (copyBtn && idEl) {
           copyBtn.addEventListener('click', () => {
             try {
-              navigator.clipboard.writeText(idEl.textContent);
+              const cu = window.HCSIG_CURRENT_USER || null;
+              const copyText = cu
+                ? (cu.email ? `${cu.email} (${cu.uid})` : cu.uid)
+                : idEl.textContent;
+              navigator.clipboard.writeText(copyText);
               showToast(lang === 'en' ? 'Copied!' : '복사되었습니다.', 'system');
             } catch(e) {}
           });

@@ -379,6 +379,10 @@
     setStatus('Firebase 인증 중... 잠시만 기다려주세요.');
     window.HCSIG_FB.auth.onAuthStateChanged(async (user)=>{
       state.user = user || null;
+      // 다른 모듈(app-core.js 등)이 현재 로그인 유저에 접근할 수 있도록 공유
+      window.HCSIG_CURRENT_USER = user
+        ? { uid: user.uid, email: user.email || '', displayName: user.displayName || '' }
+        : null;
       state.initialized = true;
       setLoggedInView(user || null);
       if (user) {
