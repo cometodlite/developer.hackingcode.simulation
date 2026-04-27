@@ -5,13 +5,13 @@
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>HCSiG - Hacking Code Simulator Game</title>
 <!-- cache-busting: bump ?v=... on release updates -->
-<link href="style.css?v=3.0.1c" rel="stylesheet"/>
+<link href="style.css?v=3.0.2" rel="stylesheet"/>
 </head>
 <body>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">3.0.1 (Web)</span>
+<span class="header-version">3.0.2 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -287,6 +287,7 @@
     <div class="event-tabs">
       <button class="event-tab-btn active" data-event-tab="weekly" id="eventTabBtnWeekly">WEEKLY</button>
       <button class="event-tab-btn" data-event-tab="pass" id="eventTabBtnPass">PASS</button>
+      <button class="event-tab-btn" data-event-tab="roulette" id="eventTabBtnRoulette">ROULETTE</button>
     </div>
 
     <!-- WEEKLY CHALLENGE 패널 -->
@@ -329,6 +330,11 @@
     <div class="event-tab-panel" id="eventTabPass">
       <div id="passPanel"></div>
     </div>
+
+    <!-- ROULETTE 패널 -->
+    <div class="event-tab-panel" id="eventTabRoulette">
+      <div id="beginnerRouletteMount"></div>
+    </div>
   </div>
   <div id="eventModalFooter"><button id="btnEventClose2">닫기</button></div>
 </div>
@@ -351,6 +357,7 @@
       <button class="more-tab-button"        data-tab="save"     id="tabBtnSave">클라우드 계정</button>
       <button class="more-tab-button"        data-tab="credits"  id="tabBtnCredits">CREDITS</button>
       <button class="more-tab-button"        data-tab="manual"   id="tabBtnManual">설명서</button>
+      <button class="more-tab-button"        data-tab="support"  id="tabBtnSupport">SUPPORT</button>
     </div>
     <!-- v3.0.0: 튜토리얼 다시 보기는 설정 탭 안으로 이동됨. 더보기 상단의 플로팅 버튼 제거 -->
 
@@ -690,6 +697,11 @@
       </div>
     </div>
 
+    <!-- SUPPORT 탭 -->
+    <div class="more-tab-panel" id="tabSupport">
+      <div id="supportPanelMount"></div>
+    </div>
+
   </div><!-- /moreModalBody -->
   <div id="moreModalFooter"><button id="btnMoreClose2">닫기</button></div>
 </div>
@@ -780,10 +792,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js?v=3.0.1"></script>
-<script src="auth.js?v=3.0.1c"></script>
-<script src="cloudSave.js?v=3.0.1c"></script>
-<script src="app-core.js?v=3.0.1c"></script>
-<script src="app-ui.js?v=3.0.1c"></script>
-<script src="liveOps.js?v=3.0.1c"></script>
+<script src="auth.js?v=3.0.2"></script>
+<script src="cloudSave.js?v=3.0.2"></script>
+<script src="app-core.js?v=3.0.2"></script>
+<script src="app-ui.js?v=3.0.2"></script>
+<script src="liveOps.js?v=3.0.2"></script>
 </body>
 </html>

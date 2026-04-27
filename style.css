@@ -5665,4 +5665,201 @@ header button.header-glow-reward {
   border-color: rgba(0,255,136,0.25) !important;
 }
 
+/* ══ v3.0.2 BEGINNER ROULETTE ════════════════════════ */
+.roulette-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.roulette-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffd700;
+}
+.roulette-progress {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+}
+.roulette-desc {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 12px;
+}
+.roulette-guaranteed {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,255,136,0.08);
+  border: 1px solid rgba(0,255,136,0.25);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+.roulette-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.45);
+}
+.roulette-reward {
+  font-size: 12px;
+  font-weight: 600;
+  color: #00ff88;
+}
+.roulette-bonus-section {
+  margin-bottom: 14px;
+}
+.roulette-prob-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  margin-top: 6px;
+}
+.roulette-prob-table th {
+  text-align: left;
+  padding: 4px 6px;
+  color: rgba(255,255,255,0.45);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-weight: 500;
+}
+.roulette-prob-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.roulette-claim-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(255,215,0,0.18), rgba(255,165,0,0.12));
+  border: 1px solid rgba(255,200,0,0.40);
+  border-radius: 8px;
+  color: #ffd700;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  animation: glow-action-pulse 2.5s ease-in-out infinite;
+}
+.roulette-claim-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(255,215,0,0.28), rgba(255,165,0,0.20));
+}
+.roulette-claim-btn.disabled,
+.roulette-claim-btn:disabled {
+  opacity: 0.40;
+  cursor: not-allowed;
+  animation: none;
+  color: rgba(255,255,255,0.4);
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.04);
+}
+.roulette-expired {
+  text-align: center;
+  padding: 24px;
+  color: rgba(255,255,255,0.35);
+  font-size: 12px;
+}
+
+/* ══ v3.0.2 SUPPORT PANEL ══════════════════════════ */
+.support-header {
+  margin-bottom: 14px;
+}
+.support-header h3 {
+  margin: 6px 0 4px;
+  font-size: 15px;
+}
+.support-header p {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+}
+.support-products {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.support-product-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.support-product-name {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.support-product-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffd700;
+  margin-bottom: 4px;
+}
+.support-product-reward {
+  font-size: 11px;
+  color: #00ff88;
+  margin-bottom: 3px;
+}
+.support-product-desc {
+  color: rgba(255,255,255,0.45);
+}
+.support-how {
+  margin-bottom: 12px;
+}
+.support-how-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 4px;
+}
+.support-id-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 14px;
+}
+.support-id-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  white-space: nowrap;
+}
+.support-id-value {
+  flex: 1;
+  font-size: 11px;
+  font-family: monospace;
+  word-break: break-all;
+}
+.support-copy-btn {
+  font-size: 10px;
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.support-contact-area {
+  margin-bottom: 8px;
+}
+.support-link-btn {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 6px 14px;
+  background: rgba(0,255,136,0.10);
+  border: 1px solid rgba(0,255,136,0.30);
+  border-radius: 6px;
+  color: #00ff88;
+  font-size: 12px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.support-link-btn:hover {
+  background: rgba(0,255,136,0.20);
+}
+
 

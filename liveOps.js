@@ -211,6 +211,16 @@
   // v3.0.1 Foundation Prep 고정 공지 (Firebase 여부 무관하게 항상 상단 표시)
   const PINNED_ANNOUNCEMENTS = [
     {
+      id: 'convenience-update-302',
+      title: text('HCSiG v3.0.2 — Convenience Update', 'HCSiG v3.0.2 — Convenience Update'),
+      body: text(
+        '신규 아이템 타임 스와프(2h/5h/10h) · TRACE 앰플 · NULL 시드가 추가되었습니다. 초보자 한정 룰렛(EVENT→ROULETTE)이 오픈됩니다. 일일 미션 3종에 COIN 보상이 추가되었습니다. Support Pack 수동 결제 시스템이 MORE→SUPPORT에 추가되었습니다.',
+        'New items: Time Swap (2h/5h/10h), TRACE Ample, NULL Seed added. Beginner Roulette (EVENT→ROULETTE) is now open. COIN rewards added to 3 daily missions. Support Pack manual payment system added in MORE→SUPPORT.'
+      ),
+      createdAt: 1745798400000, // 2026-04-28
+      level: 'UPDATE'
+    },
+    {
       id: 'foundation-prep-301',
       title: text('HCSiG v3.0.1 — Foundation Prep Update', 'HCSiG v3.0.1 — Foundation Prep Update'),
       body: text(
