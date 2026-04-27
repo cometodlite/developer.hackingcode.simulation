@@ -5511,6 +5511,11 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   background: rgba(0,255,136,0.06);
   animation: glow-done-breathe 2s ease-in-out infinite;
 }
+.auto-run-card.auto-run-paused-state {
+  border-color: rgba(255,200,0,0.35);
+  background: rgba(255,200,0,0.05);
+  animation: glow-action-pulse 3s ease-in-out infinite;
+}
 .auto-run-card-name {
   font-size: 11px;
   font-weight: 700;
@@ -5540,6 +5545,9 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   letter-spacing: 0.04em;
   margin-bottom: 2px;
 }
+.auto-run-timer.auto-run-timer-paused {
+  color: #ffd700;
+}
 .auto-run-tag {
   font-size: 9px;
   color: #00ff88;
@@ -5547,6 +5555,14 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+.auto-run-tag.auto-run-tag-paused {
+  color: #ffd700;
+}
+.auto-run-pause-row {
+  display: flex;
+  gap: 5px;
+  margin-top: auto;
 }
 .auto-run-card-btn {
   font-size: 10px;
@@ -5573,6 +5589,31 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 }
 .auto-run-stop-btn:hover:not(:disabled) {
   background: rgba(255,60,60,0.20);
+}
+.auto-run-pause-btn {
+  border-color: rgba(255,200,0,0.45);
+  color: #ffd700;
+  background: rgba(255,200,0,0.08);
+}
+.auto-run-pause-btn:hover:not(:disabled) {
+  background: rgba(255,200,0,0.16);
+}
+.auto-run-resume-btn {
+  flex: 1;
+  border-color: rgba(0,255,136,0.45);
+  color: #00ff88;
+  background: rgba(0,255,136,0.08);
+}
+.auto-run-resume-btn:hover:not(:disabled) {
+  background: rgba(0,255,136,0.16);
+}
+.auto-run-end-btn {
+  border-color: rgba(255,80,80,0.45);
+  color: #ff8080;
+  background: rgba(255,60,60,0.08);
+}
+.auto-run-end-btn:hover:not(:disabled) {
+  background: rgba(255,60,60,0.18);
 }
 
 /* ── LIVE NET UPDATE level badge ─────────────────────────────── */
