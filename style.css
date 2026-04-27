@@ -5302,8 +5302,17 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 }
 
 #eventTabWeekly.active,
-#eventTabPass.active {
+#eventTabPass.active,
+#eventTabRoulette.active {
   display: block !important;
+}
+
+#eventTabRoulette.active {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 28px !important;
 }
 
 #eventTabWeekly.active > .event-intro,
@@ -5339,6 +5348,24 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   flex: 0 0 auto !important;
   position: relative !important;
   z-index: 10 !important;
+}
+
+/* ── MORE modal: 스크롤이 필요한 탭 패널 ──────────────────────
+   CODEX/MISSION/ACHIEVEMENT는 내부 리스트가 스크롤을 담당.
+   LIVE NET · RANK · SETTINGS · SAVE · CREDITS · MANUAL · SUPPORT는
+   패널 자체가 스크롤해야 함. */
+#tabLiveNet.active,
+#tabRank.active,
+#tabSettings.active,
+#tabSave.active,
+#tabCredits.active,
+#tabManual.active,
+#tabSupport.active {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 2px 4px 32px !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
