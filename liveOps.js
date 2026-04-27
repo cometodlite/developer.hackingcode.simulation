@@ -214,8 +214,8 @@
       id: 'foundation-prep-301',
       title: text('HCSiG v3.0.1 — Foundation Prep Update', 'HCSiG v3.0.1 — Foundation Prep Update'),
       body: text(
-        'HOME에 "오늘 할 일" 요약이 추가되었습니다. CODES 탭이 INVENTORY로 개편되어 CODES / ITEMS 두 패널로 분리되었습니다. DAILY 미션 완료 상태 저장이 강화되었습니다. 이번 업데이트는 3.0.0의 심화 시스템을 안정적으로 받기 위한 기반 패치입니다.',
-        '"Today" summary added to HOME. CODES tab renamed to INVENTORY with CODES / ITEMS panels. Daily mission save stability improved. This update is a foundation patch preparing for future 3.0.x deep systems.'
+        'HOME에 "오늘 할 일" 요약이 추가되었습니다. CODES 탭이 INVENTORY로 개편되어 CODES / ITEMS 두 패널로 분리되었습니다. ITEMS 패널에 AUTO-RUN 시스템이 추가되었습니다: 자동 스캔(10 COIN, 10초마다, 1시간)과 자동 해킹(15 COIN, 20초마다, 30분), 일일 3회, 에너지 팩 자동 소모 지원. DAILY 미션 완료 상태 저장이 강화되었습니다. 이번 업데이트는 3.0.0의 심화 시스템을 안정적으로 받기 위한 기반 패치입니다.',
+        '"Today" summary added to HOME. CODES tab renamed to INVENTORY with CODES / ITEMS panels. AUTO-RUN system added to ITEMS panel: Auto Scan (10 COIN, every 10s, 1 hour) and Auto Hack (15 COIN, every 20s, 30 min), 3 uses/day, auto-consumes Energy Packs. Daily mission save stability improved. This update is a foundation patch preparing for future 3.0.x deep systems.'
       ),
       createdAt: 1745712000000, // 2026-04-27
       level: 'UPDATE'

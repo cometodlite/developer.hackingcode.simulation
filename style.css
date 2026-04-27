@@ -5488,6 +5488,93 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   padding: 4px 2px;
 }
 
+/* ── AUTO-RUN 카드 ──────────────────────────────────────────── */
+.auto-run-grid {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.auto-run-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  padding: 10px 8px 8px;
+  text-align: center;
+  transition: border-color 0.3s, background 0.3s;
+}
+.auto-run-card.auto-run-active {
+  border-color: rgba(0,255,136,0.40);
+  background: rgba(0,255,136,0.06);
+  animation: glow-done-breathe 2s ease-in-out infinite;
+}
+.auto-run-card-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 3px;
+}
+.auto-run-card-cost {
+  font-size: 10px;
+  color: #ffd700;
+  margin-bottom: 2px;
+}
+.auto-run-card-info {
+  font-size: 9px;
+  color: rgba(255,255,255,0.42);
+  margin-bottom: 5px;
+}
+.auto-run-uses {
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 6px;
+}
+.auto-run-timer {
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #00ff88;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.auto-run-tag {
+  font-size: 9px;
+  color: #00ff88;
+  opacity: 0.8;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.auto-run-card-btn {
+  font-size: 10px;
+  padding: 3px 10px;
+  margin-top: auto;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 5px;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.auto-run-card-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.16);
+}
+.auto-run-card-btn:disabled {
+  opacity: 0.30;
+  cursor: not-allowed;
+}
+.auto-run-stop-btn {
+  border-color: rgba(255,80,80,0.50);
+  color: #ff8080;
+  background: rgba(255,60,60,0.10);
+}
+.auto-run-stop-btn:hover:not(:disabled) {
+  background: rgba(255,60,60,0.20);
+}
+
 /* ── LIVE NET UPDATE level badge ─────────────────────────────── */
 .live-announcement:has(> span:first-child) {
   /* UPDATE 레벨 공지 강조 */
