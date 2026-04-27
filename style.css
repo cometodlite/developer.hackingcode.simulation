@@ -5493,3 +5493,48 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   /* UPDATE 레벨 공지 강조 */
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   v3.0.1 GLOW — 헤더 버튼 & TODAY 박스 글로우 효과
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 키프레임: action 필요 — amber/yellow 펄스 */
+@keyframes glow-action-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,200,0,0), 0 0 0 0 rgba(255,200,0,0); }
+  50%     { box-shadow: 0 0 7px 2px rgba(255,200,0,0.40), 0 0 14px 4px rgba(255,165,0,0.18); }
+}
+
+/* 키프레임: reward ready — green/cyan 펄스 */
+@keyframes glow-reward-pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0), 0 0 0 0 rgba(0,255,136,0); }
+  50%     { box-shadow: 0 0 8px 3px rgba(0,255,136,0.45), 0 0 18px 6px rgba(0,255,136,0.15); }
+}
+
+/* 키프레임: all done — 부드러운 초록 호흡 */
+@keyframes glow-done-breathe {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
+  50%     { box-shadow: 0 0 5px 1px rgba(0,255,136,0.22); }
+}
+
+/* ── 헤더 버튼 글로우 ─────────────────────────────────────────── */
+header button.header-glow-action {
+  animation: glow-action-pulse 2.2s ease-in-out infinite;
+  border-color: rgba(255,200,0,0.55) !important;
+  color: #ffc800 !important;
+}
+header button.header-glow-reward {
+  animation: glow-reward-pulse 1.6s ease-in-out infinite;
+  border-color: rgba(0,255,136,0.55) !important;
+  color: var(--accent, #00ff88) !important;
+}
+
+/* ── TODAY 박스 글로우 ──────────────────────────────────────────── */
+.today-summary-box.today-has-actions {
+  animation: glow-action-pulse 3s ease-in-out infinite;
+  border-color: rgba(255,200,0,0.30) !important;
+}
+.today-summary-box.today-all-done {
+  animation: glow-done-breathe 4s ease-in-out infinite;
+  border-color: rgba(0,255,136,0.25) !important;
+}
+
+

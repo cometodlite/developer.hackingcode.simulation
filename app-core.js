@@ -3601,6 +3601,58 @@ function applyLanguageToUI(){
       if (chkRiskMode) chkRiskMode.checked = state.hackMode === 'risk';
     }
 
+    // ── v3.0.1: 보상/행동 가능 상태 헬퍼 ────────────────────────────────────
+    function isWeeklyBonusClaimable() {
+      try {
+        ensureWeeklyChallengeDefaults();
+        const goals = getWeeklyGoalsForWeek();
+        if (!goals.length) return false;
+        const allClaimed = goals.every(def => state.weeklyChallenge.claimed && state.weeklyChallenge.claimed[def.id]);
+        return allClaimed && !state.weeklyChallenge.bonusClaimed;
+      } catch(e) { return false; }
+    }
+
+    function hasUnclaimedPassTiers() {
+      try {
+        ensureSeasonState();
+        const currentTier = state.season.passTier || 0;
+        if (currentTier < 1) return false;
+        const claimed = state.season.passClaimed || {};
+        for (let i = 1; i <= currentTier; i++) {
+          if (!claimed[String(i)]) return true;
+        }
+        return false;
+      } catch(e) { return false; }
+    }
+
+    function updateHeaderGlow() {
+      try {
+        ensureMissionResets();
+        const prog = state.missionProgress.daily || {};
+        const incompleteDailyCount = missionDefs.daily
+          ? missionDefs.daily.filter(def => !prog.completed || !prog.completed[def.id]).length
+          : 0;
+
+        const rewardReady = isWeeklyBonusClaimable() || hasUnclaimedPassTiers();
+
+        const btnListEl  = document.getElementById('btnList');
+        const btnEventEl = document.getElementById('btnEvent');
+
+        // LIST 버튼 — 일일 미션 남음 (action 필요)
+        if (btnListEl) btnListEl.classList.toggle('header-glow-action', incompleteDailyCount > 0);
+
+        // EVENT 버튼 — 수령 가능한 보상 있음 (reward ready)
+        if (btnEventEl) btnEventEl.classList.toggle('header-glow-reward', rewardReady);
+
+        // TODAY 박스 글로우
+        const todayBox = document.getElementById('todaySummaryBox');
+        if (todayBox) {
+          todayBox.classList.toggle('today-has-actions', incompleteDailyCount > 0);
+          todayBox.classList.toggle('today-all-done', incompleteDailyCount === 0);
+        }
+      } catch(e) { console.warn('[HeaderGlow]', e); }
+    }
+
     // ── v3.0.1: HOME "오늘 할 일" 요약 ──────────────────────────────────────
     function renderTodaySummary() {
       const el = document.getElementById('todaySummaryContent');
@@ -3736,6 +3788,7 @@ function applyLanguageToUI(){
       renderZeroDayPanel();
       renderTodaySummary();
       renderItemsPanel();
+      updateHeaderGlow();
     }
 
 
