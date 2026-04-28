@@ -6086,13 +6086,39 @@ header button.header-glow-reward {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.10);
   border-radius: 9px;
-  padding: 9px 11px;
+  padding: 9px 11px 9px 11px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+.sd-product-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.20);
+}
+.sd-product-card.sd-product-selected {
+  background: rgba(0,255,136,0.07);
+  border-color: rgba(0,255,136,0.45);
+}
+/* 선택 체크 표시 */
+.sd-product-check {
+  display: none;
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 13px;
+  color: #00ff88;
+  font-weight: 800;
+}
+.sd-product-card.sd-product-selected .sd-product-check {
+  display: block;
 }
 .sd-product-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 3px;
+  padding-right: 18px; /* 체크 아이콘 공간 */
 }
 .sd-product-name {
   font-size: 12px;

@@ -4485,26 +4485,22 @@ function applyLanguageToUI(){
 
           <!-- 신청하기 탭 -->
           <div class="sd-tab-panel" id="sdTabApply">
-            <div class="sd-products">
-              ${SUPPORT_PRODUCTS.map(p => `
-                <div class="sd-product-card" data-pid="${p.id}">
+            <div class="sd-form-label" style="margin-bottom:6px;">${lang === 'en' ? 'Select Pack' : '상품을 선택하세요'}</div>
+            <div class="sd-products" id="sdProductCards">
+              ${SUPPORT_PRODUCTS.map((p, i) => `
+                <div class="sd-product-card ${i === 0 ? 'sd-product-selected' : ''}" data-pid="${p.id}" role="radio" aria-checked="${i === 0 ? 'true' : 'false'}" tabindex="0">
                   <div class="sd-product-top">
                     <span class="sd-product-name">${p.name}</span>
                     <span class="sd-product-price">${p.price}</span>
                   </div>
                   <div class="sd-product-reward">${lang === 'en' ? p.rewardLabelEn : p.rewardLabel}</div>
                   <div class="sd-product-desc small">${lang === 'en' ? p.descEn : p.desc}</div>
+                  <div class="sd-product-check">✓</div>
                 </div>
               `).join('')}
             </div>
 
             <div class="sd-form">
-              <div class="sd-form-row">
-                <label class="sd-form-label" for="supportProductSelect">${lang === 'en' ? 'Select Pack' : '상품 선택'}</label>
-                <select class="sd-form-select" id="supportProductSelect">
-                  ${SUPPORT_PRODUCTS.map(p => `<option value="${p.id}">${p.name} — ${p.price}</option>`).join('')}
-                </select>
-              </div>
               <div class="sd-form-row">
                 <label class="sd-form-label" for="supportPayerName">${lang === 'en' ? 'Payer Name' : '입금자명'}</label>
                 <input class="sd-form-input" id="supportPayerName" type="text" maxlength="20"
@@ -4512,12 +4508,12 @@ function applyLanguageToUI(){
               </div>
               <div class="sd-form-how small">
                 ${lang === 'en'
-                  ? '① Select pack → ② Transfer payment to the account below → ③ Enter your name above → ④ Click Submit'
-                  : '① 상품 선택 → ② 아래 계좌로 결제 → ③ 입금자명 입력 → ④ 신청 제출'}
+                  ? '① Select pack above → ② Transfer to the account below → ③ Enter your name → ④ Submit'
+                  : '① 위에서 상품 선택 → ② 아래 계좌로 이체 → ③ 입금자명 입력 → ④ 신청 제출'}
               </div>
               <div class="sd-bank-box">
                 <span class="sd-bank-label">${lang === 'en' ? 'Payment Account' : '결제 계좌'}</span>
-                <span class="sd-bank-value">카카오뱅크 3333-29-9178268 이용완</span>
+                <span class="sd-bank-value">토스뱅크 1002-3349-0522 조용완</span>
                 <button class="sd-bank-copy" id="btnSdBankCopy">복사</button>
               </div>
               ${isLoggedIn
@@ -4559,11 +4555,26 @@ function applyLanguageToUI(){
           });
         }
 
+        // ── 상품 카드 클릭 선택 ──────────────────────────────────────────────
+        const productCards = el.querySelectorAll('.sd-product-card[data-pid]');
+        productCards.forEach(card => {
+          const selectCard = () => {
+            productCards.forEach(c => {
+              c.classList.remove('sd-product-selected');
+              c.setAttribute('aria-checked', 'false');
+            });
+            card.classList.add('sd-product-selected');
+            card.setAttribute('aria-checked', 'true');
+          };
+          card.addEventListener('click', selectCard);
+          card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectCard(); } });
+        });
+
         // ── 계좌 복사 버튼 ──────────────────────────────────────────────────
         const bankCopyBtn = el.querySelector('#btnSdBankCopy');
         if (bankCopyBtn) {
           bankCopyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText('3333-29-9178268').catch(() => {});
+            navigator.clipboard.writeText('1002-3349-0522').catch(() => {});
             showToast(lang === 'en' ? 'Account number copied!' : '계좌번호가 복사되었습니다.', 'system');
           });
         }
@@ -4590,7 +4601,8 @@ function applyLanguageToUI(){
         const submitMsg = el.querySelector('#sdSubmitMsg');
         if (submitBtn) {
           submitBtn.addEventListener('click', async () => {
-            const productId  = (el.querySelector('#supportProductSelect')?.value || '').trim();
+            const selectedCard = el.querySelector('.sd-product-card.sd-product-selected');
+            const productId  = (selectedCard?.dataset?.pid || SUPPORT_PRODUCTS[0]?.id || '').trim();
             const payerName  = (el.querySelector('#supportPayerName')?.value || '').trim();
             if (!payerName) {
               submitMsg.textContent = lang === 'en' ? '⚠ Please enter the payer name.' : '⚠ 입금자명을 입력해주세요.';
@@ -8046,8 +8058,13 @@ function applyLanguageToUI(){
           setTimeout(() => {
             const applyTab = document.getElementById('btnSupportSubApply');
             if (applyTab) applyTab.click();
-            const sel = document.getElementById('supportProductSelect');
-            if (sel) { sel.value = pid; sel.dispatchEvent(new Event('change')); }
+            // 해당 상품 카드 선택 상태로 설정
+            const allCards = document.querySelectorAll('#sdProductCards .sd-product-card[data-pid]');
+            allCards.forEach(c => {
+              const isTarget = c.dataset.pid === pid;
+              c.classList.toggle('sd-product-selected', isTarget);
+              c.setAttribute('aria-checked', isTarget ? 'true' : 'false');
+            });
           }, 80);
         });
       });
