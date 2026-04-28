@@ -567,6 +567,7 @@
             <button id="btnClearSave" title="저장 데이터를 삭제합니다.">저장 삭제</button>
             <button id="btnExportSave" title="현재 저장 데이터를 JSON 파일로 내보냅니다.">내보내기</button>
             <button id="btnImportSaveFile" title="JSON 저장 파일을 불러옵니다.">파일 불러오기</button>
+            <button id="btnBackupRestore" title="자동 백업 데이터를 조회하고 복구합니다.">백업 복구</button>
           </div>
           <!-- 텍스트 붙여넣기 불러오기 — v3.0.0 제거됨. 파일 불러오기 사용 -->
           <textarea id="importSaveText" hidden></textarea>
@@ -796,15 +797,66 @@
   </div>
 </div>
 
+<!-- Save Conflict Resolution Dialog (v3.0.1 Save Foundation) -->
+<div id="saveConflictBackdrop">
+  <div id="saveConflictModal">
+    <div class="sc-title">⚠ 저장 데이터 충돌</div>
+    <div class="sc-subtitle" id="scSubtitle">로컬과 클라우드에 서로 다른 진행 데이터가 있습니다. 사용할 저장본을 선택하세요.</div>
+    <div class="sc-compare">
+      <div class="sc-side" id="scLocalSide">
+        <div class="sc-side-label">이 기기 (로컬)</div>
+        <div class="sc-side-score" id="scLocalScore">점수: -</div>
+        <div class="sc-side-time" id="scLocalTime">저장: -</div>
+        <div class="sc-side-detail" id="scLocalDetail"></div>
+      </div>
+      <div class="sc-vs">VS</div>
+      <div class="sc-side" id="scCloudSide">
+        <div class="sc-side-label">클라우드</div>
+        <div class="sc-side-score" id="scCloudScore">점수: -</div>
+        <div class="sc-side-time" id="scCloudTime">저장: -</div>
+        <div class="sc-side-detail" id="scCloudDetail"></div>
+      </div>
+    </div>
+    <div class="sc-actions">
+      <button class="sc-btn" id="scUseLocal">
+        <div class="sc-btn-title">이 기기 저장 사용</div>
+        <div class="sc-btn-desc">이 기기 데이터를 유지합니다</div>
+      </button>
+      <button class="sc-btn" id="scUseCloud">
+        <div class="sc-btn-title">클라우드 저장 사용</div>
+        <div class="sc-btn-desc">클라우드 데이터를 이 기기에 적용합니다</div>
+      </button>
+      <button class="sc-btn sc-btn-safe" id="scSafeMerge">
+        <div class="sc-btn-title">안전 병합 (권장)</div>
+        <div class="sc-btn-desc">점수가 더 높은 쪽을 자동 선택합니다</div>
+      </button>
+      <button class="sc-btn sc-btn-export" id="scExportBoth">
+        <div class="sc-btn-title">JSON 내보내기</div>
+        <div class="sc-btn-desc">두 데이터를 모두 백업 후 나중에 결정합니다</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Backup Restore Panel (v3.0.1 Save Foundation) — rendered by renderBackupPanel() -->
+<div id="backupRestoreBackdrop" style="display:none;">
+  <div id="backupRestoreModal">
+    <div class="br-title">💾 자동 백업 복구</div>
+    <div class="br-subtitle">마이그레이션·로드 전에 자동으로 저장된 백업 데이터입니다.</div>
+    <div id="brBackupList"></div>
+    <button class="br-close-btn" id="btnBrClose">닫기</button>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js?v=3.0.1"></script>
-<script src="auth.js?v=3.0.2c"></script>
-<script src="cloudSave.js?v=3.0.2c"></script>
-<script src="app-core.js?v=3.0.2c"></script>
-<script src="app-ui.js?v=3.0.2c"></script>
-<script src="liveOps.js?v=3.0.2c"></script>
-<script src="bgm.js?v=3.0.2c"></script>
+<script src="auth.js?v=3.0.2d"></script>
+<script src="cloudSave.js?v=3.0.2d"></script>
+<script src="app-core.js?v=3.0.2d"></script>
+<script src="app-ui.js?v=3.0.2d"></script>
+<script src="liveOps.js?v=3.0.2d"></script>
+<script src="bgm.js?v=3.0.2d"></script>
 </body>
 </html>

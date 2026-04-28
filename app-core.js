@@ -10012,6 +10012,159 @@ function applyLanguageToUI(){
       });
     }
 
+    // ── v3.0.1 Save Foundation: 충돌 다이얼로그 ──────────────────────────────
+    // cloudSave.js가 브릿지를 통해 호출. 유저 선택을 Promise로 반환.
+    // choice: 'use-local' | 'use-cloud' | 'safe-merge' | 'export-both'
+    function showSaveConflictDialog(localSave, cloudSave) {
+      return new Promise(resolve => {
+        const bd  = document.getElementById('saveConflictBackdrop');
+        if (!bd) { resolve('safe-merge'); return; }
+
+        const localSum = getSaveSummary(localSave);
+        const cloudSum = getSaveSummary(cloudSave);
+
+        function fmt(ts) {
+          if (!ts) return '-';
+          try { return new Date(Number(ts)).toLocaleString(); } catch(e) { return '-'; }
+        }
+        function detail(sum) {
+          return `Lv.${sum.level || 0}  크레딧 ${(sum.credits||0).toLocaleString()}  코드 ${sum.codeCount || 0}개`;
+        }
+
+        const localWins = localSum.score >= cloudSum.score;
+
+        const elLocalScore  = document.getElementById('scLocalScore');
+        const elLocalTime   = document.getElementById('scLocalTime');
+        const elLocalDetail = document.getElementById('scLocalDetail');
+        const elCloudScore  = document.getElementById('scCloudScore');
+        const elCloudTime   = document.getElementById('scCloudTime');
+        const elCloudDetail = document.getElementById('scCloudDetail');
+        const localSide  = document.getElementById('scLocalSide');
+        const cloudSide  = document.getElementById('scCloudSide');
+
+        if (elLocalScore)  elLocalScore.textContent  = `점수: ${localSum.score}`;
+        if (elLocalTime)   elLocalTime.textContent   = `저장: ${fmt(localSave && localSave.savedAt)}`;
+        if (elLocalDetail) elLocalDetail.textContent = detail(localSum);
+        if (elCloudScore)  elCloudScore.textContent  = `점수: ${cloudSum.score}`;
+        if (elCloudTime)   elCloudTime.textContent   = `저장: ${fmt(cloudSave && cloudSave.savedAt)}`;
+        if (elCloudDetail) elCloudDetail.textContent = detail(cloudSum);
+
+        if (localSide)  localSide.classList.toggle('sc-winner', localWins);
+        if (cloudSide)  cloudSide.classList.toggle('sc-winner', !localWins);
+
+        bd.classList.add('active');
+
+        function finish(choice) {
+          bd.classList.remove('active');
+          ['scUseLocal','scUseCloud','scSafeMerge','scExportBoth'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.onclick = null;
+          });
+          resolve(choice);
+        }
+
+        const btnLocal  = document.getElementById('scUseLocal');
+        const btnCloud  = document.getElementById('scUseCloud');
+        const btnSafe   = document.getElementById('scSafeMerge');
+        const btnExport = document.getElementById('scExportBoth');
+        if (btnLocal)  btnLocal.onclick  = () => finish('use-local');
+        if (btnCloud)  btnCloud.onclick  = () => finish('use-cloud');
+        if (btnSafe)   btnSafe.onclick   = () => finish('safe-merge');
+        if (btnExport) btnExport.onclick = () => finish('export-both');
+      });
+    }
+
+    // ── v3.0.1 Save Foundation: 두 세이브 동시 내보내기 ─────────────────────
+    function exportSaveFileWithData(saveObj, tag) {
+      try {
+        if (!saveObj) return;
+        const sum  = getSaveSummary(saveObj);
+        const data = JSON.stringify(Object.assign({}, saveObj, {
+          exportMeta: { summary: sum, exportedAt: new Date().toISOString(), tag }
+        }), null, 2);
+        const blob = new Blob([data], { type: 'application/json;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        const d = new Date();
+        a.download = `HCSiG_save_${tag}_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_s${sum.score}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(a.href);
+      } catch(e) { console.error('[ExportWithData]', e); }
+    }
+
+    // ── v3.0.1 Save Foundation: 백업 복구 패널 ──────────────────────────────
+    function showBackupRestorePanel() {
+      const bd = document.getElementById('backupRestoreBackdrop');
+      const list = document.getElementById('brBackupList');
+      if (!bd || !list) return;
+
+      function fmt(ts) {
+        if (!ts) return '-';
+        try { return new Date(Number(ts)).toLocaleString(); } catch(e) { return '-'; }
+      }
+
+      const backupSlots = [
+        { label: '최신 백업 (BACKUP)', raw: getSaveBackup(),     key: 'recent' },
+        { label: '이전 백업 (BACKUP_PREV)', raw: getSaveBackupPrev(), key: 'prev' }
+      ];
+
+      let html = '';
+      let anySlot = false;
+      backupSlots.forEach(slot => {
+        if (!slot.raw) return;
+        let parsed = null;
+        try { parsed = JSON.parse(slot.raw); } catch(e) {}
+        if (!parsed) return;
+        anySlot = true;
+        const sum = getSaveSummary(parsed);
+        html += `
+          <div class="br-slot">
+            <div class="br-slot-info">
+              <div class="br-slot-label">${slot.label}</div>
+              <div class="br-slot-score">점수: ${sum.score}</div>
+              <div class="br-slot-time">저장: ${fmt(parsed.savedAt)}</div>
+              <div class="br-slot-detail">Lv.${sum.level||0} · 코드 ${sum.codeCount||0}개 · 크레딧 ${(sum.credits||0).toLocaleString()}</div>
+            </div>
+            <button class="br-restore-btn" data-br-key="${slot.key}">복구</button>
+          </div>`;
+      });
+      if (!anySlot) {
+        html = '<div class="br-empty">저장된 자동 백업이 없습니다.</div>';
+      }
+      list.innerHTML = html;
+
+      // 복구 버튼 이벤트
+      list.querySelectorAll('.br-restore-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.dataset.brKey;
+          const slot = backupSlots.find(s => s.key === key);
+          if (!slot || !slot.raw) return;
+          const isEn = getLang() === 'en';
+          const msg = isEn
+            ? 'Restore this backup? Current progress will be backed up first.'
+            : '이 백업으로 복구할까요? 현재 진행 데이터는 먼저 백업됩니다.';
+          if (!window.confirm(msg)) return;
+          // 현재 세이브 먼저 백업
+          const currentRaw = localStorage.getItem(SAVE_KEY);
+          if (currentRaw) pushSaveBackup(currentRaw);
+          // 복구
+          localStorage.setItem(SAVE_KEY, slot.raw);
+          loadGame(slot.raw);
+          refreshUiAfterStateRestore();
+          bd.style.display = 'none';
+          showToast(isEn ? 'Backup restored.' : '백업 복구 완료.', 'save');
+        });
+      });
+
+      // 닫기
+      const closeBtn = document.getElementById('btnBrClose');
+      if (closeBtn) closeBtn.onclick = () => { bd.style.display = 'none'; };
+
+      bd.style.display = 'flex';
+    }
+
     // 내보내기 / 불러오기
     function exportSaveFile() {
       try {
@@ -10088,6 +10241,9 @@ function applyLanguageToUI(){
     }
 
     bind(btnExportSave, 'click', exportSaveFile);
+
+    const btnBackupRestore = document.getElementById('btnBackupRestore');
+    bind(btnBackupRestore, 'click', showBackupRestorePanel);
 
     if (btnImportSaveFile && fileImportSave) {
       bind(btnImportSaveFile, 'click', () => fileImportSave.click());
@@ -10402,6 +10558,9 @@ function applyLanguageToUI(){
             refreshUiAfterStateRestore();
           },
           getLanguage: () => getLang(),
+          // v3.0.1 Save Foundation
+          showConflictDialog: (localSave, cloudSave) => showSaveConflictDialog(localSave, cloudSave),
+          exportSaveWithData: (saveObj, tag) => exportSaveFileWithData(saveObj, tag),
           getStateSummary: () => ({
             level: state.level,
             credits: state.credits,

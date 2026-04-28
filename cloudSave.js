@@ -2,7 +2,7 @@
   const CLOUD_COLLECTION = 'saves';
   const USERS_COLLECTION = 'users';
   // v3.0.0: 클라우드 쓰기 throttle (Firebase 비용/할당량 보호)
-  const CLOUD_SAVE_THROTTLE_MS = 30000; // 30초
+  const CLOUD_SAVE_THROTTLE_MS = 60000; // 60초 (v3.0.1 Save Foundation)
   let authUser = null;
   let bridgeReady = false;
   let pendingInitialSync = false;
@@ -237,57 +237,80 @@
         return;
       }
 
-      // ─── 둘 다 있음 — 점수/시간 비교로 안전 결정 ───
+      // ─── 둘 다 있음 — v3.0.1: 자동 덮어쓰기 금지, 항상 사용자 선택 ───
       let localParsed = null;
       try { localParsed = JSON.parse(localRaw); } catch (e) {}
 
       const localScore = _scoreOf(localParsed);
       const cloudScore = _scoreOf(cloud);
-      const localTime = Number((localParsed && localParsed.savedAt) || 0);
-      const cloudTime = Number((cloud && cloud.savedAt) || 0);
+      const localTime  = Number((localParsed && localParsed.savedAt) || 0);
+      const cloudTime  = Number((cloud && cloud.savedAt) || 0);
+      const isEn = (bridge().getLanguage && bridge().getLanguage() === 'en');
 
-      // v3.0.0+ 안전 정책:
-      // - 클라우드 점수가 로컬보다 의미있게(+10 이상) 높으면 → 클라우드 적용
-      // - 로컬 점수가 클라우드보다 의미있게 높으면 → 로컬 유지 (자동 적용 안 함)
-      // - 점수가 거의 같으면(±10) 시간 더 최근인 쪽 적용
-      // - 점수 차이가 크고 시간이 반대 방향이면 → 사용자 선택 다이얼로그
-      const SCORE_DELTA = 10;
-
-      let action = 'keep-local';
-      let reason = '';
-
-      if (cloudScore > localScore + SCORE_DELTA) {
-        action = 'apply-cloud';
-        reason = `cloud score ${cloudScore} > local ${localScore}`;
-      } else if (localScore > cloudScore + SCORE_DELTA) {
-        action = 'keep-local';
-        reason = `local score ${localScore} > cloud ${cloudScore} — keeping local`;
-      } else {
-        // 점수 비슷함 — 시간 기준
-        if (cloudTime > localTime) {
-          action = 'apply-cloud';
-          reason = `scores similar, cloud is newer`;
-        } else {
-          action = 'keep-local';
-          reason = `scores similar, local is newer/equal`;
-        }
+      // 점수·시간 완전히 동일하면 충돌 없음 → 로컬 유지
+      if (localScore === cloudScore && Math.abs(localTime - cloudTime) < 5000) {
+        auth().setStatus(isEn
+          ? 'Local and cloud saves are in sync.'
+          : '로컬과 클라우드 저장본이 동기화되어 있습니다.');
+        if (auth().refreshProfile) await auth().refreshProfile();
+        return;
       }
 
-      console.log('[CloudSync]', action, reason, { localScore, cloudScore, localTime, cloudTime });
+      console.log('[CloudSync] conflict detected', { localScore, cloudScore, localTime, cloudTime });
+      auth().setStatus(isEn ? 'Save conflict detected — choose below.' : '저장 데이터 충돌 감지 — 아래에서 선택해주세요.');
 
-      if (action === 'apply-cloud') {
-        bridge().loadFromObject(cloud);
-        const msg = (window.HCSIG_BRIDGE.getLanguage && window.HCSIG_BRIDGE.getLanguage()==='en')
-          ? `Cloud save applied (score ${cloudScore} vs local ${localScore})`
-          : `클라우드 저장 적용 (점수 ${cloudScore} vs 로컬 ${localScore})`;
-        auth().setStatus(msg);
-      } else {
-        // 로컬 유지
-        const msg = (window.HCSIG_BRIDGE.getLanguage && window.HCSIG_BRIDGE.getLanguage()==='en')
-          ? `Local save kept (score ${localScore} vs cloud ${cloudScore}). Use Cloud Pull to override.`
-          : `로컬 저장본 유지 (점수 ${localScore} vs 클라우드 ${cloudScore}). 클라우드 적용은 PULL 버튼으로 가능합니다.`;
-        auth().setStatus(msg);
+      // 충돌 다이얼로그 (showConflictDialog가 없으면 안전 병합 fallback)
+      let choice = 'safe-merge';
+      if (bridge().showConflictDialog) {
+        try { choice = await bridge().showConflictDialog(localParsed, cloud); }
+        catch(e) { console.warn('[CloudSync] conflict dialog error:', e); }
       }
+
+      switch (choice) {
+        case 'use-local':
+          // 로컬 유지, 클라우드에 업로드
+          try {
+            await saveCloud('conflict-use-local');
+            auth().setStatus(isEn ? 'Local save kept and uploaded to cloud.' : '로컬 저장본 유지 및 클라우드 업로드 완료.');
+          } catch(e) {
+            auth().setStatus(isEn ? 'Local kept (cloud upload failed).' : '로컬 유지 (클라우드 업로드 실패).');
+          }
+          break;
+
+        case 'use-cloud':
+          bridge().loadFromObject(cloud);
+          auth().setStatus(isEn
+            ? `Cloud save applied (score ${cloudScore}).`
+            : `클라우드 저장본 적용 (점수 ${cloudScore}).`);
+          break;
+
+        case 'export-both':
+          // 두 데이터 내보내기 후 로컬 유지
+          if (bridge().exportSaveWithData) {
+            bridge().exportSaveWithData(localParsed, 'local');
+            setTimeout(() => {
+              if (bridge().exportSaveWithData) bridge().exportSaveWithData(cloud, 'cloud');
+            }, 600);
+          }
+          auth().setStatus(isEn ? 'Both saves exported. Local save kept.' : '두 저장본 내보내기 완료. 로컬 유지.');
+          break;
+
+        case 'safe-merge':
+        default:
+          // 점수 더 높은 쪽 선택
+          if (cloudScore > localScore) {
+            bridge().loadFromObject(cloud);
+            auth().setStatus(isEn
+              ? `Safe merge: cloud save used (score ${cloudScore} > ${localScore}).`
+              : `안전 병합: 클라우드 저장본 사용 (점수 ${cloudScore} > ${localScore}).`);
+          } else {
+            auth().setStatus(isEn
+              ? `Safe merge: local save kept (score ${localScore} >= ${cloudScore}).`
+              : `안전 병합: 로컬 저장본 유지 (점수 ${localScore} >= ${cloudScore}).`);
+          }
+          break;
+      }
+
       if (auth().refreshProfile) await auth().refreshProfile();
     } catch (err) {
       auth().setStatus('클라우드 초기 동기화 실패: ' + (err.message || err));
