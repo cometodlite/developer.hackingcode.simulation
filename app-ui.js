@@ -12,8 +12,12 @@
 
 
 // --- Touch/zoom guard (mobile double-tap/pinch accidental zoom) ---
+// body에 touch-action:manipulation이 있어 더블탭 줌은 이미 방지됨.
+// touchend preventDefault는 "완전히 같은 요소"를 320ms 내 연속 탭할
+// 때만 적용 — 다른 요소를 연속 탭할 때 click이 차단되는 버그 방지.
 (function(){
-  let lastTouchEnd = 0;
+  let lastTouchEnd    = 0;
+  let lastTouchTarget = null;
   function isEditable(target){
     return !!(target && target.closest && target.closest('input, textarea, select, [contenteditable="true"], label'));
   }
@@ -21,11 +25,13 @@
     ev.preventDefault();
   }, { passive:false });
   document.addEventListener('touchend', ev => {
-    const now = Date.now();
-    if (!isEditable(ev.target) && now - lastTouchEnd <= 320) {
+    const now        = Date.now();
+    const sameTarget = ev.target === lastTouchTarget;
+    if (!isEditable(ev.target) && sameTarget && now - lastTouchEnd <= 320) {
       ev.preventDefault();
     }
-    lastTouchEnd = now;
+    lastTouchEnd    = now;
+    lastTouchTarget = ev.target;
   }, { passive:false });
 })();
 
