@@ -4985,52 +4985,53 @@ function applyLanguageToUI(){
       const now = ctx.currentTime + 0.005;
       const v = getSfxVolume();
 
+      // gain 기준: v=1.0(100%)일 때 0.15~0.30 범위가 적절
       switch (name) {
         case 'tap':
           if (Date.now() - sfxState.lastTapAt < 55) return;
           sfxState.lastTapAt = Date.now();
-          playTone(ctx, now, 520, 0.045, 'triangle', 0.035 * v, 760);
+          playTone(ctx, now, 520, 0.045, 'triangle', 0.20 * v, 760);
           break;
         case 'scanStart':
-          playNoise(ctx, now, 0.11, 0.028 * v, 1800);
-          playTone(ctx, now + 0.04, 440, 0.08, 'sawtooth', 0.018 * v, 880);
+          playNoise(ctx, now, 0.11, 0.17 * v, 1800);
+          playTone(ctx, now + 0.04, 440, 0.08, 'sawtooth', 0.12 * v, 880);
           break;
         case 'scanComplete':
-          playTone(ctx, now, 660, 0.07, 'sine', 0.04 * v, 990);
-          playTone(ctx, now + 0.065, 990, 0.08, 'sine', 0.032 * v, 1320);
+          playTone(ctx, now, 660, 0.07, 'sine', 0.22 * v, 990);
+          playTone(ctx, now + 0.065, 990, 0.08, 'sine', 0.18 * v, 1320);
           break;
         case 'success':
-          playTone(ctx, now, 523.25, 0.08, 'triangle', 0.045 * v, 659.25);
-          playTone(ctx, now + 0.07, 783.99, 0.11, 'triangle', 0.04 * v, 1046.5);
+          playTone(ctx, now, 523.25, 0.08, 'triangle', 0.26 * v, 659.25);
+          playTone(ctx, now + 0.07, 783.99, 0.11, 'triangle', 0.22 * v, 1046.5);
           break;
         case 'fail':
-          playTone(ctx, now, 260, 0.12, 'sawtooth', 0.04 * v, 140);
-          playNoise(ctx, now + 0.03, 0.10, 0.016 * v, 360);
+          playTone(ctx, now, 260, 0.12, 'sawtooth', 0.24 * v, 140);
+          playNoise(ctx, now + 0.03, 0.10, 0.10 * v, 360);
           break;
         case 'upgrade':
-          playTone(ctx, now, 392, 0.07, 'square', 0.026 * v, 587);
-          playTone(ctx, now + 0.065, 784, 0.10, 'triangle', 0.042 * v, 1175);
+          playTone(ctx, now, 392, 0.07, 'square', 0.16 * v, 587);
+          playTone(ctx, now + 0.065, 784, 0.10, 'triangle', 0.24 * v, 1175);
           break;
         case 'achievement':
-          playTone(ctx, now, 660, 0.08, 'sine', 0.038 * v, 880);
-          playTone(ctx, now + 0.07, 990, 0.09, 'sine', 0.036 * v, 1320);
-          playTone(ctx, now + 0.15, 1320, 0.12, 'triangle', 0.03 * v, 1760);
+          playTone(ctx, now, 660, 0.08, 'sine', 0.22 * v, 880);
+          playTone(ctx, now + 0.07, 990, 0.09, 'sine', 0.20 * v, 1320);
+          playTone(ctx, now + 0.15, 1320, 0.12, 'triangle', 0.18 * v, 1760);
           break;
         case 'level':
-          playTone(ctx, now, 392, 0.10, 'triangle', 0.035 * v, 523);
-          playTone(ctx, now + 0.09, 659, 0.11, 'triangle', 0.04 * v, 880);
-          playTone(ctx, now + 0.19, 1046, 0.13, 'sine', 0.032 * v, 1318);
+          playTone(ctx, now, 392, 0.10, 'triangle', 0.20 * v, 523);
+          playTone(ctx, now + 0.09, 659, 0.11, 'triangle', 0.24 * v, 880);
+          playTone(ctx, now + 0.19, 1046, 0.13, 'sine', 0.20 * v, 1318);
           break;
         case 'mode':
-          playTone(ctx, now, 330, 0.06, 'triangle', 0.028 * v, 660);
-          playTone(ctx, now + 0.05, 440, 0.07, 'square', 0.018 * v, 880);
+          playTone(ctx, now, 330, 0.06, 'triangle', 0.17 * v, 660);
+          playTone(ctx, now + 0.05, 440, 0.07, 'square', 0.12 * v, 880);
           break;
         case 'stage':
-          playNoise(ctx, now, 0.08, 0.018 * v, 900);
-          playTone(ctx, now + 0.035, 220, 0.09, 'sawtooth', 0.026 * v, 440);
+          playNoise(ctx, now, 0.08, 0.12 * v, 900);
+          playTone(ctx, now + 0.035, 220, 0.09, 'sawtooth', 0.16 * v, 440);
           break;
         default:
-          playTone(ctx, now, 600, 0.06, 'sine', 0.025 * v, 720);
+          playTone(ctx, now, 600, 0.06, 'sine', 0.15 * v, 720);
       }
     }
 
