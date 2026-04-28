@@ -211,6 +211,16 @@
   // v3.0.1 Foundation Prep 고정 공지 (Firebase 여부 무관하게 항상 상단 표시)
   const PINNED_ANNOUNCEMENTS = [
     {
+      id: 'support-desk-302',
+      title: text('🎁 SUPPORT DESK 오픈', '🎁 SUPPORT DESK Open'),
+      body: text(
+        'HCSiG 후원 시스템이 오픈되었습니다! SHOP 하단 또는 MORE→SUPPORT에서 Support Pack Start(₩1,500) / Plus(₩3,300)를 신청할 수 있습니다. 계좌 이체 후 입금자명을 입력하고 신청을 제출하면, 검토 후 REDEEM CODE가 발급됩니다. 코드를 MORE→SUPPORT→REDEEM에 입력하면 COIN, 에너지팩, 데일리 보너스 박스를 즉시 지급받습니다.',
+        'HCSiG Support Desk is now open! Apply for Support Pack Start (₩1,500) / Plus (₩3,300) at the bottom of SHOP or via MORE→SUPPORT. Submit your claim with payer name after bank transfer — we\'ll review and issue a REDEEM CODE. Enter the code in MORE→SUPPORT→REDEEM to instantly receive COIN, Energy Packs, and Daily Bonus Boxes.'
+      ),
+      createdAt: 1745884800000, // 2026-04-29
+      level: 'UPDATE'
+    },
+    {
       id: 'convenience-update-302',
       title: text('HCSiG v3.0.2 — Convenience Update', 'HCSiG v3.0.2 — Convenience Update'),
       body: text(

@@ -131,6 +131,39 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // SUPPORT DESK: 신청 내역
+    // - 로그인 유저가 자신의 신청 생성 가능
+    // - 자신의 신청 읽기 가능
+    // - 업데이트/삭제는 관리자(Firebase Console) 전용
+    match /supportClaims/{claimId} {
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasAll([
+          'uid', 'email', 'productId', 'productName', 'price',
+          'payerName', 'status', 'submittedAt', 'updatedAt'
+        ])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.productId in ['support_start', 'support_plus']
+        && isShortText(request.resource.data.payerName, 40)
+        && request.resource.data.submittedAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // SUPPORT DESK: 리딤 코드
+    // - 로그인 유저가 코드 읽기 가능 (uid 매칭 또는 uid 필드 없음)
+    // - 사용 완료 업데이트: 본인 uid가 설정된 코드만
+    match /redeemCodes/{codeId} {
+      allow read: if signedIn();
+      allow update: if signedIn()
+        && resource.data.status == 'active'
+        && (resource.data.uid == null || resource.data.uid == '' || resource.data.uid == request.auth.uid)
+        && request.resource.data.status == 'redeemed'
+        && request.resource.data.redeemedByUid == request.auth.uid
+        && request.resource.data.redeemedAt == request.time;
+      allow create, delete: if false;
+    }
+
     match /leaderboards/{boardId}/entries/{userId} {
       allow read: if true;
       allow create, update: if isOwner(userId)

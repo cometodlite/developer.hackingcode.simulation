@@ -530,7 +530,8 @@ function applyLanguageToUI(){
   const setLangEl=document.getElementById('setLanguage'); if(setLangEl){ setLangEl.title=t('languageTitle'); [...setLangEl.options].forEach(opt=>{ if(opt.value==='ko') opt.textContent = getLang()==='en' ? 'Korean' : '한국어'; if(opt.value==='en') opt.textContent = 'English'; }); }
   const setUiZoomEl=document.getElementById('setUiZoom'); if(setUiZoomEl) setUiZoomEl.title=t('uiScaleTitle');
   const setToastMsEl=document.getElementById('setToastMs'); if(setToastMsEl){ setToastMsEl.title=t('toastTitle'); [...setToastMsEl.options].forEach(opt=>{ const secs=Math.round(Number(opt.value||0)/1000); opt.textContent = `${secs}${getLang()==='en' ? ' sec' : '초'}`; }); }
-  ['setSnow','setAnim','setSfx','setLiveNetwork'].forEach(id=>{ const input=document.getElementById(id); if(input && input.parentElement){ input.parentElement.lastChild.textContent = ' ' + t('enabled'); } });
+  ['setSnow','setAnim','setSfx','setLiveNetwork','setBgm'].forEach(id=>{ const input=document.getElementById(id); if(input && input.parentElement){ input.parentElement.lastChild.textContent = ' ' + t('enabled'); } });
+  const labelBgmEl = document.getElementById('labelBgm'); if(labelBgmEl) labelBgmEl.textContent = (getLang()==='en' ? 'BGM' : getLang()==='ja' ? 'BGM' : 'BGM');
   const ast=document.getElementById('setAutoSaveToast'); if(ast && ast.parentElement){ ast.parentElement.lastChild.textContent = ' ' + t('visible'); }
   const liveNameModeEl=document.getElementById('setLiveNicknameMode'); if(liveNameModeEl){ [...liveNameModeEl.options].forEach(opt=>{ if(opt.value==='nickname') opt.textContent=t('nickname'); if(opt.value==='callsign') opt.textContent=t('callsign'); }); }
   const btnSaveGameEl=document.getElementById('btnSaveGame'); if(btnSaveGameEl) btnSaveGameEl.title=t('saveToLocal');
@@ -1104,7 +1105,7 @@ function applyLanguageToUI(){
       energy: 20,
       energyMax: 20,
       energyTimerMs: 0,
-      items: { energyPack: 0, weeklyToken: 0, coin: 0, zeroDayVulnerability: 0, zeroDayVulnerabilityShard: 0, oneDay: 0, timeSwap2h: 0, timeSwap5h: 0, timeSwap10h: 0, traceAmple: 0, nullSeed: 0 },
+      items: { energyPack: 0, weeklyToken: 0, coin: 0, zeroDayVulnerability: 0, zeroDayVulnerabilityShard: 0, oneDay: 0, timeSwap2h: 0, timeSwap5h: 0, timeSwap10h: 0, traceAmple: 0, nullSeed: 0, dailyBonusBox: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
       tutorial: { completed: false, step: 0, seen: false, version: TUTORIAL_VERSION },
@@ -1231,7 +1232,8 @@ function applyLanguageToUI(){
       beginnerRoulette: {
         firstSeenAt: null,
         claimedDays: []
-      }
+      },
+      supporterTags: []
     };
 
     const codeDefs = {
@@ -2117,6 +2119,32 @@ function applyLanguageToUI(){
           modifiers.zdExtractionDetectionReduction = (modifiers.zdExtractionDetectionReduction || 0) + 0.3;
           state.stats.oneDayBoostsUsed = (state.stats.oneDayBoostsUsed || 0) + 1;
         }
+      }
+    ];
+
+    // ── SUPPORT DESK 상품 정의 ──────────────────────────────────────────────
+    const SUPPORT_PRODUCTS = [
+      {
+        id: 'support_start',
+        name: 'Support Pack Start',
+        price: '₩1,500',
+        tag: 'START',
+        rewards: { coin: 10, energyPack: 2, dailyBonusBox: 1 },
+        rewardLabel:    'COIN ×10 + 에너지팩 ×2 + 데일리 보너스 박스 ×1',
+        rewardLabelEn:  'COIN ×10 + Energy Pack ×2 + Daily Bonus Box ×1',
+        desc:   'HCSiG 체험에 감사를 전하는 작은 후원입니다.',
+        descEn: 'A small thanks for trying HCSiG.'
+      },
+      {
+        id: 'support_plus',
+        name: 'Support Pack Plus',
+        price: '₩3,300',
+        tag: 'PLUS',
+        rewards: { coin: 25, energyPack: 5, dailyBonusBox: 3 },
+        rewardLabel:    'COIN ×25 + 에너지팩 ×5 + 데일리 보너스 박스 ×3',
+        rewardLabelEn:  'COIN ×25 + Energy Pack ×5 + Daily Bonus Box ×3',
+        desc:   'HCSiG 개발을 더 크게 응원하는 후원입니다.',
+        descEn: 'Bigger support for HCSiG development.'
       }
     ];
 
@@ -4165,6 +4193,11 @@ function applyLanguageToUI(){
       }
     }
 
+    function ensureSupportDefaults() {
+      if (!Array.isArray(state.supporterTags)) state.supporterTags = [];
+      if (typeof state.items.dailyBonusBox !== 'number') state.items.dailyBonusBox = 0;
+    }
+
     function isBeginnerRouletteActive() {
       ensureBeginnerRouletteDefaults();
       const br = state.beginnerRoulette;
@@ -4295,90 +4328,381 @@ function applyLanguageToUI(){
       } catch(e) { console.warn('[BeginnerRoulette]', e); }
     }
 
-    function renderSupportPanel() {
+    // ── SUPPORT DESK: Firebase 함수들 ────────────────────────────────────────
+
+    async function submitSupportClaim(productId, payerName) {
+      if (!window.HCSIG_FB || !window.HCSIG_FIREBASE_READY) return { ok: false, err: 'Firebase에 연결되어 있지 않습니다.' };
+      const cu = window.HCSIG_CURRENT_USER;
+      if (!cu) return { ok: false, err: '로그인이 필요합니다.' };
+
+      const product = SUPPORT_PRODUCTS.find(p => p.id === productId);
+      if (!product) return { ok: false, err: '잘못된 상품입니다.' };
+
+      // 동일 상품 처리 중인 신청 확인 (복합 인덱스 회피 → 클라이언트 필터)
+      try {
+        const existing = await window.HCSIG_FB.db.collection('supportClaims')
+          .where('uid', '==', cu.uid)
+          .get();
+        const active = existing.docs.find(d => {
+          const data = d.data();
+          return data.productId === productId && ['pending', 'approved', 'code_issued'].includes(data.status);
+        });
+        if (active) return { ok: false, err: '이미 처리 중인 신청이 있습니다. 내역 탭을 확인해주세요.' };
+      } catch(e) { /* 쿼리 실패 시 계속 진행 */ }
+
+      const doc = {
+        uid: cu.uid,
+        email: cu.email || '',
+        productId,
+        productName: product.name,
+        price: product.price,
+        payerName: (payerName || '').trim(),
+        status: 'pending',
+        submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        const ref = await window.HCSIG_FB.db.collection('supportClaims').add(doc);
+        return { ok: true, claimId: ref.id };
+      } catch(e) {
+        return { ok: false, err: '신청 저장에 실패했습니다: ' + (e.message || e.code || e) };
+      }
+    }
+
+    async function loadMyClaims() {
+      if (!window.HCSIG_FB || !window.HCSIG_FIREBASE_READY) return [];
+      const cu = window.HCSIG_CURRENT_USER;
+      if (!cu) return [];
+      try {
+        // orderBy 생략 → 복합 인덱스 불필요, 클라이언트 정렬
+        const snap = await window.HCSIG_FB.db.collection('supportClaims')
+          .where('uid', '==', cu.uid)
+          .get();
+        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // submittedAt 내림차순 (Timestamp or null)
+        docs.sort((a, b) => {
+          const ta = a.submittedAt && a.submittedAt.toMillis ? a.submittedAt.toMillis() : 0;
+          const tb = b.submittedAt && b.submittedAt.toMillis ? b.submittedAt.toMillis() : 0;
+          return tb - ta;
+        });
+        return docs;
+      } catch(e) {
+        console.warn('[loadMyClaims]', e);
+        return [];
+      }
+    }
+
+    async function redeemSupportCode(rawCode) {
+      if (!window.HCSIG_FB || !window.HCSIG_FIREBASE_READY) return { ok: false, err: 'Firebase에 연결되어 있지 않습니다.' };
+      const cu = window.HCSIG_CURRENT_USER;
+      if (!cu) return { ok: false, err: '로그인이 필요합니다.' };
+
+      const code = rawCode.trim().toUpperCase();
+      if (!code.startsWith('HCSIG-')) return { ok: false, err: '코드 형식이 올바르지 않습니다. (HCSIG-XXXX-XXXXXX)' };
+
+      try {
+        const snap = await window.HCSIG_FB.db.collection('redeemCodes')
+          .where('code', '==', code)
+          .limit(1)
+          .get();
+        if (snap.empty) return { ok: false, err: '존재하지 않는 코드입니다.' };
+
+        const docRef = snap.docs[0].ref;
+        const data = snap.docs[0].data();
+
+        if (data.status === 'redeemed') return { ok: false, err: '이미 사용된 코드입니다.' };
+        if (data.status !== 'active') return { ok: false, err: '현재 사용할 수 없는 코드입니다.' };
+        if (data.uid && data.uid !== cu.uid) return { ok: false, err: '이 코드는 다른 계정 전용입니다.' };
+
+        const product = SUPPORT_PRODUCTS.find(p => p.id === data.productId);
+        if (!product) return { ok: false, err: '보상 정보를 찾을 수 없습니다. 관리자에게 문의하세요.' };
+
+        // 보상 지급
+        state.items.coin         = (state.items.coin         || 0) + (product.rewards.coin         || 0);
+        state.items.energyPack   = (state.items.energyPack   || 0) + (product.rewards.energyPack   || 0);
+        state.items.dailyBonusBox = (state.items.dailyBonusBox || 0) + (product.rewards.dailyBonusBox || 0);
+        state.supporterTags = state.supporterTags || [];
+        if (product.tag && !state.supporterTags.includes(product.tag)) {
+          state.supporterTags.push(product.tag);
+        }
+
+        // Firestore: 코드 사용 완료 표시
+        await docRef.update({
+          status: 'redeemed',
+          redeemedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          redeemedByUid: cu.uid,
+          redeemedByEmail: cu.email || ''
+        });
+
+        // Firestore: 신청 상태 업데이트
+        if (data.claimId) {
+          try {
+            await window.HCSIG_FB.db.collection('supportClaims').doc(data.claimId).update({
+              status: 'redeemed',
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          } catch(e2) { /* 선택적 업데이트 — 실패해도 보상은 지급됨 */ }
+        }
+
+        scheduleSilentSave();
+        updateStatsUI();
+        return { ok: true, product };
+      } catch(e) {
+        return { ok: false, err: '코드 처리 중 오류가 발생했습니다: ' + (e.message || e.code || e) };
+      }
+    }
+
+    // ── SUPPORT DESK 패널 렌더 ────────────────────────────────────────────────
+
+    function renderSupportPanel(initialSubTab) {
       const el = document.getElementById('supportPanelMount');
       if (!el) return;
       try {
         const lang = getLang();
-        // 유저 식별 정보
-        const uid = (window.HCSIG_BRIDGE && window.HCSIG_BRIDGE.getStateSummary)
-          ? null : null; // Firebase UID는 cloudSave.js에서 관리
-        const nickname = state.ui && state.ui.nickname ? state.ui.nickname : null;
+        const cu = window.HCSIG_CURRENT_USER || null;
+        const isLoggedIn = !!cu;
 
-        const products = [
-          { id: 'support_start', name: 'Support Pack Start', price: lang === 'en' ? '₩1,000' : '₩1,000',
-            reward: lang === 'en' ? 'COIN ×300 + Time Swap 2h ×3' : 'COIN ×300 + 타임 스와프 2h ×3',
-            desc: lang === 'en' ? 'A small thanks for trying HCSiG.' : 'HCSiG 체험에 감사를 전하는 작은 후원입니다.' },
-          { id: 'support_plus', name: 'Support Pack Plus', price: lang === 'en' ? '₩3,000' : '₩3,000',
-            reward: lang === 'en' ? 'COIN ×1000 + Time Swap 5h ×3 + TRACE Ample ×50' : 'COIN ×1,000 + 타임 스와프 5h ×3 + TRACE 앰플 ×50',
-            desc: lang === 'en' ? 'Bigger support for HCSiG development.' : 'HCSiG 개발을 더 크게 응원하는 후원입니다.' },
-          { id: 'support_pro', name: 'Support Pack Pro', price: lang === 'en' ? '₩9,900' : '₩9,900',
-            reward: lang === 'en' ? 'COIN ×5000 + Time Swap 10h ×5 + NULL Seed ×100 + TRACE Ample ×200' : 'COIN ×5,000 + 타임 스와프 10h ×5 + NULL 시드 ×100 + TRACE 앰플 ×200',
-            desc: lang === 'en' ? 'Full support for continued HCSiG development.' : 'HCSiG의 지속적인 개발을 위한 완전 후원입니다.' }
-        ];
+        // 현재 서포터 태그 확인
+        const myTags = state.supporterTags || [];
 
         el.innerHTML = `
-          <div class="support-header">
-            <div class="badge">SUPPORT</div>
-            <h3>${t('supportTitle')}</h3>
-            <p>${t('supportDesc')}</p>
+          <div class="sd-header">
+            <div class="sd-badge">SUPPORT DESK</div>
+            <div class="sd-account-row">
+              <span class="sd-account-label">${lang === 'en' ? 'Account' : '계정'}:</span>
+              <span class="sd-account-value" id="sdAccountValue">${isLoggedIn ? (cu.email || cu.uid) : (lang === 'en' ? '(not logged in)' : '(로그인 전)')}</span>
+              ${isLoggedIn ? `<button class="sd-copy-btn" id="btnSdCopyId" title="${lang === 'en' ? 'Copy' : '복사'}">⎘</button>` : ''}
+            </div>
+            ${myTags.length > 0 ? `<div class="sd-tags-row">${myTags.map(tag => `<span class="sd-tag sd-tag-${tag.toLowerCase()}">${tag}</span>`).join('')}</div>` : ''}
           </div>
-          <div class="support-products">
-            ${products.map(p => `
-              <div class="support-product-card">
-                <div class="support-product-name">${p.name}</div>
-                <div class="support-product-price">${p.price}</div>
-                <div class="support-product-reward">${p.reward}</div>
-                <div class="support-product-desc small">${p.desc}</div>
+
+          <div class="sd-subtab-bar">
+            <button class="sd-subtab-btn active" id="btnSupportSubApply"  data-sd-tab="apply" >${lang === 'en' ? 'Apply'   : '신청하기'}</button>
+            <button class="sd-subtab-btn"        id="btnSupportSubHistory" data-sd-tab="history">${lang === 'en' ? 'History' : '내역'}</button>
+            <button class="sd-subtab-btn"        id="btnSupportSubRedeem"  data-sd-tab="redeem">${lang === 'en' ? 'REDEEM'  : 'REDEEM'}</button>
+          </div>
+
+          <!-- 신청하기 탭 -->
+          <div class="sd-tab-panel" id="sdTabApply">
+            <div class="sd-products">
+              ${SUPPORT_PRODUCTS.map(p => `
+                <div class="sd-product-card" data-pid="${p.id}">
+                  <div class="sd-product-top">
+                    <span class="sd-product-name">${p.name}</span>
+                    <span class="sd-product-price">${p.price}</span>
+                  </div>
+                  <div class="sd-product-reward">${lang === 'en' ? p.rewardLabelEn : p.rewardLabel}</div>
+                  <div class="sd-product-desc small">${lang === 'en' ? p.descEn : p.desc}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="sd-form">
+              <div class="sd-form-row">
+                <label class="sd-form-label" for="supportProductSelect">${lang === 'en' ? 'Select Pack' : '상품 선택'}</label>
+                <select class="sd-form-select" id="supportProductSelect">
+                  ${SUPPORT_PRODUCTS.map(p => `<option value="${p.id}">${p.name} — ${p.price}</option>`).join('')}
+                </select>
               </div>
-            `).join('')}
+              <div class="sd-form-row">
+                <label class="sd-form-label" for="supportPayerName">${lang === 'en' ? 'Payer Name' : '입금자명'}</label>
+                <input class="sd-form-input" id="supportPayerName" type="text" maxlength="20"
+                  placeholder="${lang === 'en' ? 'Name used for payment' : '결제 시 사용한 이름'}"/>
+              </div>
+              <div class="sd-form-how small">
+                ${lang === 'en'
+                  ? '① Select pack → ② Transfer payment to the account below → ③ Enter your name above → ④ Click Submit'
+                  : '① 상품 선택 → ② 아래 계좌로 결제 → ③ 입금자명 입력 → ④ 신청 제출'}
+              </div>
+              <div class="sd-bank-box">
+                <span class="sd-bank-label">${lang === 'en' ? 'Payment Account' : '결제 계좌'}</span>
+                <span class="sd-bank-value">카카오뱅크 3333-29-9178268 이용완</span>
+                <button class="sd-bank-copy" id="btnSdBankCopy">복사</button>
+              </div>
+              ${isLoggedIn
+                ? `<button class="sd-submit-btn" id="btnSdSubmit">${lang === 'en' ? 'Submit Claim' : '신청 제출'}</button>`
+                : `<div class="sd-login-notice">${lang === 'en' ? '⚠ Please log in first (MORE → Cloud Account)' : '⚠ 먼저 로그인해주세요 (더보기 → 클라우드 계정)'}</div>`}
+              <div class="sd-submit-msg" id="sdSubmitMsg"></div>
+            </div>
           </div>
-          <div class="support-how">
-            <div class="support-how-title">${t('supportHow')}</div>
-            <p class="small">${t('supportHowDesc')}</p>
+
+          <!-- 내역 탭 -->
+          <div class="sd-tab-panel hidden" id="sdTabHistory">
+            <div class="sd-history-loading" id="sdHistoryLoading">${lang === 'en' ? 'Loading...' : '불러오는 중...'}</div>
+            <div class="sd-history-list" id="sdHistoryList"></div>
           </div>
-          <div class="support-id-box">
-            <div class="support-id-label">${t('supportYourId')}</div>
-            <div class="support-id-value" id="supportIdValue">로딩 중...</div>
-            <button type="button" class="support-copy-btn" id="btnSupportCopyId">복사</button>
-          </div>
-          <div class="support-contact-area">
-            <div class="support-how-title">${t('supportContact')}</div>
-            <p class="small">${lang === 'en'
-              ? 'Please contact us via the GitHub Issues page or email after purchase.'
-              : '구매 후 GitHub Issues 페이지 또는 이메일로 문의해주세요.'}</p>
-            <a href="https://github.com/cometodlite/developer.hackingcode.simulation/issues" target="_blank" rel="noopener" class="support-link-btn">GitHub Issues</a>
+
+          <!-- REDEEM 탭 -->
+          <div class="sd-tab-panel hidden" id="sdTabRedeem">
+            <div class="sd-redeem-desc small">
+              ${lang === 'en'
+                ? 'When a code is issued (status: code_issued), enter it below to receive your rewards.'
+                : '관리자가 코드를 발급하면(상태: code_issued), 아래에 코드를 입력해 보상을 받으세요.'}
+            </div>
+            <div class="sd-redeem-row">
+              <input class="sd-redeem-input" id="sdRedeemInput" type="text"
+                placeholder="HCSIG-XXXX-XXXXXX" maxlength="30" autocomplete="off"/>
+              <button class="sd-redeem-btn" id="btnSdRedeem">${lang === 'en' ? 'Redeem' : '코드 적용'}</button>
+            </div>
+            <div class="sd-redeem-msg" id="sdRedeemMsg"></div>
           </div>
         `;
 
-        // 계정 ID 표시 — window.HCSIG_CURRENT_USER 는 auth.js의 onAuthStateChanged 에서 설정
-        const idEl = el.querySelector('#supportIdValue');
-        if (idEl) {
-          try {
-            const cu = window.HCSIG_CURRENT_USER || null;
-            if (cu) {
-              // 이메일 있으면 이메일, 없으면 UID 표시
-              idEl.textContent = cu.email || cu.uid;
-            } else {
-              idEl.textContent = lang === 'en' ? '(not logged in)' : '(로그인 전)';
-            }
-          } catch(e) { idEl.textContent = '—'; }
-        }
-
-        // 복사 버튼 — 표시값(이메일) + UID를 함께 복사
-        const copyBtn = el.querySelector('#btnSupportCopyId');
-        if (copyBtn && idEl) {
+        // ── 계정 복사 버튼 ──────────────────────────────────────────────────
+        const copyBtn = el.querySelector('#btnSdCopyId');
+        if (copyBtn && isLoggedIn) {
           copyBtn.addEventListener('click', () => {
-            try {
-              const cu = window.HCSIG_CURRENT_USER || null;
-              const copyText = cu
-                ? (cu.email ? `${cu.email} (${cu.uid})` : cu.uid)
-                : idEl.textContent;
-              navigator.clipboard.writeText(copyText);
-              showToast(lang === 'en' ? 'Copied!' : '복사되었습니다.', 'system');
-            } catch(e) {}
+            const text = cu.email ? `${cu.email} (${cu.uid})` : cu.uid;
+            navigator.clipboard.writeText(text).catch(() => {});
+            showToast(lang === 'en' ? 'Copied!' : '복사되었습니다.', 'system');
           });
         }
+
+        // ── 계좌 복사 버튼 ──────────────────────────────────────────────────
+        const bankCopyBtn = el.querySelector('#btnSdBankCopy');
+        if (bankCopyBtn) {
+          bankCopyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText('3333-29-9178268').catch(() => {});
+            showToast(lang === 'en' ? 'Account number copied!' : '계좌번호가 복사되었습니다.', 'system');
+          });
+        }
+
+        // ── Sub-tab 전환 ─────────────────────────────────────────────────────
+        const sdTabs = { apply: 'sdTabApply', history: 'sdTabHistory', redeem: 'sdTabRedeem' };
+        function switchSdTab(tabId) {
+          el.querySelectorAll('.sd-subtab-btn').forEach(b => b.classList.toggle('active', b.dataset.sdTab === tabId));
+          el.querySelectorAll('.sd-tab-panel').forEach(p => p.classList.add('hidden'));
+          const panel = el.querySelector('#' + (sdTabs[tabId] || 'sdTabApply'));
+          if (panel) panel.classList.remove('hidden');
+          if (tabId === 'history') loadAndRenderHistory();
+        }
+
+        el.querySelectorAll('.sd-subtab-btn').forEach(btn => {
+          btn.addEventListener('click', () => switchSdTab(btn.dataset.sdTab));
+        });
+
+        // 초기 sub-tab 선택
+        if (initialSubTab && sdTabs[initialSubTab]) switchSdTab(initialSubTab);
+
+        // ── 신청 제출 버튼 ───────────────────────────────────────────────────
+        const submitBtn = el.querySelector('#btnSdSubmit');
+        const submitMsg = el.querySelector('#sdSubmitMsg');
+        if (submitBtn) {
+          submitBtn.addEventListener('click', async () => {
+            const productId  = (el.querySelector('#supportProductSelect')?.value || '').trim();
+            const payerName  = (el.querySelector('#supportPayerName')?.value || '').trim();
+            if (!payerName) {
+              submitMsg.textContent = lang === 'en' ? '⚠ Please enter the payer name.' : '⚠ 입금자명을 입력해주세요.';
+              submitMsg.className = 'sd-submit-msg sd-msg-error';
+              return;
+            }
+            submitBtn.disabled = true;
+            submitMsg.textContent = lang === 'en' ? 'Submitting...' : '신청 중...';
+            submitMsg.className = 'sd-submit-msg';
+            const result = await submitSupportClaim(productId, payerName);
+            submitBtn.disabled = false;
+            if (result.ok) {
+              submitMsg.textContent = lang === 'en'
+                ? `✅ Submitted! (ID: ${result.claimId.slice(0,8)}…) We'll review within 24h.`
+                : `✅ 신청이 접수되었습니다! (ID: ${result.claimId.slice(0,8)}…) 24시간 내 검토 후 코드를 발급해드립니다.`;
+              submitMsg.className = 'sd-submit-msg sd-msg-ok';
+              el.querySelector('#supportPayerName').value = '';
+            } else {
+              submitMsg.textContent = '⚠ ' + result.err;
+              submitMsg.className = 'sd-submit-msg sd-msg-error';
+            }
+          });
+        }
+
+        // ── 내역 로드 ────────────────────────────────────────────────────────
+        async function loadAndRenderHistory() {
+          const listEl  = el.querySelector('#sdHistoryList');
+          const loadEl  = el.querySelector('#sdHistoryLoading');
+          if (!listEl) return;
+          if (!isLoggedIn) {
+            if (loadEl) loadEl.style.display = 'none';
+            listEl.innerHTML = `<div class="sd-history-empty">${lang === 'en' ? 'Please log in first.' : '로그인 후 확인하세요.'}</div>`;
+            return;
+          }
+          if (loadEl) loadEl.style.display = '';
+          listEl.innerHTML = '';
+          const claims = await loadMyClaims();
+          if (loadEl) loadEl.style.display = 'none';
+          if (!claims.length) {
+            listEl.innerHTML = `<div class="sd-history-empty">${lang === 'en' ? 'No claims yet.' : '신청 내역이 없습니다.'}</div>`;
+            return;
+          }
+          const statusLabel = {
+            pending:    lang === 'en' ? '⏳ Pending'    : '⏳ 검토 중',
+            approved:   lang === 'en' ? '✅ Approved'   : '✅ 승인됨',
+            code_issued:lang === 'en' ? '🎁 Code Issued': '🎁 코드 발급',
+            redeemed:   lang === 'en' ? '🏅 Redeemed'  : '🏅 사용 완료',
+            rejected:   lang === 'en' ? '❌ Rejected'   : '❌ 거절됨'
+          };
+          const statusClass = { pending:'sd-status-pending', approved:'sd-status-approved', code_issued:'sd-status-code', redeemed:'sd-status-redeemed', rejected:'sd-status-rejected' };
+          listEl.innerHTML = claims.map(c => {
+            const ts = c.submittedAt && c.submittedAt.toDate ? c.submittedAt.toDate().toLocaleDateString('ko-KR') : '—';
+            const st = c.status || 'pending';
+            return `
+              <div class="sd-claim-row">
+                <div class="sd-claim-info">
+                  <span class="sd-claim-name">${c.productName || c.productId}</span>
+                  <span class="sd-claim-price">${c.price || ''}</span>
+                  <span class="sd-claim-date">${ts}</span>
+                </div>
+                <div class="sd-claim-status ${statusClass[st] || ''}">
+                  ${statusLabel[st] || st}
+                  ${st === 'code_issued' ? `<button class="sd-goto-redeem" data-sd-tab="redeem">${lang === 'en' ? '→ Redeem' : '→ 코드 입력'}</button>` : ''}
+                </div>
+              </div>`;
+          }).join('');
+          // "→ 코드 입력" 버튼 클릭 시 REDEEM 탭으로 이동
+          listEl.querySelectorAll('.sd-goto-redeem').forEach(b => {
+            b.addEventListener('click', () => switchSdTab('redeem'));
+          });
+        }
+
+        // ── REDEEM CODE 적용 ─────────────────────────────────────────────────
+        const redeemInput = el.querySelector('#sdRedeemInput');
+        const redeemBtn   = el.querySelector('#btnSdRedeem');
+        const redeemMsg   = el.querySelector('#sdRedeemMsg');
+        if (redeemBtn) {
+          redeemBtn.addEventListener('click', async () => {
+            const code = (redeemInput?.value || '').trim();
+            if (!code) {
+              redeemMsg.textContent = lang === 'en' ? '⚠ Please enter a code.' : '⚠ 코드를 입력해주세요.';
+              redeemMsg.className = 'sd-redeem-msg sd-msg-error';
+              return;
+            }
+            redeemBtn.disabled = true;
+            redeemMsg.textContent = lang === 'en' ? 'Verifying...' : '코드 확인 중...';
+            redeemMsg.className = 'sd-redeem-msg';
+            const result = await redeemSupportCode(code);
+            redeemBtn.disabled = false;
+            if (result.ok) {
+              if (redeemInput) redeemInput.value = '';
+              const r = result.product.rewards;
+              const rLabel = lang === 'en'
+                ? `COIN +${r.coin}, Energy Pack +${r.energyPack}, Daily Bonus Box +${r.dailyBonusBox}`
+                : `COIN +${r.coin}, 에너지팩 +${r.energyPack}, 데일리 보너스 박스 +${r.dailyBonusBox}`;
+              redeemMsg.innerHTML = `<strong>${lang === 'en' ? '🎉 Code redeemed!' : '🎉 코드 적용 완료!'}</strong><br>${rLabel}`;
+              redeemMsg.className = 'sd-redeem-msg sd-msg-ok';
+              showToast(lang === 'en' ? '🎁 Support reward received!' : '🎁 후원 보상이 지급되었습니다!', 'system');
+            } else {
+              redeemMsg.textContent = '⚠ ' + result.err;
+              redeemMsg.className = 'sd-redeem-msg sd-msg-error';
+            }
+          });
+        }
+
+        // Enter 키로 REDEEM 제출
+        if (redeemInput) {
+          redeemInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && redeemBtn && !redeemBtn.disabled) redeemBtn.click();
+          });
+        }
+
       } catch(e) { console.warn('[SupportPanel]', e); }
     }
 
@@ -4432,7 +4756,11 @@ function applyLanguageToUI(){
       renderItemsPanel();
       updateHeaderGlow();
       renderBeginnerRoulette();
-      renderSupportPanel();
+      // SUPPORT 패널은 탭이 실제 보일 때만 재렌더 (폼 입력 보호)
+      const tabSupportEl = document.getElementById('tabSupport');
+      if (tabSupportEl && tabSupportEl.classList.contains('active')) {
+        renderSupportPanel();
+      }
     }
 
 
@@ -7681,6 +8009,49 @@ function applyLanguageToUI(){
 
         shopList.appendChild(wrapper);
       });
+
+      // ── SUPPORT DESK 섹션 (항상 하단에 표시) ─────────────────────────────
+      const lang = getLang();
+      const supportSection = document.createElement('div');
+      supportSection.className = 'shop-support-section';
+      supportSection.innerHTML = `
+        <div class="shop-support-header">
+          <span class="shop-support-badge">SUPPORT DESK</span>
+          <span class="shop-support-subtitle">${lang === 'en' ? 'Support HCSiG development · Manual payment' : 'HCSiG 개발 후원 · 수동 결제'}</span>
+        </div>
+        <div class="shop-support-cards">
+          ${SUPPORT_PRODUCTS.map(p => `
+            <div class="shop-support-card">
+              <div class="shop-support-card-name">${p.name}</div>
+              <div class="shop-support-card-price">${p.price}</div>
+              <div class="shop-support-card-reward">${lang === 'en' ? p.rewardLabelEn : p.rewardLabel}</div>
+              <div class="shop-support-card-desc small">${lang === 'en' ? p.descEn : p.desc}</div>
+              <button class="shop-support-apply-btn" data-support-apply="${p.id}">${lang === 'en' ? 'Apply' : '신청하기'}</button>
+            </div>
+          `).join('')}
+        </div>
+        <div class="shop-support-note small">${lang === 'en'
+          ? '💡 Go to MORE → SUPPORT to submit, check status, and redeem codes.'
+          : '💡 더보기 → SUPPORT에서 신청·내역 확인·코드 입력이 가능합니다.'}</div>
+      `;
+      // 신청하기 버튼 → MORE > SUPPORT > 신청하기 탭으로 이동
+      supportSection.querySelectorAll('[data-support-apply]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pid = btn.dataset.supportApply;
+          // MORE 모달 열기 → SUPPORT 탭 열기 → 신청하기 sub-tab
+          const moreModal = document.getElementById('moreModal');
+          if (moreModal) moreModal.classList.remove('hidden');
+          if (typeof setActiveMoreTab === 'function') setActiveMoreTab('support');
+          // 신청하기 sub-tab 선택 및 상품 pre-select
+          setTimeout(() => {
+            const applyTab = document.getElementById('btnSupportSubApply');
+            if (applyTab) applyTab.click();
+            const sel = document.getElementById('supportProductSelect');
+            if (sel) { sel.value = pid; sel.dispatchEvent(new Event('change')); }
+          }, 80);
+        });
+      });
+      shopList.appendChild(supportSection);
     }
     function rollRarity(effect = {}) {
       const rareBoost = Math.max(0, Number(effect.scanRareBoost || 0));
@@ -9010,6 +9381,7 @@ function applyLanguageToUI(){
     function refreshUiAfterStateRestore() {
       ensureStageDefaults();
       ensureZeroDayDefaults();
+      ensureSupportDefaults();
       initAutoRunOnLoad();
       applySettings();
       syncSettingsUI();
@@ -9432,6 +9804,8 @@ function applyLanguageToUI(){
           shopTypeTabButtons.forEach(tab => tab.classList.toggle('active', tab === btn));
           renderShop();
           scheduleSilentSave();
+          // BGM: 상점 탭 전환 알림
+          try { document.dispatchEvent(new CustomEvent('hcsig:shop-type', { detail: { shopType: nextType } })); } catch(e) {}
         });
       });
     }
@@ -9548,6 +9922,18 @@ function applyLanguageToUI(){
       setLiveNetwork.addEventListener('change', () => {
         state.ui.liveNetworkEnabled = !!setLiveNetwork.checked;
         scheduleSilentSave(80);
+      });
+    }
+    // BGM 토글
+    const setBgm = document.getElementById('setBgm');
+    if (setBgm) {
+      // 초기값: localStorage에서 읽어 반영
+      try {
+        const lsVal = localStorage.getItem('HCSiG_BGM_enabled');
+        setBgm.checked = lsVal === null ? true : lsVal !== 'false';
+      } catch(e) {}
+      setBgm.addEventListener('change', () => {
+        if (window.HCSIG_BGM) window.HCSIG_BGM.setEnabled(!!setBgm.checked);
       });
     }
     if (setLiveNicknameMode) {

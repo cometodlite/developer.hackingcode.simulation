@@ -457,6 +457,8 @@
         if (tab === 'zero') {
           try { document.dispatchEvent(new CustomEvent('hcsig:zd-tab-open')); } catch(e) {}
         }
+        // BGM: 랩 서브탭 전환 알림
+        try { document.dispatchEvent(new CustomEvent('hcsig:lab-tab', { detail: { tab } })); } catch(e) {}
       });
     });
   }

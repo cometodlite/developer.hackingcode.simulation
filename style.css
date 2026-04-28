@@ -5889,4 +5889,448 @@ header button.header-glow-reward {
   background: rgba(0,255,136,0.20);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHOP: Support Desk 섹션
+   ═══════════════════════════════════════════════════════════════════════════ */
+.shop-support-section {
+  margin-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.10);
+  padding-top: 14px;
+}
+.shop-support-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.shop-support-badge {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 2px 7px;
+  background: rgba(0,255,136,0.12);
+  border: 1px solid rgba(0,255,136,0.30);
+  border-radius: 4px;
+  color: #00ff88;
+  text-transform: uppercase;
+}
+.shop-support-subtitle {
+  font-size: 10px;
+  color: rgba(255,255,255,0.40);
+}
+.shop-support-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.shop-support-card {
+  background: rgba(0,255,136,0.04);
+  border: 1px solid rgba(0,255,136,0.15);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.shop-support-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.shop-support-card-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffd700;
+  margin-bottom: 3px;
+}
+.shop-support-card-reward {
+  font-size: 11px;
+  color: #00ff88;
+  margin-bottom: 3px;
+}
+.shop-support-card-desc {
+  color: rgba(255,255,255,0.40);
+  margin-bottom: 8px;
+}
+.shop-support-apply-btn {
+  display: inline-block;
+  padding: 5px 14px;
+  background: rgba(0,255,136,0.12);
+  border: 1px solid rgba(0,255,136,0.35);
+  border-radius: 6px;
+  color: #00ff88;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.shop-support-apply-btn:hover {
+  background: rgba(0,255,136,0.22);
+}
+.shop-support-note {
+  color: rgba(255,255,255,0.35);
+  margin-top: 6px;
+  margin-bottom: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUPPORT DESK 패널 (MORE → SUPPORT)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sd-header {
+  margin-bottom: 12px;
+}
+.sd-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding: 2px 7px;
+  background: rgba(0,255,136,0.12);
+  border: 1px solid rgba(0,255,136,0.30);
+  border-radius: 4px;
+  color: #00ff88;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.sd-account-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.sd-account-label {
+  color: rgba(255,255,255,0.40);
+  white-space: nowrap;
+}
+.sd-account-value {
+  font-family: monospace;
+  word-break: break-all;
+  font-size: 11px;
+}
+.sd-copy-btn {
+  padding: 2px 6px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 4px;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sd-copy-btn:hover { background: rgba(255,255,255,0.14); }
+.sd-tags-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+.sd-tag {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 1px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.sd-tag-start {
+  background: rgba(0,255,136,0.15);
+  border: 1px solid rgba(0,255,136,0.35);
+  color: #00ff88;
+}
+.sd-tag-plus {
+  background: rgba(255,215,0,0.12);
+  border: 1px solid rgba(255,215,0,0.35);
+  color: #ffd700;
+}
+
+/* Sub-tab 바 */
+.sd-subtab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 8px;
+}
+.sd-subtab-btn {
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 5px;
+  color: rgba(255,255,255,0.55);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sd-subtab-btn:hover {
+  background: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.80);
+}
+.sd-subtab-btn.active {
+  background: rgba(0,255,136,0.12);
+  border-color: rgba(0,255,136,0.35);
+  color: #00ff88;
+}
+
+/* Tab panels */
+.sd-tab-panel { }
+.sd-tab-panel.hidden { display: none; }
+
+/* 신청하기 탭 */
+.sd-products {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.sd-product-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 9px;
+  padding: 9px 11px;
+}
+.sd-product-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+.sd-product-name {
+  font-size: 12px;
+  font-weight: 700;
+}
+.sd-product-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffd700;
+}
+.sd-product-reward {
+  font-size: 10px;
+  color: #00ff88;
+  margin-bottom: 2px;
+}
+.sd-product-desc {
+  color: rgba(255,255,255,0.38);
+}
+
+/* 폼 */
+.sd-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sd-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.sd-form-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.sd-form-select,
+.sd-form-input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 6px;
+  color: inherit;
+  font-size: 12px;
+  padding: 6px 8px;
+  outline: none;
+  font-family: inherit;
+}
+.sd-form-select:focus,
+.sd-form-input:focus {
+  border-color: rgba(0,255,136,0.40);
+}
+.sd-form-how {
+  color: rgba(255,255,255,0.38);
+  line-height: 1.55;
+  padding: 6px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.sd-bank-box {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,215,0,0.06);
+  border: 1px solid rgba(255,215,0,0.20);
+  border-radius: 7px;
+  padding: 8px 10px;
+  flex-wrap: wrap;
+}
+.sd-bank-label {
+  font-size: 10px;
+  color: rgba(255,215,0,0.70);
+  white-space: nowrap;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.sd-bank-value {
+  font-family: monospace;
+  font-size: 12px;
+  color: #ffd700;
+  flex: 1;
+}
+.sd-bank-copy {
+  padding: 3px 9px;
+  background: rgba(255,215,0,0.10);
+  border: 1px solid rgba(255,215,0,0.30);
+  border-radius: 5px;
+  color: #ffd700;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sd-bank-copy:hover { background: rgba(255,215,0,0.20); }
+.sd-submit-btn {
+  padding: 8px 0;
+  background: rgba(0,255,136,0.13);
+  border: 1px solid rgba(0,255,136,0.38);
+  border-radius: 7px;
+  color: #00ff88;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+}
+.sd-submit-btn:hover:not(:disabled) { background: rgba(0,255,136,0.22); }
+.sd-submit-btn:disabled { opacity: 0.45; cursor: default; }
+.sd-login-notice {
+  padding: 8px 10px;
+  background: rgba(255,160,0,0.08);
+  border: 1px solid rgba(255,160,0,0.25);
+  border-radius: 7px;
+  color: rgba(255,160,0,0.90);
+  font-size: 11px;
+}
+.sd-submit-msg {
+  font-size: 11px;
+  min-height: 16px;
+  padding: 0 2px;
+  line-height: 1.5;
+}
+
+/* 내역 탭 */
+.sd-history-loading {
+  text-align: center;
+  color: rgba(255,255,255,0.35);
+  font-size: 11px;
+  padding: 18px 0;
+}
+.sd-history-empty {
+  text-align: center;
+  color: rgba(255,255,255,0.30);
+  font-size: 11px;
+  padding: 18px 0;
+}
+.sd-claim-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 8px;
+  margin-bottom: 7px;
+  flex-wrap: wrap;
+}
+.sd-claim-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+.sd-claim-name {
+  font-size: 12px;
+  font-weight: 700;
+}
+.sd-claim-price {
+  font-size: 11px;
+  color: #ffd700;
+}
+.sd-claim-date {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+}
+.sd-claim-status {
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.sd-status-pending   { color: rgba(255,200,0,0.80); }
+.sd-status-approved  { color: #00ff88; }
+.sd-status-code      { color: #00bfff; }
+.sd-status-redeemed  { color: rgba(255,255,255,0.55); }
+.sd-status-rejected  { color: rgba(255,80,80,0.80); }
+.sd-goto-redeem {
+  font-size: 10px;
+  padding: 3px 8px;
+  background: rgba(0,191,255,0.12);
+  border: 1px solid rgba(0,191,255,0.30);
+  border-radius: 5px;
+  color: #00bfff;
+  cursor: pointer;
+}
+.sd-goto-redeem:hover { background: rgba(0,191,255,0.22); }
+
+/* REDEEM 탭 */
+.sd-redeem-desc {
+  color: rgba(255,255,255,0.40);
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+.sd-redeem-row {
+  display: flex;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+.sd-redeem-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 6px;
+  color: inherit;
+  font-size: 13px;
+  font-family: monospace;
+  padding: 7px 10px;
+  outline: none;
+  letter-spacing: 0.05em;
+}
+.sd-redeem-input:focus {
+  border-color: rgba(0,191,255,0.45);
+}
+.sd-redeem-btn {
+  padding: 7px 14px;
+  background: rgba(0,191,255,0.12);
+  border: 1px solid rgba(0,191,255,0.32);
+  border-radius: 6px;
+  color: #00bfff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.sd-redeem-btn:hover:not(:disabled) { background: rgba(0,191,255,0.22); }
+.sd-redeem-btn:disabled { opacity: 0.45; cursor: default; }
+.sd-redeem-msg {
+  font-size: 11px;
+  min-height: 16px;
+  padding: 0 2px;
+  line-height: 1.55;
+}
+
+/* 공통: 메시지 색상 */
+.sd-msg-ok    { color: #00ff88; }
+.sd-msg-error { color: rgba(255,100,100,0.90); }
 
