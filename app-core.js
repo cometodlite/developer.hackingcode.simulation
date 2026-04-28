@@ -4979,11 +4979,13 @@ function applyLanguageToUI(){
       if (!isSfxEnabled()) return;
       const ctx = getAudioContext();
       if (!ctx) return;
-      if (ctx.state === 'suspended') {
-        ctx.resume().catch(() => {});
-      }
-      const now = ctx.currentTime + 0.005;
-      const v = getSfxVolume();
+
+      // ctx.resume()은 비동기 — resume 완료 후 currentTime을 읽어야
+      // suspended 상태에서 스케줄된 시각이 과거가 되는 문제를 방지
+      function doPlay() {
+        if (!isSfxEnabled()) return;
+        const now = ctx.currentTime + 0.005;
+        const v = getSfxVolume();
 
       // gain 기준: v=1.0(100%)일 때 0.15~0.30 범위가 적절
       switch (name) {
@@ -5032,6 +5034,13 @@ function applyLanguageToUI(){
           break;
         default:
           playTone(ctx, now, 600, 0.06, 'sine', 0.15 * v, 720);
+      }
+      } // end doPlay
+
+      if (ctx.state === 'suspended') {
+        ctx.resume().then(doPlay).catch(() => {});
+      } else {
+        doPlay();
       }
     }
 
