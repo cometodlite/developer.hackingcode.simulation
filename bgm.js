@@ -332,6 +332,7 @@
       } else if (st.started) {
         st.isFirstTrack = true;
         st.currentTrack = null;
+        st.context = null;   // 강제 재평가 — 같은 컨텍스트여도 재생 시작
         applyContext(resolveContext());
       }
       return st.enabled;
