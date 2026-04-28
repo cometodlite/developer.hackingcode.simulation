@@ -261,7 +261,7 @@
 
       // 충돌 다이얼로그 (showConflictDialog가 없으면 안전 병합 fallback)
       let choice = 'safe-merge';
-      if (bridge().showConflictDialog) {
+      if (bridge() && bridge().showConflictDialog) {
         try { choice = await bridge().showConflictDialog(localParsed, cloud); }
         catch(e) { console.warn('[CloudSync] conflict dialog error:', e); }
       }

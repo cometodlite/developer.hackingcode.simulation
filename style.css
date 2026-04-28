@@ -6377,7 +6377,8 @@ header button.header-glow-reward {
   padding: 16px;
   backdrop-filter: blur(4px);
 }
-#saveConflictBackdrop.active { display: flex; }
+#saveConflictBackdrop.active,
+#saveConflictBackdrop[style*="flex"] { display: flex !important; }
 #saveConflictModal {
   width: min(520px, calc(100vw - 24px));
   max-height: calc(100dvh - 40px);
@@ -6405,6 +6406,10 @@ header button.header-glow-reward {
   display: flex;
   gap: 10px;
   align-items: stretch;
+}
+@media (max-width: 400px) {
+  .sc-compare { flex-direction: column; }
+  .sc-vs { justify-content: center; }
 }
 .sc-side {
   flex: 1;
