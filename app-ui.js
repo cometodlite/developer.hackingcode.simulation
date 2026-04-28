@@ -15,7 +15,7 @@
 (function(){
   let lastTouchEnd = 0;
   function isEditable(target){
-    return !!(target && target.closest && target.closest('input, textarea, select, [contenteditable="true"]'));
+    return !!(target && target.closest && target.closest('input, textarea, select, [contenteditable="true"], label'));
   }
   document.addEventListener('gesturestart', ev => {
     ev.preventDefault();
