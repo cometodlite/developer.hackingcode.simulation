@@ -1777,6 +1777,12 @@ function applyLanguageToUI(){
         cost: 520,
         rarity: 'UNCOMMON',
         category: 'ENERGY',
+        canBuy: () => {
+          if (state.energy >= state.energyMax) {
+            return { ok: false, reason: getLang() === 'en' ? 'Energy is already full.' : '에너지가 이미 가득 찼습니다.' };
+          }
+          return { ok: true };
+        },
         buy: () => {
           state.energy = state.energyMax;
           state.energyTimerMs = 0;
@@ -7929,6 +7935,13 @@ function applyLanguageToUI(){
           btn.disabled = true;
           btn.textContent = t('buyUnavailable');
           btn.title = lim2.type === 'daily' ? t('buyDailyLimit') : t('buyOnceLimit');
+        } else if (typeof item.canBuy === 'function') {
+          const preCheck = item.canBuy();
+          if (!preCheck.ok) {
+            btn.disabled = true;
+            btn.textContent = t('buyUnavailable');
+            btn.title = preCheck.reason;
+          }
         }
         btn.addEventListener('click', () => {
           // purchase cap check (daily/once)
@@ -7937,6 +7950,16 @@ function applyLanguageToUI(){
             log(t('shopLog', { msg: cap.reason }), 'shop');
             showToast(cap.reason, 'shop');
             return;
+          }
+
+          // 아이템 자체 구매 가능 여부 검사 (e.g. 에너지 풀)
+          if (typeof item.canBuy === 'function') {
+            const itemCheck = item.canBuy();
+            if (!itemCheck.ok) {
+              log(t('shopLog', { msg: itemCheck.reason }), 'shop');
+              showToast(itemCheck.reason, 'shop');
+              return;
+            }
           }
 
           // 통화별 확인
