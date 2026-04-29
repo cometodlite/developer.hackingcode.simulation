@@ -4451,7 +4451,8 @@ function applyLanguageToUI(){
           } catch(e2) { /* 선택적 업데이트 — 실패해도 보상은 지급됨 */ }
         }
 
-        scheduleSilentSave();
+        // v3.0.2d fix: 실제 결제 보상이므로 즉시 저장 (scheduleSilentSave 대신)
+        saveGame(true);
         updateStatsUI();
         return { ok: true, product };
       } catch(e) {
@@ -4638,7 +4639,9 @@ function applyLanguageToUI(){
           const listEl  = el.querySelector('#sdHistoryList');
           const loadEl  = el.querySelector('#sdHistoryLoading');
           if (!listEl) return;
-          if (!isLoggedIn) {
+          // v3.0.2d fix: 클로저 캡처값 대신 live 값 사용 (Firebase 초기화 타이밍 이슈 방지)
+          const liveLoggedIn = !!(window.HCSIG_CURRENT_USER);
+          if (!liveLoggedIn) {
             if (loadEl) loadEl.style.display = 'none';
             listEl.innerHTML = `<div class="sd-history-empty">${lang === 'en' ? 'Please log in first.' : '로그인 후 확인하세요.'}</div>`;
             return;
@@ -4707,6 +4710,14 @@ function applyLanguageToUI(){
               redeemMsg.innerHTML = `<strong>${lang === 'en' ? '🎉 Code redeemed!' : '🎉 코드 적용 완료!'}</strong><br>${rLabel}`;
               redeemMsg.className = 'sd-redeem-msg sd-msg-ok';
               showToast(lang === 'en' ? '🎁 Support reward received!' : '🎁 후원 보상이 지급되었습니다!', 'system');
+              // v3.0.2d fix: 서포터 태그 뱃지 갱신 — 2.5초 후 재렌더 (성공 메시지 읽을 시간 확보)
+              setTimeout(() => {
+                const supportTabEl = document.getElementById('tabSupport');
+                if (supportTabEl && supportTabEl.classList.contains('active')) {
+                  _supportPanelLoginState = undefined; // 강제 재렌더
+                  renderSupportPanel('redeem');
+                }
+              }, 2500);
             } else {
               redeemMsg.textContent = '⚠ ' + result.err;
               redeemMsg.className = 'sd-redeem-msg sd-msg-error';
@@ -4720,6 +4731,9 @@ function applyLanguageToUI(){
             if (e.key === 'Enter' && redeemBtn && !redeemBtn.disabled) redeemBtn.click();
           });
         }
+
+        // v3.0.2d: 렌더 완료 후 로그인 상태 기록 (updateStatsUI 재렌더 방지 기준점)
+        _supportPanelLoginState = !!(window.HCSIG_CURRENT_USER);
 
       } catch(e) { console.warn('[SupportPanel]', e); }
     }
@@ -4774,13 +4788,21 @@ function applyLanguageToUI(){
       renderItemsPanel();
       updateHeaderGlow();
       renderBeginnerRoulette();
-      // SUPPORT 패널은 탭이 실제 보일 때만 재렌더 (폼 입력 보호)
+      // v3.0.2d: SUPPORT 패널은 로그인 상태 변경 시에만 재렌더 (폼 입력 보호)
+      // 매 틱마다 재렌더하면 입금자명 등 폼 입력이 초기화되는 버그 방지
       const tabSupportEl = document.getElementById('tabSupport');
       if (tabSupportEl && tabSupportEl.classList.contains('active')) {
-        renderSupportPanel();
+        const _curLoginState = !!(window.HCSIG_CURRENT_USER);
+        if (_supportPanelLoginState !== _curLoginState) {
+          _supportPanelLoginState = _curLoginState;
+          renderSupportPanel();
+        }
       }
     }
 
+
+    // v3.0.2d: SUPPORT 패널 로그인 상태 추적 (불필요한 재렌더 방지 → 폼 입력 보호)
+    let _supportPanelLoginState = undefined; // undefined = 아직 렌더 전
 
     // v3.0.0 fix: 같은 WARN/메시지 중복 토스트 방지 (1.2초 윈도우)
     const _recentToasts = new Map(); // key: kind+msg, value: timestamp
@@ -9216,7 +9238,10 @@ function applyLanguageToUI(){
         manual: tabManual,
         support: tabSupport
       };
-      if (tabName === 'support') renderSupportPanel();
+      if (tabName === 'support') {
+        _supportPanelLoginState = undefined; // 탭 진입 시 항상 새로 렌더
+        renderSupportPanel();
+      }
       const activeTab = panelMap[tabName] ? tabName : 'codex';
 
       // v3.0.0 hotfix3: class-only switching could leave CODEX rendered
