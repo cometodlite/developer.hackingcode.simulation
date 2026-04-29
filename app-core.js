@@ -6374,6 +6374,8 @@ function applyLanguageToUI(){
       const score = run.score || 0;
       const signal = run.signal || 0;
       const depth = run.depth || 0;
+      // v3.0.2d fix: CLEAR = 최대 깊이 도달 + 탈출 성공 (depth 0 즉시 탈출은 CLEAR 아님)
+      const isClear = extracted && depth >= def.depthMax;
       const rewardCredits = extracted ? Math.round(def.baseScore * 0.8 + score * 0.5) : 0;
       // OneDay: 30–80 range for PVE (spec v3.0.0)
       let rewardOneDay = extracted
@@ -6388,9 +6390,12 @@ function applyLanguageToUI(){
       state.zeroDay.pve.bestDepth = Math.max(state.zeroDay.pve.bestDepth || 0, depth);
       state.zeroDay.pve.bestScore = Math.max(state.zeroDay.pve.bestScore || 0, score);
       if (extracted) {
-        state.zeroDay.pve.extracts = (state.zeroDay.pve.extracts || 0) + 1;
-        state.stats.zeroDayPveClearCount  = (state.stats.zeroDayPveClearCount || 0) + 1;
         state.stats.zeroDayPveEscapeCount = (state.stats.zeroDayPveEscapeCount || 0) + 1;
+        // v3.0.2d fix: extracts / zeroDayPveClearCount 는 최대 깊이 도달 시에만 카운트
+        if (isClear) {
+          state.zeroDay.pve.extracts = (state.zeroDay.pve.extracts || 0) + 1;
+          state.stats.zeroDayPveClearCount = (state.stats.zeroDayPveClearCount || 0) + 1;
+        }
         // Track difficulty for PVP recommendation
         const diffOrder = ['intro','easy','normal','hard','danger'];
         const diffIdx   = diffOrder.indexOf(run.diff);
@@ -6404,12 +6409,29 @@ function applyLanguageToUI(){
       if (rewardCredits) { state.credits += rewardCredits; state.stats.creditsEarnedTotal += rewardCredits; }
       if (rewardOneDay)  { state.items.oneDay = (state.items.oneDay || 0) + rewardOneDay; state.stats.zeroDayOneDayEarnedTotal += rewardOneDay; }
       // pass points
-      addPassPoints(extracted ? 60 : 20);
+      addPassPoints(isClear ? 60 : extracted ? 30 : 20);
+      // v3.0.2d: 결과 구분 — CLEAR / PARTIAL EXIT / TRACE COMPLETE
+      const resultLabel = isClear
+        ? 'CLEAR'
+        : extracted
+          ? (getLang()==='en' ? 'PARTIAL EXIT' : 'PARTIAL EXIT')
+          : (getLang()==='en' ? 'TRACE COMPLETE' : 'TRACE COMPLETE');
       const resultLine = extracted
-        ? `result: ${getLang()==='en' ? 'CLEAN EXIT' : 'CLEAN EXIT'} · depth ${depth} · signal ${signal} · score ${score} · credits +${rewardCredits} · OneDay +${rewardOneDay}`
-        : `result: ${getLang()==='en' ? 'TRACE COMPLETE' : 'TRACE COMPLETE'} · depth ${depth} · signal ${signal} · OneDay +${rewardOneDay}`;
+        ? `result: ${resultLabel} · depth ${depth}/${def.depthMax} · signal ${signal} · score ${score} · credits +${rewardCredits} · OneDay +${rewardOneDay}`
+        : `result: ${resultLabel} · depth ${depth}/${def.depthMax} · signal ${signal} · OneDay +${rewardOneDay}`;
       log(`[ZERO-DAY PVE] ${resultLine}`, 'hack');
-      showToast(extracted ? (getLang()==='en' ? 'ZERO-DAY: Clean exit' : 'ZERO-DAY: 정식 탈출') : (getLang()==='en' ? 'ZERO-DAY: Traced' : 'ZERO-DAY: 추적됨'), extracted ? 'achievement' : 'warn');
+      let toastMsg, toastType;
+      if (isClear) {
+        toastMsg  = getLang()==='en' ? 'ZERO-DAY: Cleared!' : 'ZERO-DAY: 클리어!';
+        toastType = 'achievement';
+      } else if (extracted) {
+        toastMsg  = getLang()==='en' ? 'ZERO-DAY: Partial exit' : 'ZERO-DAY: 부분 탈출';
+        toastType = 'system';
+      } else {
+        toastMsg  = getLang()==='en' ? 'ZERO-DAY: Traced' : 'ZERO-DAY: 추적됨';
+        toastType = 'warn';
+      }
+      showToast(toastMsg, toastType);
       checkAchievements('zeroDayPve');
       updateStatsUI();
       renderZeroDayPanel();
