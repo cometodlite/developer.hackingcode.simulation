@@ -6,7 +6,9 @@
 (function(){
   try{
     if('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    document.documentElement.style.setProperty('--appH', Math.ceil(window.innerHeight) + 'px');
+    const firstH = Math.ceil(window.innerHeight) + 'px';
+    document.documentElement.style.setProperty('--appH', firstH);
+    document.documentElement.style.setProperty('--app-height', firstH);
   }catch(e){}
 })();
 
@@ -48,7 +50,9 @@
   function setAppH(){
     const vv = window.visualViewport;
     const h = vv ? vv.height : window.innerHeight;
-    root.style.setProperty('--appH', px(h));
+    const value = px(h);
+    root.style.setProperty('--appH', value);
+    root.style.setProperty('--app-height', value);
   }
 
   function setHeaderTabs(){
@@ -57,7 +61,9 @@
     const isMobile = window.matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
 
     if(header){
-      root.style.setProperty('--headerH', px(header.getBoundingClientRect().height));
+      const headerValue = px(header.getBoundingClientRect().height);
+      root.style.setProperty('--headerH', headerValue);
+      root.style.setProperty('--header-h', headerValue);
     }
     if(isMobile){
       if(tabs){
@@ -78,7 +84,11 @@
     setAppH();
     setHeaderTabs();
     // remove tiny scroll offsets that look like the whole UI is shifted upward
-    try{ if(window.scrollY !== 0) window.scrollTo(0,0); }catch(e){}
+    try{
+      if(window.scrollY !== 0) window.scrollTo(0,0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }catch(e){}
   }
 
   function scheduleKick(delay = 0){
@@ -107,6 +117,9 @@
   window.addEventListener('resize', () => scheduleKick());
   window.addEventListener('orientationchange', () => scheduleKick(250));
   window.addEventListener('pageshow', () => scheduleKick(40));
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') scheduleKick(20);
+  });
 
   // ResizeObserver catches font-load/header wrap changes that happen AFTER first paint
   try{

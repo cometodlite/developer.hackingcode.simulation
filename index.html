@@ -118,13 +118,13 @@
   </div>
 
   <!-- 서버 + 루트 선택 -->
-  <div class="flex-col" style="gap:4px; margin-top:6px;">
-    <div class="flex-row" style="gap:8px; align-items:flex-end;">
-      <div style="flex:2;">
+  <div class="flex-col home-actions-controls" style="gap:4px; margin-top:6px;">
+    <div class="flex-row action-control-row" style="gap:8px; align-items:flex-end;">
+      <div class="action-control action-control-wide" style="flex:2;">
         <span class="small" id="labelTargetServer">타겟 서버</span>
         <select id="serverSelect"></select>
       </div>
-      <div style="flex:1;">
+      <div class="action-control" style="flex:1;">
         <span class="small" id="labelTargetRoute">루트</span>
         <select id="routeSelect">
           <option value="external">외부 루트</option>
@@ -135,16 +135,17 @@
     </div>
 
     <!-- CPU/GPU 업그레이드 단일 선택 -->
-    <div class="flex-row" style="gap:8px; align-items:flex-end; margin-top:4px;">
-      <div style="flex:2;">
+    <div class="flex-row action-control-row" style="gap:8px; align-items:flex-end; margin-top:4px;">
+      <div class="action-control action-control-wide" style="flex:2;">
         <span class="small" id="labelUpgradeTarget">업그레이드 대상</span>
         <select id="upgradeTargetSelect">
           <option value="cpu">CPU</option>
           <option value="gpu">GPU</option>
         </select>
       </div>
-      <div style="flex:1;">
-        <button id="btnUpgrade" style="width:100%; margin-top:18px;" title="선택한 대상을 업그레이드합니다.">업그레이드</button>
+      <div class="action-control action-control-button" style="flex:1;">
+        <span class="small" id="labelSystemUpgrade">시스템 업그레이드</span>
+        <button id="btnUpgrade" class="control-button action-upgrade-button" title="선택한 대상을 업그레이드합니다.">업그레이드</button>
       </div>
     </div>
 
@@ -287,7 +288,6 @@
     <div class="event-tabs">
       <button class="event-tab-btn active" data-event-tab="weekly" id="eventTabBtnWeekly">WEEKLY</button>
       <button class="event-tab-btn" data-event-tab="pass" id="eventTabBtnPass">PASS</button>
-      <button class="event-tab-btn" data-event-tab="roulette" id="eventTabBtnRoulette">ROULETTE</button>
     </div>
 
     <!-- WEEKLY CHALLENGE 패널 -->
@@ -331,10 +331,6 @@
       <div id="passPanel"></div>
     </div>
 
-    <!-- ROULETTE 패널 -->
-    <div class="event-tab-panel" id="eventTabRoulette">
-      <div id="beginnerRouletteMount"></div>
-    </div>
   </div>
   <div id="eventModalFooter"><button id="btnEventClose2">닫기</button></div>
 </div>
@@ -649,9 +645,9 @@
         <div class="credits-title">HCSiG</div>
         <div class="credits-subtitle">Hacking Code Simulator Game</div>
         <div class="credits-divider"></div>
-        <div class="credits-row"><span>개발</span><strong>COMET DEVELOPS</strong></div>
-        <div class="credits-row"><span>유통</span><strong>COMETODLITE</strong></div>
-        <div class="credits-row"><span>© 2025–2026</span><strong>COMET</strong></div>
+        <div class="credits-row"><span id="creditsLabelDevelop">개발</span><strong>COMET DEVELOPS</strong></div>
+        <div class="credits-row"><span id="creditsLabelPublish">유통</span><strong>COMETODLITE</strong></div>
+        <div class="credits-row"><span id="creditsLabelCopyright">© 2025–2026</span><strong>COMET</strong></div>
         <div class="credits-divider"></div>
         <div class="credits-meta">
           <span id="creditsVersion">v3.0.0</span>

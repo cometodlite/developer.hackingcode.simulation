@@ -514,10 +514,13 @@ function applyLanguageToUI(){
   setText('titleStatus', t('status')); setText('titleShop', t('shop')); setText('titleActions', t('actions')); setText('titleCodeInventory', t('codeInventory')); setText('titleCodeDetail', t('codeDetail'));
   setText('labelLevel', t('level')); setText('labelExp', t('exp')); setText('labelCredits', t('credits')); setText('labelCpuTier', t('cpuTier')); setText('labelGpuTier', t('gpuTier')); setText('labelEnergy', t('energy')); setText('labelEnergyTimer', t('nextRecovery')); setText('labelEnergyPack', t('energyPack')); setText('labelLastSave', t('lastSave')); setText('btnUseEnergyPack', t('use'));
   setText('shopSortLabel', t('sort')); setText('shopCategoryLabel', t('category')); setText('shopCatAll', t('all')); setText('shopCatEnergy', t('energy')); setText('shopCatSystem', t('system')); setText('shopCatEconomy', t('economy')); setText('shopCatUtility', t('utility'));
-  setText('btnScan', t('codeScan')); setText('btnHack', t('serverHack')); setText('btnUpgradeCpu', t('cpuUpgrade')); setText('btnUpgradeGpu', t('gpuUpgrade')); setText('labelTargetServer', t('targetServer')); setText('labelLoadout', t('loadout')); setText('btnSaveLoadout', t('saveSlot')); setText('btnLoadLoadout', t('loadSlot')); setText('labelHackMode', t('hackMode'));
+  setText('btnScan', t('codeScan')); setText('btnHack', t('serverHack')); setText('btnUpgradeCpu', t('cpuUpgrade')); setText('btnUpgradeGpu', t('gpuUpgrade')); setText('labelTargetServer', t('targetServer')); setText('labelTargetRoute', t('targetRoute')); setText('labelUpgradeTarget', t('upgradeTarget')); setText('labelLoadout', t('loadout')); setText('btnSaveLoadout', t('saveSlot')); setText('btnLoadLoadout', t('loadSlot')); setText('labelHackMode', t('hackMode'));
+  setText('btnUpgrade', getLang()==='en' ? 'Upgrade' : getLang()==='ja' ? 'アップグレード' : '업그레이드');
+  setText('labelSystemUpgrade', getLang()==='en' ? 'System Upgrade' : getLang()==='ja' ? 'システムアップグレード' : '시스템 업그레이드');
   setText('actionsDesc1', t('actionsDesc1')); setText('actionsDesc2', t('actionsDesc2')); setText('actionsDesc3', t('actionsDesc3')); setText('actionsDesc4', t('actionsDesc4'));
   setText('btnUpgradeCode', t('codeUpgrade')); setText('btnSyncCode', t('codeSync')); setText('btnEvolveCode', t('codeEvolve')); setText('btnModalUpgradeCode', t('codeUpgrade')); setText('btnModalSyncCode', t('codeSync')); setText('btnModalEvolveCode', t('codeEvolve')); setText('btnModalShardCode', t('shardEnhance')); setText('codeDesc1', t('codeDesc1')); setText('codeDesc2', t('codeDesc2')); setText('codeDesc3', t('codeDesc3'));
-  setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnLiveNet', t('liveNet')); setText('tabBtnRank', t('rank')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data'));
+  setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnLiveNet', t('liveNet')); setText('tabBtnRank', t('rank')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data')); setText('tabBtnCredits', t('creditsTab')); setText('tabBtnManual', t('manualTab')); setText('tabBtnSupport', t('supportTab'));
+  setText('eventTabBtnWeekly', t('weeklyTab')); setText('eventTabBtnPass', t('passTab'));
   setText('listTabBtnMission', t('mission')); setText('listTabBtnAchievement', t('achievement')); setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('liveNetTabTitle', t('liveNetRecords')); setText('rankTabTitle', t('softRank')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnListClose2', t('close')); setText('btnEventClose2', t('close')); setText('btnMoreClose2', t('close'));
   setText('logSearchHelp', t('logSearchHelp')); const lsi=document.getElementById('logSearchInput'); if(lsi) lsi.placeholder=t('searchPlaceholder'); setText('btnClearLogs', t('clearLogs')); const btnToggle=document.getElementById('btnToggleLogs'); if(btnToggle){ btnToggle.textContent = (window.logsHidden ? t('showLogs') : t('hideLogs')); } setText('logFilterTitle', t('logFilter'));
   document.querySelectorAll('[data-achievement-filter="all"]').forEach(el => { el.textContent = t('achievementAll'); });
@@ -535,6 +538,10 @@ function applyLanguageToUI(){
   const labelBgmEl = document.getElementById('labelBgm'); if(labelBgmEl) labelBgmEl.textContent = (getLang()==='en' ? 'BGM' : getLang()==='ja' ? 'BGM' : 'BGM');
   const ast=document.getElementById('setAutoSaveToast'); if(ast && ast.parentElement){ ast.parentElement.lastChild.textContent = ' ' + t('visible'); }
   const liveNameModeEl=document.getElementById('setLiveNicknameMode'); if(liveNameModeEl){ [...liveNameModeEl.options].forEach(opt=>{ if(opt.value==='nickname') opt.textContent=t('nickname'); if(opt.value==='callsign') opt.textContent=t('callsign'); }); }
+  setText('creditsLabelDevelop', getLang()==='en' ? 'Developed by' : getLang()==='ja' ? '開発' : '개발');
+  setText('creditsLabelPublish', getLang()==='en' ? 'Published by' : getLang()==='ja' ? '配信' : '유통');
+  setText('creditsLabelCopyright', getLang()==='en' ? '© 2025–2026' : getLang()==='ja' ? '© 2025–2026' : '© 2025–2026');
+  const creditsSeasonEl=document.getElementById('creditsSeasonLabel'); if(creditsSeasonEl) creditsSeasonEl.textContent = getSeasonPhaseInfo().badge;
   const btnSaveGameEl=document.getElementById('btnSaveGame'); if(btnSaveGameEl) btnSaveGameEl.title=t('saveToLocal');
   const btnLoadGameEl=document.getElementById('btnLoadGame'); if(btnLoadGameEl) btnLoadGameEl.title=t('loadFromLocal');
   const btnClearSaveEl=document.getElementById('btnClearSave'); if(btnClearSaveEl) btnClearSaveEl.title=t('deleteSave');
@@ -3012,11 +3019,15 @@ function applyLanguageToUI(){
       ];
     }
 
-    function getDayKey() {
-      return new Date().toISOString().slice(0, 10);
-    }
     const DAY_MS = 24 * 60 * 60 * 1000;
     const KST_WEEK_RESET_OFFSET_MS = 4 * 60 * 60 * 1000; // UTC + 9h, then 05:00 KST reset.
+    function getResetLogicalDate(ms = Date.now()) {
+      return new Date(ms + KST_WEEK_RESET_OFFSET_MS);
+    }
+    function getDayKey(ms = Date.now()) {
+      const d = getResetLogicalDate(ms);
+      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    }
     function getKstWeeklyStartMs(ms = Date.now()) {
       const logical = new Date(ms + KST_WEEK_RESET_OFFSET_MS);
       const day = logical.getUTCDay();
@@ -3030,9 +3041,9 @@ function applyLanguageToUI(){
     function getNextWeeklyResetMs(ms = Date.now()) {
       return getKstWeeklyStartMs(ms) + (7 * DAY_MS) - KST_WEEK_RESET_OFFSET_MS;
     }
-    function getMonthKey() {
-      const d = new Date();
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    function getMonthKey(ms = Date.now()) {
+      const d = getResetLogicalDate(ms);
+      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
     }
 
     const weeklyChallengeDefs = [
@@ -3740,6 +3751,7 @@ function applyLanguageToUI(){
         const weeklyProg = state.weeklyChallenge || {};
         const weeklyGoals = Array.isArray(weeklyProg.goals) ? weeklyProg.goals : [];
         const weeklyLeft = weeklyGoals.filter(g => !g.done).length;
+        const seasonInfo = getSeasonPhaseInfo();
 
         const energyCurrent = state.energy || 0;
         const energyMax = state.energyMax || 20;
@@ -3761,6 +3773,11 @@ function applyLanguageToUI(){
         if (weeklyLeft > 0) {
           items.push({ cls: 'today-item today-item-action', text: `${t('todayWeeklyGoals')} ${weeklyLeft} ${t('todayRemaining')}` });
         }
+
+        items.push({
+          cls: seasonInfo.state === 'active' ? 'today-item today-item-ok' : 'today-item today-item-action',
+          text: seasonInfo.todaySummary
+        });
 
         el.innerHTML = items.map(item =>
           `<div class="${item.cls}"><span class="today-item-text">${item.text}</span></div>`
@@ -5188,8 +5205,10 @@ function applyLanguageToUI(){
         state.energy = 0;
         unlockAchievement('energy_zero');
         // 방전 습관 / 한계 돌파 미션용 플래그 기록
+        state.missionProgress.daily.energy0Reached  = true;
         state.missionProgress.weekly.energy0Reached = true;
         state.missionProgress.month.energy0Reached  = true;
+        checkMissions('daily');
         checkMissions('weekly');
         checkMissions('month');
       }
@@ -5643,7 +5662,66 @@ function applyLanguageToUI(){
     // ══════════════════════════════════════════════════════
     const PASS_MAX_TIER = 30;
     const PASS_POINTS_PER_TIER = 100;
-    const SEASON_START_DATE = new Date('2026-05-01T05:00:00+09:00');
+    const SEASON_1 = {
+      id: 'season_1',
+      name: 'Foundation Season',
+      startsAt: new Date('2026-05-01T00:00:00+09:00'),
+      endsAt: new Date('2026-05-31T23:59:59+09:00')
+    };
+    const SEASON_START_DATE = SEASON_1.startsAt;
+    const SEASON_END_DATE = SEASON_1.endsAt;
+
+    function formatCountdownShort(msLeft, lang = getLang()) {
+      if (msLeft <= 0) return lang === 'en' ? 'now' : lang === 'ja' ? 'まもなく' : '곧 시작';
+      if (msLeft >= DAY_MS) {
+        const days = Math.ceil(msLeft / DAY_MS);
+        return `D-${days}`;
+      }
+      const totalMinutes = Math.max(1, Math.ceil(msLeft / 60000));
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
+
+    function getSeasonPhaseInfo(nowMs = Date.now()) {
+      const lang = getLang();
+      if (nowMs < SEASON_START_DATE.getTime()) {
+        const countdown = formatCountdownShort(SEASON_START_DATE.getTime() - nowMs, lang);
+        return {
+          state: 'locked',
+          badge: 'PRESEASON',
+          seasonLabel: lang === 'en' ? 'Season 1 · Foundation' : lang === 'ja' ? 'シーズン1 · Foundation' : '시즌 1 · Foundation',
+          seasonName: lang === 'en' ? 'Season 1 — Foundation Season' : lang === 'ja' ? 'シーズン1 — Foundation Season' : '시즌 1 — Foundation Season',
+          countdownLabel: lang === 'en' ? `Starts in ${countdown}` : lang === 'ja' ? `開始まで ${countdown}` : `시작까지 ${countdown}`,
+          dateLabel: '2026-05-01 00:00 KST',
+          note: lang === 'en' ? 'PASS rewards unlock when Season 1 begins.' : lang === 'ja' ? 'シーズン1開始後にPASS報酬が解放されます。' : '시즌 1이 시작되면 PASS 보상이 활성화됩니다.',
+          todaySummary: lang === 'en' ? `Season 1 starts in ${countdown}` : lang === 'ja' ? `シーズン1開始まで ${countdown}` : `시즌 1 시작까지 ${countdown}`
+        };
+      }
+      if (nowMs <= SEASON_END_DATE.getTime()) {
+        const countdown = formatCountdownShort(SEASON_END_DATE.getTime() - nowMs, lang);
+        return {
+          state: 'active',
+          badge: lang === 'en' ? 'ACTIVE' : lang === 'ja' ? '稼働中' : '진행 중',
+          seasonLabel: lang === 'en' ? 'Season 1 · Foundation' : lang === 'ja' ? 'シーズン1 · Foundation' : '시즌 1 · Foundation',
+          seasonName: lang === 'en' ? 'Season 1 — Foundation Season' : lang === 'ja' ? 'シーズン1 — Foundation Season' : '시즌 1 — Foundation Season',
+          countdownLabel: lang === 'en' ? `Ends in ${countdown}` : lang === 'ja' ? `終了まで ${countdown}` : `종료까지 ${countdown}`,
+          dateLabel: '2026-05-31 23:59 KST',
+          note: lang === 'en' ? 'Season PICKS and base rewards are now live.' : lang === 'ja' ? 'シーズンPICKSと基本報酬が有効になりました。' : '시즌 PICKS와 기본 보상이 열렸습니다.',
+          todaySummary: lang === 'en' ? 'Foundation Season active' : lang === 'ja' ? 'Foundation Season 진행 중' : 'Foundation Season 진행 중'
+        };
+      }
+      return {
+        state: 'ended',
+        badge: lang === 'en' ? 'ENDED' : lang === 'ja' ? '終了' : '종료',
+        seasonLabel: lang === 'en' ? 'Season 1 · Legacy' : lang === 'ja' ? 'シーズン1 · Legacy' : '시즌 1 · Legacy',
+        seasonName: lang === 'en' ? 'Season 1 — Foundation Season' : lang === 'ja' ? 'シーズン1 — Foundation Season' : '시즌 1 — Foundation Season',
+        countdownLabel: lang === 'en' ? 'Legacy settlement pending' : lang === 'ja' ? 'Legacy 精算待機中' : 'Legacy 정산 대기',
+        dateLabel: '2026-05-31 23:59 KST',
+        note: lang === 'en' ? 'Season 1 has ended.' : lang === 'ja' ? 'シーズン1は終了しました。' : '시즌 1이 종료되었습니다.',
+        todaySummary: lang === 'en' ? 'Season 1 ended' : lang === 'ja' ? 'シーズン1終了' : '시즌 1 종료'
+      };
+    }
 
     function getCurrentSeasonKey(now) {
       const d = now ? new Date(now) : new Date();
@@ -5792,33 +5870,30 @@ function applyLanguageToUI(){
       const tier = state.season.passTier || 0;
       const ptsInTier = pts % PASS_POINTS_PER_TIER;
       const isPreseason = key === 'preseason';
-      const seasonLabel = isPreseason
-        ? (getLang()==='en' ? 'PRESEASON' : 'PRESEASON')
-        : (getLang()==='en' ? `Season ${num} · ZERO-DAY` : `시즌 ${num} · ZERO-DAY`);
-
-      // v3.0.0: 프리시즌 카운트다운 계산
-      let preseasonDaysLeft = 0;
-      if (isPreseason) {
-        const msLeft = SEASON_START_DATE.getTime() - Date.now();
-        preseasonDaysLeft = Math.max(0, Math.ceil(msLeft / (24 * 60 * 60 * 1000)));
-      }
+      const seasonInfo = getSeasonPhaseInfo();
+      const creditsSeasonEl = document.getElementById('creditsSeasonLabel');
+      if (creditsSeasonEl) creditsSeasonEl.textContent = seasonInfo.badge;
 
       el.innerHTML = `
         <div class="pass-header">
-          <span class="badge">${seasonLabel}</span>
+          <span class="badge">${seasonInfo.seasonLabel}</span>
           ${!isPreseason ? '' : ''}
         </div>
         ${isPreseason ? `
         <!-- v3.0.0: 프리시즌 안내 카드 (여백 축소, 정보 밀도 향상) -->
         <div class="pass-preseason-card">
-          <div class="pass-preseason-title">${getLang()==='en' ? 'Season 1 — ZERO-DAY' : '시즌 1 — ZERO-DAY'}</div>
-          <div class="pass-preseason-countdown">${preseasonDaysLeft > 0
-            ? (getLang()==='en' ? `Starts in ${preseasonDaysLeft} day(s)` : `시작까지 ${preseasonDaysLeft}일`)
-            : (getLang()==='en' ? 'Starting soon' : '곧 시작')}</div>
-          <div class="pass-preseason-date">${getLang()==='en' ? '2026-05-01 05:00 KST' : '2026-05-01 05:00 KST'}</div>
-          <div class="pass-preseason-note small">${getLang()==='en' ? 'PASS rewards will unlock when Season 1 begins.' : '시즌 1이 시작되면 PASS 보상이 활성화됩니다.'}</div>
+          <div class="pass-preseason-title">${seasonInfo.seasonName}</div>
+          <div class="pass-preseason-countdown">${seasonInfo.countdownLabel}</div>
+          <div class="pass-preseason-date">${seasonInfo.dateLabel}</div>
+          <div class="pass-preseason-note small">${seasonInfo.note}</div>
         </div>
         ` : `
+        <div class="pass-preseason-card">
+          <div class="pass-preseason-title">${seasonInfo.seasonName}</div>
+          <div class="pass-preseason-countdown">${seasonInfo.countdownLabel}</div>
+          <div class="pass-preseason-date">${seasonInfo.dateLabel}</div>
+          <div class="pass-preseason-note small">${seasonInfo.note}</div>
+        </div>
         <div class="pass-progress-row">
           <span>${getLang()==='en' ? 'Tier' : '티어'} ${tier} / ${PASS_MAX_TIER}</span>
           <div class="pass-bar"><div class="pass-bar-fill" style="width:${Math.round(ptsInTier)}%"></div></div>
@@ -6168,7 +6243,7 @@ function applyLanguageToUI(){
       const diff = (state.zeroDay.pve && state.zeroDay.pve.difficulty) || 'easy';
       const def  = ZD_DISC_DIFFICULTIES[diff] || ZD_DISC_DIFFICULTIES.easy;
       if (def.free) {
-        const todayKey = new Date().toISOString().slice(0, 10);
+        const todayKey = getDayKey();
         if ((state.zeroDay.pve.introDailyKey || '') === todayKey) {
           return { ok: false, reason: getLang()==='en' ? 'Intro free run used today. Come back tomorrow.' : '오늘 입문 무료 런을 이미 사용했습니다. 내일 다시 시도하세요.' };
         }
@@ -6206,7 +6281,7 @@ function applyLanguageToUI(){
       };
 
       if (def.free) {
-        const todayKey = new Date().toISOString().slice(0, 10);
+        const todayKey = getDayKey();
         state.zeroDay.pve.introDailyKey = todayKey;
       } else {
         if (!consumeZdVuln(1)) {
@@ -8587,7 +8662,11 @@ function applyLanguageToUI(){
         state.missionProgress.daily.extremeHackSuccess = 0;
         state.missionProgress.daily.shopPurchases = 0;
         state.missionProgress.daily.energySpent = 0;
+        state.missionProgress.daily.energy0Reached = false;
         state.missionProgress.daily.completed = {};
+      }
+      if (state.missionProgress.daily.energy0Reached === undefined) {
+        state.missionProgress.daily.energy0Reached = false;
       }
 
       if (state.missionProgress.weekly.lastResetWeek !== weekKey) {
@@ -10402,14 +10481,13 @@ function applyLanguageToUI(){
         p.classList.toggle('active', p.id === 'accountPanel' + tabId.charAt(0).toUpperCase() + tabId.slice(1)));
     });
 
-    // EVENT modal tab switching (WEEKLY / PASS / ROULETTE)
+    // EVENT modal tab switching (WEEKLY / PASS)
     bind(document, 'click', (e) => {
       const btn = e.target.closest && e.target.closest('[data-event-tab]');
       if (!btn) return;
       const tabId = btn.dataset.eventTab;
       document.querySelectorAll('.event-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.eventTab === tabId));
       document.querySelectorAll('.event-tab-panel').forEach(p => p.classList.toggle('active', p.id === 'eventTab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)));
-      if (tabId === 'roulette') renderBeginnerRoulette();
       if (tabId === 'pass') try { renderPassPanel(); } catch(ex) {}
     });
 
