@@ -209,6 +209,8 @@
   }
 
   // v3.0.1 Foundation Prep 고정 공지 (Firebase 여부 무관하게 항상 상단 표시)
+  const SEASON_1_START_TS = new Date('2026-05-01T00:00:00+09:00').getTime();
+  const SEASON_1_END_TS = new Date('2026-05-31T23:59:59+09:00').getTime();
   const PINNED_ANNOUNCEMENTS = [
     {
       id: 'support-desk-302',
@@ -242,11 +244,51 @@
     }
   ];
 
+  function getSeasonAnnouncement(){
+    const stamp = now();
+    if (stamp < SEASON_1_START_TS) {
+      return {
+        id: 'season-1-staging',
+        title: text('Season 1 staging', 'Season 1 staging'),
+        body: text(
+          '시즌 1은 Foundation Season입니다. 시즌 PICKS와 기본 보상이 먼저 열리고, 나머지 시스템은 순차적으로 가동됩니다.',
+          'Season 1 is Foundation Season. Season PICKS and base rewards open first, with more systems staged in gradually.'
+        ),
+        createdAt: SEASON_1_START_TS,
+        level: 'SEASON'
+      };
+    }
+    if (stamp <= SEASON_1_END_TS) {
+      return {
+        id: 'season-1-live',
+        title: text('Season 1 active', 'Season 1 active'),
+        body: text(
+          'Foundation Season 진행 중입니다. ZERO_TRACE PICK과 기본 시즌 보상을 확인하고, WEEKLY OPS로 패스 포인트를 쌓아보세요.',
+          'Foundation Season is live. Check ZERO_TRACE PICK and base season rewards, then stack pass points through WEEKLY OPS.'
+        ),
+        createdAt: SEASON_1_START_TS,
+        level: 'SEASON'
+      };
+    }
+    return {
+      id: 'season-1-ended',
+      title: text('Season 1 ended', 'Season 1 ended'),
+      body: text(
+        'Foundation Season이 종료되었습니다. Legacy 정산과 다음 시즌 신호를 기다리는 중입니다.',
+        'Foundation Season has ended. Waiting for legacy settlement and the next season signal.'
+      ),
+      createdAt: SEASON_1_END_TS,
+      level: 'SEASON'
+    };
+  }
+
   function fallbackAnnouncements(status){
     const liveStatus = normalizeStatus(status || 'LOCAL MIRROR');
+    const seasonAnnouncement = getSeasonAnnouncement();
     if (liveStatus === 'ONLINE') {
       return [
         ...PINNED_ANNOUNCEMENTS,
+        seasonAnnouncement,
         {
           id:'online-brief',
 	          title:'WEEKLY OPS ACTIVE',
@@ -259,6 +301,7 @@
     if (liveStatus === 'DEGRADED') {
       return [
         ...PINNED_ANNOUNCEMENTS,
+        seasonAnnouncement,
         {
           id:'degraded-brief',
           title:'Route Degraded',
@@ -271,6 +314,7 @@
     if (liveStatus === 'MAINTENANCE') {
       return [
         ...PINNED_ANNOUNCEMENTS,
+        seasonAnnouncement,
         {
           id:'maintenance-brief',
           title:'Maintenance Window',
@@ -282,6 +326,7 @@
     }
     return [
       ...PINNED_ANNOUNCEMENTS,
+      seasonAnnouncement,
       {
         id:'local-brief',
         title:'LOCAL MIRROR',
@@ -493,9 +538,10 @@
 
   function getAnnouncementItems(status){
     const firebase = (state.announcements || []).filter(item => item && item.active !== false);
-    // v3.0.1: PINNED 항목은 Firebase 공지보다 항상 앞에 표시
+    const seasonAnnouncement = getSeasonAnnouncement();
     const pinned = PINNED_ANNOUNCEMENTS.filter(p => !firebase.some(f => f.id === p.id));
-    return firebase.length ? [...pinned, ...firebase] : fallbackAnnouncements(status || getLiveStatus());
+    const seasonal = firebase.some(f => f.id === seasonAnnouncement.id) ? [] : [seasonAnnouncement];
+    return firebase.length ? [...pinned, ...seasonal, ...firebase] : fallbackAnnouncements(status || getLiveStatus());
   }
 
   function renderRankTabs(){

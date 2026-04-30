@@ -4084,6 +4084,11 @@ body.app-shell-ui #tutorialStepHint{
   background: #0a1525;
 }
 .progress-tier-btn.active strong { color: #7ecfff; }
+.progress-tier-btn.queued:not(.active) {
+  border-color: #44cfa1;
+  background: #081813;
+}
+.progress-tier-btn.queued strong { color: #8ff5d0; }
 .progress-tier-btn:hover:not(.active) { border-color: #2a3a50; background: #0b1020; }
 
 /* --- Collapsible System Status (HOME) --- */

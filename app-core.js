@@ -1369,6 +1369,17 @@ function applyLanguageToUI(){
         basePower: 29,
         description: '해킹 성공 확률 +12%p, 성공 시 크레딧 +20%를 적용합니다.'
       },
+      zero_trace: {
+        id: 'zero_trace',
+        name: 'ZERO_TRACE',
+        rarity: 'EPIC',
+        basePower: 168,
+        seasonId: 'season_1',
+        codeClass: 'PICK',
+        description: 'Foundation Season 기념 코드. 해킹 성공률 +8%p, 크레딧 +18%, 데이터 타워 성공률 +4%p.',
+        descriptionEn: 'Foundation Season commemorative code. Hack chance +8%p, credits +18%, Data Tower chance +4%p.',
+        effect: { hackChance: 0.08, creditBonus: 0.18, stageChance: 0.04 }
+      },
       ghost_script: {
         id: 'ghost_script',
         name: 'Ghost_Script',
@@ -3139,10 +3150,23 @@ function applyLanguageToUI(){
       return PROGRESS_TIERS[key] || PROGRESS_TIERS.foundation;
     }
 
+    function getQueuedProgressTier() {
+      const key = state.weeklyChallenge && state.weeklyChallenge.progressTierNext;
+      return PROGRESS_TIERS[key] || null;
+    }
+
     function setProgressTier(tierId) {
       if (!PROGRESS_TIERS[tierId]) return;
       ensureWeeklyChallengeDefaults();
-      state.weeklyChallenge.progressTierCurrent = tierId;
+      const wc = state.weeklyChallenge;
+      if ((wc.progressTierCurrent || 'foundation') === tierId) {
+        wc.progressTierNext = null;
+        showToast(getLang() === 'en' ? 'Current weekly difficulty will stay the same.' : '현재 주간 난이도를 유지합니다.', 'system');
+      } else {
+        wc.progressTierNext = tierId;
+        const tier = PROGRESS_TIERS[tierId];
+        showToast(getLang() === 'en' ? `Next reset: ${tier.en}` : `다음 리셋 적용: ${tier.ko}`, 'achievement');
+      }
       scheduleSilentSave();
       renderWeeklyPanel();
     }
@@ -3172,8 +3196,14 @@ function applyLanguageToUI(){
       wc.badges = wc.badges && typeof wc.badges === 'object' ? wc.badges : {};
       wc.score = Math.max(0, Math.round(Number(wc.score || 0)));
       wc.bonusClaimed = !!wc.bonusClaimed;
+      wc.progressTierCurrent = PROGRESS_TIERS[wc.progressTierCurrent] ? wc.progressTierCurrent : 'foundation';
+      wc.progressTierNext = PROGRESS_TIERS[wc.progressTierNext] ? wc.progressTierNext : null;
       const weekKey = getWeekKey();
       if (wc.weekKey !== weekKey) {
+        if (wc.progressTierNext && PROGRESS_TIERS[wc.progressTierNext]) {
+          wc.progressTierCurrent = wc.progressTierNext;
+          wc.progressTierNext = null;
+        }
         wc.weekKey = weekKey;
         wc.progress = {};
         wc.claimed = {};
@@ -3341,20 +3371,25 @@ function applyLanguageToUI(){
       const el = document.getElementById('progressTierSelector');
       if (!el) return;
       const currentTier = getProgressTier();
+      const queuedTier = getQueuedProgressTier();
       const isEn = getLang() === 'en';
       el.innerHTML = `
         <div class="progress-tier-header">
           <span class="badge">PROGRESS</span>
           <strong>${isEn ? 'Weekly Difficulty' : '주간 난이도'}</strong>
-          <span class="progress-tier-note">${isEn ? '(applied next reset)' : '(다음 리셋 시 적용)'}</span>
+          <span class="progress-tier-note">${queuedTier
+            ? (isEn ? `Next reset → ${queuedTier.en}` : `다음 리셋 → ${queuedTier.ko}`)
+            : (isEn ? `Current → ${currentTier.en}` : `현재 → ${currentTier.ko}`)}</span>
         </div>
         <div class="progress-tier-grid">
           ${Object.values(PROGRESS_TIERS).map(tier => {
             const totalPicks = (tier.picks.normal||0) + (tier.picks.medium||0) + (tier.picks.hard||0);
+            const isCurrent = tier.id === currentTier.id;
+            const isQueued = queuedTier && tier.id === queuedTier.id;
             return `
-            <button type="button" class="progress-tier-btn ${tier.id === currentTier.id ? 'active' : ''}"
+            <button type="button" class="progress-tier-btn ${isCurrent ? 'active' : ''} ${isQueued ? 'queued' : ''}"
               data-progress-tier="${tier.id}">
-              <strong>${isEn ? tier.en : tier.ko}</strong>
+              <strong>${isEn ? tier.en : tier.ko}${isCurrent ? (isEn ? ' · CURRENT' : ' · 현재') : ''}${isQueued ? (isEn ? ' · NEXT' : ' · 다음') : ''}</strong>
               <span>${isEn ? tier.descEn : tier.desc}</span>
               <span class="progress-tier-picks">${isEn ? 'Goals' : '목표'} ${totalPicks} · ${isEn ? 'Reward' : '보상'} ×${tier.rewardMult || 1.0}</span>
             </button>
@@ -5286,8 +5321,35 @@ function applyLanguageToUI(){
         level: 1,
         usage: 0,
         shards: 0,
-        syncLevel: 0
+        syncLevel: 0,
+        obtainedAt: Date.now()
       });
+    }
+
+    function grantCodeFromTemplate(templateId, opts = {}) {
+      const def = codeDefs[templateId];
+      if (!def) return null;
+      const existing = getOwnedCode(templateId);
+      if (existing) {
+        const shardGain = Math.max(5, Number(opts.duplicateShards || 0) || getShardGainByRarity(def.rarity));
+        existing.shards = (existing.shards || 0) + shardGain;
+        state.stats.codeShardsTotal = (state.stats.codeShardsTotal || 0) + shardGain;
+        return { type: 'duplicate', code: existing, shards: shardGain };
+      }
+      const instance = {
+        id: def.id,
+        name: def.name,
+        rarity: def.rarity,
+        power: def.basePower,
+        level: 1,
+        usage: 0,
+        shards: 0,
+        syncLevel: 0,
+        obtainedAt: Date.now()
+      };
+      ownedCodes.push(instance);
+      if (!state.activeCodeId) state.activeCodeId = def.id;
+      return { type: 'new', code: instance, shards: 0 };
     }
 
 
@@ -5432,12 +5494,16 @@ function applyLanguageToUI(){
 
         const left = document.createElement('div');
         left.className = 'code-card-main';
+        const def = codeDefs[code.id];
         const nameEl = document.createElement('strong');
         nameEl.textContent = code.name;
         const rarityClass = 'rarity-' + code.rarity.toLowerCase();
         nameEl.classList.add(rarityClass);
         const shardEl = document.createElement('span');
-        shardEl.textContent = `${localizeRarityLabel(code.rarity)} · 조각 ${code.shards || 0}`;
+        const tagParts = [localizeRarityLabel(code.rarity)];
+        if (def && def.codeClass) tagParts.push(def.codeClass);
+        if (def && def.seasonId) tagParts.push('S1');
+        shardEl.textContent = `${tagParts.join(' · ')} · ${getLang() === 'en' ? 'Shards' : getLang() === 'ja' ? 'シャード' : '조각'} ${code.shards || 0}`;
         left.appendChild(nameEl);
         left.appendChild(shardEl);
 
@@ -5509,6 +5575,13 @@ function applyLanguageToUI(){
       const syncBonusText = Math.round((getSyncSuccessBonus(syncLevel + 1) - getSyncSuccessBonus(syncLevel)) * 100);
       const shardBoostCost = getShardEnhanceCost(code);
       const lang = getLang();
+      const seasonMeta = def && def.seasonId
+        ? (lang === 'en'
+          ? `Season code: ${def.seasonId === 'season_1' ? 'Foundation Season PICK' : def.seasonId}`
+          : lang === 'ja'
+            ? `シーズンコード: ${def.seasonId === 'season_1' ? 'Foundation Season PICK' : def.seasonId}`
+            : `시즌 코드: ${def.seasonId === 'season_1' ? 'Foundation Season PICK' : def.seasonId}`)
+        : '';
       const labels = lang === 'en'
         ? {
           level: `Level: Lv.${code.level}`,
@@ -5558,6 +5631,7 @@ function applyLanguageToUI(){
           <div class="small">${labels.usage}</div>
           <div class="small">${labels.shards}</div>
           <div class="small">${labels.sync}</div>
+          ${seasonMeta ? `<div class="small">${seasonMeta}</div>` : ''}
         </div>
         <div class="code-modal-cost-grid">
           <div class="small code-next-meta">${labels.upgrade}</div>
@@ -5708,7 +5782,7 @@ function applyLanguageToUI(){
           countdownLabel: lang === 'en' ? `Ends in ${countdown}` : lang === 'ja' ? `終了まで ${countdown}` : `종료까지 ${countdown}`,
           dateLabel: '2026-05-31 23:59 KST',
           note: lang === 'en' ? 'Season PICKS and base rewards are now live.' : lang === 'ja' ? 'シーズンPICKSと基本報酬が有効になりました。' : '시즌 PICKS와 기본 보상이 열렸습니다.',
-          todaySummary: lang === 'en' ? 'Foundation Season active' : lang === 'ja' ? 'Foundation Season 진행 중' : 'Foundation Season 진행 중'
+          todaySummary: lang === 'en' ? 'Foundation Season active · PICK reward live' : lang === 'ja' ? 'Foundation Season 진행 중 · PICK報酬確認' : 'Foundation Season 진행 중 · PICK 보상 확인'
         };
       }
       return {
@@ -5822,6 +5896,7 @@ function applyLanguageToUI(){
         energyPack: isBig ? 1 : 0,
         weeklyToken: tier % 10 === 0 ? 2 : 0,
         coin: tier === 15 ? 50 : (tier === 30 ? 150 : 0),
+        pickCode: tier === 5 ? 'zero_trace' : null,
         label: `Tier ${tier}`
       };
     });
@@ -5846,16 +5921,32 @@ function applyLanguageToUI(){
       if (reward.energyPack)  { state.items.energyPack = (state.items.energyPack || 0) + reward.energyPack; }
       if (reward.weeklyToken) { state.items.weeklyToken = (state.items.weeklyToken || 0) + reward.weeklyToken; }
       if (reward.coin)        { state.items.coin = (state.items.coin || 0) + reward.coin; state.stats.coinEarnedTotal += reward.coin; }
+      let pickGrant = null;
+      if (reward.pickCode) {
+        pickGrant = grantCodeFromTemplate(reward.pickCode, { duplicateShards: 5 });
+      }
       // v3.0.0: 티어 25 도달 시 Quartz Terminal 스킨 자동 해금 (시즌 보상)
       if (tNum >= 25 && state.season.currentNumber >= 1) {
         try { unlockZdSkin('quartz_terminal'); } catch(e) {}
       }
+      const msgParts = [];
+      if (reward.credits) msgParts.push(getLang() === 'en' ? `Credits +${reward.credits}` : `크레딧 +${reward.credits}`);
+      if (reward.energyPack) msgParts.push(getLang() === 'en' ? `EnergyPack +${reward.energyPack}` : `에너지팩 +${reward.energyPack}`);
+      if (reward.coin) msgParts.push(`COIN +${reward.coin}`);
+      if (pickGrant && reward.pickCode) {
+        const pickName = (codeDefs[reward.pickCode] && codeDefs[reward.pickCode].name) || reward.pickCode;
+        msgParts.push(pickGrant.type === 'new'
+          ? `PICK ${pickName}`
+          : (getLang() === 'en' ? `${pickName} shards +${pickGrant.shards}` : `${pickName} 조각 +${pickGrant.shards}`));
+      }
       const msg = getLang() === 'en'
-        ? `Pass Tier ${tNum} claimed: ${reward.credits ? 'Credits +'+reward.credits : ''}${reward.energyPack ? ' EnergyPack +'+reward.energyPack : ''}${reward.coin ? ' COIN +'+reward.coin : ''}`
-        : `패스 티어 ${tNum} 수령: ${reward.credits ? '크레딧 +'+reward.credits : ''}${reward.energyPack ? ' 에너지팩 +'+reward.energyPack : ''}${reward.coin ? ' COIN +'+reward.coin : ''}`;
+        ? `Pass Tier ${tNum} claimed: ${msgParts.join(' · ')}`
+        : `패스 티어 ${tNum} 수령: ${msgParts.join(' · ')}`;
       log(msg, 'system');
       showToast(msg, 'achievement');
       updateStatsUI();
+      renderCodeList();
+      renderCodeDetail();
       renderPassPanel();
       saveGame(true);
     }
@@ -5909,6 +6000,7 @@ function applyLanguageToUI(){
             if (r.energyPack)  parts.push(`+${r.energyPack}EP`);
             if (r.weeklyToken) parts.push(`+${r.weeklyToken}TK`);
             if (r.coin)        parts.push(`+${r.coin}COIN`);
+            if (r.pickCode)    parts.push(`PICK ZERO_TRACE`);
             return `<div class="pass-tier-row ${claimed ? 'claimed' : ''} ${canClaim ? 'can-claim' : ''} ${reached && !claimed ? 'reached' : ''}">
               <span class="pass-tier-num">T${r.tier}</span>
               <span class="pass-tier-reward">${parts.join(' ')}</span>
