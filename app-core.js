@@ -1,6 +1,7 @@
 
-/** * HCSiG v3.0.0 Stability Hotfix Patch 
- * 반영 내용: 세이브 마이그레이션, 템플릿 치환, UI 레이아웃 고정
+/**
+ * HCSiG v3.0.0 — ZERO-DAY DISCOVERY
+ * ZERO-DAY 모드 타임어택 코어 루프 / SUPPORT 패널 버그픽스 / 즉시 클리어 버그픽스
  */
 
 // 전역 초기화 상태 변수
@@ -55,7 +56,7 @@ function getSaveScore(saveObj) {
 
 // 기존 loadGame을 래핑하거나 로직 보강 필요 (여기서는 핵심 로직 가이드만 포함)
 console.log('[Stability Patch] Loaded');
-const CURRENT_VERSION = '3.0.2';
+const CURRENT_VERSION = '3.0.0';
 const TUTORIAL_VERSION = 6;
     const ENERGY_INTERVAL_MS = 60000; // 에너지 1칸당 60초
     const SAVE_KEY = 'HCSiG_SAVE_v17';
@@ -728,6 +729,18 @@ function applyLanguageToUI(){
 
     // 업데이트 로그
     const updateLogs = [
+
+      {
+        version: 'v3.0.0',
+        lines: [
+          'ZERO-DAY 모드를 완전히 새로 만들었습니다. 기존 터미널 커맨드 방식(15버튼)을 폐기하고 ZERO-DAY DISCOVERY 타임어택으로 교체했습니다.',
+          '패치 타이머가 실시간으로 올라가는 동안 DATA INJECT를 탭/홀드해 데이터를 주입합니다. TRACE 위험도가 90%를 넘으면 기하급수적으로 증가합니다.',
+          '런 결과는 CLEAR(최소 주입량 달성) / CUT(패치 완료) / TRACED(추적됨) / ABORT(중단) 4종으로 구분됩니다.',
+          '난이도 5종(INTRO/EASY/NORMAL/HARD/DANGER), PHANTOM·BREAKER 프로토콜이 TRACE 감소·주입량 증가로 재편됩니다.',
+          'SUPPORT 패널 버그 수정: 입력 중 초기화, 보상 저장 지연, 태그 배지 미갱신 문제를 해결했습니다.',
+          'ZERO-DAY 즉시 클리어 버그 수정: depth 0에서 탈출해도 CLEAR가 카운트되던 문제를 수정했습니다.'
+        ]
+      },
 
       {
         version: 'v1.6.14(k5b3)',
@@ -5871,69 +5884,55 @@ function applyLanguageToUI(){
     // ══════════════════════════════════════════════════════
     //  ZERO-DAY 3.0 SYSTEM
     // ══════════════════════════════════════════════════════
-    const ZD_CMDS = {
-      scan:       { ko: '정찰', group: 'recon' },
-      probe:      { ko: '탐지', group: 'recon' },
-      enum:       { ko: '열거', group: 'recon' },
-      breach:     { ko: '침투', group: 'infiltrate' },
-      inject:     { ko: '주입', group: 'infiltrate' },
-      elevate:    { ko: '승격', group: 'infiltrate' },
-      bypass:     { ko: '우회', group: 'infiltrate' },
-      mask:       { ko: '은폐', group: 'conceal' },
-      cloak:      { ko: '차폐', group: 'conceal' },
-      wipe:       { ko: '삭제', group: 'conceal' },
-      scrub:      { ko: '정리', group: 'conceal' },
-      spoof:      { ko: '위장', group: 'disrupt' },
-      reroute:    { ko: '재경로', group: 'disrupt' },
-      jam:        { ko: '교란', group: 'disrupt' },
-      decoy:      { ko: '미끼', group: 'disrupt' },
-      exfil:      { ko: '회수', group: 'exit' },
-      exit:       { ko: '종료', group: 'exit' },
-      disconnect: { ko: '절단', group: 'exit' }
+    // ─────────────────────────────────────────────────────────────────────────
+    // ZERO-DAY DISCOVERY v3.0.0 — 패치 타임어택 코어 루프
+    // 구 터미널 커맨드 방식(ZD_CMDS) 완전 폐기 → 주입/회수/중단 3액션으로 단순화
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // 난이도 설정: timerMs=패치 완료까지, injectPerTap=1탭당 주입량,
+    // traceBase=기본 TRACE 증가, traceHighAdd=90%+ 위험구간 추가 TRACE,
+    // maxInject=최대 주입량, baseScore=보상 기준, clearMin=CLEAR 인정 최소 주입량
+    const ZD_DISC_DIFFICULTIES = {
+      intro:  { label:'INTRO',  ko:'입문',   timerMs:60000, injectPerTap:6,  traceBase:0.022, traceHighAdd:0.08, maxInject:80,  baseScore:40,  clearMin:30, free:true  },
+      easy:   { label:'EASY',   ko:'쉬움',   timerMs:50000, injectPerTap:7,  traceBase:0.028, traceHighAdd:0.10, maxInject:100, baseScore:75,  clearMin:40, free:false },
+      normal: { label:'NORMAL', ko:'보통',   timerMs:40000, injectPerTap:8,  traceBase:0.035, traceHighAdd:0.14, maxInject:130, baseScore:130, clearMin:55, free:false },
+      hard:   { label:'HARD',   ko:'어려움', timerMs:30000, injectPerTap:9,  traceBase:0.045, traceHighAdd:0.20, maxInject:160, baseScore:210, clearMin:75, free:false },
+      danger: { label:'DANGER', ko:'위험',   timerMs:20000, injectPerTap:10, traceBase:0.060, traceHighAdd:0.32, maxInject:200, baseScore:340, clearMin:100,free:false },
     };
 
-    function zdCmdDisplay(id) {
-      const locale = (state.ui && state.ui.zeroDayCommandLocale) || 'auto';
-      const lang = getLang();
-      if (locale === 'english') return id;
-      if (locale === 'korean')  return ZD_CMDS[id] ? ZD_CMDS[id].ko : id;
-      // auto: match ui language
-      if (lang === 'ko' && ZD_CMDS[id]) return ZD_CMDS[id].ko;
-      return id;
-    }
+    // 타이머/홀드 인터벌 — 런 수명 관리
+    let _zdTimerId   = null;
+    let _zdHoldTimer = null;
 
-    function parseZdCmd(input) {
-      const raw = String(input || '').trim().toLowerCase();
-      if (ZD_CMDS[raw]) return raw;
-      // Korean alias lookup
-      for (const [id, def] of Object.entries(ZD_CMDS)) {
-        if (raw === def.ko) return id;
-      }
-      return null;
-    }
-
-    // handleZdInput: bridge between text/button input and ZD action system
-    function handleZdInput(raw) {
-      const cmdId = parseZdCmd(raw);
-      if (!cmdId) {
-        // Unknown command — echo to terminal output if there's an active run
-        const zd = state.zeroDay || {};
-        if (zd.pve && zd.pve.active) {
-          const el = document.getElementById('zeroDayPanel');
-          if (el) {
-            const out = el.querySelector('.zd-term-output');
-            if (out) {
-              const line = document.createElement('div');
-              line.className = 'zd-line zd-error';
-              line.textContent = `root@zeroday:~# ${raw}: command not found`;
-              out.appendChild(line);
-              out.scrollTop = out.scrollHeight;
-            }
-          }
+    function startZdDiscTimer() {
+      stopZdDiscTimer();
+      _zdTimerId = setInterval(() => {
+        const run = state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active;
+        if (!run) { stopZdDiscTimer(); return; }
+        const def = ZD_DISC_DIFFICULTIES[run.diff] || ZD_DISC_DIFFICULTIES.easy;
+        const patch = Math.min(1.0, (Date.now() - run.startedAt) / def.timerMs);
+        if (patch >= 1.0) {
+          stopZdDiscTimer();
+          stopZdHold();
+          finishZdDiscRun('cut', run, def);
+          return;
         }
-        return;
-      }
-      doZdPveAction(cmdId);
+        // 패널 live 갱신 (in-place 업데이트 — 홀드 중 버튼 유지)
+        if (document.getElementById('zeroDayPanel')) updateZdDiscLive();
+      }, 150);
+    }
+
+    function stopZdDiscTimer() {
+      if (_zdTimerId !== null) { clearInterval(_zdTimerId); _zdTimerId = null; }
+    }
+
+    function stopZdHold() {
+      if (_zdHoldTimer !== null) { clearInterval(_zdHoldTimer); _zdHoldTimer = null; }
+    }
+
+    function getZdPatch(run, def) {
+      if (!run || !run.startedAt || !def) return 0;
+      return Math.min(1.0, (Date.now() - run.startedAt) / def.timerMs);
     }
 
     function ensureZeroDayDefaults() {
@@ -5972,63 +5971,8 @@ function applyLanguageToUI(){
       return true;
     }
 
-    // ── ZD Node Types (12종) ─────────────────────────────────────────────
-    // detMult: detection gain multiplier for this node type
-    // sigMult: signal gain multiplier
-    // cpuCheck / gpuCheck: whether high CPU/GPU tier reduces detection
-    const ZD_NODE_TYPES = {
-      ENTRY:    { id:'ENTRY',    ko:'진입점', en:'Entry Point', detMult:0.5,  sigMult:0.3,  cpuCheck:false, gpuCheck:false },
-      HUB:      { id:'HUB',     ko:'허브',   en:'Hub',         detMult:0.8,  sigMult:0.6,  cpuCheck:false, gpuCheck:false },
-      CORE:     { id:'CORE',    ko:'코어',   en:'Core',        detMult:1.4,  sigMult:2.0,  cpuCheck:false, gpuCheck:false },
-      FIREWALL: { id:'FIREWALL',ko:'방화벽', en:'Firewall',    detMult:1.6,  sigMult:0.8,  cpuCheck:true,  gpuCheck:false },
-      IDS:      { id:'IDS',     ko:'침입탐지',en:'IDS',        detMult:2.0,  sigMult:1.0,  cpuCheck:false, gpuCheck:false },
-      DECOY:    { id:'DECOY',   ko:'미끼',   en:'Decoy',       detMult:0.3,  sigMult:0.1,  cpuCheck:false, gpuCheck:false },
-      CPU_LOCK: { id:'CPU_LOCK',ko:'CPU잠금',en:'CPU Lock',    detMult:1.4,  sigMult:1.2,  cpuCheck:true,  gpuCheck:false },
-      GPU_LOCK: { id:'GPU_LOCK',ko:'GPU잠금',en:'GPU Lock',    detMult:1.4,  sigMult:1.2,  cpuCheck:false, gpuCheck:true  },
-      CACHE:    { id:'CACHE',   ko:'캐시',   en:'Cache Node',  detMult:0.6,  sigMult:1.5,  cpuCheck:false, gpuCheck:false },
-      WIPE:     { id:'WIPE',    ko:'와이프', en:'Wipe',        detMult:0.8,  sigMult:0.0,  cpuCheck:false, gpuCheck:false },
-      TRAP:     { id:'TRAP',    ko:'트랩',   en:'Trap',        detMult:2.5,  sigMult:0.5,  cpuCheck:false, gpuCheck:false },
-      EXIT:     { id:'EXIT',    ko:'출구',   en:'Exit Node',   detMult:0.2,  sigMult:0.0,  cpuCheck:false, gpuCheck:false }
-    };
-
-    // Node pools per difficulty: array of node type ids to sample from
-    const ZD_NODE_POOLS = {
-      intro:  ['ENTRY','HUB','CACHE','DECOY','EXIT'],
-      easy:   ['ENTRY','HUB','HUB','CACHE','FIREWALL','EXIT'],
-      normal: ['ENTRY','HUB','FIREWALL','IDS','CACHE','CPU_LOCK','GPU_LOCK','DECOY','EXIT'],
-      hard:   ['ENTRY','FIREWALL','IDS','IDS','CPU_LOCK','GPU_LOCK','CORE','TRAP','CACHE','EXIT'],
-      danger: ['ENTRY','FIREWALL','FIREWALL','IDS','IDS','CPU_LOCK','GPU_LOCK','CORE','TRAP','TRAP','WIPE','EXIT']
-    };
-
-    function generateZdNodeSequence(diff) {
-      const pool = ZD_NODE_POOLS[diff] || ZD_NODE_POOLS.easy;
-      const def  = ZD_PVE_DIFFICULTIES[diff] || ZD_PVE_DIFFICULTIES.easy;
-      const len  = def.depthMax;
-      const seq  = ['ENTRY'];
-      const mid  = pool.filter(n => n !== 'ENTRY' && n !== 'EXIT');
-      while (seq.length < len - 1) {
-        seq.push(mid[Math.floor(Math.random() * mid.length)]);
-      }
-      seq.push('EXIT');
-      return seq;
-    }
-
-    // ── Detection Stages (5단계) ─────────────────────────────────────────
-    function getZdDetectionStage(detection) {
-      if (detection >= 1.0)  return { id:'FAILED',   label:'FAILED',   ko:'실패',  color:'#ff2020' };
-      if (detection >= 0.81) return { id:'LOCKDOWN', label:'LOCKDOWN', ko:'봉쇄',  color:'#ff6600' };
-      if (detection >= 0.51) return { id:'PURSUIT',  label:'PURSUIT',  ko:'추적',  color:'#ffaa00' };
-      if (detection >= 0.26) return { id:'CAUTION',  label:'CAUTION',  ko:'경계',  color:'#ffee00' };
-      return                         { id:'SAFE',     label:'SAFE',     ko:'안전',  color:'#00ff88' };
-    }
-
-    const ZD_PVE_DIFFICULTIES = {
-      intro:  { label: '입문', labelEn: 'Intro',  depthMax: 6,  detectionRate: 0.08, signalPerNode: 8,  baseScore: 50,  free: true },
-      easy:   { label: '쉬움', labelEn: 'Easy',   depthMax: 8,  detectionRate: 0.12, signalPerNode: 12, baseScore: 100 },
-      normal: { label: '보통', labelEn: 'Normal', depthMax: 10, detectionRate: 0.16, signalPerNode: 18, baseScore: 180 },
-      hard:   { label: '어려움',labelEn: 'Hard',  depthMax: 12, detectionRate: 0.22, signalPerNode: 25, baseScore: 280 },
-      danger: { label: '위험', labelEn: 'Danger', depthMax: 14, detectionRate: 0.30, signalPerNode: 35, baseScore: 450 }
-    };
+    // v3.0.0: ZD_NODE_TYPES / ZD_NODE_POOLS / generateZdNodeSequence / getZdDetectionStage / ZD_PVE_DIFFICULTIES
+    // 구 터미널 커맨드 기반 노드 시스템 → ZERO-DAY DISCOVERY 타임어택으로 완전 교체됨 (폐기)
 
     // ══════════════════════════════════════════════════════
     //  v3.0.0: ZERO-DAY 방어자 카드 시스템
@@ -6116,20 +6060,20 @@ function applyLanguageToUI(){
       protocol_phantom: {
         id:'protocol_phantom',
         ko:'PHANTOM', en:'PHANTOM',
-        descKo:'정찰 명령(scan/probe/enum) 사용 시 탐지 -25%',
-        descEn:'Recon commands (scan/probe/enum) cause -25% detection',
+        descKo:'INJECT 시 TRACE 증가량 -25% (저위험 운영 특화)',
+        descEn:'TRACE gain per inject -25% (stealth specialist)',
         condition:{ type:'pveRuns', target:30 },
         cost:{ currency:'oneDay', amount:300 },
-        effect:{ reconDetectionMult:0.75 }
+        effect:{ reconDetectionMult:0.75 }   // reconDetectionMult < 1.0 → TRACE gain multiplier
       },
       protocol_breaker: {
         id:'protocol_breaker',
         ko:'BREAKER', en:'BREAKER',
-        descKo:'침투 명령(breach/inject/elevate/bypass) 성공률 +15%',
-        descEn:'Infiltrate commands +15% success rate',
+        descKo:'DATA INJECT 1탭당 주입량 +15%',
+        descEn:'DATA INJECT amount per tap +15%',
         condition:{ type:'pvpWins', target:5 },
         cost:{ currency:'oneDay', amount:500 },
-        effect:{ infiltrateSuccessBonus:0.15 }
+        effect:{ infiltrateSuccessBonus:0.15 } // infiltrateSuccessBonus → inject amount multiplier
       },
       protocol_shroud: {
         id:'protocol_shroud',
@@ -6218,239 +6162,220 @@ function applyLanguageToUI(){
       return sum;
     }
 
-    function canStartZdPve() {
+    // ── ZERO-DAY DISCOVERY v3.0.0: 코어 런 함수 ────────────────────────────
+
+    function canStartZdDisc() {
       const diff = (state.zeroDay.pve && state.zeroDay.pve.difficulty) || 'easy';
-      const def = ZD_PVE_DIFFICULTIES[diff] || ZD_PVE_DIFFICULTIES.easy;
+      const def  = ZD_DISC_DIFFICULTIES[diff] || ZD_DISC_DIFFICULTIES.easy;
       if (def.free) {
-        // intro: free once per day
-        const todayKey = new Date().toISOString().slice(0,10);
+        const todayKey = new Date().toISOString().slice(0, 10);
         if ((state.zeroDay.pve.introDailyKey || '') === todayKey) {
-          return { ok: false, reason: getLang()==='en' ? 'Intro free run already used today.' : '오늘 입문 무료 런을 이미 사용했습니다.' };
+          return { ok: false, reason: getLang()==='en' ? 'Intro free run used today. Come back tomorrow.' : '오늘 입문 무료 런을 이미 사용했습니다. 내일 다시 시도하세요.' };
         }
         return { ok: true };
       }
-      // v3.0.0 fix: 단일 게터 사용 (UI/검사 일관성 보장)
       if (getZdVulnCount() < 1) {
-        return { ok: false, reason: getLang()==='en' ? 'Need 1 Vulnerability to start PVE.' : 'PVE 시작에 취약점 1개가 필요합니다.' };
+        return { ok: false, reason: getLang()==='en' ? 'Need 1 Vulnerability to start.' : '취약점 1개가 필요합니다.' };
       }
       return { ok: true };
     }
 
-    function startZdPve() {
+    function startZdDiscRun() {
       ensureZeroDayDefaults();
       if (!state.zeroDay.onboardingCompleted) {
-        showToast(getLang()==='en' ? 'Complete the onboarding first.' : '먼저 온보딩을 완료하세요.', 'warn');
+        showToast(getLang()==='en' ? 'Complete onboarding first.' : '먼저 온보딩을 완료하세요.', 'warn');
         renderZeroDayPanel();
         return;
       }
-      const check = canStartZdPve();
+      if (state.zeroDay.pve.active) {
+        showToast(getLang()==='en' ? 'Run already in progress.' : '이미 런이 진행 중입니다.', 'warn');
+        return;
+      }
+      const check = canStartZdDisc();
       if (!check.ok) { showToast(check.reason, 'warn'); return; }
       const diff = (state.zeroDay.pve && state.zeroDay.pve.difficulty) || 'easy';
-      const def  = ZD_PVE_DIFFICULTIES[diff];
-      // v3.0.0 fix: run 객체를 먼저 빌드, 성공 후 차감 (실패 시 차감 롤백)
-      let nodeSeq, runActive;
-      try {
-        nodeSeq = generateZdNodeSequence(diff);
-        if (!nodeSeq || !nodeSeq.length) throw new Error('empty node sequence');
-        runActive = {
-          diff,
-          depth: 0,
-          detection: 0,
-          signal: 0,
-          score: 0,
-          nodes: nodeSeq,
-          log: [`root@zeroday:~# info: ${getLang()==='en' ? 'Run started' : '런 시작'} · ${def.labelEn} · depth 0/${def.depthMax} · node: ${nodeSeq[0]}`],
-          startedAt: Date.now()
-        };
-      } catch (err) {
-        console.error('[ZD PVE] Failed to build run:', err);
-        showToast(getLang()==='en' ? 'PVE start failed. Try again.' : 'PVE 시작 실패 — 다시 시도하세요.', 'warn');
-        return; // ← 차감 안 함
-      }
+      const def  = ZD_DISC_DIFFICULTIES[diff] || ZD_DISC_DIFFICULTIES.easy;
 
-      // v3.0.0 fix: run 빌드 성공 → 이제 차감 (실패 시 vuln 보호)
+      const runActive = {
+        diff,
+        injected:  0,
+        trace:     0,
+        score:     0,
+        startedAt: Date.now(),
+        log:       []
+      };
+
       if (def.free) {
-        const todayKey = new Date().toISOString().slice(0,10);
+        const todayKey = new Date().toISOString().slice(0, 10);
         state.zeroDay.pve.introDailyKey = todayKey;
       } else {
         if (!consumeZdVuln(1)) {
-          showToast(getLang()==='en' ? 'Vulnerability count out of sync. Refreshing...' : '취약점 수가 일치하지 않습니다. 갱신 중...', 'warn');
+          showToast(getLang()==='en' ? 'Vulnerability sync error. Try again.' : '취약점 수가 일치하지 않습니다. 다시 시도하세요.', 'warn');
           renderZeroDayPanel();
           return;
         }
       }
 
       state.zeroDay.pve.active = runActive;
-      state.zeroDay.pve.runs = (state.zeroDay.pve.runs || 0) + 1;
+      state.zeroDay.pve.runs   = (state.zeroDay.pve.runs || 0) + 1;
       state.stats.zeroDayRunCount = (state.stats.zeroDayRunCount || 0) + 1;
-      // Track in weekly/monthly mission progress
+      state.missionProgress = state.missionProgress || { weekly: {}, month: {} };
       state.missionProgress.weekly.zeroDayRuns = (state.missionProgress.weekly.zeroDayRuns || 0) + 1;
       state.missionProgress.month.zeroDayRuns  = (state.missionProgress.month.zeroDayRuns  || 0) + 1;
       checkMissions('weekly');
       checkMissions('month');
       playSfx('hack');
+      startZdDiscTimer();
       renderZeroDayPanel();
       saveGame(true);
     }
 
-    function doZdPveAction(cmdId) {
+    // INJECT 탭/홀드: 데이터 주입 → TRACE 증가 (PHANTOM 프로토콜로 완화)
+    function doZdInject() {
       ensureZeroDayDefaults();
       const run = state.zeroDay.pve.active;
       if (!run) return;
-      const def = ZD_PVE_DIFFICULTIES[run.diff] || ZD_PVE_DIFFICULTIES.easy;
-      const cmd = parseZdCmd(cmdId) || cmdId;
-      const logPush = (line) => {
-        run.log.push(line);
-        if (run.log.length > 20) run.log.shift();
-      };
+      const def   = ZD_DISC_DIFFICULTIES[run.diff] || ZD_DISC_DIFFICULTIES.easy;
+      const patch = getZdPatch(run, def);
 
-      if (cmd === 'exfil' || cmd === 'exit' || cmd === 'disconnect') {
-        const extracted = run.detection < 1.0;
-        finishZdPveRun(extracted, run, def);
+      if (run.injected >= def.maxInject) {
+        showToast(getLang()==='en' ? 'MAX INJECT reached' : '최대 주입량 도달', 'warn');
         return;
       }
 
-      // Current node type
-      const nodes    = run.nodes || [];
-      const curNodeId = nodes[Math.min(run.depth, nodes.length - 1)] || 'HUB';
-      const curNode  = ZD_NODE_TYPES[curNodeId] || ZD_NODE_TYPES.HUB;
+      const protoEff = getZdProtocolEffectSum();
+      // BREAKER: infiltrateSuccessBonus → inject amount multiplier (+15% per tap)
+      const breakerMult  = 1 + (protoEff.infiltrateSuccessBonus || 0);
+      const injectAmount = Math.round(def.injectPerTap * breakerMult);
+      const actualInject = Math.min(injectAmount, def.maxInject - run.injected);
 
-      // Detection stage pressure
-      const stage = getZdDetectionStage(run.detection);
+      // TRACE gain: base + exponential spike above 90% patch
+      // PHANTOM: reconDetectionMult → trace gain multiplier (0.75 = -25% TRACE)
+      const phantomMult = protoEff.reconDetectionMult || 1.0;
+      const highRisk    = Math.max(0, (patch - 0.9) / 0.1);
+      const traceGain   = (def.traceBase + def.traceHighAdd * highRisk * highRisk) * phantomMult;
 
-      const group = ZD_CMDS[cmd] ? ZD_CMDS[cmd].group : 'infiltrate';
-      let detectionGain = def.detectionRate * curNode.detMult;
-      let signalGain    = 0;
-      let depthGain     = 0;
-      let extra         = '';
+      run.injected = Math.min(def.maxInject, (run.injected || 0) + actualInject);
+      run.trace    = Math.min(1.0, (run.trace || 0) + traceGain);
+      run.score    = (run.score || 0) + Math.round(actualInject * 2);
 
-      // Stage pressure effects
-      if (stage.id === 'LOCKDOWN') {
-        detectionGain *= 1.5; // LOCKDOWN: extra pressure
-      } else if (stage.id === 'PURSUIT') {
-        detectionGain *= 1.2;
-      }
+      const patchPct = Math.round(patch * 100);
+      const tracePct = Math.round(run.trace * 100);
+      run.log = run.log || [];
+      run.log.push(`INJ +${actualInject} [${run.injected}/${def.maxInject}] · TRACE ${tracePct}% · PATCH ${patchPct}%`);
+      if (run.log.length > 12) run.log.shift();
 
-      // CPU/GPU check: high tier reduces detection for locked nodes
-      if (curNode.cpuCheck) {
-        const cpuBonus = Math.max(0.3, 1 - 0.04 * Math.max(0, (state.cpuTier || 1) - 1));
-        detectionGain *= cpuBonus;
-      }
-      if (curNode.gpuCheck) {
-        const gpuBonus = Math.max(0.3, 1 - 0.04 * Math.max(0, (state.gpuTier || 1) - 1));
-        detectionGain *= gpuBonus;
-      }
-
-      if (group === 'recon') {
-        detectionGain *= 0.4;
-        signalGain = Math.round(def.signalPerNode * curNode.sigMult * 0.5);
-        extra = getLang()==='en'
-          ? `ok: [${curNode.en}] recon data +${signalGain} sig`
-          : `ok: [${curNode.ko}] 정찰 데이터 +${signalGain} sig`;
-      } else if (group === 'infiltrate') {
-        depthGain = 1;
-        signalGain = Math.round(def.signalPerNode * curNode.sigMult);
-        const nextNodeId = nodes[Math.min(run.depth + 1, nodes.length - 1)] || 'EXIT';
-        extra = getLang()==='en'
-          ? `ok: [${curNode.en}] breached → next: ${nextNodeId} · depth +1, signal +${signalGain}`
-          : `ok: [${curNode.ko}] 침투 → 다음: ${nextNodeId} · 깊이 +1, 신호 +${signalGain}`;
-      } else if (group === 'conceal') {
-        // PURSUIT/LOCKDOWN: conceal is less effective
-        const eff = stage.id === 'LOCKDOWN' ? 0.3 : stage.id === 'PURSUIT' ? 0.5 : 0.8;
-        const reduce = def.detectionRate * eff;
-        run.detection = Math.max(0, run.detection - reduce);
-        detectionGain = 0;
-        extra = getLang()==='en'
-          ? `ok: detection reduced by ${Math.round(reduce*100)}% (stage: ${stage.label})`
-          : `ok: 탐지율 ${Math.round(reduce*100)}% 감소 (단계: ${stage.ko})`;
-      } else if (group === 'disrupt') {
-        detectionGain *= 0.6;
-        signalGain = Math.round(def.signalPerNode * curNode.sigMult * 0.5);
-        extra = getLang()==='en'
-          ? `ok: [${curNode.en}] disruption +${signalGain} sig`
-          : `ok: [${curNode.ko}] 교란 +${signalGain} sig`;
-      }
-
-      run.detection = Math.min(1.0, run.detection + detectionGain);
-      run.depth     = Math.min(def.depthMax, run.depth + depthGain);
-      run.signal    += signalGain;
-      run.score     += Math.round(signalGain * (1 + run.depth * 0.1));
-
-      const newStage = getZdDetectionStage(run.detection);
-      const detPct   = Math.round(run.detection * 100);
-      logPush(`root@zeroday:~# ${zdCmdDisplay(cmd)}`);
-      if (extra) logPush(extra);
-      logPush(`info: ${newStage.label} ${detPct}% · depth ${run.depth}/${def.depthMax} · signal ${run.signal}`);
-
-      if (run.detection >= 1.0) {
-        logPush(`fatal: ${getLang()==='en' ? 'TRACE COMPLETE — connection terminated' : 'TRACE COMPLETE — 연결 종료'}`);
-        finishZdPveRun(false, run, def);
+      // TRACED: TRACE가 100%에 도달하면 즉시 종료
+      if (run.trace >= 1.0) {
+        stopZdDiscTimer();
+        stopZdHold();
+        finishZdDiscRun('traced', run, def);
         return;
       }
 
-      renderZeroDayPanel();
-      saveGame(true);
+      updateZdDiscLive();
     }
 
-    function finishZdPveRun(extracted, run, def) {
-      const score = run.score || 0;
-      const signal = run.signal || 0;
-      const depth = run.depth || 0;
-      // v3.0.2d fix: CLEAR = 최대 깊이 도달 + 탈출 성공 (depth 0 즉시 탈출은 CLEAR 아님)
-      const isClear = extracted && depth >= def.depthMax;
-      const rewardCredits = extracted ? Math.round(def.baseScore * 0.8 + score * 0.5) : 0;
-      // OneDay: 30–80 range for PVE (spec v3.0.0)
-      let rewardOneDay = extracted
-        ? Math.min(80, Math.max(30, Math.round(30 + 50 * (depth / Math.max(1, def.depthMax)))))
-        : Math.round(depth * 2);
-      // v3.0.0: OVERLORD 프로토콜 — 탈출 시 OneDay +20%
+    // RECOVER: 데이터 회수 (런 종료) — 패치 완료 전이면 CLEAR, 이후면 CUT
+    function doZdRecover() {
+      ensureZeroDayDefaults();
+      const run = state.zeroDay.pve.active;
+      if (!run) return;
+      const def   = ZD_DISC_DIFFICULTIES[run.diff] || ZD_DISC_DIFFICULTIES.easy;
+      const patch = getZdPatch(run, def);
+      stopZdDiscTimer();
+      stopZdHold();
+      // patch >= 1.0: 타이머가 아직 CUT을 못 쐈을 때의 레이스 컨디션 처리
+      finishZdDiscRun(patch >= 1.0 ? 'cut' : 'clear', run, def);
+    }
+
+    // ABORT: 런 중단 (보상 없음, 확인 다이얼로그)
+    function doZdAbort() {
+      ensureZeroDayDefaults();
+      const run = state.zeroDay.pve.active;
+      if (!run) return;
+      const def = ZD_DISC_DIFFICULTIES[run.diff] || ZD_DISC_DIFFICULTIES.easy;
+      if (!window.confirm(getLang()==='en'
+        ? 'Abort the run? No rewards will be given.'
+        : '런을 중단하시겠습니까? 보상이 지급되지 않습니다.')) return;
+      stopZdDiscTimer();
+      stopZdHold();
+      finishZdDiscRun('abort', run, def);
+    }
+
+    // endState: 'clear' | 'cut' | 'traced' | 'abort'
+    function finishZdDiscRun(endState, run, def) {
+      stopZdDiscTimer();
+      stopZdHold();
+      const injected = run.injected || 0;
+      const score    = run.score    || 0;
+      const trace    = run.trace    || 0;
+
+      // CLEAR 인정: endState==='clear' + 최소 주입량(clearMin) 달성
+      const isClear = endState === 'clear' && injected >= def.clearMin;
+      // 실제 결과 라벨 (RECOVER를 눌렀지만 clearMin 미달이면 CUT으로 처리)
+      const actualState = isClear
+        ? 'clear'
+        : (endState === 'clear' && injected < def.clearMin) ? 'cut'
+        : endState;
+
+      // 보상 배율: CLEAR 100% / CUT 20% / TRACED·ABORT 0%
+      const rewardMult = actualState === 'clear' ? 1.0 : actualState === 'cut' ? 0.2 : 0.0;
+
       const protoEff = getZdProtocolEffectSum();
-      if (extracted && protoEff.exitOneDayBonus > 0) {
+      let rewardOneDay = Math.round((def.baseScore + score * 0.1) * rewardMult);
+      // OVERLORD: CLEAR 시 OneDay +20%
+      if (actualState === 'clear' && protoEff.exitOneDayBonus > 0) {
         rewardOneDay = Math.round(rewardOneDay * (1 + protoEff.exitOneDayBonus));
       }
+      const rewardCredits = Math.round((def.baseScore * 0.5 + score * 0.2) * rewardMult);
+
+      // 런 초기화
       state.zeroDay.pve.active = null;
-      state.zeroDay.pve.bestDepth = Math.max(state.zeroDay.pve.bestDepth || 0, depth);
-      state.zeroDay.pve.bestScore = Math.max(state.zeroDay.pve.bestScore || 0, score);
-      if (extracted) {
+
+      // 통계 업데이트
+      if (actualState === 'clear') {
+        state.zeroDay.pve.extracts        = (state.zeroDay.pve.extracts || 0) + 1;
+        state.zeroDay.pve.bestScore       = Math.max(state.zeroDay.pve.bestScore || 0, score);
+        state.stats.zeroDayPveClearCount  = (state.stats.zeroDayPveClearCount  || 0) + 1;
         state.stats.zeroDayPveEscapeCount = (state.stats.zeroDayPveEscapeCount || 0) + 1;
-        // v3.0.2d fix: extracts / zeroDayPveClearCount 는 최대 깊이 도달 시에만 카운트
-        if (isClear) {
-          state.zeroDay.pve.extracts = (state.zeroDay.pve.extracts || 0) + 1;
-          state.stats.zeroDayPveClearCount = (state.stats.zeroDayPveClearCount || 0) + 1;
-        }
-        // Track difficulty for PVP recommendation
         const diffOrder = ['intro','easy','normal','hard','danger'];
-        const diffIdx   = diffOrder.indexOf(run.diff);
+        const diffIdx     = diffOrder.indexOf(run.diff);
         const bestDiffIdx = diffOrder.indexOf(state.stats.zeroDayBestExtractDiff || 'intro');
         if (diffIdx > bestDiffIdx) state.stats.zeroDayBestExtractDiff = run.diff;
-        // Track clean extract with detection < 50% for PVP recommendation
-        if ((run.detection || 0) < 0.5) {
-          state.stats.zeroDayLowDetectionExtracts = (state.stats.zeroDayLowDetectionExtracts || 0) + 1;
-        }
+        // TRACE < 50% → PHANTOM 프로토콜 해금 조건(저탐지 클리어) 카운트
+        if (trace < 0.5) state.stats.zeroDayLowDetectionExtracts = (state.stats.zeroDayLowDetectionExtracts || 0) + 1;
+      } else if (actualState === 'cut') {
+        state.stats.zeroDayPveEscapeCount = (state.stats.zeroDayPveEscapeCount || 0) + 1;
       }
-      if (rewardCredits) { state.credits += rewardCredits; state.stats.creditsEarnedTotal += rewardCredits; }
-      if (rewardOneDay)  { state.items.oneDay = (state.items.oneDay || 0) + rewardOneDay; state.stats.zeroDayOneDayEarnedTotal += rewardOneDay; }
-      // pass points
-      addPassPoints(isClear ? 60 : extracted ? 30 : 20);
-      // v3.0.2d: 결과 구분 — CLEAR / PARTIAL EXIT / TRACE COMPLETE
-      const resultLabel = isClear
-        ? 'CLEAR'
-        : extracted
-          ? (getLang()==='en' ? 'PARTIAL EXIT' : 'PARTIAL EXIT')
-          : (getLang()==='en' ? 'TRACE COMPLETE' : 'TRACE COMPLETE');
-      const resultLine = extracted
-        ? `result: ${resultLabel} · depth ${depth}/${def.depthMax} · signal ${signal} · score ${score} · credits +${rewardCredits} · OneDay +${rewardOneDay}`
-        : `result: ${resultLabel} · depth ${depth}/${def.depthMax} · signal ${signal} · OneDay +${rewardOneDay}`;
-      log(`[ZERO-DAY PVE] ${resultLine}`, 'hack');
+
+      // 보상 지급
+      if (rewardCredits > 0) { state.credits += rewardCredits; state.stats.creditsEarnedTotal += rewardCredits; }
+      if (rewardOneDay  > 0) {
+        state.items.oneDay = (state.items.oneDay || 0) + rewardOneDay;
+        state.stats.zeroDayOneDayEarnedTotal = (state.stats.zeroDayOneDayEarnedTotal || 0) + rewardOneDay;
+      }
+
+      // 패스 포인트
+      addPassPoints(actualState === 'clear' ? 60 : actualState === 'cut' ? 20 : 5);
+
+      // 로그
+      const diffLabel = def.label || run.diff.toUpperCase();
+      log(`[ZERO-DAY] ${actualState.toUpperCase()} · ${diffLabel} · injected ${injected}/${def.maxInject} · trace ${Math.round(trace*100)}% · OneDay +${rewardOneDay} · credits +${rewardCredits}`, 'hack');
+
+      // 토스트
       let toastMsg, toastType;
-      if (isClear) {
-        toastMsg  = getLang()==='en' ? 'ZERO-DAY: Cleared!' : 'ZERO-DAY: 클리어!';
+      if (actualState === 'clear') {
+        toastMsg  = getLang()==='en' ? `ZERO-DAY CLEAR!  OneDay +${rewardOneDay}` : `ZERO-DAY 클리어! OneDay +${rewardOneDay}`;
         toastType = 'achievement';
-      } else if (extracted) {
-        toastMsg  = getLang()==='en' ? 'ZERO-DAY: Partial exit' : 'ZERO-DAY: 부분 탈출';
+      } else if (actualState === 'cut') {
+        toastMsg  = getLang()==='en' ? `ZERO-DAY CUT — patch closed. OneDay +${rewardOneDay}` : `ZERO-DAY CUT — 패치 완료. OneDay +${rewardOneDay}`;
         toastType = 'system';
+      } else if (actualState === 'traced') {
+        toastMsg  = getLang()==='en' ? 'ZERO-DAY TRACED — no reward' : 'ZERO-DAY: 추적됨 — 보상 없음';
+        toastType = 'warn';
       } else {
-        toastMsg  = getLang()==='en' ? 'ZERO-DAY: Traced' : 'ZERO-DAY: 추적됨';
+        toastMsg  = getLang()==='en' ? 'ZERO-DAY: Aborted' : 'ZERO-DAY: 중단됨';
         toastType = 'warn';
       }
       showToast(toastMsg, toastType);
@@ -6472,382 +6397,383 @@ function applyLanguageToUI(){
       saveGame(true);
     }
 
+    // ── ZERO-DAY DISCOVERY v3.0.0: in-place 바/로그 업데이트 (홀드 중 버튼 보존) ──
+    function updateZdDiscLive() {
+      const run = state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active;
+      if (!run) { renderZeroDayPanel(); return; }
+      const def      = ZD_DISC_DIFFICULTIES[run.diff] || ZD_DISC_DIFFICULTIES.easy;
+      const patch    = getZdPatch(run, def);
+      const patchPct = Math.min(100, Math.round(patch * 100));
+      const tracePct = Math.min(100, Math.round((run.trace || 0) * 100));
+      const patchFill  = document.getElementById('zdPatchFill');
+      const traceFill  = document.getElementById('zdTraceFill');
+      const patchPctEl = document.getElementById('zdPatchPct');
+      const tracePctEl = document.getElementById('zdTracePct');
+      const logEl      = document.getElementById('zdDiscLog');
+      const injectEl   = document.getElementById('zdDiscInjectCount');
+      // 엘리먼트가 없으면 런 UI가 아직 렌더되지 않은 것 → 풀 렌더
+      if (!patchFill || !traceFill) { renderZeroDayPanel(); return; }
+
+      patchFill.style.width = patchPct + '%';
+      traceFill.style.width = tracePct + '%';
+      patchFill.classList.toggle('zd-patch-danger', patchPct >= 90);
+      traceFill.classList.toggle('zd-trace-danger', tracePct >= 70);
+      // 라벨 색상 토글
+      const patchLabelEl = patchPctEl && patchPctEl.closest('.zd-disc-bar-label');
+      if (patchLabelEl) patchLabelEl.classList.toggle('zd-bar-danger', patchPct >= 90);
+      const traceLabelEl = tracePctEl && tracePctEl.closest('.zd-disc-bar-label');
+      if (traceLabelEl) traceLabelEl.classList.toggle('zd-bar-danger', tracePct >= 70);
+      if (patchPctEl) patchPctEl.textContent = patchPct + '%';
+      if (tracePctEl) tracePctEl.textContent = tracePct + '%';
+      if (injectEl)   injectEl.textContent = `${run.injected || 0} / ${def.maxInject}`;
+      if (logEl && run.log && run.log.length) {
+        logEl.innerHTML = run.log.slice(-8).map(l => `<div class="zd-disc-log-line">${escapeHtml(l)}</div>`).join('');
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+    }
+
+    // ── ZERO-DAY DISCOVERY v3.0.0: 패널 렌더 ────────────────────────────────
     function renderZeroDayPanel() {
       ensureZeroDayDefaults();
       const el = document.getElementById('zeroDayPanel');
       if (!el) return;
-      const zd = state.zeroDay;
-      // v3.0.0 fix: 단일 게터 — 표시값과 검사값 동일 보장
-      const vuln = getZdVulnCount();
+      const zd     = state.zeroDay;
+      const vuln   = getZdVulnCount();
       const shards = state.items.zeroDayVulnerabilityShard || 0;
       const oneDay = state.items.oneDay || 0;
 
+      // ── 온보딩 미완료 ──────────────────────────────────────────────────────
       if (!zd.onboardingCompleted) {
         el.innerHTML = `
-          <div class="zd-terminal">
-            <div class="zd-term-output">
-              <div class="zd-line">root@zeroday:~# info: ${getLang()==='en' ? 'ZERO-DAY system initializing...' : 'ZERO-DAY 시스템 초기화 중...'}</div>
-              <div class="zd-line">info: ${getLang()==='en' ? 'Onboarding mode activated.' : '온보딩 모드 활성화.'}</div>
-              <div class="zd-line">info: ${getLang()==='en' ? 'Complete training to unlock PVE & PVP.' : '훈련 완료 시 PVE & PVP 해금.'}</div>
-              <div class="zd-line">info: ${getLang()==='en' ? 'Reward: 1 Vulnerability (entry ticket).' : '보상: 취약점 1개 (입장권).'}</div>
+          <div class="zd-disc-panel">
+            <div class="zd-disc-header">
+              <div class="zd-disc-title">ZERO-DAY<span class="zd-disc-badge">DISCOVERY</span></div>
+              <div class="zd-disc-tagline">${getLang()==='en' ? 'Inject before the patch closes.' : '패치되기 전에 주입하라.'}</div>
             </div>
-            <button type="button" id="btnZdOnboarding" class="btn-primary">${getLang()==='en' ? 'Start Onboarding' : '온보딩 시작'}</button>
+            <div class="zd-onboard-box">
+              <div class="zd-disc-log-line">$ ${getLang()==='en' ? 'ZERO-DAY system initializing...' : 'ZERO-DAY 시스템 초기화 중...'}</div>
+              <div class="zd-disc-log-line">${getLang()==='en' ? 'Onboarding mode active. Complete to unlock DISCOVERY.' : '온보딩 모드 활성화. 완료하면 DISCOVERY 해금.'}</div>
+              <div class="zd-disc-log-line">${getLang()==='en' ? 'Reward: 1 Vulnerability (entry ticket).' : '보상: 취약점 1개 (첫 입장권).'}</div>
+              <button type="button" id="btnZdOnboarding" class="zd-disc-start-btn">${getLang()==='en' ? '▶ Start Onboarding' : '▶ 온보딩 시작'}</button>
+            </div>
           </div>`;
-        // v3.0.0+ fix: 견고한 클릭 등록 (el.querySelector + bind 폴백)
-        const btnOnboard = el.querySelector('#btnZdOnboarding') || document.getElementById('btnZdOnboarding');
-        if (btnOnboard) {
-          // 기존 핸들러 제거를 위해 새 button으로 replace 후 등록 (중복 클릭 방지)
-          btnOnboard.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('[ZD Onboarding] Button clicked');
-            completeZdOnboarding();
-          });
-        } else {
-          console.warn('[ZD] Onboarding button not found in DOM');
-        }
+        const btn = el.querySelector('#btnZdOnboarding');
+        if (btn) btn.addEventListener('click', (e) => { e.preventDefault(); completeZdOnboarding(); });
         return;
       }
 
       const activeRun = zd.pve.active;
-      const diff = zd.pve.difficulty || 'easy';
-      const diffDef = ZD_PVE_DIFFICULTIES[diff] || ZD_PVE_DIFFICULTIES.easy;
+      const diff      = zd.pve.difficulty || 'easy';
+      const diffDef   = ZD_DISC_DIFFICULTIES[diff] || ZD_DISC_DIFFICULTIES.easy;
 
+      // ── 런 진행 중 UI ──────────────────────────────────────────────────────
       if (activeRun) {
-        // Active run UI
-        const detPct   = Math.round((activeRun.detection || 0) * 100);
-        const barW     = Math.min(100, detPct);
-        const detStage = getZdDetectionStage(activeRun.detection || 0);
-        const curDepth = activeRun.depth || 0;
-        const nodeSeq  = activeRun.nodes || [];
-        const curNodeId = nodeSeq[Math.min(curDepth, nodeSeq.length - 1)] || 'HUB';
-        const curNode   = ZD_NODE_TYPES[curNodeId] || ZD_NODE_TYPES.HUB;
-        const nodeLabel = getLang()==='en' ? curNode.en : curNode.ko;
-        const actionGroups = [
-          { label: getLang()==='en'?'Recon':'정찰',     cmds: ['scan','probe','enum'] },
-          { label: getLang()==='en'?'Infiltrate':'침투', cmds: ['breach','inject','elevate','bypass'] },
-          { label: getLang()==='en'?'Conceal':'은폐',   cmds: ['mask','cloak','wipe','scrub'] },
-          { label: getLang()==='en'?'Disrupt':'교란',   cmds: ['spoof','reroute','jam','decoy'] },
-          { label: getLang()==='en'?'Extract':'탈출',   cmds: ['exfil','exit','disconnect'] }
-        ];
+        const def      = ZD_DISC_DIFFICULTIES[activeRun.diff] || ZD_DISC_DIFFICULTIES.easy;
+        const patch    = getZdPatch(activeRun, def);
+        const patchPct = Math.min(100, Math.round(patch * 100));
+        const tracePct = Math.min(100, Math.round((activeRun.trace || 0) * 100));
+        const isPatchDanger = patchPct >= 90;
+        const isTraceDanger = tracePct >= 70;
+        const logLines = (activeRun.log || []).slice(-8)
+          .map(l => `<div class="zd-disc-log-line">${escapeHtml(l)}</div>`).join('');
+
         el.innerHTML = `
-          <div class="zd-terminal active-run">
-            <div class="zd-status-bar">
-              <span>${getLang()==='en'?'Depth':'깊이'} ${curDepth}/${diffDef.depthMax}</span>
-              <span class="zd-node-badge">${nodeLabel}</span>
-              <span>Signal ${activeRun.signal}</span>
-              <span>Score ${activeRun.score}</span>
-              <span class="zd-det-label" style="color:${detStage.color}">${getLang()==='en'?detStage.label:detStage.ko} ${detPct}%</span>
+          <div class="zd-disc-panel">
+            <div class="zd-disc-header">
+              <div class="zd-disc-title">ZERO-DAY <span class="zd-disc-badge">${def.label}</span></div>
+              <div class="zd-disc-tagline">${getLang()==='en' ? 'Inject before the patch closes.' : '패치되기 전에 주입하라.'}</div>
             </div>
-            <div class="zd-detection-bar"><div class="zd-det-fill" style="width:${barW}%;background:${detStage.color}"></div></div>
-            <div class="zd-term-output" id="zdTermOutput">
-              ${activeRun.log.slice(-8).map(l=>`<div class="zd-line">${escapeHtml(l)}</div>`).join('')}
-            </div>
-            <div class="zd-cmd-groups">
-              ${actionGroups.map(grp=>`
-                <div class="zd-cmd-group">
-                  <span class="zd-grp-label">${grp.label}</span>
-                  ${grp.cmds.map(c=>`<button type="button" class="zd-cmd-btn" data-zd-cmd="${c}">${zdCmdDisplay(c)}</button>`).join('')}
+
+            <div class="zd-disc-bars">
+              <div class="zd-disc-bar-section">
+                <div class="zd-disc-bar-label ${isPatchDanger ? 'zd-bar-danger' : ''}">
+                  <span>${getLang()==='en' ? 'PATCH PROGRESS' : '패치 진행도'}</span>
+                  <span id="zdPatchPct">${patchPct}%</span>
                 </div>
-              `).join('')}
+                <div class="zd-disc-bar-track">
+                  <div class="zd-disc-bar-fill zd-patch-fill ${isPatchDanger ? 'zd-patch-danger' : ''}"
+                       id="zdPatchFill" style="width:${patchPct}%"></div>
+                </div>
+              </div>
+              <div class="zd-disc-bar-section">
+                <div class="zd-disc-bar-label ${isTraceDanger ? 'zd-bar-danger' : ''}">
+                  <span>${getLang()==='en' ? 'TRACE RISK' : '추적 위험도'}</span>
+                  <span id="zdTracePct">${tracePct}%</span>
+                </div>
+                <div class="zd-disc-bar-track">
+                  <div class="zd-disc-bar-fill zd-trace-fill ${isTraceDanger ? 'zd-trace-danger' : ''}"
+                       id="zdTraceFill" style="width:${tracePct}%"></div>
+                </div>
+              </div>
             </div>
+
+            <div class="zd-disc-inject-display">
+              <span>${getLang()==='en' ? 'INJECTED' : '주입량'}</span>
+              <strong id="zdDiscInjectCount">${activeRun.injected || 0} / ${def.maxInject}</strong>
+              <span>SCORE ${activeRun.score || 0}</span>
+            </div>
+
+            <button type="button" id="zdInjectBtn" class="zd-disc-inject-btn">
+              <span class="zd-disc-inject-icon">⬇</span>
+              <span class="zd-disc-inject-label">DATA INJECT</span>
+              <span class="zd-disc-inject-sub">${getLang()==='en' ? 'Tap or Hold' : '탭 또는 홀드'}</span>
+            </button>
+
+            <div class="zd-disc-action-row">
+              <button type="button" id="zdRecoverBtn" class="zd-disc-recover-btn">
+                ${getLang()==='en' ? '▶ RECOVER' : '▶ 회수'}
+              </button>
+              <button type="button" id="zdAbortBtn" class="zd-disc-abort-btn">
+                ${getLang()==='en' ? '✕ ABORT' : '✕ 중단'}
+              </button>
+            </div>
+
+            <div class="zd-disc-log" id="zdDiscLog">${logLines}</div>
           </div>`;
-        el.querySelectorAll('[data-zd-cmd]').forEach(btn => {
-          btn.addEventListener('click', () => doZdPveAction(btn.dataset.zdCmd));
-        });
+
+        applyActiveZdSkin();
+
+        // INJECT 버튼 — 탭/홀드 (mousedown+touchstart 기반)
+        const injectBtn = el.querySelector('#zdInjectBtn');
+        if (injectBtn) {
+          const startHold = (e) => {
+            e.preventDefault();
+            doZdInject();
+            stopZdHold();
+            _zdHoldTimer = setInterval(doZdInject, 250);
+          };
+          const endHold = () => stopZdHold();
+          injectBtn.addEventListener('mousedown',   startHold);
+          injectBtn.addEventListener('mouseup',     endHold);
+          injectBtn.addEventListener('mouseleave',  endHold);
+          injectBtn.addEventListener('touchstart',  startHold, { passive: false });
+          injectBtn.addEventListener('touchend',    endHold,   { passive: true  });
+          injectBtn.addEventListener('touchcancel', endHold,   { passive: true  });
+        }
+        el.querySelector('#zdRecoverBtn')?.addEventListener('click', doZdRecover);
+        el.querySelector('#zdAbortBtn')  ?.addEventListener('click', doZdAbort);
         return;
       }
 
-      // Lobby UI — 난이도 버튼 그리드
-      const check = canStartZdPve();
-      const diffBtns = Object.entries(ZD_PVE_DIFFICULTIES).map(([id, d]) => {
-        const label  = getLang()==='en' ? d.labelEn : d.label;
-        const costTx = d.free ? (getLang()==='en'?'Free (1/day)':'무료 1일1회') : (getLang()==='en'?'1 Vuln':'취약점 1개');
-        return `<button type="button" class="zd-diff-btn ${id===diff?'active':''}" data-zd-diff="${id}">
-          <strong>${label}</strong><span>${costTx}</span>
+      // ── 로비 (대기) UI ────────────────────────────────────────────────────
+      const check = canStartZdDisc();
+
+      const diffBtns = Object.entries(ZD_DISC_DIFFICULTIES).map(([id, d]) => {
+        const costTx = d.free
+          ? (getLang()==='en' ? 'Free (1/day)' : '무료 1일1회')
+          : (getLang()==='en' ? '1 Vuln'       : '취약점 1개');
+        return `<button type="button" class="zd-disc-diff-btn ${id===diff?'active':''}" data-zd-diff="${id}">
+          <strong>${d.label}</strong><span>${d.ko}</span><span class="zd-diff-cost">${costTx}</span>
         </button>`;
       }).join('');
 
-      // v3.0.0: 방어 카드 / 스킨 / 프로토콜 UI 데이터
-      zd.defense = zd.defense || { slots:3, cards:[], usesThisMatch:0 };
-      zd.skins = zd.skins || [];
-      zd.unlocks = zd.unlocks || {};
-      zd.activeSkin = zd.activeSkin || 'zero_shell';
-
-      const slotCount = zd.defense.slots || 3;
-      const slotCards = zd.defense.cards || [];
-
-      // 카드 슬롯 HTML
-      const slotsHtml = Array.from({length:5}).map((_, i) => {
-        const idx = i+1;
-        const enabled = idx <= slotCount;
-        const cardId = slotCards[i] || null;
-        const card = cardId ? ZD_DEFENSE_CARDS[cardId] : null;
-        const lockHtml = !enabled
-          ? `<span class="zd-slot-lock">🔒 ${ZD_SLOT_EXPAND_COST[idx] || '?'} OneDay</span>`
-          : '';
-        const cardHtml = card
-          ? `<strong>${getLang()==='en'?card.en:card.ko}</strong><span class="small">${getLang()==='en'?card.descEn:card.desc}</span>`
-          : `<span class="small zd-slot-empty">${getLang()==='en'?'(empty)':'(비어있음)'}</span>`;
-        return `<div class="zd-defense-slot ${enabled?'enabled':'locked'}" data-zd-slot="${idx}">
-          <div class="zd-slot-num">SLOT ${idx}</div>
-          ${enabled ? cardHtml : lockHtml}
-          ${enabled ? `<button type="button" data-zd-slot-edit="${idx}">${card ? (getLang()==='en'?'Change':'변경') : (getLang()==='en'?'Equip':'장착')}</button>` : `<button type="button" data-zd-slot-expand="${idx}">${getLang()==='en'?'Expand':'확장'}</button>`}
+      // 프로토콜 섹션
+      const protosHtml = Object.values(ZD_PROTOCOLS).map(p => {
+        const unlocked = isZdProtocolUnlocked(p.id);
+        const prog     = getZdProtocolProgress(p.id);
+        const condText = (() => {
+          switch (p.condition.type) {
+            case 'pveRuns':           return getLang()==='en' ? `Clears ${prog.current}/${prog.target}`         : `클리어 ${prog.current}/${prog.target}`;
+            case 'pvpWins':           return getLang()==='en' ? `PVP wins ${prog.current}/${prog.target}`       : `PVP 승리 ${prog.current}/${prog.target}`;
+            case 'lowDetectExtracts': return getLang()==='en' ? `Low-trace clears ${prog.current}/${prog.target}` : `저추적 클리어 ${prog.current}/${prog.target}`;
+            case 'passTier':          return getLang()==='en' ? `PASS tier ${prog.current}/${prog.target}`      : `PASS 티어 ${prog.current}/${prog.target}`;
+            default: return '';
+          }
+        })();
+        const canUnlock = !unlocked && prog.ok && (state.items[p.cost.currency] || 0) >= p.cost.amount;
+        return `<div class="zd-disc-protocol ${unlocked ? 'unlocked' : ''}" data-zd-protocol="${p.id}">
+          <div class="zd-disc-proto-head">
+            <strong>${getLang()==='en' ? p.en : p.ko}</strong>
+            ${unlocked ? '<span class="zd-proto-badge">ON</span>' : ''}
+          </div>
+          <div class="small">${getLang()==='en' ? p.descEn : p.descKo}</div>
+          <div class="zd-proto-meta small"><span>${condText}</span><span>${p.cost.amount} ${p.cost.currency.toUpperCase()}</span></div>
+          ${!unlocked ? `<button type="button" class="zd-disc-proto-unlock" data-zd-protocol-unlock="${p.id}" ${canUnlock ? '' : 'disabled'}>${getLang()==='en' ? 'Unlock' : '해금'}</button>` : ''}
         </div>`;
       }).join('');
 
-      // 스킨 선택 HTML
+      // PVP 준비도
+      const cond1    = ['normal','hard','danger'].includes(state.stats.zeroDayBestExtractDiff || '');
+      const cond2    = (state.stats.zeroDayPveEscapeCount || 0) >= 1;
+      const cond3    = (state.stats.zeroDayLowDetectionExtracts || 0) >= 1;
+      const condsMet = [cond1, cond2, cond3].filter(Boolean).length;
+      const pvpReady = condsMet >= 2;
+
+      // 방어 카드 슬롯
+      zd.defense   = zd.defense   || { slots:3, cards:[], usesThisMatch:0 };
+      zd.skins     = zd.skins     || [];
+      zd.unlocks   = zd.unlocks   || {};
+      const slotCards = zd.defense.cards || [];
+      const slotCount = zd.defense.slots || 3;
+
+      const slotsHtml = Array.from({length:5}).map((_,i) => {
+        const idx    = i + 1;
+        const enabled= idx <= slotCount;
+        const cardId = slotCards[i] || null;
+        const card   = cardId ? ZD_DEFENSE_CARDS[cardId] : null;
+        return `<div class="zd-defense-slot ${enabled?'enabled':'locked'}">
+          <div class="zd-slot-num">SLOT ${idx}</div>
+          ${enabled
+            ? (card
+                ? `<strong>${getLang()==='en'?card.en:card.ko}</strong><span class="small">${getLang()==='en'?card.descEn:card.desc}</span>`
+                : `<span class="small zd-slot-empty">${getLang()==='en'?'(empty)':'(비어있음)'}</span>`)
+            : `<span class="zd-slot-lock">🔒 ${ZD_SLOT_EXPAND_COST[idx]||'?'} OneDay</span>`}
+          ${enabled
+            ? `<button type="button" data-zd-slot-edit="${idx}">${card?(getLang()==='en'?'Change':'변경'):(getLang()==='en'?'Equip':'장착')}</button>`
+            : `<button type="button" data-zd-slot-expand="${idx}">${getLang()==='en'?'Expand':'확장'}</button>`}
+        </div>`;
+      }).join('');
+
       const skinsHtml = Object.values(ZD_SKINS).map(skin => {
-        const owned = isZdSkinUnlocked(skin.id);
+        const owned  = isZdSkinUnlocked(skin.id);
         const active = zd.activeSkin === skin.id;
         return `<div class="zd-skin-card ${active?'active':''} ${owned?'owned':'locked'}" data-zd-skin="${skin.id}">
           <strong>${getLang()==='en'?skin.en:skin.ko}</strong>
           <span class="small">${getLang()==='en'?skin.descEn:skin.desc}</span>
-          ${active
-            ? `<span class="zd-skin-badge">${getLang()==='en'?'ACTIVE':'사용 중'}</span>`
-            : owned
-              ? `<button type="button" data-zd-skin-equip="${skin.id}">${getLang()==='en'?'Equip':'장착'}</button>`
-              : `<span class="zd-skin-badge locked">${getLang()==='en'?'LOCKED':'미해금'}</span>`}
+          ${active ? `<span class="zd-skin-badge">${getLang()==='en'?'ACTIVE':'사용 중'}</span>`
+            : owned ? `<button type="button" data-zd-skin-equip="${skin.id}">${getLang()==='en'?'Equip':'장착'}</button>`
+            : `<span class="zd-skin-badge locked">${getLang()==='en'?'LOCKED':'미해금'}</span>`}
         </div>`;
       }).join('');
-
-      // 프로토콜 4종 HTML
-      const protocolsHtml = Object.values(ZD_PROTOCOLS).map(p => {
-        const unlocked = isZdProtocolUnlocked(p.id);
-        const prog = getZdProtocolProgress(p.id);
-        const condText = (() => {
-          switch (p.condition.type) {
-            case 'pveRuns': return getLang()==='en'?`PVE clears ${prog.current}/${prog.target}`:`PVE 클리어 ${prog.current}/${prog.target}`;
-            case 'pvpWins': return getLang()==='en'?`PVP wins ${prog.current}/${prog.target}`:`PVP 승리 ${prog.current}/${prog.target}`;
-            case 'lowDetectExtracts': return getLang()==='en'?`Low-detection extracts ${prog.current}/${prog.target}`:`저탐지 탈출 ${prog.current}/${prog.target}`;
-            case 'passTier': return getLang()==='en'?`PASS tier ${prog.current}/${prog.target}`:`PASS 티어 ${prog.current}/${prog.target}`;
-          }
-        })();
-        const canUnlock = !unlocked && prog.ok && (state.items[p.cost.currency] || 0) >= p.cost.amount;
-        return `<div class="zd-protocol-card ${unlocked?'unlocked':''}" data-zd-protocol="${p.id}">
-          <div class="zd-protocol-head">
-            <strong>${getLang()==='en'?p.en:p.ko}</strong>
-            ${unlocked ? `<span class="zd-protocol-badge">${getLang()==='en'?'UNLOCKED':'해금'}</span>` : ''}
-          </div>
-          <p class="small">${getLang()==='en'?p.descEn:p.descKo}</p>
-          <div class="zd-protocol-meta small">
-            <span>${condText}</span>
-            <span>${p.cost.amount} ${p.cost.currency.toUpperCase()}</span>
-          </div>
-          ${unlocked ? '' : `<button type="button" data-zd-protocol-unlock="${p.id}" ${canUnlock?'':'disabled'}>${getLang()==='en'?'Unlock':'해금'}</button>`}
-        </div>`;
-      }).join('');
-
-      // PVP 추천 조건 (기존 유지)
-      const cond1 = ['normal','hard','danger'].includes(state.stats.zeroDayBestExtractDiff || '');
-      const cond2 = (state.stats.zeroDayPveEscapeCount || 0) >= 1;
-      const cond3 = (state.stats.zeroDayLowDetectionExtracts || 0) >= 1;
-      const condsMet = [cond1, cond2, cond3].filter(Boolean).length;
-      const pvpReady = condsMet >= 2;
 
       el.innerHTML = `
-        <div class="zd-lobby">
-          <div class="zd-inventory-row">
-            <span>${getLang()==='en'?'Vulnerability':'취약점'}: <strong>${vuln}</strong></span>
-            <span>${getLang()==='en'?'Shards':'조각'}: <strong>${shards}</strong>/50</span>
+        <div class="zd-disc-panel">
+          <div class="zd-disc-header">
+            <div class="zd-disc-title">ZERO-DAY <span class="zd-disc-badge">DISCOVERY</span></div>
+            <div class="zd-disc-tagline">${getLang()==='en' ? 'Season 1 · Inject before the patch closes.' : 'Season 1 · 패치되기 전에 주입하라.'}</div>
+          </div>
+
+          <div class="zd-disc-resource-row">
+            <span>${getLang()==='en'?'VULN':'취약점'}: <strong>${vuln}</strong></span>
+            <span>${getLang()==='en'?'SHARDS':'조각'}: <strong>${shards}</strong>/50</span>
             <span>OneDay: <strong>${oneDay}</strong></span>
-            ${shards >= 50 ? `<button type="button" id="btnCraftVuln">${getLang()==='en'?'Craft Vulnerability':'취약점 제작'}</button>` : ''}
+            ${shards >= 50 ? `<button type="button" id="btnCraftVuln" class="zd-disc-craft-btn">${getLang()==='en'?'Craft Vuln':'취약점 제작'}</button>` : ''}
           </div>
-          <div class="zd-stats-row">
-            <div><span>${getLang()==='en'?'PVE Runs':'PVE 런'}</span><strong>${zd.pve.runs||0}</strong></div>
-            <div><span>${getLang()==='en'?'Best Depth':'최고 깊이'}</span><strong>${zd.pve.bestDepth||0}</strong></div>
-            <div><span>${getLang()==='en'?'Extracts':'탈출'}</span><strong>${zd.pve.extracts||0}</strong></div>
-            <div><span>${getLang()==='en'?'PVP Rating':'PVP 레이팅'}</span><strong>${zd.pvp.rating||1000}</strong></div>
-          </div>
-          <div class="zd-diff-section">
-            <div class="zd-diff-label">${getLang()==='en'?'Select Difficulty':'난이도 선택'}</div>
-            <div class="zd-diff-grid">${diffBtns}</div>
-          </div>
-          <div class="zd-start-row">
-            <button type="button" id="btnStartZdPve" ${check.ok ? '' : 'disabled'}>${getLang()==='en'?'Start PVE':'PVE 시작'}</button>
+
+          <div class="zd-disc-section-label">${getLang()==='en'?'DIFFICULTY':'난이도'}</div>
+          <div class="zd-disc-diff-row">${diffBtns}</div>
+
+          <div class="zd-disc-start-row">
+            <button type="button" id="btnStartZdDisc" class="zd-disc-start-btn" ${check.ok ? '' : 'disabled'}>
+              ${getLang()==='en' ? '▶ EXPLOIT START' : '▶ 익스플로잇 시작'}
+            </button>
             <span class="small zd-start-hint">${check.ok
-              ? (getLang()==='en'?`Cost: ${diffDef.free?'Free (1/day)':'1 Vulnerability'}`:`비용: ${diffDef.free?'무료 (1일 1회)':'취약점 1개'}`)
+              ? (getLang()==='en' ? `Cost: ${diffDef.free?'Free (1/day)':'1 Vulnerability'}` : `비용: ${diffDef.free?'무료 (1일 1회)':'취약점 1개'}`)
               : `⚠ ${check.reason}`
             }</span>
           </div>
 
-          <!-- v3.0.0+: PVP 비동기 트레이닝 매치 — 준비도 조건 명시 -->
-          <div class="zd-pvp-section">
-            <h4>${getLang()==='en'?'PVP (Async)':'PVP (비동기)'}</h4>
-            <p class="small">${getLang()==='en'?'Snapshot-based async duel against a bot opponent (training mode). Cloud matchmaking expands later. Each match costs 1 Vulnerability.':'스냅샷 기반 비동기 PVP — 봇 상대 트레이닝 매치 (클라우드 매칭은 추후 확장). 매치당 취약점 1개를 소모합니다.'}</p>
-            <div class="zd-pvp-readiness">
-              <div class="zd-readiness-head">
-                <strong>${getLang()==='en'?`Readiness ${condsMet}/3`:`준비도 ${condsMet}/3`}</strong>
-                <span class="small">${getLang()==='en'?'Meet 2 of 3 to enable PVP. Conditions ensure you have practical PVE experience.':'3개 중 2개를 충족하면 PVP가 활성화됩니다. 실제 PVE 경험이 있는지 검증합니다.'}</span>
-              </div>
-              <ul class="zd-readiness-list">
-                <li class="${cond1?'met':''}">
-                  <span class="zd-cond-mark">${cond1?'✓':'✗'}</span>
-                  <span class="zd-cond-text">
-                    <strong>${getLang()==='en'?'Hard PVE clear':'보통 이상 PVE 클리어'}</strong>
-                    <em class="small">${getLang()==='en'?'Extract from Normal/Hard/Danger difficulty at least once. Confirms you can handle real attack scenarios.':'보통/어려움/위험 난이도에서 1회 이상 탈출. 공격 시나리오를 다룰 수 있는지 확인합니다.'}</em>
-                  </span>
-                </li>
-                <li class="${cond2?'met':''}">
-                  <span class="zd-cond-mark">${cond2?'✓':'✗'}</span>
-                  <span class="zd-cond-text">
-                    <strong>${getLang()==='en'?'Clean exit experience':'정식 탈출 경험'}</strong>
-                    <em class="small">${getLang()==='en'?'Exit at least 1 PVE run via exfil/exit/disconnect (not lockdown).':'1회 이상 PVE 런을 정식 탈출 명령으로 종료 (봉쇄로 강제 종료 X).'}</em>
-                  </span>
-                </li>
-                <li class="${cond3?'met':''}">
-                  <span class="zd-cond-mark">${cond3?'✓':'✗'}</span>
-                  <span class="zd-cond-text">
-                    <strong>${getLang()==='en'?'Low-detection extract':'저탐지 탈출'}</strong>
-                    <em class="small">${getLang()==='en'?'Extract with detection below 50% at least once. Proves stealth ability.':'탐지율 50% 미만으로 1회 이상 탈출 — 은폐 능력 입증.'}</em>
-                  </span>
-                </li>
-              </ul>
+          <div class="zd-disc-stats-row">
+            <div><span>${getLang()==='en'?'RUNS':'런'}</span><strong>${zd.pve.runs||0}</strong></div>
+            <div><span>${getLang()==='en'?'CLEARS':'클리어'}</span><strong>${zd.pve.extracts||0}</strong></div>
+            <div><span>${getLang()==='en'?'BEST SCORE':'최고 점수'}</span><strong>${zd.pve.bestScore||0}</strong></div>
+            <div><span>PVP</span><strong>R${zd.pvp.rating||1000}</strong></div>
+          </div>
+
+          <div class="zd-disc-section-label">${getLang()==='en'?'PROTOCOLS':'프로토콜'}</div>
+          <div class="zd-disc-protocols">${protosHtml}</div>
+
+          <div class="zd-disc-section-label">${getLang()==='en'?'PVP (ASYNC)':'PVP (비동기)'}</div>
+          <div class="zd-disc-pvp-row">
+            <p class="small">${getLang()==='en'
+              ? `Readiness ${condsMet}/3 — need 2 of 3 conditions to enable. Each match costs 1 Vulnerability.`
+              : `준비도 ${condsMet}/3 — 3개 중 2개 충족 시 활성화. 매치당 취약점 1개 소모.`}</p>
+            <div class="zd-disc-pvp-stats small">
+              W ${zd.pvp.seasonWins||0} &nbsp; L ${zd.pvp.seasonLosses||0} &nbsp; R${zd.pvp.rating||1000}
             </div>
-            <div class="zd-pvp-stats">
-              <span>${getLang()==='en'?'Wins':'승'}: ${zd.pvp.seasonWins||0}</span>
-              <span>${getLang()==='en'?'Losses':'패'}: ${zd.pvp.seasonLosses||0}</span>
-              <span>${getLang()==='en'?'Rating':'레이팅'}: ${zd.pvp.rating||1000}</span>
-            </div>
-            <button type="button" id="btnZdPvpMatch" ${pvpReady && getZdVulnCount() >= 1 ? '' : 'disabled'}>
+            <button type="button" id="btnZdPvpMatch" class="zd-disc-pvp-btn"
+              ${pvpReady && vuln >= 1 ? '' : 'disabled'}>
               ${getLang()==='en'?'Match PVP (1 Vuln)':'PVP 매칭 (취약점 1)'}
             </button>
-            ${!pvpReady ? `<span class="small zd-pvp-block-hint">⚠ ${getLang()==='en'?'Need 2 readiness conditions met (above)':'위 준비도 조건 중 2개 이상 충족 필요'}</span>` : ''}
-            ${pvpReady && getZdVulnCount() < 1 ? `<span class="small zd-pvp-block-hint">⚠ ${getLang()==='en'?'Need at least 1 Vulnerability':'취약점 1개 이상 필요'}</span>` : ''}
+            ${!pvpReady ? `<span class="small zd-pvp-block-hint">⚠ ${getLang()==='en'?'Need 2 readiness conditions':'준비도 조건 2개 이상 필요'}</span>` : ''}
+            ${pvpReady && vuln < 1 ? `<span class="small zd-pvp-block-hint">⚠ ${getLang()==='en'?'Need 1 Vulnerability':'취약점 1개 필요'}</span>` : ''}
           </div>
 
-          <!-- v3.0.0: 방어자 카드 슬롯 (3 기본 / 4슬롯 500 OneDay / 5슬롯 1500 OneDay) -->
-          <div class="zd-defense-section">
-            <h4>${getLang()==='en'?'Defense Loadout':'방어 로드아웃'}</h4>
-            <p class="small">${getLang()==='en'?`Slots ${slotCount}/5 — equipped cards trigger automatically when defending in PVP. 3 uses per match, no duplicates.`:`슬롯 ${slotCount}/5 — 장착한 카드는 PVP 방어 시 자동 발동됩니다. 매치당 3회, 중복 불가.`}</p>
-            <div class="zd-defense-help small">
-              <span>${getLang()==='en'?'💡 Click "Equip" to add a card. Click "Change" to cycle through cards. The cycle ensures no duplicate slots.':'💡 "장착" 클릭으로 카드를 추가, "변경" 클릭으로 카드 순환. 같은 카드가 두 슬롯에 들어가지 않도록 자동 회피합니다.'}</span>
-            </div>
-            <div class="zd-defense-slots">${slotsHtml}</div>
-            ${slotCards.filter(Boolean).length > 0 ? `
-            <div class="zd-defense-summary small">
-              <strong>${getLang()==='en'?'Equipped:':'장착 중:'}</strong>
-              ${slotCards.filter(Boolean).map(cid => {
-                const c = ZD_DEFENSE_CARDS[cid];
-                return `<span class="zd-eq-pill">${getLang()==='en'?c.en:c.ko}</span>`;
-              }).join(' ')}
-            </div>` : `
-            <div class="zd-defense-summary small empty">
-              <em>${getLang()==='en'?'No cards equipped. Empty defense — opponents pass through unopposed.':'장착된 카드 없음. 방어 무방비 — 상대 행동을 그대로 받게 됩니다.'}</em>
-            </div>`}
-          </div>
+          <div class="zd-disc-section-label">${getLang()==='en'?'DEFENSE CARDS':'방어 카드'} (${slotCount}/5)</div>
+          <div class="zd-defense-slots">${slotsHtml}</div>
 
-          <!-- v3.0.0: 스킨 선택 -->
-          <div class="zd-skin-section">
-            <h4>${getLang()==='en'?'Terminal Skin':'터미널 스킨'}</h4>
-            <div class="zd-skin-grid">${skinsHtml}</div>
-          </div>
-
-          <!-- v3.0.0: ZERO-DAY 프로토콜 4종 -->
-          <div class="zd-protocol-section">
-            <h4>${getLang()==='en'?'ZERO-DAY Protocols':'ZERO-DAY 프로토콜'}</h4>
-            <p class="small">${getLang()==='en'?'Unlock by meeting conditions and spending OneDay. Effects stack passively.':'조건 달성 + OneDay 소비로 해금. 효과는 패시브로 누적.'}</p>
-            <div class="zd-protocol-grid">${protocolsHtml}</div>
-          </div>
+          <div class="zd-disc-section-label">${getLang()==='en'?'TERMINAL SKIN':'터미널 스킨'}</div>
+          <div class="zd-skin-grid">${skinsHtml}</div>
         </div>`;
 
-      // 활성 스킨 적용
       applyActiveZdSkin();
 
-      document.getElementById('btnStartZdPve')?.addEventListener('click', startZdPve);
-      document.getElementById('btnCraftVuln')?.addEventListener('click', () => {
+      // 로비 이벤트 바인딩
+      el.querySelector('#btnStartZdDisc')?.addEventListener('click', startZdDiscRun);
+      el.querySelector('#btnCraftVuln')?.addEventListener('click', () => {
         if ((state.items.zeroDayVulnerabilityShard||0) >= 50) {
           state.items.zeroDayVulnerabilityShard -= 50;
-          state.items.zeroDayVulnerability = (state.items.zeroDayVulnerability||0) + 1;
+          setZdVulnCount(getZdVulnCount() + 1);
           showToast(getLang()==='en'?'Vulnerability crafted! +1':'취약점 제작 완료! +1', 'achievement');
           updateStatsUI(); renderZeroDayPanel(); saveGame(true);
         }
       });
       el.querySelectorAll('[data-zd-diff]').forEach(btn => {
         btn.addEventListener('click', () => {
-          state.zeroDay.pve.difficulty = btn.dataset.zdDiff;
-          renderZeroDayPanel();
-          saveGame(true);
+          zd.pve.difficulty = btn.dataset.zdDiff;
+          renderZeroDayPanel(); saveGame(true);
         });
       });
-
-      // v3.0.0: 슬롯 확장 버튼
+      el.querySelectorAll('[data-zd-protocol-unlock]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pid    = btn.dataset.zdProtocolUnlock;
+          const result = tryUnlockZdProtocol(pid);
+          if (!result.ok) {
+            const msg = result.reason === 'currency'  ? (getLang()==='en'?'Not enough OneDay':'OneDay 부족')
+                      : result.reason === 'condition' ? (getLang()==='en'?'Condition not met':'조건 미충족')
+                      : (getLang()==='en'?'Cannot unlock':'해금 불가');
+            showToast(msg, 'warn');
+            return;
+          }
+          updateStatsUI(); renderZeroDayPanel(); saveGame(true);
+        });
+      });
+      el.querySelector('#btnZdPvpMatch')?.addEventListener('click', startZdPvpMatch);
       el.querySelectorAll('[data-zd-slot-expand]').forEach(btn => {
         btn.addEventListener('click', () => {
           const slot = Number(btn.dataset.zdSlotExpand);
           const cost = ZD_SLOT_EXPAND_COST[slot];
           if (!cost) return;
-          if ((state.items.oneDay || 0) < cost) {
-            showToast(getLang()==='en'?`Need ${cost} OneDay`:`OneDay ${cost} 필요`, 'warn');
-            return;
+          if ((state.items.oneDay||0) < cost) {
+            showToast(getLang()==='en'?`Need ${cost} OneDay`:`OneDay ${cost} 필요`, 'warn'); return;
           }
           state.items.oneDay -= cost;
-          state.stats.oneDaySpentTotal = (state.stats.oneDaySpentTotal || 0) + cost;
+          state.stats.oneDaySpentTotal        = (state.stats.oneDaySpentTotal        || 0) + cost;
           state.stats.zeroDayOneDaySpentTotal = (state.stats.zeroDayOneDaySpentTotal || 0) + cost;
           state.zeroDay.defense.slots = slot;
           showToast(getLang()==='en'?`Slot ${slot} unlocked!`:`슬롯 ${slot} 해금!`, 'achievement');
-          renderZeroDayPanel();
-          saveGame(true);
+          renderZeroDayPanel(); saveGame(true);
         });
       });
-
-      // v3.0.0: 슬롯 카드 장착/변경 (간단한 cycle: 카드 5종 순환)
       el.querySelectorAll('[data-zd-slot-edit]').forEach(btn => {
         btn.addEventListener('click', () => {
-          const slot = Number(btn.dataset.zdSlotEdit);
-          const idx = slot - 1;
+          const slot    = Number(btn.dataset.zdSlotEdit);
+          const idx     = slot - 1;
           state.zeroDay.defense.cards = state.zeroDay.defense.cards || [];
           const cardIds = Object.keys(ZD_DEFENSE_CARDS);
           const current = state.zeroDay.defense.cards[idx];
-          // 다음 카드로 cycle (중복 슬롯 방지)
-          const used = new Set(state.zeroDay.defense.cards.filter((c,i) => i !== idx && c));
-          let nextIdx = current ? (cardIds.indexOf(current) + 1) % (cardIds.length + 1) : 0;
-          let attempt = 0;
-          let next = null;
+          const used    = new Set(state.zeroDay.defense.cards.filter((c,i) => i !== idx && c));
+          let nextIdx   = current ? (cardIds.indexOf(current) + 1) % (cardIds.length + 1) : 0;
+          let attempt   = 0, next = null;
           while (attempt < cardIds.length + 1) {
-            if (nextIdx >= cardIds.length) { next = null; break; } // empty
+            if (nextIdx >= cardIds.length) { next = null; break; }
             const cand = cardIds[nextIdx];
             if (!used.has(cand)) { next = cand; break; }
             nextIdx = (nextIdx + 1) % (cardIds.length + 1);
             attempt++;
           }
           state.zeroDay.defense.cards[idx] = next;
-          renderZeroDayPanel();
-          saveGame(true);
+          renderZeroDayPanel(); saveGame(true);
         });
       });
-
-      // v3.0.0: 스킨 장착
       el.querySelectorAll('[data-zd-skin-equip]').forEach(btn => {
         btn.addEventListener('click', () => {
           const skinId = btn.dataset.zdSkinEquip;
           if (!isZdSkinUnlocked(skinId)) return;
           state.zeroDay.activeSkin = skinId;
-          renderZeroDayPanel();
-          saveGame(true);
+          renderZeroDayPanel(); saveGame(true);
         });
       });
-
-      // v3.0.0: 프로토콜 해금
-      el.querySelectorAll('[data-zd-protocol-unlock]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const pid = btn.dataset.zdProtocolUnlock;
-          const result = tryUnlockZdProtocol(pid);
-          if (!result.ok) {
-            const msg = result.reason === 'currency' ? (getLang()==='en'?'Not enough OneDay':'OneDay 부족')
-              : result.reason === 'condition' ? (getLang()==='en'?'Condition not met':'조건 미충족')
-              : (getLang()==='en'?'Cannot unlock':'해금 불가');
-            showToast(msg, 'warn');
-            return;
-          }
-          updateStatsUI();
-          renderZeroDayPanel();
-          saveGame(true);
-        });
-      });
-
-      // v3.0.0: PVP 매칭 (트레이닝 봇 매치)
-      document.getElementById('btnZdPvpMatch')?.addEventListener('click', startZdPvpMatch);
     }
 
     // v3.0.0: ZERO-DAY PVP 봇 매치 (스냅샷 기반 시뮬레이션)
@@ -9476,8 +9402,18 @@ function applyLanguageToUI(){
 
 
     function refreshUiAfterStateRestore() {
+      // v3.0.0: 세이브 로드 시 고아 타이머 정리 (서버 탭 전환 등 방지)
+      try { stopZdDiscTimer(); stopZdHold(); } catch(_) {}
       ensureStageDefaults();
       ensureZeroDayDefaults();
+      // v3.0.0 migration: 구 run 객체(depth/detection 필드) → 초기화
+      if (state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active) {
+        const r = state.zeroDay.pve.active;
+        if (typeof r.depth !== 'undefined' || typeof r.detection !== 'undefined') {
+          console.warn('[ZD] v3.0.0 migration: old run format detected — clearing active run');
+          state.zeroDay.pve.active = null;
+        }
+      }
       ensureSupportDefaults();
       initAutoRunOnLoad();
       applySettings();
@@ -10501,48 +10437,15 @@ function applyLanguageToUI(){
       try { buyOpsShopItem(btn.dataset.opsBuy); } catch(ex) { console.warn('[OpsShop]', ex); }
     });
 
-    // ZERO-DAY terminal: PVE / PVP start buttons
+    // ZERO-DAY DISCOVERY v3.0.0: 구 data-zd-start 폴백 (레거시 HTML 호환)
     bind(document, 'click', (e) => {
       const btn = e.target.closest && e.target.closest('[data-zd-start]');
       if (!btn) return;
-      const mode = btn.dataset.zdStart || 'pve';
-      if (mode === 'pve') { try { startZdPve(); } catch(ex) { console.warn('[ZD PVE]', ex); } }
+      try { startZdDiscRun(); } catch(ex) { console.warn('[ZD DISC]', ex); }
     });
 
-    // ZERO-DAY terminal: PVE action buttons
-    bind(document, 'click', (e) => {
-      const btn = e.target.closest && e.target.closest('[data-zd-action]');
-      if (!btn) return;
-      try { doZdPveAction(btn.dataset.zdAction); } catch(ex) { console.warn('[ZD Action]', ex); }
-    });
-
-    // ZERO-DAY terminal: command input submit
-    bind(document, 'click', (e) => {
-      const btn = e.target.closest && e.target.closest('.zd-cmd-submit');
-      if (!btn) return;
-      const input = btn.closest('.zd-cmd-input-row') && btn.closest('.zd-cmd-input-row').querySelector('.zd-cmd-input');
-      if (!input) return;
-      const val = (input.value || '').trim();
-      input.value = '';
-      if (!val) return;
-      try { handleZdInput(val); } catch(ex) { console.warn('[ZD CMD]', ex); }
-    });
-    bind(document, 'keydown', (e) => {
-      if (e.key !== 'Enter') return;
-      const input = e.target.closest && e.target.closest('.zd-cmd-input');
-      if (!input) return;
-      const val = (input.value || '').trim();
-      input.value = '';
-      if (!val) return;
-      try { handleZdInput(val); } catch(ex) { console.warn('[ZD CMD]', ex); }
-    });
-
-    // ZERO-DAY quick-command buttons
-    bind(document, 'click', (e) => {
-      const btn = e.target.closest && e.target.closest('.zd-cmd-btn[data-zd-cmd]');
-      if (!btn) return;
-      try { handleZdInput(btn.dataset.zdCmd); } catch(ex) { console.warn('[ZD Quick CMD]', ex); }
-    });
+    // mouseup 전역 핸들러: 홀드 인젝션 해제 (버튼 바깥 릴리스 대응)
+    bind(document, 'mouseup', () => { try { stopZdHold(); } catch(_) {} });
 
     // Restore UI state: route, systemStatus open/close, zdCmdLocale
     window.addEventListener('hcsig:ready', () => {

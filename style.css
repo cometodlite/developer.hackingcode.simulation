@@ -6607,3 +6607,400 @@ header button.header-glow-reward {
   margin-top: 4px;
 }
 .br-close-btn:hover { background: rgba(255,255,255,0.14); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ZERO-DAY DISCOVERY v3.0.0 UI
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 패널 루트 ── */
+.zd-disc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 4px 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── 헤더 ── */
+.zd-disc-header { text-align: center; margin-bottom: 2px; }
+.zd-disc-title {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: #00ff88;
+  text-transform: uppercase;
+}
+.zd-disc-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: rgba(0,255,136,0.15);
+  border: 1px solid #00ff88;
+  border-radius: 4px;
+  padding: 1px 6px;
+  vertical-align: middle;
+  color: #00ff88;
+}
+.zd-disc-tagline {
+  font-size: 11px;
+  color: rgba(0,255,136,0.55);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* ── 리소스 행 ── */
+.zd-disc-resource-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  background: rgba(0,255,136,0.05);
+  border: 1px solid rgba(0,255,136,0.12);
+  border-radius: 6px;
+  padding: 7px 10px;
+}
+.zd-disc-resource-row strong { color: #00ff88; }
+.zd-disc-craft-btn {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 3px 10px;
+  background: rgba(0,255,136,0.12);
+  border: 1px solid rgba(0,255,136,0.35);
+  border-radius: 4px;
+  color: #00ff88;
+  cursor: pointer;
+}
+.zd-disc-craft-btn:hover { background: rgba(0,255,136,0.22); }
+
+/* ── 섹션 라벨 ── */
+.zd-disc-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(0,255,136,0.50);
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(0,255,136,0.10);
+  padding-bottom: 3px;
+}
+
+/* ── 난이도 선택 ── */
+.zd-disc-diff-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.zd-disc-diff-btn {
+  flex: 1 1 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  color: rgba(255,255,255,0.65);
+  transition: border-color .15s, background .15s;
+}
+.zd-disc-diff-btn strong { font-size: 12px; color: #fff; }
+.zd-disc-diff-btn .zd-diff-cost { font-size: 10px; color: rgba(255,255,255,0.40); margin-top: 2px; }
+.zd-disc-diff-btn.active {
+  border-color: #00ff88;
+  background: rgba(0,255,136,0.10);
+  color: #00ff88;
+}
+.zd-disc-diff-btn.active strong { color: #00ff88; }
+.zd-disc-diff-btn:hover:not(.active) { border-color: rgba(0,255,136,0.40); background: rgba(0,255,136,0.06); }
+
+/* ── 시작 행 ── */
+.zd-disc-start-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.zd-disc-start-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: rgba(0,255,136,0.15);
+  border: 1px solid #00ff88;
+  border-radius: 8px;
+  color: #00ff88;
+  cursor: pointer;
+  transition: background .15s, box-shadow .15s;
+}
+.zd-disc-start-btn:hover:not(:disabled) {
+  background: rgba(0,255,136,0.25);
+  box-shadow: 0 0 12px rgba(0,255,136,0.35);
+}
+.zd-disc-start-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.zd-start-hint { font-size: 11px; color: rgba(255,255,255,0.45); }
+
+/* ── 스탯 행 ── */
+.zd-disc-stats-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.zd-disc-stats-row > div {
+  flex: 1 1 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 6px 4px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.50);
+}
+.zd-disc-stats-row > div strong { font-size: 14px; color: #00ff88; }
+
+/* ── 프로토콜 ── */
+.zd-disc-protocols { display: flex; flex-direction: column; gap: 6px; }
+.zd-disc-protocol {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.zd-disc-protocol.unlocked {
+  border-color: rgba(0,255,136,0.30);
+  background: rgba(0,255,136,0.05);
+}
+.zd-disc-proto-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 3px;
+}
+.zd-disc-protocol.unlocked .zd-disc-proto-head { color: #00ff88; }
+.zd-proto-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  background: #00ff88;
+  color: #000;
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+.zd-proto-meta {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255,255,255,0.40);
+  margin-top: 4px;
+}
+.zd-disc-proto-unlock {
+  margin-top: 5px;
+  font-size: 11px;
+  padding: 3px 10px;
+  background: rgba(0,255,136,0.10);
+  border: 1px solid rgba(0,255,136,0.30);
+  border-radius: 4px;
+  color: #00ff88;
+  cursor: pointer;
+}
+.zd-disc-proto-unlock:disabled { opacity: 0.35; cursor: not-allowed; }
+.zd-disc-proto-unlock:hover:not(:disabled) { background: rgba(0,255,136,0.20); }
+
+/* ── PVP ── */
+.zd-disc-pvp-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+.zd-disc-pvp-btn {
+  padding: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  background: rgba(255,170,0,0.10);
+  border: 1px solid rgba(255,170,0,0.40);
+  border-radius: 6px;
+  color: #ffaa00;
+  cursor: pointer;
+}
+.zd-disc-pvp-btn:hover:not(:disabled) { background: rgba(255,170,0,0.20); }
+.zd-disc-pvp-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.zd-disc-pvp-stats { color: rgba(255,255,255,0.45); }
+.zd-pvp-block-hint { color: #ffaa00; font-size: 11px; }
+
+/* ── 온보딩 박스 ── */
+.zd-onboard-box {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(0,255,136,0.15);
+  border-radius: 8px;
+  padding: 14px 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ══════════════════════════════════════════════════
+   ZERO-DAY DISCOVERY: 런 진행 중 UI
+   ══════════════════════════════════════════════════ */
+
+/* ── 진행 바 섹션 ── */
+.zd-disc-bars { display: flex; flex-direction: column; gap: 8px; }
+.zd-disc-bar-section { display: flex; flex-direction: column; gap: 3px; }
+.zd-disc-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.60);
+  text-transform: uppercase;
+}
+.zd-disc-bar-label.zd-bar-danger {
+  color: #ff4444;
+  animation: zdPulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes zdPulse {
+  from { opacity: 1; }
+  to   { opacity: 0.55; }
+}
+.zd-disc-bar-track {
+  height: 10px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.zd-disc-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.12s linear;
+}
+
+/* PATCH 바 — 청록 → 위험 시 오렌지 */
+.zd-patch-fill { background: #00ccff; }
+.zd-patch-fill.zd-patch-danger {
+  background: #ff6600;
+  box-shadow: 0 0 8px rgba(255,102,0,0.60);
+  animation: zdPulse 0.4s ease-in-out infinite alternate;
+}
+
+/* TRACE 바 — 녹색 → 위험 시 빨간 */
+.zd-trace-fill { background: #00ff88; }
+.zd-trace-fill.zd-trace-danger {
+  background: #ff2020;
+  box-shadow: 0 0 8px rgba(255,32,32,0.60);
+  animation: zdPulse 0.35s ease-in-out infinite alternate;
+}
+
+/* ── 주입량 표시 ── */
+.zd-disc-inject-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.50);
+  padding: 2px 0;
+}
+.zd-disc-inject-display strong { font-size: 15px; color: #00ff88; }
+
+/* ── DATA INJECT 버튼 ── */
+.zd-disc-inject-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  padding: 20px 12px;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  background: rgba(0,255,136,0.08);
+  border: 2px solid rgba(0,255,136,0.50);
+  border-radius: 12px;
+  color: #00ff88;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background .1s, box-shadow .1s, transform .08s;
+}
+.zd-disc-inject-btn:active {
+  background: rgba(0,255,136,0.22);
+  box-shadow: 0 0 20px rgba(0,255,136,0.45);
+  transform: scale(0.97);
+}
+.zd-disc-inject-icon { font-size: 22px; line-height: 1; }
+.zd-disc-inject-label { letter-spacing: 4px; }
+.zd-disc-inject-sub { font-size: 10px; font-weight: 400; letter-spacing: 2px; opacity: 0.55; }
+
+/* ── RECOVER / ABORT 행 ── */
+.zd-disc-action-row {
+  display: flex;
+  gap: 8px;
+}
+.zd-disc-recover-btn {
+  flex: 2;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: rgba(0,200,255,0.10);
+  border: 1px solid rgba(0,200,255,0.40);
+  border-radius: 8px;
+  color: #00ccff;
+  cursor: pointer;
+  transition: background .12s, box-shadow .12s;
+}
+.zd-disc-recover-btn:hover {
+  background: rgba(0,200,255,0.22);
+  box-shadow: 0 0 10px rgba(0,200,255,0.35);
+}
+.zd-disc-abort-btn {
+  flex: 1;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: rgba(255,50,50,0.08);
+  border: 1px solid rgba(255,50,50,0.30);
+  border-radius: 8px;
+  color: #ff4444;
+  cursor: pointer;
+  transition: background .12s;
+}
+.zd-disc-abort-btn:hover { background: rgba(255,50,50,0.18); }
+
+/* ── 런 로그 ── */
+.zd-disc-log {
+  background: rgba(0,0,0,0.40);
+  border: 1px solid rgba(0,255,136,0.10);
+  border-radius: 6px;
+  padding: 8px 10px;
+  max-height: 140px;
+  overflow-y: auto;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+}
+.zd-disc-log-line {
+  color: rgba(0,255,136,0.70);
+  line-height: 1.55;
+}
+
+/* ── 모바일 대응 ── */
+@media (max-width: 360px) {
+  .zd-disc-inject-btn { padding: 16px 8px; font-size: 14px; }
+  .zd-disc-diff-btn { flex-basis: 58px; font-size: 10px; }
+  .zd-disc-title { font-size: 17px; letter-spacing: 2px; }
+}
