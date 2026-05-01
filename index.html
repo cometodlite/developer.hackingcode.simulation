@@ -5,18 +5,19 @@
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>HCSiG - Hacking Code Simulator Game</title>
 <!-- cache-busting: bump ?v=... on release updates -->
-<link href="style.css?v=3.0.2c" rel="stylesheet"/>
+<link href="style.css?v=3.1.0" rel="stylesheet"/>
 </head>
 <body>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">3.0.2 (Web)</span>
+<span class="header-version">3.1.0 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
 <button id="btnList" title="미션과 업적 리스트">LIST</button>
-<button id="btnEvent" title="PASS와 주간 도전">EVENT</button>
+<button id="btnEvent" title="이벤트 및 주간 도전">EVENT</button>
+<button id="btnPass" title="시즌 패스 및 캠페인 패스">PASS</button>
 <button id="btnMore" title="코드 도감, LIVE NET, RANK, 설정, 클라우드 계정">더보기 ▾</button>
 </div>
 </header>
@@ -78,10 +79,9 @@
 <!-- SHOP -->
 <div class="section-title" id="titleShop">Shop</div>
 <div class="shop-type-tabs" id="shopTypeTabs" aria-label="상점 유형">
-  <button type="button" class="shop-type-tab active" data-shop-type="credits" id="shopTypeCredits">크레딧</button>
-  <button type="button" class="shop-type-tab" data-shop-type="coin" id="shopTypeCoin">COIN</button>
-  <button type="button" class="shop-type-tab" data-shop-type="oneday" id="shopTypeOneDay">OneDay</button>
-  <button type="button" class="shop-type-tab" data-shop-type="support" id="shopTypeSupport">지원 센터</button>
+  <button type="button" class="shop-type-tab active" data-shop-type="credits" id="shopTypeCredits">일반/교환 상점</button>
+  <button type="button" class="shop-type-tab" data-shop-type="currency" id="shopTypeCurrency">재화 상점</button>
+  <button type="button" class="shop-type-tab" data-shop-type="support" id="shopTypeSupport">유료 상점</button>
 </div>
 <div class="shop-sort-row">
   <span class="shop-sort-label" id="shopSortLabel">정렬</span>
@@ -288,7 +288,7 @@
     <!-- 이벤트 탭 -->
     <div class="event-tabs">
       <button class="event-tab-btn active" data-event-tab="weekly" id="eventTabBtnWeekly">WEEKLY</button>
-      <button class="event-tab-btn" data-event-tab="pass" id="eventTabBtnPass">PASS</button>
+      <button class="event-tab-btn" data-event-tab="attendance" id="eventTabBtnAttendance">특별 출석</button>
       <button class="event-tab-btn" data-event-tab="roulette" id="eventTabBtnRoulette">ROULETTE</button>
     </div>
 
@@ -328,9 +328,19 @@
       <div id="opsShopMount"></div>
     </div>
 
-    <!-- PASS 패널 -->
-    <div class="event-tab-panel" id="eventTabPass">
-      <div id="passPanel"></div>
+    <!-- 특별 출석 패널 -->
+    <div class="event-tab-panel" id="eventTabAttendance">
+      <div class="event-intro">
+        <div>
+          <span class="badge">SPECIAL OPS</span>
+          <h3>특별 출석</h3>
+          <p>특별 이벤트 기간 동안 매일 출석 보너스를 수령할 수 있습니다. 이벤트 기간 외에는 비어 있습니다.</p>
+        </div>
+        <span class="event-chip">SPECIAL ATTEND</span>
+      </div>
+      <div id="attendanceMount">
+        <div class="items-coming-note small">· 현재 진행 중인 특별 출석 이벤트가 없습니다.</div>
+      </div>
     </div>
 
     <!-- BEGINNER ROULETTE 패널 -->
@@ -348,6 +358,38 @@
 
   </div>
   <div id="eventModalFooter"><button id="btnEventClose2">닫기</button></div>
+</div>
+</div>
+
+
+<!-- ── PASS 모달 ───────────────────────────────────── -->
+<div id="passModalBackdrop">
+<div id="passModal">
+  <div id="passModalHeader">
+    <h2 id="passTitle">PASS</h2>
+    <button id="btnPassClose">✕</button>
+  </div>
+  <div id="passModalBody">
+    <!-- 패스 탭 -->
+    <div class="event-tabs">
+      <button class="event-tab-btn active" data-pass-tab="season" id="passTabBtnSeason">시즌 패스</button>
+      <button class="event-tab-btn" data-pass-tab="campaign1" id="passTabBtnCampaign1">캠페인 패스 1</button>
+      <button class="event-tab-btn" data-pass-tab="campaign2" id="passTabBtnCampaign2">캠페인 패스 2</button>
+    </div>
+    <!-- 시즌 패스 -->
+    <div class="event-tab-panel active" id="passTabSeason">
+      <div id="passPanel"></div>
+    </div>
+    <!-- 캠페인 패스 1 -->
+    <div class="event-tab-panel" id="passTabCampaign1">
+      <div class="items-coming-note small">· 캠페인 패스 1은 준비 중입니다.</div>
+    </div>
+    <!-- 캠페인 패스 2 -->
+    <div class="event-tab-panel" id="passTabCampaign2">
+      <div class="items-coming-note small">· 캠페인 패스 2는 준비 중입니다.</div>
+    </div>
+  </div>
+  <div id="passModalFooter"><button id="btnPassClose2">닫기</button></div>
 </div>
 </div>
 
