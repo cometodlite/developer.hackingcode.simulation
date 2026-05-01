@@ -1079,7 +1079,8 @@ function applyLanguageToUI(){
         version: '3.0.2',
         lines: [
           '신규 아이템 타임 스와프(2h/5h/10h)가 추가되었습니다. AUTO-RUN 시간 연장 또는 에너지 회복 대기시간 단축에 사용할 수 있습니다.',
-          '신규 성장 재료 TRACE 앰플(코드 잠재 능력)과 NULL 시드(한계 돌파)가 아이템 패널에 추가되었습니다.',
+          'TRACE 앰플은 ZERO-DAY DISCOVERY 런 중 TRACE를 18%p 낮추는 소모품이며, 사용 시 TRACE 앰플 25개를 소모합니다.',
+          'NULL 시드는 ZERO-DAY DISCOVERY 런 중 패치를 지연시키고 TRACE를 4% 낮추는 소모품이며, 사용 시 NULL 시드 10개를 소모합니다.',
           '일일 미션 3종(일일 스캐너 I, 일일 침입자 I, 에너지 소비자)에 COIN +1 보상이 추가되었습니다.',
           '초보자 한정 룰렛이 EVENT 탭에 추가되었습니다. 신규 계정 기준 10일간 매일 1회 수령 가능합니다.',
           '수동 결제 처리 기반의 Support 시스템이 MORE → SUPPORT 탭에 추가되었습니다.'
@@ -4129,9 +4130,9 @@ function applyLanguageToUI(){
             </div>
           </div>
           <div class="items-coming-note small">${langText(
-            '· Daily Bonus Box는 보상 상자를 즉시 개봉합니다.<br/>· ROM은 활성 CODE를 안정화해 PWR을 올립니다. 코드 보호권은 해킹 실패 시 보호 충전을 부여합니다.<br/>· PICK 잔류 데이터는 시즌 PICK CODE를 강화하고, TRACE 앰플과 NULL 시드는 ZERO-DAY DISCOVERY 런에서 사용됩니다.',
-            '· Daily Bonus Box opens a reward crate instantly.<br/>· ROM stabilizes your active code for extra PWR, and Code Protection adds a failure safeguard charge.<br/>· PICK Residual Data boosts season PICK codes, while TRACE Ample and NULL Seed are used during ZERO-DAY DISCOVERY runs.',
-            '· Daily Bonus Boxは即時開封型の報酬箱です。<br/>· ROMはアクティブCODEを安定化してPWRを上げ、コード保護券は失敗時の保護チャージを付与します。<br/>· PICK残留データはシーズンPICK CODEを強化し、TRACEアンプルとNULL SeedはZERO-DAY DISCOVERYランで使用します。'
+            '· Daily Bonus Box는 보상 상자를 즉시 개봉합니다.<br/>· ROM은 활성 CODE를 안정화해 PWR을 올립니다. 코드 보호권은 해킹 실패 시 보호 충전을 부여합니다.<br/>· PICK 잔류 데이터는 시즌 PICK CODE를 강화합니다.<br/>· TRACE 앰플 25개를 소모하면 ZERO-DAY DISCOVERY 런 중 TRACE가 18%p 감소합니다.<br/>· NULL 시드 10개를 소모하면 ZERO-DAY DISCOVERY 런 중 PATCH를 지연시키고 TRACE를 4% 낮춥니다.',
+            '· Daily Bonus Box opens a reward crate instantly.<br/>· ROM stabilizes your active code for extra PWR, and Code Protection adds a failure safeguard charge.<br/>· PICK Residual Data boosts season PICK codes.<br/>· Spending 25 TRACE Ample lowers TRACE by 18 percentage points during a ZERO-DAY DISCOVERY run.<br/>· Spending 10 NULL Seed delays PATCH and lowers TRACE by 4% during a ZERO-DAY DISCOVERY run.',
+            '· Daily Bonus Boxは即時開封型の報酬箱です。<br/>· ROMはアクティブCODEを安定化してPWRを上げ、コード保護券は失敗時の保護チャージを付与します。<br/>· PICK残留データはシーズンPICK CODEを強化します。<br/>· TRACEアンプルを25消費すると、ZERO-DAY DISCOVERYラン中のTRACEを18ポイント低下させます。<br/>· NULL Seedを10消費すると、ZERO-DAY DISCOVERYラン中にPATCHを遅延させ、TRACEを4%低下させます。'
           )}</div>
         `;
 
@@ -6177,7 +6178,7 @@ function applyLanguageToUI(){
       run.log = run.log || [];
       run.log.push(`AID TRACE -${Math.round((before - run.trace) * 100)}%`);
       if (run.log.length > 12) run.log.shift();
-      showToast(langText('TRACE 완화 적용', 'TRACE dampening applied', 'TRACE緩和を適用しました'), 'achievement');
+      showToast(langText('TRACE -18%p 적용', 'TRACE -18pp applied', 'TRACE -18ポイントを適用しました'), 'achievement');
       renderItemsPanel();
       updateZdDiscLive();
       saveGame(true);
@@ -6208,7 +6209,7 @@ function applyLanguageToUI(){
       run.log = run.log || [];
       run.log.push(`AID PATCH -${Math.round(patchReduction * 100)}% · TRACE -4%`);
       if (run.log.length > 12) run.log.shift();
-      showToast(langText('패치 지연 적용', 'Patch delay applied', 'パッチ遅延を適用しました'), 'achievement');
+      showToast(langText('PATCH 지연 · TRACE -4% 적용', 'PATCH delay · TRACE -4% applied', 'PATCH遅延・TRACE -4%を適用しました'), 'achievement');
       renderItemsPanel();
       updateZdDiscLive();
       saveGame(true);
