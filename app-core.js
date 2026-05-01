@@ -1102,7 +1102,7 @@ function applyLanguageToUI(){
           '메인 패널 순서를 SHOP / CODES / HOME / LAB / COMING SOON으로 재배치했습니다.',
           'EVENT를 PASS / WEEKLY CHALLENGE 2패널로 분리하고 월간 시즌제(2026-05부터 시즌 1)를 도입했습니다.',
           '데이터 타워를 BREACH / SHIELD / FOCUS / EXIT 4액션 턴제 전투로 전환하고 에너지 비용을 1로 낮췄습니다.',
-          'ZERO-DAY를 온보딩 / PVE / PVP 3모드 정식 시스템으로 재출시했습니다. 터미널 UI와 취약점 재화를 추가했습니다.',
+          'ZERO-DAY를 온보딩과 DISCOVERY 중심 구조로 재정비했습니다. 터미널 UI와 취약점 재화를 추가했습니다.',
           '서버를 12종으로 확장하고 외부 / 내부 / 코어 루트 3종을 추가했습니다.',
           'OPERATION 희귀도 코드 2종(Operation_Meridian, Operation_Blackout)을 추가했습니다.',
           '업적 난이도를 6단(입문/일반/보통/어려움/혼돈/불가능)으로 재편하고 GENERAL 퀘스트 +30종을 추가했습니다.',
@@ -6041,7 +6041,7 @@ function applyLanguageToUI(){
         const isStart = prevKey === 'preseason';
         const msg = isStart
           ? (getLang() === 'en' ? `Season ${state.season.currentNumber} has begun!` : `시즌 ${state.season.currentNumber} 시작!`)
-          : (getLang() === 'en' ? `New season: ${key} (PASS/PVP reset)` : `새 시즌: ${key} (PASS/PVP 리셋)`);
+          : (getLang() === 'en' ? `New season: ${key} (PASS reset)` : `새 시즌: ${key} (PASS 리셋)`);
         log(`[SEASON] ${msg}`, 'system');
         try { showToast(msg, 'achievement'); } catch(e) {}
       }
@@ -6547,7 +6547,7 @@ function applyLanguageToUI(){
         ko:'BREAKER', en:'BREAKER',
         descKo:'DATA INJECT 1탭당 주입량 +15%',
         descEn:'DATA INJECT amount per tap +15%',
-        condition:{ type:'pvpWins', target:5 },
+        condition:{ type:'pveRuns', target:10 },
         cost:{ currency:'oneDay', amount:500 },
         effect:{ infiltrateSuccessBonus:0.15 } // infiltrateSuccessBonus → inject amount multiplier
       },
@@ -6866,7 +6866,7 @@ function applyLanguageToUI(){
       if (state.zeroDay.onboardingCompleted) return;
       state.zeroDay.onboardingCompleted = true;
       state.items.zeroDayVulnerability = (state.items.zeroDayVulnerability || 0) + 1;
-      log(getLang()==='en' ? '[ZERO-DAY] Onboarding complete. Vulnerability x1 granted. PVE & PVP unlocked.' : '[ZERO-DAY] 온보딩 완료. 취약점 1개 지급. PVE & PVP 해금.', 'system');
+      log(getLang()==='en' ? '[ZERO-DAY] Onboarding complete. Vulnerability x1 granted. DISCOVERY unlocked.' : '[ZERO-DAY] 온보딩 완료. 취약점 1개 지급. DISCOVERY 해금.', 'system');
       showToast(getLang()==='en' ? 'Onboarding done! +1 Vulnerability' : '온보딩 완료! 취약점 +1', 'achievement');
       updateStatsUI();
       renderZeroDayPanel();
@@ -7068,13 +7068,6 @@ function applyLanguageToUI(){
         </div>`;
       }).join('');
 
-      // PVP 준비도
-      const cond1    = ['normal','hard','danger'].includes(state.stats.zeroDayBestExtractDiff || '');
-      const cond2    = (state.stats.zeroDayPveEscapeCount || 0) >= 1;
-      const cond3    = (state.stats.zeroDayLowDetectionExtracts || 0) >= 1;
-      const condsMet = [cond1, cond2, cond3].filter(Boolean).length;
-      const pvpReady = condsMet >= 2;
-
       // 방어 카드 슬롯
       zd.defense   = zd.defense   || { slots:3, cards:[], usesThisMatch:0 };
       zd.skins     = zd.skins     || [];
@@ -7125,6 +7118,7 @@ function applyLanguageToUI(){
             <span>OneDay: <strong>${oneDay}</strong></span>
             ${shards >= 50 ? `<button type="button" id="btnCraftVuln" class="zd-disc-craft-btn">${getLang()==='en'?'Craft Vuln':'취약점 제작'}</button>` : ''}
           </div>
+          <p class="small">${getLang()==='en' ? 'Discovery is the active ZERO-DAY mode in this build. PVP remains paused for now.' : '현재 빌드의 ZERO-DAY는 DISCOVERY 중심으로 운영됩니다. PVP는 잠시 보류 중입니다.'}</p>
 
           <div class="zd-disc-section-label">${getLang()==='en'?'DIFFICULTY':'난이도'}</div>
           <div class="zd-disc-diff-row">${diffBtns}</div>
@@ -7143,27 +7137,11 @@ function applyLanguageToUI(){
             <div><span>${getLang()==='en'?'RUNS':'런'}</span><strong>${zd.pve.runs||0}</strong></div>
             <div><span>${getLang()==='en'?'CLEARS':'클리어'}</span><strong>${zd.pve.extracts||0}</strong></div>
             <div><span>${getLang()==='en'?'BEST SCORE':'최고 점수'}</span><strong>${zd.pve.bestScore||0}</strong></div>
-            <div><span>PVP</span><strong>R${zd.pvp.rating||1000}</strong></div>
+            <div><span>${getLang()==='en'?'LOW TRACE':'저추적'}</span><strong>${state.stats.zeroDayLowDetectionExtracts||0}</strong></div>
           </div>
 
           <div class="zd-disc-section-label">${getLang()==='en'?'PROTOCOLS':'프로토콜'}</div>
           <div class="zd-disc-protocols">${protosHtml}</div>
-
-          <div class="zd-disc-section-label">${getLang()==='en'?'PVP (ASYNC)':'PVP (비동기)'}</div>
-          <div class="zd-disc-pvp-row">
-            <p class="small">${getLang()==='en'
-              ? `Readiness ${condsMet}/3 — need 2 of 3 conditions to enable. Each match costs 1 Vulnerability.`
-              : `준비도 ${condsMet}/3 — 3개 중 2개 충족 시 활성화. 매치당 취약점 1개 소모.`}</p>
-            <div class="zd-disc-pvp-stats small">
-              W ${zd.pvp.seasonWins||0} &nbsp; L ${zd.pvp.seasonLosses||0} &nbsp; R${zd.pvp.rating||1000}
-            </div>
-            <button type="button" id="btnZdPvpMatch" class="zd-disc-pvp-btn"
-              ${pvpReady && vuln >= 1 ? '' : 'disabled'}>
-              ${getLang()==='en'?'Match PVP (1 Vuln)':'PVP 매칭 (취약점 1)'}
-            </button>
-            ${!pvpReady ? `<span class="small zd-pvp-block-hint">⚠ ${getLang()==='en'?'Need 2 readiness conditions':'준비도 조건 2개 이상 필요'}</span>` : ''}
-            ${pvpReady && vuln < 1 ? `<span class="small zd-pvp-block-hint">⚠ ${getLang()==='en'?'Need 1 Vulnerability':'취약점 1개 필요'}</span>` : ''}
-          </div>
 
           <div class="zd-disc-section-label">${getLang()==='en'?'DEFENSE CARDS':'방어 카드'} (${slotCount}/5)</div>
           <div class="zd-defense-slots">${slotsHtml}</div>
@@ -7204,7 +7182,6 @@ function applyLanguageToUI(){
           updateStatsUI(); renderZeroDayPanel(); saveGame(true);
         });
       });
-      el.querySelector('#btnZdPvpMatch')?.addEventListener('click', startZdPvpMatch);
       el.querySelectorAll('[data-zd-slot-expand]').forEach(btn => {
         btn.addEventListener('click', () => {
           const slot = Number(btn.dataset.zdSlotExpand);
