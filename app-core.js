@@ -56,7 +56,7 @@ function getSaveScore(saveObj) {
 
 // 기존 loadGame을 래핑하거나 로직 보강 필요 (여기서는 핵심 로직 가이드만 포함)
 console.log('[Stability Patch] Loaded');
-const CURRENT_VERSION = '3.0.0';
+const CURRENT_VERSION = '3.1.0';
 const TUTORIAL_VERSION = 6;
     const ENERGY_INTERVAL_MS = 60000; // 에너지 1칸당 60초
     const SAVE_KEY = 'HCSiG_SAVE_v17';
@@ -521,7 +521,7 @@ function applyLanguageToUI(){
   setText('actionsDesc1', t('actionsDesc1')); setText('actionsDesc2', t('actionsDesc2')); setText('actionsDesc3', t('actionsDesc3')); setText('actionsDesc4', t('actionsDesc4'));
   setText('btnUpgradeCode', t('codeUpgrade')); setText('btnSyncCode', t('codeSync')); setText('btnEvolveCode', t('codeEvolve')); setText('btnModalUpgradeCode', t('codeUpgrade')); setText('btnModalSyncCode', t('codeSync')); setText('btnModalEvolveCode', t('codeEvolve')); setText('btnModalShardCode', t('shardEnhance')); setText('codeDesc1', t('codeDesc1')); setText('codeDesc2', t('codeDesc2')); setText('codeDesc3', t('codeDesc3'));
   setText('tabBtnMission', t('mission')); setText('tabBtnAchievement', t('achievement')); setText('tabBtnCodex', t('codex')); setText('tabBtnLiveNet', t('liveNet')); setText('tabBtnRank', t('rank')); setText('tabBtnSettings', t('settings')); setText('tabBtnSave', t('data')); setText('tabBtnCredits', t('creditsTab')); setText('tabBtnManual', t('manualTab')); setText('tabBtnSupport', t('supportTab'));
-  setText('eventTabBtnWeekly', t('weeklyTab')); setText('eventTabBtnPass', t('passTab')); setText('eventTabBtnRoulette', t('rouletteTab'));
+  setText('eventTabBtnWeekly', t('weeklyTab')); setText('eventTabBtnRoulette', t('rouletteTab')); setText('btnPass', t('passTab')); setText('passTitle', t('seasonPass'));
   setText('listTabBtnMission', t('mission')); setText('listTabBtnAchievement', t('achievement')); setText('missionTabTitle', t('quest')); setText('achievementTabTitle', t('achievement')); setText('codexTabTitle', t('codex')); setText('liveNetTabTitle', t('liveNetRecords')); setText('rankTabTitle', t('softRank')); setText('settingsTabTitle', t('envSettings')); setText('saveTabTitle', t('dataManage')); setText('btnListClose2', t('close')); setText('btnEventClose2', t('close')); setText('btnMoreClose2', t('close'));
   setText('logSearchHelp', t('logSearchHelp')); const lsi=document.getElementById('logSearchInput'); if(lsi) lsi.placeholder=t('searchPlaceholder'); setText('btnClearLogs', t('clearLogs')); const btnToggle=document.getElementById('btnToggleLogs'); if(btnToggle){ btnToggle.textContent = (window.logsHidden ? t('showLogs') : t('hideLogs')); } setText('logFilterTitle', t('logFilter'));
   document.querySelectorAll('[data-achievement-filter="all"]').forEach(el => { el.textContent = t('achievementAll'); });
@@ -2323,6 +2323,13 @@ function applyLanguageToUI(){
       ,
         { id: 'daily_risk1',     name: '일일 리스크',      type: 'riskHackSuccess', target: 1,   rewardCredits: 90,  desc: '위험 해킹 모드로 서버 해킹 성공 1회' },
         { id: 'daily_buy1',      name: '일일 조달',        type: 'shopPurchases',   target: 1,   rewardCredits: 50,  desc: '상점에서 1회 구매하기' }
+      // Phase 1 신규 DAILY 미션 (2026-05-01 추가)
+      ,
+        { id: 'daily_login',         name: '일일 접속',       type: 'loginDaily',      target: 1,   rewardCredits: 50,  rewardCoin: 1,  desc: '오늘 게임에 접속하기' },
+        { id: 'daily_normal_shop1',  name: '일반 상점 이용',  type: 'shopPurchases',   target: 1,   rewardCredits: 60,  desc: '상점에서 1회 구매하기 (일반/교환 상점 포함)' },
+        { id: 'daily_code_levelup1', name: '코드 레벨 업',    type: 'codeLevelUp',     target: 1,   rewardCredits: 80,  desc: '코드 강화로 레벨을 1회 올리기' },
+        { id: 'daily_gear_enhance3', name: '코드 기어 강화',  type: 'gearEnhance',     target: 3,   rewardCredits: 70,  desc: '코드 기어를 3회 강화하기' },
+        { id: 'daily_tower5',        name: '타워 5층 도전',   type: 'towerAttempts',   target: 5,   rewardCredits: 90,  desc: '데이터 타워 5회 도전하기' }
       ],
       weekly: [
         { id: 'weekly_scan30',   name: '주간 스캐너',        type: 'scans',       target: 30,  rewardCredits: 120, desc: '코드 스캔 30회 수행' },
@@ -2338,6 +2345,13 @@ function applyLanguageToUI(){
         { id: 'weekly_energy0',    name: '방전 습관',          type: 'energy0Flag', target: 1,   rewardCredits: 150, desc: '이번 주 최소 1회 에너지를 0까지 소모' },
         { id: 'weekly_zd_run1',    name: 'ZERO-DAY 입문',      type: 'zeroDayRunCount', target: 1,   rewardCredits: 0, rewardCoin: 5, desc: '이번 주 ZERO-DAY PVE 1회 진행' },
         { id: 'weekly_scan70',     name: '주간 집중 스캔',      type: 'scans',       target: 70,  rewardCredits: 0, rewardCoin: 10, desc: '코드 스캔 70회 수행' }
+      // Phase 1 신규 WEEKLY 미션 (2026-05-01 추가)
+      ,
+        { id: 'weekly_login5',          name: '연속 접속',          type: 'loginStreak',          target: 5,   rewardCredits: 200, desc: '이번 주 5일 이상 접속하기' },
+        { id: 'weekly_normal_shop10',   name: '주간 상점 이용',      type: 'shopPurchases',        target: 10,  rewardCredits: 180, desc: '상점에서 10회 구매하기' },
+        { id: 'weekly_gear_enhance15',  name: '주간 기어 강화',      type: 'gearEnhance',          target: 15,  rewardCredits: 220, desc: '코드 기어를 15회 강화하기' },
+        { id: 'weekly_tower35',         name: '주간 타워 도전',      type: 'towerAttempts',        target: 35,  rewardCredits: 250, desc: '데이터 타워 35회 도전하기' },
+        { id: 'weekly_daily_mission40', name: '일일 미션 달성',      type: 'dailyMissionsCompleted', target: 40, rewardCredits: 300, rewardCoin: 5, desc: '이번 주 일일 미션 40개 완료하기' }
       ],
       month: [
         { id: 'month_scan100',     name: '월간 스캐너',        type: 'scans',           target: 100, rewardCredits: 300, desc: '코드 스캔 100회 수행' },
@@ -2831,6 +2845,10 @@ function applyLanguageToUI(){
     const eventModalBackdrop = document.getElementById('eventModalBackdrop');
     const btnEventClose = document.getElementById('btnEventClose');
     const btnEventClose2 = document.getElementById('btnEventClose2');
+    const btnPass = document.getElementById('btnPass');
+    const passModalBackdrop = document.getElementById('passModalBackdrop');
+    const btnPassClose = document.getElementById('btnPassClose');
+    const btnPassClose2 = document.getElementById('btnPassClose2');
     const btnMore = document.getElementById('btnMore');
     const moreModalBackdrop = document.getElementById('moreModalBackdrop');
     const btnMoreClose = document.getElementById('btnMoreClose');
@@ -8943,6 +8961,9 @@ function applyLanguageToUI(){
       code.power += 5;
 	      state.stats.codeUpgradeCount = (state.stats.codeUpgradeCount || 0) + 1;
 	      trackWeeklyChallenge('code_upgrade', { codeId: code.id });
+      // Phase 1: codeLevelUp 미션 추적
+      state.missionProgress.daily.codeLevelUp = (state.missionProgress.daily.codeLevelUp || 0) + 1;
+      state.missionProgress.weekly.codeLevelUp = (state.missionProgress.weekly.codeLevelUp || 0) + 1;
       playSfx('upgrade');
       log(t('upgradeDone', { name: code.name, lv: code.level, pwr: code.power, cost }), 'system');
       // v3.0.0+: 강화 결과 피드 (토스트)
@@ -9320,9 +9341,16 @@ function applyLanguageToUI(){
         LEGENDARY: 5
       };
 
-      // SHOP TYPE 선택 (credits/coin/oneday/support)
+      // SHOP TYPE 선택 (credits/currency/support + legacy: coin/oneday)
       state.ui = state.ui || {};
+      // 구버전 저장 데이터 마이그레이션: coin/oneday → currency
+      if (state.ui.shopType === 'coin' || state.ui.shopType === 'oneday') {
+        state.ui.currencySubType = state.ui.shopType; // coin or oneday 보존
+        state.ui.shopType = 'currency';
+      }
       const shopType = state.ui.shopType || 'credits';
+      // 재화 상점 서브탭 (COIN | OneDay)
+      const currencySubType = (state.ui && state.ui.currencySubType) || 'coin';
 
       // 탭 버튼 active 상태 동기화
       document.querySelectorAll('.shop-type-tab').forEach(btn =>
@@ -9333,7 +9361,7 @@ function applyLanguageToUI(){
       const shopSortRow = document.querySelector('.shop-sort-row');
       if (shopSortRow) shopSortRow.style.display = shopType === 'support' ? 'none' : '';
 
-      // 지원 센터 탭: 별도 렌더러로 위임
+      // 유료 상점(지원 센터) 탭: 별도 렌더러로 위임
       if (shopType === 'support') {
         renderSupportCenter();
         return;
@@ -9342,11 +9370,11 @@ function applyLanguageToUI(){
       const shopTypeMeta = {
         credits: {
           badge: langText('일반 / 교환 상점', 'General / Exchange Shop', '一般 / 交換ショップ'),
-          title: langText('지금 바로 쓰는 보급품', 'Immediate support supplies', 'すぐ使える補給品'),
+          title: langText('크레딧 보급품', 'Credit Supplies', 'クレジット補給品'),
           body: langText(
-            '크레딧으로 에너지, 시스템, 경제, 유틸 보조품을 구매합니다. 대부분 즉시 적용되거나 INVENTORY > ITEMS에서 사용됩니다.',
-            'Spend credits on energy, system, economy, and utility support goods. Most apply immediately or are later used from INVENTORY > ITEMS.',
-            'クレジットでエネルギー、システム、経済、ユーティリティ補助品を購入します。多くは即時適用されるか、INVENTORY > ITEMSで使用します。'
+            '크레딧으로 에너지, 시스템, 경제, 유틸 보조품을 구매합니다. 대부분 즉시 적용되거나 INVENTORY > ITEMS에서 사용됩니다. 일일/주간/월간 로테이션 상점은 추후 추가됩니다.',
+            'Spend credits on energy, system, economy, and utility support goods. Daily/weekly/monthly rotation shops coming soon.',
+            'クレジットでエネルギー、システム、経済、ユーティリティ補助品を購入します。ローテーションショップは追加予定です。'
           ),
           meta: [
             langText('기본 재화', 'Core currency', '基本通貨'),
@@ -9354,33 +9382,38 @@ function applyLanguageToUI(){
             langText('ITEMS 연동', 'ITEMS linked', 'ITEMS連動')
           ]
         },
+        currency: {
+          badge: langText('재화 상점', 'Currency Shop', '通貨ショップ'),
+          title: currencySubType === 'coin'
+            ? langText('시즌·희소 보상 교환 (COIN)', 'Season and rare reward exchange (COIN)', 'シーズン・希少報酬交換 (COIN)')
+            : langText('ZERO-DAY 성장 보조품 (OneDay)', 'ZERO-DAY growth support (OneDay)', 'ZERO-DAY成長補助 (OneDay)'),
+          body: currencySubType === 'coin'
+            ? langText(
+                'COIN은 시즌 보상과 특별 보상으로 얻는 희귀 재화입니다. 프레임, 스킨, 보조 패키지처럼 선택적인 희소 보상을 여기서 교환합니다.',
+                'COIN is a rare currency earned through seasons and special rewards. Exchange it here for optional rare rewards like frames, skins, and support packs.',
+                'COINはシーズン報酬や特別報酬で得る希少通貨です。フレーム、スキン、補助パックなど任意の希少報酬をここで交換します。'
+              )
+            : langText(
+                'OneDay는 ZERO-DAY DISCOVERY 전용 성장 재화입니다. 취약점 조각과 런 보조품처럼 Discovery 준비와 반복 플레이에 연결된 품목을 다룹니다.',
+                'OneDay is the dedicated growth currency for ZERO-DAY DISCOVERY. Use it for Discovery prep and repeat-run support items such as vulnerability shards and run boosters.',
+                'OneDayはZERO-DAY DISCOVERY専用の成長通貨です。脆弱性シャードやラン補助品など、Discovery準備と反復プレイ向けの品を扱います。'
+              ),
+          meta: currencySubType === 'coin'
+            ? ['COIN', langText('시즌 보상', 'Season rewards', 'シーズン報酬'), langText('희소 교환', 'Rare exchange', '希少交換')]
+            : ['OneDay', 'ZERO-DAY', langText('런 보조품', 'Run support', 'ラン補助')]
+        },
+        // 레거시 키 유지 (구버전 저장 데이터 대응)
         coin: {
           badge: langText('재화 상점', 'Currency Shop', '通貨ショップ'),
           title: langText('시즌·희소 보상 교환', 'Season and rare reward exchange', 'シーズン・希少報酬交換'),
-          body: langText(
-            'COIN은 시즌 보상과 특별 보상으로 얻는 희귀 재화입니다. 프레임, 스킨, 보조 패키지처럼 선택적인 희소 보상을 여기서 교환합니다.',
-            'COIN is a rare currency earned through seasons and special rewards. Exchange it here for optional rare rewards like frames, skins, and support packs.',
-            'COINはシーズン報酬や特別報酬で得る希少通貨です。フレーム、スキン、補助パックなど任意の希少報酬をここで交換します。'
-          ),
-          meta: [
-            'COIN',
-            langText('시즌 보상', 'Season rewards', 'シーズン報酬'),
-            langText('희소 교환', 'Rare exchange', '希少交換')
-          ]
+          body: langText('COIN은 시즌 보상과 특별 보상으로 얻는 희귀 재화입니다.', 'COIN is a rare currency earned through seasons and special rewards.', 'COINはシーズン報酬や特別報酬で得る希少通貨です。'),
+          meta: ['COIN', langText('시즌 보상', 'Season rewards', 'シーズン報酬')]
         },
         oneday: {
           badge: langText('재화 상점', 'Currency Shop', '通貨ショップ'),
           title: langText('ZERO-DAY 성장 보조품', 'ZERO-DAY growth support', 'ZERO-DAY成長補助'),
-          body: langText(
-            'OneDay는 ZERO-DAY DISCOVERY 전용 성장 재화입니다. 취약점 조각과 런 보조품처럼 Discovery 준비와 반복 플레이에 연결된 품목을 다룹니다.',
-            'OneDay is the dedicated growth currency for ZERO-DAY DISCOVERY. Use it for Discovery prep and repeat-run support items such as vulnerability shards and run boosters.',
-            'OneDayはZERO-DAY DISCOVERY専用の成長通貨です。脆弱性シャードやラン補助品など、Discovery準備と反復プレイ向けの品を扱います。'
-          ),
-          meta: [
-            'OneDay',
-            'ZERO-DAY',
-            langText('런 보조품', 'Run support', 'ラン補助')
-          ]
+          body: langText('OneDay는 ZERO-DAY DISCOVERY 전용 성장 재화입니다.', 'OneDay is the dedicated growth currency for ZERO-DAY DISCOVERY.', 'OneDayはZERO-DAY DISCOVERY専用の成長通貨です。'),
+          meta: ['OneDay', 'ZERO-DAY']
         }
       };
       const meta = shopTypeMeta[shopType] || shopTypeMeta.credits;
@@ -9394,14 +9427,44 @@ function applyLanguageToUI(){
       `;
       shopList.appendChild(summary);
 
+      // 재화 상점 서브탭 (COIN | OneDay) 렌더링
+      if (shopType === 'currency') {
+        const subTabRow = document.createElement('div');
+        subTabRow.className = 'shop-currency-subtab';
+        subTabRow.innerHTML = `
+          <button class="shop-currency-sub-btn ${currencySubType === 'coin' ? 'active' : ''}" data-currency-sub="coin">🪙 COIN</button>
+          <button class="shop-currency-sub-btn ${currencySubType === 'oneday' ? 'active' : ''}" data-currency-sub="oneday">⏰ OneDay</button>
+        `;
+        subTabRow.querySelectorAll('.shop-currency-sub-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.ui = state.ui || {};
+            state.ui.currencySubType = btn.dataset.currencySub;
+            renderShop();
+          });
+        });
+        shopList.appendChild(subTabRow);
+      }
+
       let currentShopItems = shopItems;
       let currencySymbol = '💰';
       let currencyName = 'Credits';
-      if (shopType === 'coin') {
+      if (shopType === 'currency') {
+        if (currencySubType === 'oneday') {
+          currentShopItems = oneDayShopItems;
+          currencySymbol = '⏰';
+          currencyName = 'OneDay';
+        } else {
+          currentShopItems = coinShopItems;
+          currencySymbol = '🪙';
+          currencyName = 'COIN';
+        }
+      } else if (shopType === 'coin') {
+        // 레거시 호환
         currentShopItems = coinShopItems;
         currencySymbol = '🪙';
         currencyName = 'COIN';
       } else if (shopType === 'oneday') {
+        // 레거시 호환
         currentShopItems = oneDayShopItems;
         currencySymbol = '⏰';
         currencyName = 'OneDay';
@@ -9478,7 +9541,7 @@ function applyLanguageToUI(){
         catSpan.className = 'shop-cat-pill';
         catSpan.textContent = categoryLabel[item.category] || item.category || '';
 
-        const extendKind = getShopExtendKind(item, shopType);
+        const extendKind = getShopExtendKind(item, shopType === 'currency' ? (state.ui.currencySubType || 'coin') : shopType);
         const extendMeta = getExtendMeta(extendKind);
         const extendSpan = document.createElement('span');
         extendSpan.className = 'shop-extend-pill';
@@ -9553,15 +9616,17 @@ function applyLanguageToUI(){
           }
 
           // 통화별 확인
+          // currency 탭: 서브탭(currencySubType)으로 실제 통화 결정
+          const effectiveCurrencyType = (shopType === 'currency') ? (state.ui.currencySubType || 'coin') : shopType;
           let hasEnoughCurrency = false;
-          if (shopType === 'credits') {
+          if (effectiveCurrencyType === 'credits') {
             hasEnoughCurrency = state.credits >= item.cost;
             if (!hasEnoughCurrency) {
               log(t('shopLog', { msg: `${t('notEnoughCredits')} (${getLang()==='en' ? 'Need' : '필요'}: ${item.cost})` }), 'shop');
               showToast(t('notEnoughCredits'), 'shop');
               return;
             }
-          } else if (shopType === 'coin') {
+          } else if (effectiveCurrencyType === 'coin') {
             const coinBalance = state.items.coin || 0;
             hasEnoughCurrency = coinBalance >= item.cost;
             if (!hasEnoughCurrency) {
@@ -9570,7 +9635,7 @@ function applyLanguageToUI(){
               showToast(notEnoughMsg, 'shop');
               return;
             }
-          } else if (shopType === 'oneday') {
+          } else if (effectiveCurrencyType === 'oneday') {
             const oneDayBalance = state.items.oneDay || 0;
             hasEnoughCurrency = oneDayBalance >= item.cost;
             if (!hasEnoughCurrency) {
@@ -9588,13 +9653,13 @@ function applyLanguageToUI(){
             if (!ok) return;
           }
 
-          // 통화 차감
-          if (shopType === 'credits') {
+          // 통화 차감 (effectiveCurrencyType 기준)
+          if (effectiveCurrencyType === 'credits') {
             state.credits -= item.cost;
-          } else if (shopType === 'coin') {
+          } else if (effectiveCurrencyType === 'coin') {
             state.items.coin = (state.items.coin || 0) - item.cost;
             state.stats.coinSpentTotal = (state.stats.coinSpentTotal || 0) + item.cost;
-          } else if (shopType === 'oneday') {
+          } else if (effectiveCurrencyType === 'oneday') {
             state.items.oneDay = (state.items.oneDay || 0) - item.cost;
             state.stats.oneDaySpentTotal = (state.stats.oneDaySpentTotal || 0) + item.cost;
           }
@@ -10161,7 +10226,20 @@ function applyLanguageToUI(){
         state.missionProgress.daily.shopPurchases = 0;
         state.missionProgress.daily.energySpent = 0;
         state.missionProgress.daily.energy0Reached = false;
+        // Phase 1 신규 추적 필드
+        state.missionProgress.daily.loginDaily = true; // 오늘 접속했으므로 즉시 true
+        state.missionProgress.daily.codeLevelUp = 0;
+        state.missionProgress.daily.gearEnhance = 0;
+        state.missionProgress.daily.towerAttempts = 0;
         state.missionProgress.daily.completed = {};
+        // 주간 streak: 새로운 날 접속 시 +1 (주간 리셋 후라면 이미 1로 초기화됨)
+        if (state.missionProgress.weekly) {
+          state.missionProgress.weekly.loginStreak = (state.missionProgress.weekly.loginStreak || 0) + 1;
+        }
+      }
+      // 오늘 첫 접속 시 loginDaily 플래그 설정 (리셋 없을 때도 체크)
+      if (state.missionProgress.daily.loginDaily === undefined) {
+        state.missionProgress.daily.loginDaily = true;
       }
       if (state.missionProgress.daily.energy0Reached === undefined) {
         state.missionProgress.daily.energy0Reached = false;
@@ -10178,6 +10256,11 @@ function applyLanguageToUI(){
         state.missionProgress.weekly.energySpent = 0;
         state.missionProgress.weekly.energy0Reached = false;
         state.missionProgress.weekly.levelReached = state.level;
+        // Phase 1 신규 추적 필드
+        state.missionProgress.weekly.loginStreak = 1; // 이번 주에 접속했으므로 1로 시작
+        state.missionProgress.weekly.gearEnhance = 0;
+        state.missionProgress.weekly.towerAttempts = 0;
+        state.missionProgress.weekly.dailyMissionsCompleted = 0;
         state.missionProgress.weekly.completed = {};
       }
       // 기존 세이브에 energy0Reached 누락 시 기본값 보장
@@ -10228,6 +10311,13 @@ function applyLanguageToUI(){
         if (type === 'creditsEarnedTotal') return state.stats.creditsEarnedTotal || 0;
         if (type === 'energy0Flag') return prog.energy0Reached ? 1 : 0;
         if (type === 'zeroDayRunCount') return prog.zeroDayRuns || 0;
+        // Phase 1 신규 타입
+        if (type === 'loginDaily') return prog.loginDaily ? 1 : 0;
+        if (type === 'codeLevelUp') return prog.codeLevelUp || 0;
+        if (type === 'gearEnhance') return prog.gearEnhance || 0;
+        if (type === 'towerAttempts') return prog.towerAttempts || 0;
+        if (type === 'loginStreak') return prog.loginStreak || 0;
+        if (type === 'dailyMissionsCompleted') return prog.dailyMissionsCompleted || 0;
         return 0;
       }
 
@@ -10307,6 +10397,11 @@ function applyLanguageToUI(){
 
           if (scope === 'daily' && state.stats.missionsCompletedTotal >= 3) unlockAchievement('daily_mission_clear1');
           if (scope === 'weekly' && state.stats.missionsCompletedTotal >= 12) unlockAchievement('weekly_mission_clear1');
+          // Phase 1: 일일 미션 완료 시 주간 추적
+          if (scope === 'daily' && state.missionProgress.weekly) {
+            state.missionProgress.weekly.dailyMissionsCompleted =
+              (state.missionProgress.weekly.dailyMissionsCompleted || 0) + 1;
+          }
 
           updateStatsUI();
         }
@@ -10836,7 +10931,6 @@ function applyLanguageToUI(){
     function openEventModal() {
       try {
         renderWeeklyPanel();
-        try { renderPassPanel(); } catch(e){}
         if (!eventModalBackdrop) return;
         eventModalBackdrop.classList.add('active');
         try { document.dispatchEvent(new CustomEvent('hcsig:event-open', { detail: { open: true } })); } catch(e) {}
@@ -10850,6 +10944,24 @@ function applyLanguageToUI(){
       if (!eventModalBackdrop) return;
       eventModalBackdrop.classList.remove('active');
       try { document.dispatchEvent(new CustomEvent('hcsig:event-open', { detail: { open: false } })); } catch(e) {}
+    }
+
+    function openPassModal() {
+      try {
+        renderPassPanel();
+        if (!passModalBackdrop) return;
+        passModalBackdrop.classList.add('active');
+        try { document.dispatchEvent(new CustomEvent('hcsig:pass-open', { detail: { open: true } })); } catch(e) {}
+      } catch (err) {
+        console.error('[PassModal] open failed:', err);
+        try { showToast('PASS를 여는 중 오류가 발생했습니다. (콘솔 확인)', 'warn'); } catch(e) {}
+      }
+    }
+
+    function closePassModal() {
+      if (!passModalBackdrop) return;
+      passModalBackdrop.classList.remove('active');
+      try { document.dispatchEvent(new CustomEvent('hcsig:pass-open', { detail: { open: false } })); } catch(e) {}
     }
 
     function openMoreModal(defaultTab = 'codex', showDontShowButton = false) {
@@ -10883,6 +10995,8 @@ function applyLanguageToUI(){
       if (listTarget) openListModal('mission');
       const eventTarget = e.target.closest && e.target.closest('#btnEvent');
       if (eventTarget) openEventModal();
+      const passTarget = e.target.closest && e.target.closest('#btnPass');
+      if (passTarget) openPassModal();
       const moreTarget = e.target.closest && e.target.closest('#btnMore');
       if (moreTarget) openMoreModal('codex', false);
       const homeLiveHint = e.target.closest && e.target.closest('#homeLiveHint');
@@ -10897,6 +11011,20 @@ function applyLanguageToUI(){
     bind(btnEventClose2, 'click', closeEventModal);
     bind(eventModalBackdrop, 'click', (e) => {
       if (e.target === eventModalBackdrop) closeEventModal();
+    });
+    bind(btnPass, 'click', () => openPassModal());
+    bind(btnPassClose, 'click', closePassModal);
+    bind(btnPassClose2, 'click', closePassModal);
+    bind(passModalBackdrop, 'click', (e) => {
+      if (e.target === passModalBackdrop) closePassModal();
+    });
+    // PASS 모달 내부 탭 전환
+    document.querySelectorAll('[data-pass-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.passTab;
+        document.querySelectorAll('[data-pass-tab]').forEach(b => b.classList.toggle('active', b.dataset.passTab === tabId));
+        document.querySelectorAll('#passModal .event-tab-panel').forEach(p => p.classList.toggle('active', p.id === 'passTab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)));
+      });
     });
     bind(btnMoreClose, 'click', closeMoreModal);
     bind(btnMoreClose2, 'click', closeMoreModal);
@@ -12014,14 +12142,19 @@ function applyLanguageToUI(){
         p.classList.toggle('active', p.id === 'accountPanel' + tabId.charAt(0).toUpperCase() + tabId.slice(1)));
     });
 
-    // EVENT modal tab switching (WEEKLY / PASS)
+    // EVENT modal tab switching (WEEKLY / 특별 출석 / ROULETTE)
     bind(document, 'click', (e) => {
       const btn = e.target.closest && e.target.closest('[data-event-tab]');
       if (!btn) return;
+      // PASS 모달 내 탭과 혼재 방지: EVENT 모달 내 클릭만 처리
+      const eventModalEl = document.getElementById('eventModal');
+      if (eventModalEl && !eventModalEl.contains(btn)) return;
       const tabId = btn.dataset.eventTab;
-      document.querySelectorAll('.event-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.eventTab === tabId));
-      document.querySelectorAll('.event-tab-panel').forEach(p => p.classList.toggle('active', p.id === 'eventTab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)));
-      if (tabId === 'pass') try { renderPassPanel(); } catch(ex) {}
+      // EVENT 모달 내 탭 버튼만 토글
+      if (eventModalEl) {
+        eventModalEl.querySelectorAll('.event-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.eventTab === tabId));
+        eventModalEl.querySelectorAll('.event-tab-panel').forEach(p => p.classList.toggle('active', p.id === 'eventTab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)));
+      }
     });
 
     // DATA TOWER turn-battle action delegation
