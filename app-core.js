@@ -1131,6 +1131,8 @@ function applyLanguageToUI(){
       lastSeenAt: null,
       tutorial: { completed: false, step: 0, seen: false, version: TUTORIAL_VERSION },
       stage: { selectedId: 'stage_001', chapterFilter: '1', highestCleared: 0, cleared: {}, chapterRewardsClaimed: {}, activeBattle: null },
+      campaign: { chapterId: 'campaign_ch1', selectedId: 'campaign_ch1_node1', highestCleared: 0, cleared: {}, activeEncounter: null },
+      extend: { highlightsSeen: {}, lastUsedCategory: null },
       targeting: { serverId: 'school_lab', route: 'internal' },
       zeroDay: {
         onboardingCompleted: false, recommendationState: null,
@@ -4066,6 +4068,12 @@ function applyLanguageToUI(){
         const infuseLabel = langText('주입', 'Infuse', '注入');
         const dampLabel = langText('완화', 'Dampen', '緩和');
         const delayLabel = langText('지연', 'Delay', '遅延');
+        function itemExtendHtml(key) {
+          const meta = getExtendMeta(getExtendItemKind(key));
+          if (!meta) return '';
+          const label = getLang() === 'en' ? meta.en : getLang() === 'ja' ? meta.ja : meta.ko;
+          return `<div class="item-card-extend">EXTEND · ${label}</div>`;
+        }
         const canStabilize = !!activeCode && rom >= 5 && (activeCode.romLevel || 0) < 5;
         const canProtect = !!activeCode && codeProtection > 0 && (activeCode.protectionCharges || 0) < 3;
         const canTunePick = !!activeCode && isSeasonPickCode(activeCode) && pickResidualData > 0 && (activeCode.pickTuneLevel || 0) < 10;
@@ -4160,18 +4168,21 @@ function applyLanguageToUI(){
           <div class="items-grid">
             <div class="item-card">
               <div class="item-card-name">${t('todayEnergyPack')}</div>
+              ${itemExtendHtml('energyPack')}
               <div class="item-card-state ${energyPackState.className}">${energyPackState.label}</div>
               <div class="item-card-count">×${energyPack}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseEnergyPack" ${canUsePack ? '' : 'disabled'}>${useLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">Daily Bonus Box</div>
+              ${itemExtendHtml('dailyBonusBox')}
               <div class="item-card-state ${dailyBoxState.className}">${dailyBoxState.label}</div>
               <div class="item-card-count">×${dailyBonusBox}</div>
               <button type="button" class="item-card-btn" id="itemsBtnOpenDailyBox" ${dailyBonusBox > 0 ? '' : 'disabled'}>${openLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${langText('코드 보호권', 'Code Protection', 'コード保護券')}</div>
+              ${itemExtendHtml('codeProtection')}
               <div class="item-card-state ${codeProtectionState.className}">${codeProtectionState.label}</div>
               <div class="item-card-count">×${codeProtection}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseCodeProtection" ${canProtect ? '' : 'disabled'}>${protectLabel}</button>
@@ -4181,6 +4192,7 @@ function applyLanguageToUI(){
           <div class="items-grid">
             <div class="item-card">
               <div class="item-card-name">COIN</div>
+              ${itemExtendHtml('coin')}
               <div class="item-card-state ${coinState.className}">${coinState.label}</div>
               <div class="item-card-count">×${coin}</div>
             </div>
@@ -4191,22 +4203,26 @@ function applyLanguageToUI(){
             </div>
             <div class="item-card">
               <div class="item-card-name">OneDay</div>
+              ${itemExtendHtml('oneDay')}
               <div class="item-card-state ${oneDayState.className}">${oneDayState.label}</div>
               <div class="item-card-count">×${oneDay}</div>
             </div>
             <div class="item-card">
               <div class="item-card-name">ROM</div>
+              ${itemExtendHtml('rom')}
               <div class="item-card-state ${romState.className}">${romState.label}</div>
               <div class="item-card-count">×${rom}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseRom" ${canStabilize ? '' : 'disabled'}>${stabilizeLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('vulnerability')}</div>
+              ${itemExtendHtml('zeroDayVulnerability')}
               <div class="item-card-state ${vulnState.className}">${vulnState.label}</div>
               <div class="item-card-count">×${vuln}</div>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('vulnerabilityShard')}</div>
+              ${itemExtendHtml('zeroDayVulnerabilityShard')}
               <div class="item-card-state ${vulnShardState.className}">${vulnShardState.label}</div>
               <div class="item-card-count">×${vulnShard}</div>
             </div>
@@ -4220,6 +4236,7 @@ function applyLanguageToUI(){
               const swapState = itemStateMeta({ count: cnt });
               return `<div class="item-card">
                 <div class="item-card-name">${t('timeSwap'+v)}</div>
+                ${itemExtendHtml('timeSwap'+v)}
                 <div class="item-card-state ${swapState.className}">${swapState.label}</div>
                 <div class="item-card-count">×${cnt}</div>
                 <button type="button" class="item-card-btn" data-ts-variant="${v}" ${canUse ? '' : 'disabled'}>${useLabel}</button>
@@ -4230,18 +4247,21 @@ function applyLanguageToUI(){
           <div class="items-grid">
             <div class="item-card">
               <div class="item-card-name">${t('traceAmpleLabel')}</div>
+              ${itemExtendHtml('traceAmple')}
               <div class="item-card-state ${traceState.className}">${traceState.label}</div>
               <div class="item-card-count">×${traceAmple}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseTraceAmple" ${canUseTrace ? '' : 'disabled'}>${dampLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('nullSeedLabel')}</div>
+              ${itemExtendHtml('nullSeed')}
               <div class="item-card-state ${nullSeedState.className}">${nullSeedState.label}</div>
               <div class="item-card-count">×${nullSeed}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseNullSeed" ${canUseNull ? '' : 'disabled'}>${delayLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${langText('PICK 잔류 데이터', 'PICK Residual Data', 'PICK残留データ')}</div>
+              ${itemExtendHtml('pickResidualData')}
               <div class="item-card-state ${pickResidualState.className}">${pickResidualState.label}</div>
               <div class="item-card-count">×${pickResidualData}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUsePickResidual" ${canTunePick ? '' : 'disabled'}>${infuseLabel}</button>
@@ -7870,6 +7890,149 @@ function applyLanguageToUI(){
       saveGame(true);
     }
 
+    const EXTEND_CHANNEL_META = {
+      recovery: {
+        ko: 'RECOVERY', en: 'RECOVERY', ja: 'RECOVERY',
+        descKo: '에너지와 회복 흐름을 다루는 확장 보조.',
+        descEn: 'Extensions that support energy and sustain loops.',
+        descJa: 'エネルギーと回復の流れを支える拡張補助。'
+      },
+      automation: {
+        ko: 'AUTOMATION', en: 'AUTOMATION', ja: 'AUTOMATION',
+        descKo: 'AUTO-RUN과 반복 플레이 효율을 높이는 확장 보조.',
+        descEn: 'Extensions that improve AUTO-RUN and repeat-play efficiency.',
+        descJa: 'AUTO-RUNと反復プレイ効率を高める拡張補助。'
+      },
+      growth: {
+        ko: 'GROWTH', en: 'GROWTH', ja: 'GROWTH',
+        descKo: '코드 성장과 시즌 자산 조율을 다루는 확장 재료.',
+        descEn: 'Growth materials for code progression and seasonal tuning.',
+        descJa: 'コード成長とシーズン資産調律を扱う拡張素材。'
+      },
+      discovery: {
+        ko: 'DISCOVERY', en: 'DISCOVERY', ja: 'DISCOVERY',
+        descKo: 'ZERO-DAY DISCOVERY 런을 보조하는 확장 자산.',
+        descEn: 'Run support assets for ZERO-DAY DISCOVERY.',
+        descJa: 'ZERO-DAY DISCOVERYランを補助する拡張資産。'
+      },
+      economy: {
+        ko: 'ECONOMY', en: 'ECONOMY', ja: 'ECONOMY',
+        descKo: '크레딧, TOKEN, COIN, OneDay 흐름을 넓히는 경제 확장.',
+        descEn: 'Economy extensions that widen Credits, TOKEN, COIN, and OneDay loops.',
+        descJa: 'クレジット、TOKEN、COIN、OneDayの流れを広げる経済拡張。'
+      },
+      premium: {
+        ko: 'PREMIUM', en: 'PREMIUM', ja: 'PREMIUM',
+        descKo: '지원 센터와 수동 결제형 패키지 허브.',
+        descEn: 'The support-center hub for manual premium packages.',
+        descJa: 'サポートセンターと手動課金型パッケージのハブ。'
+      }
+    };
+
+    function getExtendMeta(kind) {
+      return EXTEND_CHANNEL_META[kind] || EXTEND_CHANNEL_META.growth;
+    }
+
+    function getExtendItemKind(key) {
+      const map = {
+        energyPack: 'recovery',
+        dailyBonusBox: 'economy',
+        codeProtection: 'growth',
+        coin: 'economy',
+        weeklyToken: 'economy',
+        oneDay: 'economy',
+        rom: 'growth',
+        zeroDayVulnerability: 'discovery',
+        zeroDayVulnerabilityShard: 'discovery',
+        timeSwap2h: 'automation',
+        timeSwap5h: 'automation',
+        timeSwap10h: 'automation',
+        traceAmple: 'discovery',
+        nullSeed: 'discovery',
+        pickResidualData: 'growth',
+        autoScan: 'automation',
+        autoHack: 'automation'
+      };
+      return map[key] || 'growth';
+    }
+
+    function getShopExtendKind(item, shopType) {
+      if (shopType === 'support') return 'premium';
+      const explicit = {
+        gpu_coupon: 'growth',
+        cpu_coupon: 'growth',
+        overclock_script: 'automation',
+        scan_exp_script: 'automation',
+        precision_scanner: 'automation',
+        data_pack: 'economy',
+        credit_cache: 'economy',
+        credit_relay_script: 'economy',
+        permanent_credit_mult: 'economy',
+        risk_support: 'discovery',
+        hack_stability_patch: 'discovery',
+        failure_buffer_module: 'discovery'
+      };
+      return explicit[item.id] || {
+        ENERGY: 'recovery',
+        SYSTEM: 'automation',
+        ECONOMY: 'economy',
+        UTILITY: 'discovery'
+      }[item.category] || 'growth';
+    }
+
+    const STAGE_CHANNEL_META = {
+      SCAN: {
+        ko: '정찰 채널', en: 'Recon Channel',
+        descKo: '기본 스캔과 초반 침투 감각을 익히는 채널입니다.',
+        descEn: 'A channel for learning basic scans and early breach rhythm.'
+      },
+      'SCAN+': {
+        ko: '심화 스캔 채널', en: 'Deep Scan Channel',
+        descKo: '희귀도, 메타데이터, 시야 확장에 집중한 구간입니다.',
+        descEn: 'Focuses on rarity, metadata, and wider visibility.'
+      },
+      ADAPT: {
+        ko: '적응 채널', en: 'Adaptation Channel',
+        descKo: '보안 수치 상승에 맞춰 코드 빌드를 조정하는 구간입니다.',
+        descEn: 'A channel for adjusting builds against heavier security.'
+      },
+      SIGNAL: {
+        ko: '신호 채널', en: 'Signal Channel',
+        descKo: '성공률과 안정성을 함께 다루는 교전 구간입니다.',
+        descEn: 'A combat lane focused on chance and stability together.'
+      },
+      EVADE: {
+        ko: '회피 채널', en: 'Evasion Channel',
+        descKo: '추적 회피와 저위험 운영 감각을 묻는 구간입니다.',
+        descEn: 'Tests evasive routing and low-risk operation sense.'
+      },
+      REWARD: {
+        ko: '보상 채널', en: 'Reward Channel',
+        descKo: '반복 보상과 증폭 효과를 다루는 파밍 구간입니다.',
+        descEn: 'A farming lane built around repeat rewards and amplifiers.'
+      },
+      RISK: {
+        ko: '고위험 채널', en: 'High-Risk Channel',
+        descKo: '높은 보안과 큰 보상을 동시에 노리는 구간입니다.',
+        descEn: 'Targets high security and high rewards at once.'
+      },
+      EXTREME: {
+        ko: '익스트림 채널', en: 'Extreme Channel',
+        descKo: 'EXTREME 운용 감각과 파워 완성도를 점검하는 구간입니다.',
+        descEn: 'Checks EXTREME control and mature power curves.'
+      },
+      TOWER: {
+        ko: '코어 채널', en: 'Tower Core Channel',
+        descKo: '장기 반복 운용과 보스 대응을 시험하는 핵심 구간입니다.',
+        descEn: 'Core lane testing long repeat routes and boss responses.'
+      },
+      CORE: {
+        ko: '최종 채널', en: 'Final Core Channel',
+        descKo: '100층 완주를 위한 최종 보정과 집중력이 필요한 구간입니다.',
+        descEn: 'Final lane demanding polish and focus for the 100F finish.'
+      }
+    };
+
     const stageChapters = [
       { index: 1, from: 1, to: 10, title: '기초 침투 훈련', titleEn: 'Entry Intrusion', theme: 'SCAN', hint: 'Basic_Probe / Port_Scanner' },
       { index: 2, from: 11, to: 20, title: '스캔 심화 구간', titleEn: 'Scan Deepening', theme: 'SCAN+', hint: 'Scan_Cache / Rarity_Lens' },
@@ -7881,6 +8044,24 @@ function applyLanguageToUI(){
       { index: 8, from: 71, to: 80, title: '익스트림 프리즘', titleEn: 'Extreme Prism', theme: 'EXTREME', hint: 'Abyss_Contract / Singular_Gambit' },
       { index: 9, from: 81, to: 90, title: '데이터 타워 코어', titleEn: 'Data Tower Core', theme: 'TOWER', hint: 'Repeat_Engine / Boss_Keygen' },
       { index: 10, from: 91, to: 100, title: '최종 코어 챌린지', titleEn: 'Final Core Challenge', theme: 'CORE', hint: 'Tower_Sovereign / Singularity_Root' }
+    ];
+
+    const campaignChapterDefs = [
+      {
+        id: 'campaign_ch1',
+        index: 1,
+        title: 'Foundation Breach',
+        titleEn: 'Foundation Breach',
+        subtitle: '첫 선형 침투 시퀀스',
+        subtitleEn: 'The first linear infiltration sequence',
+        nodes: [
+          { id: 'campaign_ch1_node1', order: 1, name: 'Outer Relay', nameEn: 'Outer Relay', lane: 'ENTRY', recommendedLevel: 2, recommendedPower: 26, security: 32, energyCost: 1, reward: { credits: 80, exp: 4 } },
+          { id: 'campaign_ch1_node2', order: 2, name: 'Packet Stair', nameEn: 'Packet Stair', lane: 'LINK', recommendedLevel: 3, recommendedPower: 32, security: 40, energyCost: 1, reward: { credits: 100, exp: 5 } },
+          { id: 'campaign_ch1_node3', order: 3, name: 'Access Spine', nameEn: 'Access Spine', lane: 'MID', recommendedLevel: 4, recommendedPower: 38, security: 48, energyCost: 1, reward: { credits: 130, exp: 6 } },
+          { id: 'campaign_ch1_node4', order: 4, name: 'Mirror Cache', nameEn: 'Mirror Cache', lane: 'TRACE', recommendedLevel: 5, recommendedPower: 44, security: 56, energyCost: 1, reward: { credits: 160, exp: 7, shards: 1 } },
+          { id: 'campaign_ch1_node5', order: 5, name: 'Archive Gate', nameEn: 'Archive Gate', lane: 'CORE', recommendedLevel: 6, recommendedPower: 52, security: 66, energyCost: 1, reward: { credits: 220, exp: 10, shards: 2, dailyBonusBox: 1 } }
+        ]
+      }
     ];
 
     function stageCopy(ko, en) {
@@ -7940,6 +8121,249 @@ function applyLanguageToUI(){
       state.stats = state.stats || {};
       state.stats.stageAttemptCount = state.stats.stageAttemptCount || 0;
       state.stats.stageClearCount = state.stats.stageClearCount || 0;
+    }
+
+    function getCampaignChapterById(id) {
+      return campaignChapterDefs.find(ch => ch.id === id) || campaignChapterDefs[0];
+    }
+
+    function getCampaignNodeById(id) {
+      for (const chapter of campaignChapterDefs) {
+        const node = chapter.nodes.find(entry => entry.id === id);
+        if (node) return Object.assign({ chapter }, node);
+      }
+      return null;
+    }
+
+    function ensureCampaignDefaults() {
+      state.campaign = state.campaign || {};
+      state.campaign.chapterId = state.campaign.chapterId || campaignChapterDefs[0].id;
+      state.campaign.selectedId = state.campaign.selectedId || campaignChapterDefs[0].nodes[0].id;
+      state.campaign.highestCleared = Number(state.campaign.highestCleared || 0) || 0;
+      state.campaign.cleared = (state.campaign.cleared && typeof state.campaign.cleared === 'object') ? state.campaign.cleared : {};
+      state.campaign.activeEncounter = state.campaign.activeEncounter || null;
+      if (!getCampaignNodeById(state.campaign.selectedId)) state.campaign.selectedId = campaignChapterDefs[0].nodes[0].id;
+      state.stats = state.stats || {};
+      state.stats.campaignClearCount = state.stats.campaignClearCount || 0;
+    }
+
+    function getCampaignClearInfo(node) {
+      if (!node) return null;
+      ensureCampaignDefaults();
+      return state.campaign.cleared[node.id] || null;
+    }
+
+    function isCampaignNodeUnlocked(node) {
+      if (!node) return false;
+      if (node.order === 1) return true;
+      const chapter = getCampaignChapterById(node.chapter.id);
+      const prevNode = chapter.nodes.find(entry => entry.order === node.order - 1);
+      return !!(prevNode && getCampaignClearInfo(prevNode));
+    }
+
+    function getCampaignSuccessInfo(node, code) {
+      const effect = getCodeEffect(code);
+      const effectivePower = Math.max(1, code.power || 18) * (1 + (0.08 + Number(effect.cpuPowerBonus || 0)) * ((state.cpuTier || 1) - 1));
+      let chance = effectivePower / (effectivePower + node.security);
+      chance += getSyncSuccessBonus(code.syncLevel || 0);
+      chance += Number(effect.hackChance || 0) * 0.35;
+      chance = Math.max(0.12, Math.min(0.94, chance));
+      return { effectivePower, chance, security: node.security };
+    }
+
+    function getCampaignRewardText(reward = {}) {
+      const parts = [];
+      if (reward.credits) parts.push(`${t('credits')} +${reward.credits}`);
+      if (reward.exp) parts.push(`EXP +${reward.exp}`);
+      if (reward.shards) parts.push(`${stageCopy('활성 코드 조각', 'Active Code Shards')} +${reward.shards}`);
+      if (reward.dailyBonusBox) parts.push(`Daily Bonus Box +${reward.dailyBonusBox}`);
+      return parts.join(' / ');
+    }
+
+    function getCampaignReplayReward(node) {
+      const reward = node && node.reward ? node.reward : {};
+      return {
+        credits: Math.max(1, Math.round(Number(reward.credits || 0) * 0.4)),
+        exp: Math.max(1, Math.round(Number(reward.exp || 0) * 0.5)),
+        shards: 0,
+        dailyBonusBox: 0
+      };
+    }
+
+    function renderCampaignPanel() {
+      ensureCampaignDefaults();
+      const summaryEl = document.getElementById('campaignSummary');
+      const nodeListEl = document.getElementById('campaignNodeList');
+      const detailEl = document.getElementById('campaignDetail');
+      if (!summaryEl || !nodeListEl || !detailEl) return;
+
+      const chapter = getCampaignChapterById(state.campaign.chapterId);
+      const selectedNode = getCampaignNodeById(state.campaign.selectedId) || Object.assign({ chapter }, chapter.nodes[0]);
+      const clearedCount = chapter.nodes.filter(node => !!getCampaignClearInfo(Object.assign({ chapter }, node))).length;
+      const nextNode = chapter.nodes.find(node => isCampaignNodeUnlocked(Object.assign({ chapter }, node)) && !getCampaignClearInfo(Object.assign({ chapter }, node))) || chapter.nodes[chapter.nodes.length - 1];
+      const nextLabel = nextNode ? `${nextNode.order}. ${getLang() === 'en' ? nextNode.nameEn : nextNode.name}` : stageCopy('정산 완료', 'Cleared');
+
+      summaryEl.innerHTML = `
+        <div><span>CHAPTER</span><strong>${chapter.index} / ${campaignChapterDefs.length}</strong></div>
+        <div><span>CLEARED</span><strong>${clearedCount} / ${chapter.nodes.length}</strong></div>
+        <div><span>NEXT</span><strong>${nextLabel}</strong></div>
+      `;
+
+      nodeListEl.innerHTML = chapter.nodes.map(node => {
+        const nodeWithChapter = Object.assign({ chapter }, node);
+        const cleared = !!getCampaignClearInfo(nodeWithChapter);
+        const unlocked = isCampaignNodeUnlocked(nodeWithChapter);
+        const active = selectedNode.id === node.id;
+        const status = cleared
+          ? stageCopy('CLEAR', 'CLEAR')
+          : unlocked
+            ? stageCopy('READY', 'READY')
+            : stageCopy('LOCKED', 'LOCKED');
+        return `
+          <button type="button" class="campaign-node ${active ? 'active' : ''} ${cleared ? 'is-cleared' : ''} ${!unlocked ? 'is-locked' : ''}" data-campaign-node="${node.id}" ${unlocked || cleared ? '' : 'disabled'}>
+            <span class="campaign-node-order">${node.order}</span>
+            <span class="campaign-node-main">
+              <strong>${getLang() === 'en' ? node.nameEn : node.name}</strong>
+              <em>${node.lane} · Lv.${node.recommendedLevel} · PWR ${node.recommendedPower}</em>
+            </span>
+            <span class="campaign-node-status">${status}</span>
+          </button>
+        `;
+      }).join('');
+
+      const clearInfo = getCampaignClearInfo(selectedNode);
+      const unlocked = isCampaignNodeUnlocked(selectedNode);
+      const activeCode = getActiveCodeInstance();
+      const enoughEnergy = state.energy >= selectedNode.energyCost;
+      const canAttempt = !!activeCode && unlocked && enoughEnergy;
+      const successInfo = activeCode ? getCampaignSuccessInfo(selectedNode, activeCode) : { chance: 0, effectivePower: 0, security: selectedNode.security };
+      const chancePct = Math.round(successInfo.chance * 100);
+      const firstRewardText = getCampaignRewardText(selectedNode.reward);
+      const replayRewardText = getCampaignRewardText(getCampaignReplayReward(selectedNode));
+      const disabledHint = !activeCode
+        ? t('noOwnedCodes')
+        : (!unlocked
+            ? stageCopy('이전 노드를 먼저 클리어해야 합니다.', 'Clear the previous node first.')
+            : (!enoughEnergy
+                ? stageCopy(`에너지 ${selectedNode.energyCost} 필요`, `Need ${selectedNode.energyCost} energy`)
+                : stageCopy('선형 챌린지 준비 완료', 'Linear challenge ready')));
+      detailEl.innerHTML = `
+        <div class="stage-detail-head">
+          <div>
+            <span class="badge">CAMPAIGN</span>
+            <h4>${getLang() === 'en' ? selectedNode.nameEn : selectedNode.name}</h4>
+            <p>${chapter.subtitle} · ${selectedNode.lane}</p>
+          </div>
+          <div class="stage-status-pill">${clearInfo ? stageCopy(`클리어 ${clearInfo.clears || 1}회`, `Cleared ${clearInfo.clears || 1} time(s)`) : (unlocked ? stageCopy('첫 클리어 대기', 'First clear pending') : stageCopy('잠금 상태', 'Locked'))}</div>
+        </div>
+        <div class="stage-meta-grid">
+          <div><span>${stageCopy('추천 레벨', 'Recommended Level')}</span><strong>Lv.${selectedNode.recommendedLevel}</strong></div>
+          <div><span>${stageCopy('추천 파워', 'Recommended Power')}</span><strong>${selectedNode.recommendedPower}</strong></div>
+          <div><span>${stageCopy('보안값', 'Security')}</span><strong>${successInfo.security}</strong></div>
+          <div><span>${stageCopy('성공률', 'Success Rate')}</span><strong>${chancePct}%</strong></div>
+          <div><span>${stageCopy('에너지', 'Energy')}</span><strong>${selectedNode.energyCost}</strong></div>
+          <div><span>${stageCopy('현재 코드', 'Active Code')}</span><strong>${activeCode ? `${activeCode.name} · PWR ${Math.round(successInfo.effectivePower)}` : stageCopy('미선택', 'None')}</strong></div>
+        </div>
+        <div class="stage-reward-grid">
+          <div>
+            <span>${stageCopy('첫 클리어 보상', 'First Clear Reward')}</span>
+            <strong>${firstRewardText}</strong>
+          </div>
+          <div>
+            <span>${stageCopy('반복 보상', 'Replay Reward')}</span>
+            <strong>${replayRewardText}</strong>
+          </div>
+        </div>
+        <div class="campaign-role-note">${stageCopy('캠페인은 선형 챌린지입니다. 다음 미클리어 노드만 새로 열리며, 데이터 타워처럼 장기 반복 보상 루프가 아닙니다.', 'Campaign is a linear challenge. Only the next uncleared node opens, and it is not a long repeat-reward ladder like Data Tower.')}</div>
+        <div class="stage-action-row">
+          <button type="button" id="btnAttemptCampaignNode" ${canAttempt ? '' : 'disabled'}>${clearInfo ? stageCopy('재도전', 'Replay Node') : stageCopy('선형 도전', 'Start Node')}</button>
+          <span class="small">${disabledHint}</span>
+        </div>
+      `;
+
+      nodeListEl.querySelectorAll('[data-campaign-node]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.campaign.selectedId = btn.dataset.campaignNode;
+          renderCampaignPanel();
+          scheduleSilentSave();
+        });
+      });
+      detailEl.querySelector('#btnAttemptCampaignNode')?.addEventListener('click', startCampaignNode);
+    }
+
+    function startCampaignNode() {
+      ensureCampaignDefaults();
+      const node = getCampaignNodeById(state.campaign.selectedId);
+      const code = getActiveCodeInstance();
+      if (!node) return;
+      if (!code) {
+        showToast(t('noOwnedCodes'), 'warn');
+        renderCampaignPanel();
+        return;
+      }
+      if (!isCampaignNodeUnlocked(node)) {
+        showToast(stageCopy('이전 노드를 먼저 클리어해야 합니다.', 'Clear the previous node first.'), 'warn');
+        renderCampaignPanel();
+        return;
+      }
+      if (!consumeEnergy(node.energyCost)) {
+        showToast(stageCopy('에너지가 부족합니다.', 'Not enough energy.'), 'warn');
+        renderCampaignPanel();
+        return;
+      }
+
+      const previous = getCampaignClearInfo(node);
+      const firstClear = !previous;
+      const reward = firstClear ? node.reward : getCampaignReplayReward(node);
+      const info = getCampaignSuccessInfo(node, code);
+      const success = Math.random() < info.chance;
+      code.usage = (code.usage || 0) + 1;
+
+      if (success) {
+        state.credits += reward.credits;
+        state.stats.creditsEarnedTotal = (state.stats.creditsEarnedTotal || 0) + reward.credits;
+        addExp(reward.exp);
+        if (reward.shards) {
+          code.shards = (code.shards || 0) + reward.shards;
+          state.stats.codeShardsTotal = (state.stats.codeShardsTotal || 0) + reward.shards;
+        }
+        if (reward.dailyBonusBox) {
+          state.items.dailyBonusBox = (state.items.dailyBonusBox || 0) + reward.dailyBonusBox;
+        }
+        const now = Date.now();
+        state.campaign.cleared[node.id] = {
+          firstAt: previous && previous.firstAt ? previous.firstAt : now,
+          lastAt: now,
+          clears: (previous && previous.clears ? previous.clears : 0) + 1,
+          bestCodeId: code.id
+        };
+        state.campaign.highestCleared = Math.max(state.campaign.highestCleared || 0, node.order);
+        state.stats.campaignClearCount = (state.stats.campaignClearCount || 0) + 1;
+        const nextNode = node.chapter.nodes.find(entry => entry.order === node.order + 1 && !getCampaignClearInfo(Object.assign({ chapter: node.chapter }, entry)));
+        if (nextNode) {
+          state.campaign.selectedId = nextNode.id;
+        }
+        const msg = stageCopy(
+          `[CAMPAIGN] ${node.name} 클리어! ${getCampaignRewardText(reward)}`,
+          `[CAMPAIGN] ${node.nameEn} cleared! ${getCampaignRewardText(reward)}`
+        );
+        log(msg, 'hack');
+        showToast(firstClear ? stageCopy(`${node.name} 첫 클리어`, `${node.nameEn} first clear`) : stageCopy(`${node.name} 반복 클리어`, `${node.nameEn} replay clear`), 'achievement');
+        checkMissions('general');
+      } else {
+        const msg = stageCopy(
+          `[CAMPAIGN] ${node.name} 실패 · 보안 ${node.security}`,
+          `[CAMPAIGN] ${node.nameEn} failed · security ${node.security}`
+        );
+        log(msg, 'hack');
+        showToast(stageCopy('CAMPAIGN 실패', 'Campaign failed'), 'warn');
+      }
+
+      updateStatsUI();
+      renderCodeList();
+      renderCodeDetail();
+      renderCampaignPanel();
+      saveGame(true);
     }
 
     function getStageById(id) {
@@ -8048,6 +8472,7 @@ function applyLanguageToUI(){
       const selectedStage = getStageById(state.stage.selectedId);
       const filter = state.stage.chapterFilter || 'all';
       const completedCount = Object.keys(state.stage.cleared || {}).length;
+      const channelMeta = STAGE_CHANNEL_META[selectedStage.chapter.theme] || null;
 
       // 현재 챕터 = 미클리어 스테이지가 있는 가장 낮은 챕터
       const currentProgressChapter = (() => {
@@ -8145,7 +8570,7 @@ function applyLanguageToUI(){
             <div>
               <span class="badge">${selectedStage.boss ? 'BOSS' : 'DATA TOWER'}</span>
               <h4>${selectedStage.name}</h4>
-              <p>${getLang() === 'en' ? selectedStage.chapter.titleEn : selectedStage.chapter.title} · ${selectedStage.chapter.from}-${selectedStage.chapter.to}</p>
+              <p>${getLang() === 'en' ? selectedStage.chapter.titleEn : selectedStage.chapter.title} · ${selectedStage.chapter.from}-${selectedStage.chapter.to}${channelMeta ? ` · ${getLang() === 'en' ? channelMeta.en : channelMeta.ko}` : ''}</p>
             </div>
             <div class="stage-status-pill">${statusText}</div>
           </div>
@@ -8155,6 +8580,7 @@ function applyLanguageToUI(){
             <div><span>${stageCopy('보안값', 'Security')}</span><strong>${successInfo.security}</strong></div>
             <div><span>${stageCopy('에너지', 'Energy')}</span><strong>${selectedStage.energyCost}</strong></div>
             <div><span>${stageCopy('추천 코드', 'Suggested Code')}</span><strong>${selectedStage.chapter.hint}</strong></div>
+            <div><span>${stageCopy('채널', 'Channel')}</span><strong>${channelMeta ? (getLang() === 'en' ? channelMeta.en : channelMeta.ko) : selectedStage.chapter.theme}</strong></div>
           </div>
           <div class="stage-reward-grid">
             <div>
@@ -8165,7 +8591,12 @@ function applyLanguageToUI(){
               <span>${stageCopy('반복 보상', 'Repeat Reward')}</span>
               <strong>${getStageRewardText(repeatPreview)}</strong>
             </div>
+            <div>
+              <span>${stageCopy('챕터 보상', 'Chapter Reward')}</span>
+              <strong>${state.stage.chapterRewardsClaimed[String(selectedStage.chapter.index)] ? stageCopy('이미 수령함', 'Already claimed') : getStageChapterRewardText(selectedStage.chapter.index)}</strong>
+            </div>
           </div>
+          ${channelMeta ? `<div class="stage-channel-note">${getLang() === 'en' ? channelMeta.descEn : channelMeta.descKo}</div>` : ''}
           <div class="stage-action-row">
             <button type="button" id="btnAttemptStage" ${canAttempt ? '' : 'disabled'}>${buttonText}</button>
             <span class="small">${disabledHint}${activeCode ? ` · ${activeCode.name} PWR ${Math.round(successInfo.effectivePower)}` : ''}</span>
@@ -8186,7 +8617,7 @@ function applyLanguageToUI(){
           <section class="stage-chapter ${open ? 'open' : ''} ${complete ? 'is-complete' : ''}" data-stage-chapter="${chapter.index}">
             <button type="button" class="stage-chapter-head" data-stage-chapter-toggle="${chapter.index}">
               <span><strong>CH.${chapter.index}</strong> ${getLang() === 'en' ? chapter.titleEn : chapter.title}</span>
-              <em>${chapter.from}-${chapter.to} · ${clearedInChapter}/10 · ${claimed ? stageCopy('보상 수령', 'Reward claimed') : getStageChapterRewardText(chapter.index)}</em>
+              <em>${chapter.from}-${chapter.to} · ${(STAGE_CHANNEL_META[chapter.theme] ? (getLang() === 'en' ? STAGE_CHANNEL_META[chapter.theme].en : STAGE_CHANNEL_META[chapter.theme].ko) : chapter.theme)} · ${clearedInChapter}/10 · ${claimed ? stageCopy('보상 수령', 'Reward claimed') : getStageChapterRewardText(chapter.index)}</em>
             </button>
             <div class="stage-list" ${open ? '' : 'hidden'}>
               ${stages.map(stage => {
@@ -9040,9 +9471,16 @@ function applyLanguageToUI(){
         catSpan.className = 'shop-cat-pill';
         catSpan.textContent = categoryLabel[item.category] || item.category || '';
 
+        const extendKind = getShopExtendKind(item, shopType);
+        const extendMeta = getExtendMeta(extendKind);
+        const extendSpan = document.createElement('span');
+        extendSpan.className = 'shop-extend-pill';
+        extendSpan.textContent = `EXTEND · ${getLang() === 'en' ? extendMeta.en : getLang() === 'ja' ? extendMeta.ja : extendMeta.ko}`;
+
         const leftWrap = document.createElement('span');
         leftWrap.appendChild(raritySpan);
         leftWrap.appendChild(catSpan);
+        leftWrap.appendChild(extendSpan);
         const itemName = localizeShopName(item);
         const itemDesc = localizeShopDesc(item);
         leftWrap.appendChild(document.createTextNode(itemName));
@@ -10549,6 +10987,7 @@ function applyLanguageToUI(){
       // v3.0.0: 세이브 로드 시 고아 타이머 정리 (서버 탭 전환 등 방지)
       try { stopZdDiscTimer(); stopZdHold(); } catch(_) {}
       ensureStageDefaults();
+      ensureCampaignDefaults();
       ensureZeroDayDefaults();
       // v3.0.0 migration: 구 run 객체(depth/detection 필드) → 초기화
       if (state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active) {
@@ -10572,6 +11011,7 @@ function applyLanguageToUI(){
       renderCodeDetail();
       renderUpdateLog();
       renderStagePanel();
+      renderCampaignPanel();
       renderWeeklyPanel();
       renderZeroDayPanel();
       updateStatsUI();
@@ -11432,6 +11872,7 @@ function applyLanguageToUI(){
     bind(btnUseEnergyPack, 'click', useEnergyPack);
     bind(document, 'hcsig:lab-ready', () => {
       renderStagePanel();
+      renderCampaignPanel();
       renderWeeklyPanel();
       renderZeroDayPanel();
     });
@@ -11442,6 +11883,7 @@ function applyLanguageToUI(){
     });
     bind(window, 'hcsig:language-applied', () => {
       renderStagePanel();
+      renderCampaignPanel();
       renderWeeklyPanel();
       renderZeroDayPanel();
     });
@@ -11637,6 +12079,7 @@ function applyLanguageToUI(){
       addCodeInstanceFromTemplate('basic');
       state.requiredExp = requiredExp(state.level);
       ensureStageDefaults();
+      ensureCampaignDefaults();
       ensureMissionResets();
       try { ensureSeasonState(); } catch(e) { console.warn('[Season] init error:', e); }
 

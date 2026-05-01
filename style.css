@@ -3303,6 +3303,16 @@ body.app-shell-ui .list-tab-button{
 	.stage-reward-grid strong{
 	  overflow-wrap:anywhere;
 	}
+	.stage-channel-note{
+	  margin-bottom:12px;
+	  padding:10px 12px;
+	  border:1px solid rgba(45,212,191,.14);
+	  border-radius:8px;
+	  background:rgba(8,26,21,.55);
+	  color:#c8f9eb;
+	  font-size:12px;
+	  line-height:1.6;
+	}
 	.stage-action-row{
 	  display:flex;
 	  align-items:center;
@@ -3327,6 +3337,93 @@ body.app-shell-ui .list-tab-button{
 	  padding-top:10px;
 	  color:#bcd8d1 !important;
 	  font-size:12px;
+	}
+	.campaign-head{
+	  margin-bottom:14px;
+	}
+	.campaign-summary{
+	  align-self:stretch;
+	}
+	.campaign-map{
+	  display:grid;
+	  gap:10px;
+	  margin-bottom:14px;
+	}
+	.campaign-node{
+	  width:100%;
+	  display:grid;
+	  grid-template-columns:40px minmax(0,1fr) auto;
+	  align-items:center;
+	  gap:10px;
+	  padding:12px 14px;
+	  border-radius:8px;
+	  border:1px solid rgba(94,234,212,.16);
+	  background:rgba(8,20,18,.84);
+	  color:#e5fff7;
+	  text-align:left;
+	}
+	.campaign-node:hover:not(:disabled),
+	.campaign-node.active{
+	  border-color:rgba(45,212,191,.45);
+	  box-shadow:0 0 0 1px rgba(45,212,191,.18) inset;
+	  background:rgba(10,33,28,.96);
+	}
+	.campaign-node.is-cleared{
+	  border-color:rgba(163,230,53,.28);
+	}
+	.campaign-node.is-locked{
+	  opacity:.55;
+	}
+	.campaign-node-order{
+	  display:inline-flex;
+	  align-items:center;
+	  justify-content:center;
+	  width:32px;
+	  height:32px;
+	  border-radius:999px;
+	  border:1px solid rgba(148,163,184,.20);
+	  background:rgba(15,23,42,.65);
+	  font-size:12px;
+	  font-weight:800;
+	}
+	.campaign-node-main{
+	  display:flex;
+	  flex-direction:column;
+	  gap:2px;
+	  min-width:0;
+	}
+	.campaign-node-main strong{
+	  font-size:14px;
+	  color:#f8fafc;
+	}
+	.campaign-node-main em{
+	  color:#9dd7cb;
+	  font-size:11px;
+	  font-style:normal;
+	  overflow-wrap:anywhere;
+	}
+	.campaign-node-status{
+	  display:inline-flex;
+	  align-items:center;
+	  justify-content:center;
+	  padding:5px 8px;
+	  border-radius:999px;
+	  border:1px solid rgba(148,163,184,.16);
+	  background:rgba(15,23,42,.5);
+	  color:#cbd5e1;
+	  font-size:10px;
+	  font-weight:800;
+	  letter-spacing:.06em;
+	}
+	.campaign-role-note{
+	  margin-bottom:12px;
+	  padding:10px 12px;
+	  border:1px solid rgba(148,163,184,.14);
+	  border-radius:8px;
+	  background:rgba(15,23,42,.18);
+	  color:#d2efe6;
+	  font-size:12px;
+	  line-height:1.6;
 	}
 	body.app-shell-ui #tutorialBackdrop.show{
 	  display:flex !important;
@@ -5632,6 +5729,17 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   color: var(--accent, #00ff88);
   font-family: monospace;
 }
+.item-card-extend {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(45,212,191,0.16);
+  background: rgba(45,212,191,0.08);
+  color: #a7f3d0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
 .item-card-btn {
   font-size: 10px;
   padding: 3px 10px;
@@ -5708,6 +5816,21 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 .shop-summary-card-support {
   border-color: rgba(0,200,255,0.18);
   background: linear-gradient(180deg, rgba(0,200,255,0.07), rgba(0,200,255,0.03));
+}
+.shop-extend-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(45,212,191,0.16);
+  background: rgba(45,212,191,0.08);
+  color: #a7f3d0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* ── AUTO-RUN 카드 ──────────────────────────────────────────── */
