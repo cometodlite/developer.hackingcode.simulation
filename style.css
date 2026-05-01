@@ -2695,6 +2695,11 @@ body.app-shell-ui .list-tab-button{
   gap:12px;
   padding:10px 12px;
 }
+.live-rank-entry.is-self{
+  border-radius:12px;
+  background:rgba(20,184,166,.08);
+  box-shadow:inset 0 0 0 1px rgba(45,212,191,.18);
+}
 .rank-no{
   width:28px;
   height:28px;

@@ -572,13 +572,15 @@
 
   function renderRank(){
     if (!el.liveRankList || state.moreTab !== 'rank') return;
-    const entries = state.rankEntries || [];
+    const entries = (state.rankEntries && state.rankEntries.length)
+      ? state.rankEntries
+      : fallbackRankEntries(state.selectedBoard);
     if (!entries.length) {
       el.liveRankList.innerHTML = `<div class="live-empty">${escapeHtml(text('랭킹 신호 대기 중', 'Waiting for rank signal'))}</div>`;
       return;
     }
     el.liveRankList.innerHTML = entries.slice(0, 10).map((entry, idx) => `
-      <article class="live-rank-entry">
+      <article class="live-rank-entry${entry.isSelf ? ' is-self' : ''}">
         <span class="rank-no">${idx + 1}</span>
         <div>
           <strong>${escapeHtml(entry.displayName || 'Agent')}</strong>
@@ -922,6 +924,72 @@
 	      level: Number(gameState.level || 1),
       codeCount: ownedCodes.length
     };
+  }
+
+  function rankBaseline(boardId){
+    switch (boardId) {
+      case 'stage': return 6;
+      case 'extreme': return 2;
+      case 'credits': return 1800;
+      case 'power': return 220;
+      case 'weekly': return 420;
+      case 'hack':
+      default: return 18;
+    }
+  }
+
+  function rankStep(boardId){
+    switch (boardId) {
+      case 'stage': return 1;
+      case 'extreme': return 1;
+      case 'credits': return 120;
+      case 'power': return 16;
+      case 'weekly': return 60;
+      case 'hack':
+      default: return 3;
+    }
+  }
+
+  function fallbackRankEntries(boardId){
+    const board = BOARDS.find(item => item.id === boardId) || BOARDS[0];
+    const scores = computeScores();
+    const display = getDisplayContext();
+    const playerScore = Math.max(0, Math.round(Number(scores[board.id] || 0)));
+    const base = Math.max(rankBaseline(board.id), playerScore || 0);
+    const step = rankStep(board.id);
+    const seed = hashString(`${display.uid}:${board.id}:${VERSION}`);
+    const playerSubtitle = board.id === 'power'
+      ? text(`LOCAL MIRROR · Lv.${scores.level} · CODE ${scores.codeCount}`, `LOCAL MIRROR · Lv.${scores.level} · CODE ${scores.codeCount}`)
+      : text(`LOCAL MIRROR · Lv.${scores.level} · ${board.label}`, `LOCAL MIRROR · Lv.${scores.level} · ${board.label}`);
+    const player = {
+      id: `self-${board.id}`,
+      displayName: display.displayName,
+      subtitle: playerSubtitle,
+      score: playerScore,
+      isSelf: true
+    };
+    const rivals = [
+      text('LOCAL NODE', 'LOCAL NODE'),
+      'Trace-204',
+      'Node-17A',
+      'Relay-882',
+      'Vault-031'
+    ].map((name, idx) => {
+      const weight = [1.22, 1.08, 0.97, 0.89, 0.8][idx];
+      const wobble = ((seed >> (idx * 3)) % 7) - 3;
+      const raw = Math.round((base || rankBaseline(board.id)) * weight + (wobble * step));
+      const score = Math.max(0, raw);
+      return {
+        id: `mirror-${board.id}-${idx}`,
+        displayName: name,
+        subtitle: text('LOCAL MIRROR · 추정 비교', 'LOCAL MIRROR · estimated'),
+        score,
+        isSelf: false
+      };
+    });
+    return [...rivals, player]
+      .sort((a, b) => Number(b.score || 0) - Number(a.score || 0))
+      .slice(0, 10);
   }
 
   function scheduleRankPush(){

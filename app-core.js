@@ -3954,6 +3954,7 @@ function applyLanguageToUI(){
       if (!el) return;
       try {
         ensureReleaseRewardDefaults();
+        ensureZeroDayDefaults();
         const energyPack = (state.items && state.items.energyPack) || 0;
         const coin = (state.items && state.items.coin) || 0;
         const weeklyToken = (state.items && state.items.weeklyToken) || 0;
@@ -3966,8 +3967,22 @@ function applyLanguageToUI(){
         const vulnShard = (state.items && state.items.zeroDayVulnerabilityShard) || 0;
         const traceAmple = (state.items && state.items.traceAmple) || 0;
         const nullSeed = (state.items && state.items.nullSeed) || 0;
+        const activeCode = ensureCodeSupportState(getActiveCodeInstance());
+        const activeRun = state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active;
         const canUsePack = energyPack > 0 && state.energy < state.energyMax;
         const useLabel = getLang() === 'en' ? 'Use' : (getLang() === 'ja' ? '使用' : '사용');
+        const openLabel = langText('열기', 'Open', '開封');
+        const stabilizeLabel = langText('안정화', 'Stabilize', '安定化');
+        const protectLabel = langText('적용', 'Apply', '適用');
+        const infuseLabel = langText('주입', 'Infuse', '注入');
+        const dampLabel = langText('완화', 'Dampen', '緩和');
+        const delayLabel = langText('지연', 'Delay', '遅延');
+        const canStabilize = !!activeCode && rom >= 5 && (activeCode.romLevel || 0) < 5;
+        const canProtect = !!activeCode && codeProtection > 0 && (activeCode.protectionCharges || 0) < 3;
+        const canTunePick = !!activeCode && isSeasonPickCode(activeCode) && pickResidualData > 0 && (activeCode.pickTuneLevel || 0) < 10;
+        const canUseTrace = !!activeRun && traceAmple >= 25 && (activeRun.trace || 0) > 0.01;
+        const diffDef = activeRun ? (ZD_DISC_DIFFICULTIES[activeRun.diff] || ZD_DISC_DIFFICULTIES.easy) : null;
+        const canUseNull = !!activeRun && nullSeed >= 10 && diffDef && getZdPatch(activeRun, diffDef) > 0.03;
 
         // AUTO-RUN 상태 계산
         ensureAutoRunDefaults();
@@ -4031,10 +4046,12 @@ function applyLanguageToUI(){
             <div class="item-card">
               <div class="item-card-name">Daily Bonus Box</div>
               <div class="item-card-count">×${dailyBonusBox}</div>
+              <button type="button" class="item-card-btn" id="itemsBtnOpenDailyBox" ${dailyBonusBox > 0 ? '' : 'disabled'}>${openLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${langText('코드 보호권', 'Code Protection', 'コード保護券')}</div>
               <div class="item-card-count">×${codeProtection}</div>
+              <button type="button" class="item-card-btn" id="itemsBtnUseCodeProtection" ${canProtect ? '' : 'disabled'}>${protectLabel}</button>
             </div>
           </div>
           <div class="items-section-title">${t('itemsCurrency')}</div>
@@ -4054,6 +4071,7 @@ function applyLanguageToUI(){
             <div class="item-card">
               <div class="item-card-name">ROM</div>
               <div class="item-card-count">×${rom}</div>
+              <button type="button" class="item-card-btn" id="itemsBtnUseRom" ${canStabilize ? '' : 'disabled'}>${stabilizeLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('vulnerability')}</div>
@@ -4082,14 +4100,17 @@ function applyLanguageToUI(){
             <div class="item-card">
               <div class="item-card-name">${t('traceAmpleLabel')}</div>
               <div class="item-card-count">×${traceAmple}</div>
+              <button type="button" class="item-card-btn" id="itemsBtnUseTraceAmple" ${canUseTrace ? '' : 'disabled'}>${dampLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('nullSeedLabel')}</div>
               <div class="item-card-count">×${nullSeed}</div>
+              <button type="button" class="item-card-btn" id="itemsBtnUseNullSeed" ${canUseNull ? '' : 'disabled'}>${delayLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${langText('PICK 잔류 데이터', 'PICK Residual Data', 'PICK残留データ')}</div>
               <div class="item-card-count">×${pickResidualData}</div>
+              <button type="button" class="item-card-btn" id="itemsBtnUsePickResidual" ${canTunePick ? '' : 'disabled'}>${infuseLabel}</button>
             </div>
           </div>
           <div class="items-section-title">${t('autoRunLabel')}</div>
@@ -4108,9 +4129,9 @@ function applyLanguageToUI(){
             </div>
           </div>
           <div class="items-coming-note small">${langText(
-            '· Daily Bonus Box, ROM, 코드 보호권, PICK 잔류 데이터는 시즌 보상과 보상함에서 획득합니다.<br/>· ROM은 시즌 진행 중 열리는 CODE 안정화·복구 시스템에 사용됩니다.',
-            '· Daily Bonus Box, ROM, Code Protection, and PICK Residual Data come from season rewards and reward boxes.<br/>· ROM will be used by the CODE stabilization and recovery systems that unlock during the season.',
-            '· Daily Bonus Box、ROM、コード保護券、PICK残留データはシーズン報酬と報酬箱から獲得します。<br/>· ROMはシーズン中に開放されるCODE安定化・復旧システムで使用されます。'
+            '· Daily Bonus Box는 보상 상자를 즉시 개봉합니다.<br/>· ROM은 활성 CODE를 안정화해 PWR을 올립니다. 코드 보호권은 해킹 실패 시 보호 충전을 부여합니다.<br/>· PICK 잔류 데이터는 시즌 PICK CODE를 강화하고, TRACE 앰플과 NULL 시드는 ZERO-DAY DISCOVERY 런에서 사용됩니다.',
+            '· Daily Bonus Box opens a reward crate instantly.<br/>· ROM stabilizes your active code for extra PWR, and Code Protection adds a failure safeguard charge.<br/>· PICK Residual Data boosts season PICK codes, while TRACE Ample and NULL Seed are used during ZERO-DAY DISCOVERY runs.',
+            '· Daily Bonus Boxは即時開封型の報酬箱です。<br/>· ROMはアクティブCODEを安定化してPWRを上げ、コード保護券は失敗時の保護チャージを付与します。<br/>· PICK残留データはシーズンPICK CODEを強化し、TRACEアンプルとNULL SeedはZERO-DAY DISCOVERYランで使用します。'
           )}</div>
         `;
 
@@ -4122,6 +4143,12 @@ function applyLanguageToUI(){
             setTimeout(() => renderItemsPanel(), 50);
           });
         }
+        el.querySelector('#itemsBtnOpenDailyBox')?.addEventListener('click', openDailyBonusBox);
+        el.querySelector('#itemsBtnUseRom')?.addEventListener('click', useRomOnActiveCode);
+        el.querySelector('#itemsBtnUseCodeProtection')?.addEventListener('click', useCodeProtection);
+        el.querySelector('#itemsBtnUsePickResidual')?.addEventListener('click', usePickResidualData);
+        el.querySelector('#itemsBtnUseTraceAmple')?.addEventListener('click', useTraceAmple);
+        el.querySelector('#itemsBtnUseNullSeed')?.addEventListener('click', useNullSeed);
 
         // 타임 스와프 버튼 이벤트
         el.querySelectorAll('[data-ts-variant]').forEach(btn => {
@@ -5329,12 +5356,18 @@ function applyLanguageToUI(){
 
     function levelUp() {
       ensureMissionResets();
+      const prevLevel = state.level;
       state.level++;
       state.requiredExp = requiredExp(state.level);
       state.credits += 50;
       state.stats.creditsEarnedTotal += 50;
       playSfx('level');
       log(t('levelUpLog', { lv: state.level }), 'level');
+      if (prevLevel < 5 && state.level >= 5) {
+        const msg = langText('EXTREME 해킹 모드가 해금되었습니다.', 'EXTREME hack mode unlocked.', 'EXTREMEハックモードが解放されました。');
+        log(`[시스템] ${msg}`, 'system');
+        showToast(msg, 'achievement');
+      }
 
       state.missionProgress.weekly.levelReached = Math.max(
         state.missionProgress.weekly.levelReached,
@@ -5496,6 +5529,9 @@ function applyLanguageToUI(){
         usage: 0,
         shards: 0,
         syncLevel: 0,
+        romLevel: 0,
+        protectionCharges: 0,
+        pickTuneLevel: 0,
         obtainedAt: Date.now()
       });
     }
@@ -5519,6 +5555,9 @@ function applyLanguageToUI(){
         usage: 0,
         shards: 0,
         syncLevel: 0,
+        romLevel: 0,
+        protectionCharges: 0,
+        pickTuneLevel: 0,
         obtainedAt: Date.now()
       };
       ownedCodes.push(instance);
@@ -5767,7 +5806,10 @@ function applyLanguageToUI(){
           syncCost: `Next sync cost: ${syncCost} shards / expected success bonus +${syncBonusText}%`,
           shard: `Shard boost cost: ${shardBoostCost} shards / PWR +2`,
           evolve: evolveReady ? 'Evolution requirement: Met' : 'Evolution requirement: Need Lv.5+',
-          ability: 'Ability'
+          ability: 'Ability',
+          rom: `ROM Stabilize: ${code.romLevel || 0}/5`,
+          protect: `Protection: ${code.protectionCharges || 0}`,
+          pickTune: `PICK Tune: ${code.pickTuneLevel || 0}/10`
         }
         : lang === 'ja'
           ? {
@@ -5780,7 +5822,10 @@ function applyLanguageToUI(){
             syncCost: `次の同期コスト: シャード ${syncCost} / 予想成功率補正 +${syncBonusText}%`,
             shard: `シャード強化コスト: シャード ${shardBoostCost} / PWR +2`,
             evolve: evolveReady ? '進化条件: 達成' : '進化条件: Lv.5以上必要',
-            ability: '能力'
+            ability: '能力',
+            rom: `ROM安定化: ${code.romLevel || 0}/5`,
+            protect: `保護チャージ: ${code.protectionCharges || 0}`,
+            pickTune: `PICK調律: ${code.pickTuneLevel || 0}/10`
           }
           : {
             level: `레벨: Lv.${code.level}`,
@@ -5792,8 +5837,15 @@ function applyLanguageToUI(){
             syncCost: `다음 동기화 비용: 조각 ${syncCost} / 예상 성공률 보정 +${syncBonusText}%`,
             shard: `조각 강화 비용: 조각 ${shardBoostCost} / PWR +2`,
             evolve: evolveReady ? '진화 조건: 충족' : '진화 조건: Lv.5 이상 필요',
-            ability: '능력'
+            ability: '능력',
+            rom: `ROM 안정화: ${code.romLevel || 0}/5`,
+            protect: `보호 충전: ${code.protectionCharges || 0}`,
+            pickTune: `PICK 조율: ${code.pickTuneLevel || 0}/10`
           };
+      const supportMeta = [];
+      if ((code.romLevel || 0) > 0) supportMeta.push(labels.rom);
+      if ((code.protectionCharges || 0) > 0) supportMeta.push(labels.protect);
+      if (isSeasonPickCode(code) || (code.pickTuneLevel || 0) > 0) supportMeta.push(labels.pickTune);
       return `
         <div class="code-modal-identity">
           <strong class="${rarityClass}">${code.name}</strong>
@@ -5806,6 +5858,7 @@ function applyLanguageToUI(){
           <div class="small">${labels.shards}</div>
           <div class="small">${labels.sync}</div>
           ${seasonMeta ? `<div class="small">${seasonMeta}</div>` : ''}
+          ${supportMeta.map(line => `<div class="small">${line}</div>`).join('')}
         </div>
         <div class="code-modal-cost-grid">
           <div class="small code-next-meta">${labels.upgrade}</div>
@@ -5887,6 +5940,278 @@ function applyLanguageToUI(){
       if (!codeOrDef) return {};
       const def = codeOrDef.effect ? codeOrDef : codeDefs[codeOrDef.id];
       return (def && def.effect) ? def.effect : {};
+    }
+
+    function ensureCodeSupportState(code) {
+      if (!code) return null;
+      code.romLevel = Math.max(0, Math.round(Number(code.romLevel || 0)));
+      code.protectionCharges = Math.max(0, Math.round(Number(code.protectionCharges || 0)));
+      code.pickTuneLevel = Math.max(0, Math.round(Number(code.pickTuneLevel || 0)));
+      return code;
+    }
+
+    function isSeasonPickCode(code) {
+      if (!code) return false;
+      const def = codeDefs[code.id];
+      return !!(def && (def.codeClass === 'PICK' || def.seasonId));
+    }
+
+    function grantInventoryRewards(reward = {}) {
+      state.items = state.items || {};
+      state.stats = state.stats || {};
+      const lang = getLang();
+      const parts = [];
+      const pushPart = (ko, en, ja) => parts.push(lang === 'en' ? en : lang === 'ja' ? ja : ko);
+      if (reward.credits) {
+        const amount = Math.max(0, Math.round(Number(reward.credits || 0)));
+        if (amount > 0) {
+          state.credits += amount;
+          state.stats.creditsEarnedTotal = (state.stats.creditsEarnedTotal || 0) + amount;
+          pushPart(`크레딧 +${amount}`, `Credits +${amount}`, `クレジット +${amount}`);
+        }
+      }
+      if (reward.energyPack) {
+        const amount = Math.max(0, Math.round(Number(reward.energyPack || 0)));
+        if (amount > 0) {
+          state.items.energyPack = (state.items.energyPack || 0) + amount;
+          pushPart(`에너지 팩 +${amount}`, `Energy Pack +${amount}`, `エネルギーパック +${amount}`);
+        }
+      }
+      if (reward.weeklyToken) {
+        const amount = Math.max(0, Math.round(Number(reward.weeklyToken || 0)));
+        if (amount > 0) {
+          state.items.weeklyToken = (state.items.weeklyToken || 0) + amount;
+          pushPart(`TOKEN +${amount}`, `TOKEN +${amount}`, `TOKEN +${amount}`);
+        }
+      }
+      if (reward.oneDay) {
+        const amount = Math.max(0, Math.round(Number(reward.oneDay || 0)));
+        if (amount > 0) {
+          state.items.oneDay = (state.items.oneDay || 0) + amount;
+          state.stats.zeroDayOneDayEarnedTotal = (state.stats.zeroDayOneDayEarnedTotal || 0) + amount;
+          pushPart(`OneDay +${amount}`, `OneDay +${amount}`, `OneDay +${amount}`);
+        }
+      }
+      if (reward.coin) {
+        const amount = Math.max(0, Math.round(Number(reward.coin || 0)));
+        if (amount > 0) {
+          state.items.coin = (state.items.coin || 0) + amount;
+          state.stats.coinEarnedTotal = (state.stats.coinEarnedTotal || 0) + amount;
+          pushPart(`COIN +${amount}`, `COIN +${amount}`, `COIN +${amount}`);
+        }
+      }
+      if (reward.zeroDayVulnerabilityShard) {
+        const amount = Math.max(0, Math.round(Number(reward.zeroDayVulnerabilityShard || 0)));
+        if (amount > 0) {
+          state.items.zeroDayVulnerabilityShard = (state.items.zeroDayVulnerabilityShard || 0) + amount;
+          pushPart(`취약점 조각 +${amount}`, `Vulnerability Shards +${amount}`, `脆弱性シャード +${amount}`);
+        }
+      }
+      if (reward.traceAmple) {
+        const amount = Math.max(0, Math.round(Number(reward.traceAmple || 0)));
+        if (amount > 0) {
+          state.items.traceAmple = (state.items.traceAmple || 0) + amount;
+          pushPart(`TRACE 앰플 +${amount}`, `TRACE Ample +${amount}`, `TRACEアンプル +${amount}`);
+        }
+      }
+      if (reward.nullSeed) {
+        const amount = Math.max(0, Math.round(Number(reward.nullSeed || 0)));
+        if (amount > 0) {
+          state.items.nullSeed = (state.items.nullSeed || 0) + amount;
+          pushPart(`NULL 시드 +${amount}`, `NULL Seed +${amount}`, `NULL Seed +${amount}`);
+        }
+      }
+      if (reward.rom) {
+        const amount = Math.max(0, Math.round(Number(reward.rom || 0)));
+        if (amount > 0) {
+          state.items.rom = (state.items.rom || 0) + amount;
+          pushPart(`ROM +${amount}`, `ROM +${amount}`, `ROM +${amount}`);
+        }
+      }
+      if (reward.codeProtection) {
+        const amount = Math.max(0, Math.round(Number(reward.codeProtection || 0)));
+        if (amount > 0) {
+          state.items.codeProtection = (state.items.codeProtection || 0) + amount;
+          pushPart(`코드 보호권 +${amount}`, `Code Protection +${amount}`, `コード保護券 +${amount}`);
+        }
+      }
+      return parts;
+    }
+
+    function openDailyBonusBox() {
+      ensureReleaseRewardDefaults();
+      if ((state.items.dailyBonusBox || 0) < 1) {
+        showToast(langText('Daily Bonus Box가 없습니다.', 'No Daily Bonus Box available.', 'Daily Bonus Boxがありません。'), 'warn');
+        return;
+      }
+      state.items.dailyBonusBox -= 1;
+      const baseCredits = 180 + Math.floor(Math.random() * 181);
+      const pool = [
+        { weight: 22, reward: { energyPack: 1 } },
+        { weight: 16, reward: { weeklyToken: 5 } },
+        { weight: 16, reward: { oneDay: 40 } },
+        { weight: 14, reward: { zeroDayVulnerabilityShard: 10 } },
+        { weight: 12, reward: { traceAmple: 50 } },
+        { weight: 10, reward: { nullSeed: 15 } },
+        { weight: 5,  reward: { rom: 5 } },
+        { weight: 3,  reward: { codeProtection: 1 } },
+        { weight: 2,  reward: { coin: 2 } }
+      ];
+      const total = pool.reduce((sum, item) => sum + item.weight, 0);
+      let roll = Math.random() * total;
+      let chosen = pool[0];
+      for (const item of pool) {
+        roll -= item.weight;
+        if (roll <= 0) { chosen = item; break; }
+      }
+      const reward = Object.assign({ credits: baseCredits }, chosen.reward || {});
+      const parts = grantInventoryRewards(reward);
+      const msg = parts.join(' / ');
+      log(langText(`[ITEM] Daily Bonus Box 개봉: ${msg}`, `[ITEM] Daily Bonus Box opened: ${msg}`, `[ITEM] Daily Bonus Box開封: ${msg}`), 'shop');
+      showToast(langText('Daily Bonus Box 개봉 완료', 'Daily Bonus Box opened', 'Daily Bonus Boxを開封しました'), 'achievement');
+      updateStatsUI();
+      renderItemsPanel();
+      renderZeroDayPanel();
+      saveGame(true);
+    }
+
+    function useRomOnActiveCode() {
+      ensureReleaseRewardDefaults();
+      const code = ensureCodeSupportState(getActiveCodeInstance());
+      if (!code) {
+        showToast(langText('활성 CODE가 없습니다.', 'No active code selected.', 'アクティブCODEがありません。'), 'warn');
+        return;
+      }
+      const cost = 5;
+      if ((state.items.rom || 0) < cost) {
+        showToast(langText(`ROM이 부족합니다. (필요 ${cost})`, `Need ${cost} ROM.`, `ROMが不足しています。(${cost}必要)`), 'warn');
+        return;
+      }
+      if ((code.romLevel || 0) >= 5) {
+        showToast(langText('이 CODE는 이미 최대 안정화 상태입니다.', 'This code is already fully stabilized.', 'このCODEはすでに最大まで安定化されています。'), 'warn');
+        return;
+      }
+      state.items.rom -= cost;
+      code.romLevel = (code.romLevel || 0) + 1;
+      code.power += 3;
+      log(langText(`[ITEM] ROM 안정화: ${code.name} 안정화 ${code.romLevel}단계 · PWR +3`, `[ITEM] ROM stabilization: ${code.name} Mk.${code.romLevel} · PWR +3`, `[ITEM] ROM安定化: ${code.name} 安定化 ${code.romLevel}段階 · PWR +3`), 'system');
+      showToast(langText(`${code.name} 안정화 +1`, `${code.name} stabilized +1`, `${code.name} 安定化 +1`), 'achievement');
+      renderCodeList();
+      renderCodeDetail();
+      updateStatsUI();
+      renderItemsPanel();
+      saveGame(true);
+    }
+
+    function useCodeProtection() {
+      ensureReleaseRewardDefaults();
+      const code = ensureCodeSupportState(getActiveCodeInstance());
+      if (!code) {
+        showToast(langText('보호할 활성 CODE가 없습니다.', 'No active code to protect.', '保護するアクティブCODEがありません。'), 'warn');
+        return;
+      }
+      if ((state.items.codeProtection || 0) < 1) {
+        showToast(langText('코드 보호권이 없습니다.', 'No Code Protection available.', 'コード保護券がありません。'), 'warn');
+        return;
+      }
+      if ((code.protectionCharges || 0) >= 3) {
+        showToast(langText('이 CODE는 이미 보호 충전이 가득합니다.', 'This code already has maximum protection.', 'このCODEはすでに保護チャージが満タンです。'), 'warn');
+        return;
+      }
+      state.items.codeProtection -= 1;
+      code.protectionCharges = (code.protectionCharges || 0) + 1;
+      log(langText(`[ITEM] 코드 보호 적용: ${code.name} 보호 충전 +1`, `[ITEM] Code protection applied: ${code.name} +1 charge`, `[ITEM] コード保護適用: ${code.name} 保護チャージ +1`), 'system');
+      showToast(langText(`${code.name} 보호 충전 +1`, `${code.name} protection +1`, `${code.name} 保護チャージ +1`), 'achievement');
+      renderCodeDetail();
+      renderItemsPanel();
+      saveGame(true);
+    }
+
+    function usePickResidualData() {
+      ensureReleaseRewardDefaults();
+      const code = ensureCodeSupportState(getActiveCodeInstance());
+      if (!code || !isSeasonPickCode(code)) {
+        showToast(langText('시즌 PICK CODE를 활성화해야 합니다.', 'Activate a season PICK code first.', 'シーズンPICK CODEを先に有効化してください。'), 'warn');
+        return;
+      }
+      if ((state.items.pickResidualData || 0) < 1) {
+        showToast(langText('PICK 잔류 데이터가 없습니다.', 'No PICK Residual Data available.', 'PICK残留データがありません。'), 'warn');
+        return;
+      }
+      if ((code.pickTuneLevel || 0) >= 10) {
+        showToast(langText('이 PICK은 이미 충분히 조율되었습니다.', 'This PICK is already fully tuned.', 'このPICKはすでに十分に調律されています。'), 'warn');
+        return;
+      }
+      state.items.pickResidualData -= 1;
+      code.pickTuneLevel = (code.pickTuneLevel || 0) + 1;
+      code.power += 4;
+      code.shards = (code.shards || 0) + 1;
+      state.stats.codeShardsTotal = (state.stats.codeShardsTotal || 0) + 1;
+      log(langText(`[ITEM] PICK 잔류 데이터 주입: ${code.name} 조율 ${code.pickTuneLevel}단계 · PWR +4 · 조각 +1`, `[ITEM] PICK residual infusion: ${code.name} tune ${code.pickTuneLevel} · PWR +4 · shards +1`, `[ITEM] PICK残留データ注入: ${code.name} 調律 ${code.pickTuneLevel}段階 · PWR +4 · シャード +1`), 'system');
+      showToast(langText(`${code.name} 조율 +1`, `${code.name} tuned +1`, `${code.name} 調律 +1`), 'achievement');
+      renderCodeList();
+      renderCodeDetail();
+      renderItemsPanel();
+      saveGame(true);
+    }
+
+    function useTraceAmple() {
+      ensureZeroDayDefaults();
+      const run = state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active;
+      if (!run) {
+        showToast(langText('TRACE 앰플은 ZERO-DAY 런 중에만 사용할 수 있습니다.', 'TRACE Ample can only be used during a ZERO-DAY run.', 'TRACEアンプルはZERO-DAYラン中にのみ使用できます。'), 'warn');
+        return;
+      }
+      const cost = 25;
+      if ((state.items.traceAmple || 0) < cost) {
+        showToast(langText(`TRACE 앰플이 부족합니다. (필요 ${cost})`, `Need ${cost} TRACE Ample.`, `TRACEアンプルが不足しています。(${cost}必要)`), 'warn');
+        return;
+      }
+      const before = Number(run.trace || 0);
+      if (before <= 0.01) {
+        showToast(langText('현재 TRACE가 안정적입니다.', 'TRACE is already stable.', '現在TRACEは安定しています。'), 'warn');
+        return;
+      }
+      state.items.traceAmple -= cost;
+      run.trace = Math.max(0, before - 0.18);
+      run.log = run.log || [];
+      run.log.push(`AID TRACE -${Math.round((before - run.trace) * 100)}%`);
+      if (run.log.length > 12) run.log.shift();
+      showToast(langText('TRACE 완화 적용', 'TRACE dampening applied', 'TRACE緩和を適用しました'), 'achievement');
+      renderItemsPanel();
+      updateZdDiscLive();
+      saveGame(true);
+    }
+
+    function useNullSeed() {
+      ensureZeroDayDefaults();
+      const run = state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active;
+      if (!run) {
+        showToast(langText('NULL 시드는 ZERO-DAY 런 중에만 사용할 수 있습니다.', 'NULL Seed can only be used during a ZERO-DAY run.', 'NULL SeedはZERO-DAYラン中にのみ使用できます。'), 'warn');
+        return;
+      }
+      const cost = 10;
+      if ((state.items.nullSeed || 0) < cost) {
+        showToast(langText(`NULL 시드가 부족합니다. (필요 ${cost})`, `Need ${cost} NULL Seed.`, `NULL Seedが不足しています。(${cost}必要)`), 'warn');
+        return;
+      }
+      const def = ZD_DISC_DIFFICULTIES[run.diff] || ZD_DISC_DIFFICULTIES.easy;
+      const patch = getZdPatch(run, def);
+      const patchReduction = Math.min(0.12, Math.max(0, patch - 0.02));
+      if (patchReduction <= 0.005) {
+        showToast(langText('지금은 패치 지연 효과가 거의 없습니다.', 'Patch delay would have almost no effect right now.', '今はパッチ遅延の効果がほとんどありません。'), 'warn');
+        return;
+      }
+      state.items.nullSeed -= cost;
+      run.startedAt = Math.min(Date.now() - 400, run.startedAt + Math.round(def.durationMs * patchReduction));
+      run.trace = Math.max(0, (run.trace || 0) - 0.04);
+      run.log = run.log || [];
+      run.log.push(`AID PATCH -${Math.round(patchReduction * 100)}% · TRACE -4%`);
+      if (run.log.length > 12) run.log.shift();
+      showToast(langText('패치 지연 적용', 'Patch delay applied', 'パッチ遅延を適用しました'), 'achievement');
+      renderItemsPanel();
+      updateZdDiscLive();
+      saveGame(true);
     }
 
     function getGpuCreditMultiplier() {
@@ -8850,6 +9175,7 @@ function applyLanguageToUI(){
       successChance += successChanceBonus;
       successChance = Math.max(0.05, Math.min(0.95, successChance));
 
+      ensureCodeSupportState(code);
       const success = Math.random() < successChance;
       code.usage = (code.usage || 0) + 1;
 
@@ -8935,6 +9261,14 @@ function applyLanguageToUI(){
           t('hackFailLog', { server: localizeServerName(server), chance: Math.round(successChance * 100) }),
           'hack'
         );
+        let protectionConsumed = false;
+        if ((code.protectionCharges || 0) > 0) {
+          code.protectionCharges -= 1;
+          protectionConsumed = true;
+          state.energy = Math.min(state.energyMax, state.energy + 1);
+          if (state.energy >= state.energyMax) state.energyTimerMs = 0;
+          log(langText(`[ITEM] 코드 보호 발동: ${code.name} · 에너지 1 회복`, `[ITEM] Code protection triggered: ${code.name} · Energy +1`, `[ITEM] コード保護発動: ${code.name} · エネルギー +1`), 'hack');
+        }
 
         if (def && def.id === 'overflow_inject') {
           state.energy = Math.max(0, state.energy - 1);
@@ -8950,6 +9284,8 @@ function applyLanguageToUI(){
           if (modifiers.failureBufferCharges > 0) {
             modifiers.failureBufferCharges -= 1;
             log(getLang() === 'en' ? 'Failure Buffer Module prevented the extra energy penalty.' : '실패 완충 모듈이 추가 에너지 페널티를 방지했습니다.', 'hack');
+          } else if (protectionConsumed) {
+            log(langText('코드 보호권이 추가 에너지 페널티를 막아냈습니다.', 'Code Protection blocked the extra energy penalty.', 'コード保護券が追加エネルギーペナルティを防ぎました。'), 'hack');
           } else {
             state.energy = Math.max(0, state.energy - modeInfo.failEnergyPenalty);
             state.stats.energySpentTotal += modeInfo.failEnergyPenalty;
