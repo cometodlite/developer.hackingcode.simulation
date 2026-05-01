@@ -213,6 +213,16 @@
   const SEASON_1_END_TS = new Date('2026-05-31T23:59:59+09:00').getTime();
   const PINNED_ANNOUNCEMENTS = [
     {
+      id: 'pwr-recalibration-300',
+      title: text('3.0.0 PWR 재조정 안내', '3.0.0 PWR recalibration'),
+      body: text(
+        '3.0.0부터 CODE PWR 표기 기준이 새 보안 체계에 맞게 재조정됩니다. 기존 OPERATION급 CODE의 PWR이 낮아져 보일 수 있으나, 서버 보안값도 함께 재산정되므로 실제 체감 성능은 유지됩니다. 예: 기존 PWR 1000 → 신규 320 / 서버 보안 800~1200 → 250~380.',
+        'Starting in 3.0.0, CODE PWR values are recalibrated for the new security scale. OPERATION-grade CODEs may display lower numbers, but server security values are recalculated as well, so practical performance should remain similar. Example: previous PWR 1000 → new 320 / server security 800–1200 → 250–380.'
+      ),
+      createdAt: 1745967600000, // 2026-04-30
+      level: 'NOTICE'
+    },
+    {
       id: 'support-desk-302',
       title: text('🎁 SUPPORT DESK 오픈', '🎁 SUPPORT DESK Open'),
       body: text(
@@ -251,8 +261,8 @@
         id: 'season-1-staging',
         title: text('Season 1 staging', 'Season 1 staging'),
         body: text(
-          '시즌 1은 Foundation Season입니다. 시즌 PICKS와 기본 보상이 먼저 열리고, 나머지 시스템은 순차적으로 가동됩니다.',
-          'Season 1 is Foundation Season. Season PICKS and base rewards open first, with more systems staged in gradually.'
+          '내일 자정, 시즌 1이 시작됩니다. Foundation Season은 한 달에 걸쳐 새로운 시스템이 단계적으로 가동됩니다. 첫날에는 시즌 PICKS와 기본 보상이 먼저 열립니다.',
+          'Season 1 begins at midnight. Foundation Season unfolds over the month, with new systems activated in stages. On day one, Season PICKS and base rewards open first.'
         ),
         createdAt: SEASON_1_START_TS,
         level: 'SEASON'
@@ -263,8 +273,8 @@
         id: 'season-1-live',
         title: text('Season 1 active', 'Season 1 active'),
         body: text(
-          'Foundation Season 진행 중입니다. ZERO_TRACE PICK과 기본 시즌 보상을 확인하고, WEEKLY OPS로 패스 포인트를 쌓아보세요.',
-          'Foundation Season is live. Check ZERO_TRACE PICK and base season rewards, then stack pass points through WEEKLY OPS.'
+          '시즌 1이 시작되었습니다. 이번 시즌은 Foundation Season입니다. 오늘은 시즌 PICKS, 기본 보상, INVENTORY 구조가 먼저 열립니다. TRACE, ROM 복구, CODE 변형, CODEX 색상 수집은 시즌 진행 중 단계적으로 가동됩니다.',
+          'Season 1 has begun. This is Foundation Season. Today opens the season PICKS, base rewards, and the INVENTORY structure first. TRACE, ROM recovery, CODE mutation, and CODEX color collection will unlock in stages during the season.'
         ),
         createdAt: SEASON_1_START_TS,
         level: 'SEASON'

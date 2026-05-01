@@ -125,6 +125,7 @@ const I18N = {
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
 function t(key, vars){ const lang=getLang(); let str=(I18N[lang]&&I18N[lang][key]) || I18N.ko[key] || key; if(vars){ for(const [k,v] of Object.entries(vars)){ str=str.replaceAll('{'+k+'}', String(v)); } } return str; }
+function langText(ko, en, ja = ko){ const lang = getLang(); return lang === 'en' ? en : (lang === 'ja' ? ja : ko); }
 function setText(id, value){ const el=document.getElementById(id); if(el) el.textContent=value; }
 function setHtml(id, value){ const el=document.getElementById(id); if(el) el.innerHTML=value; }
 
@@ -1090,7 +1091,7 @@ function applyLanguageToUI(){
           'HOME 화면에 "오늘 할 일" 요약이 추가되었습니다. 에너지, 일일 미션 진행도, 주간 목표를 한 화면에서 확인할 수 있습니다.',
           'CODES 탭이 INVENTORY로 이름이 바뀌었습니다. 내부에 CODES / ITEMS 두 패널로 분리되었습니다.',
           'ITEMS 패널에 AUTO-RUN 시스템이 추가되었습니다. 자동 스캔(10 COIN, 10초마다, 1시간)과 자동 해킹(15 COIN, 20초마다, 30분)을 각각 일일 3회 사용할 수 있습니다. 에너지 소진 시 에너지 팩을 자동 사용합니다.',
-          'ITEMS 패널에서 에너지 팩, COIN, TOKEN 보유 현황을 확인하고 바로 사용할 수 있습니다. Daily Bonus Box와 ROM은 다음 업데이트에서 추가됩니다.',
+          'ITEMS 패널에서 에너지 팩, COIN, TOKEN, Daily Bonus Box, ROM 보유 현황을 확인할 수 있습니다.',
           'DAILY / WEEKLY 미션 완료 상태가 새로고침 후에도 유지되도록 저장 로직을 강화했습니다.',
           'LIVE NET에 Foundation Prep Update 공지가 추가되었습니다.'
         ]
@@ -1125,7 +1126,7 @@ function applyLanguageToUI(){
       energy: 20,
       energyMax: 20,
       energyTimerMs: 0,
-      items: { energyPack: 0, weeklyToken: 0, coin: 0, zeroDayVulnerability: 0, zeroDayVulnerabilityShard: 0, oneDay: 0, timeSwap2h: 0, timeSwap5h: 0, timeSwap10h: 0, traceAmple: 0, nullSeed: 0, dailyBonusBox: 0 },
+      items: { energyPack: 0, weeklyToken: 0, coin: 0, zeroDayVulnerability: 0, zeroDayVulnerabilityShard: 0, oneDay: 0, timeSwap2h: 0, timeSwap5h: 0, timeSwap10h: 0, traceAmple: 0, nullSeed: 0, dailyBonusBox: 0, rom: 0, codeProtection: 0, pickResidualData: 0 },
       lastSavedAt: null,
       lastSeenAt: null,
       tutorial: { completed: false, step: 0, seen: false, version: TUTORIAL_VERSION },
@@ -1253,7 +1254,8 @@ function applyLanguageToUI(){
         firstSeenAt: null,
         claimedDays: []
       },
-      supporterTags: []
+      supporterTags: [],
+      claimFlags: { firstLogin_3_0_0: false, pre3ScaleCompensation: false, pre3ScaleEligible: false }
     };
 
     const codeDefs = {
@@ -3951,9 +3953,19 @@ function applyLanguageToUI(){
       const el = document.getElementById('itemsContent');
       if (!el) return;
       try {
+        ensureReleaseRewardDefaults();
         const energyPack = (state.items && state.items.energyPack) || 0;
         const coin = (state.items && state.items.coin) || 0;
         const weeklyToken = (state.items && state.items.weeklyToken) || 0;
+        const dailyBonusBox = (state.items && state.items.dailyBonusBox) || 0;
+        const rom = (state.items && state.items.rom) || 0;
+        const codeProtection = (state.items && state.items.codeProtection) || 0;
+        const pickResidualData = (state.items && state.items.pickResidualData) || 0;
+        const oneDay = (state.items && state.items.oneDay) || 0;
+        const vuln = (state.items && state.items.zeroDayVulnerability) || 0;
+        const vulnShard = (state.items && state.items.zeroDayVulnerabilityShard) || 0;
+        const traceAmple = (state.items && state.items.traceAmple) || 0;
+        const nullSeed = (state.items && state.items.nullSeed) || 0;
         const canUsePack = energyPack > 0 && state.energy < state.energyMax;
         const useLabel = getLang() === 'en' ? 'Use' : (getLang() === 'ja' ? '使用' : '사용');
 
@@ -4016,6 +4028,14 @@ function applyLanguageToUI(){
               <div class="item-card-count">×${energyPack}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseEnergyPack" ${canUsePack ? '' : 'disabled'}>${useLabel}</button>
             </div>
+            <div class="item-card">
+              <div class="item-card-name">Daily Bonus Box</div>
+              <div class="item-card-count">×${dailyBonusBox}</div>
+            </div>
+            <div class="item-card">
+              <div class="item-card-name">${langText('코드 보호권', 'Code Protection', 'コード保護券')}</div>
+              <div class="item-card-count">×${codeProtection}</div>
+            </div>
           </div>
           <div class="items-section-title">${t('itemsCurrency')}</div>
           <div class="items-grid">
@@ -4026,6 +4046,22 @@ function applyLanguageToUI(){
             <div class="item-card">
               <div class="item-card-name">TOKEN</div>
               <div class="item-card-count">×${weeklyToken}</div>
+            </div>
+            <div class="item-card">
+              <div class="item-card-name">OneDay</div>
+              <div class="item-card-count">×${oneDay}</div>
+            </div>
+            <div class="item-card">
+              <div class="item-card-name">ROM</div>
+              <div class="item-card-count">×${rom}</div>
+            </div>
+            <div class="item-card">
+              <div class="item-card-name">${t('vulnerability')}</div>
+              <div class="item-card-count">×${vuln}</div>
+            </div>
+            <div class="item-card">
+              <div class="item-card-name">${t('vulnerabilityShard')}</div>
+              <div class="item-card-count">×${vulnShard}</div>
             </div>
           </div>
           <div class="items-section-title">${t('timeSwapLabel')}</div>
@@ -4045,11 +4081,15 @@ function applyLanguageToUI(){
           <div class="items-grid">
             <div class="item-card">
               <div class="item-card-name">${t('traceAmpleLabel')}</div>
-              <div class="item-card-count">×${(state.items && state.items.traceAmple) || 0}</div>
+              <div class="item-card-count">×${traceAmple}</div>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('nullSeedLabel')}</div>
-              <div class="item-card-count">×${(state.items && state.items.nullSeed) || 0}</div>
+              <div class="item-card-count">×${nullSeed}</div>
+            </div>
+            <div class="item-card">
+              <div class="item-card-name">${langText('PICK 잔류 데이터', 'PICK Residual Data', 'PICK残留データ')}</div>
+              <div class="item-card-count">×${pickResidualData}</div>
             </div>
           </div>
           <div class="items-section-title">${t('autoRunLabel')}</div>
@@ -4067,7 +4107,11 @@ function applyLanguageToUI(){
               ${hackInner}
             </div>
           </div>
-          <div class="items-coming-note small">${t('itemsComingSoon')}</div>
+          <div class="items-coming-note small">${langText(
+            '· Daily Bonus Box, ROM, 코드 보호권, PICK 잔류 데이터는 시즌 보상과 보상함에서 획득합니다.<br/>· ROM은 시즌 진행 중 열리는 CODE 안정화·복구 시스템에 사용됩니다.',
+            '· Daily Bonus Box, ROM, Code Protection, and PICK Residual Data come from season rewards and reward boxes.<br/>· ROM will be used by the CODE stabilization and recovery systems that unlock during the season.',
+            '· Daily Bonus Box、ROM、コード保護券、PICK残留データはシーズン報酬と報酬箱から獲得します。<br/>· ROMはシーズン中に開放されるCODE安定化・復旧システムで使用されます。'
+          )}</div>
         `;
 
         const useBtn = el.querySelector('#itemsBtnUseEnergyPack');
@@ -4653,6 +4697,10 @@ function applyLanguageToUI(){
 
     // ── SUPPORT DESK 패널 렌더 ────────────────────────────────────────────────
 
+    function tagClassName(tag) {
+      return String(tag || 'tag').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'tag';
+    }
+
     function renderSupportPanel(initialSubTab) {
       const el = document.getElementById('supportPanelMount');
       if (!el) return;
@@ -4672,7 +4720,7 @@ function applyLanguageToUI(){
               <span class="sd-account-value" id="sdAccountValue">${isLoggedIn ? (cu.email || cu.uid) : (lang === 'en' ? '(not logged in)' : '(로그인 전)')}</span>
               ${isLoggedIn ? `<button class="sd-copy-btn" id="btnSdCopyId" title="${lang === 'en' ? 'Copy' : '복사'}">⎘</button>` : ''}
             </div>
-            ${myTags.length > 0 ? `<div class="sd-tags-row">${myTags.map(tag => `<span class="sd-tag sd-tag-${tag.toLowerCase()}">${tag}</span>`).join('')}</div>` : ''}
+            ${myTags.length > 0 ? `<div class="sd-tags-row">${myTags.map(tag => `<span class="sd-tag sd-tag-${tagClassName(tag)}">${tag}</span>`).join('')}</div>` : ''}
           </div>
 
           <div class="sd-subtab-bar">
@@ -5870,6 +5918,7 @@ function applyLanguageToUI(){
     };
     const SEASON_START_DATE = SEASON_1.startsAt;
     const SEASON_END_DATE = SEASON_1.endsAt;
+    const RELEASE_300_TS = SEASON_1.startsAt.getTime();
 
     function formatCountdownShort(msLeft, lang = getLang()) {
       if (msLeft <= 0) return lang === 'en' ? 'now' : lang === 'ja' ? 'まもなく' : '곧 시작';
@@ -5996,6 +6045,140 @@ function applyLanguageToUI(){
         log(`[SEASON] ${msg}`, 'system');
         try { showToast(msg, 'achievement'); } catch(e) {}
       }
+    }
+
+    function ensureReleaseRewardDefaults(meta = {}) {
+      ensureSupportDefaults();
+      state.items = state.items || {};
+      state.items.dailyBonusBox = Number(state.items.dailyBonusBox || 0) || 0;
+      state.items.rom = Number(state.items.rom || 0) || 0;
+      state.items.codeProtection = Number(state.items.codeProtection || 0) || 0;
+      state.items.pickResidualData = Number(state.items.pickResidualData || 0) || 0;
+      state.claimFlags = (state.claimFlags && typeof state.claimFlags === 'object') ? state.claimFlags : {};
+      if (typeof state.claimFlags.firstLogin_3_0_0 !== 'boolean') state.claimFlags.firstLogin_3_0_0 = false;
+      if (typeof state.claimFlags.pre3ScaleCompensation !== 'boolean') state.claimFlags.pre3ScaleCompensation = false;
+
+      const shouldDetectLegacy = meta.forceDetectLegacy || meta.hasRawClaimFlags === false || typeof state.claimFlags.pre3ScaleEligible !== 'boolean';
+      if (shouldDetectLegacy) {
+        const savedAt = Number(meta.savedAt || state.lastSavedAt || state.lastSeenAt || 0) || 0;
+        const version = String(meta.version || '');
+        const major = Number.parseInt(version.split('.')[0], 10);
+        const eligibleByVersion = Number.isFinite(major) && major > 0 && major < 3;
+        const eligibleByDate = savedAt > 0 && savedAt < RELEASE_300_TS;
+        const eligibleBySource = meta.source === 'old-key' || meta.source === 'backup-prev';
+        state.claimFlags.pre3ScaleEligible = !!(eligibleByVersion || eligibleByDate || eligibleBySource);
+      }
+    }
+
+    function getHighestOwnedRarity() {
+      let best = 'COMMON';
+      let bestIdx = rarityOrder.indexOf(best);
+      ownedCodes.forEach(code => {
+        const idx = rarityOrder.indexOf(code && code.rarity);
+        if (idx > bestIdx) {
+          best = code.rarity;
+          bestIdx = idx;
+        }
+      });
+      return best;
+    }
+
+    function applyReleaseRewardBundle(bundle) {
+      if (!bundle) return;
+      state.items.dailyBonusBox = (state.items.dailyBonusBox || 0) + (bundle.dailyBonusBox || 0);
+      state.items.rom = (state.items.rom || 0) + (bundle.rom || 0);
+      state.items.codeProtection = (state.items.codeProtection || 0) + (bundle.codeProtection || 0);
+      state.items.pickResidualData = (state.items.pickResidualData || 0) + (bundle.pickResidualData || 0);
+      if (bundle.coin) {
+        state.items.coin = (state.items.coin || 0) + bundle.coin;
+        state.stats.coinEarnedTotal = (state.stats.coinEarnedTotal || 0) + bundle.coin;
+      }
+      if (bundle.oneDay) {
+        state.items.oneDay = (state.items.oneDay || 0) + bundle.oneDay;
+        state.stats.zeroDayOneDayEarnedTotal = (state.stats.zeroDayOneDayEarnedTotal || 0) + bundle.oneDay;
+      }
+      if (bundle.tag) {
+        state.supporterTags = state.supporterTags || [];
+        if (!state.supporterTags.includes(bundle.tag)) state.supporterTags.push(bundle.tag);
+      }
+    }
+
+    function maybeApplyReleaseBundles(meta = {}) {
+      ensureReleaseRewardDefaults(meta);
+      const notices = [];
+      let changed = false;
+      if (Date.now() < RELEASE_300_TS) return { changed, notices };
+
+      if (!state.claimFlags.firstLogin_3_0_0) {
+        applyReleaseRewardBundle({ rom: 20, codeProtection: 1, dailyBonusBox: 2 });
+        state.claimFlags.firstLogin_3_0_0 = true;
+        changed = true;
+        notices.push({
+          toast: langText('3.0.0 첫 접속 보상 지급', '3.0.0 first-login rewards granted', '3.0.0 初回ログイン報酬 지급'),
+          log: langText(
+            '[시즌] 3.0.0 첫 접속 보상 지급: ROM +20 · 코드 보호권 +1 · Daily Bonus Box +2',
+            '[Season] 3.0.0 first-login grant: ROM +20 · Code Protection +1 · Daily Bonus Box +2',
+            '[シーズン] 3.0.0 初回ログイン配布: ROM +20 · コード保護券 +1 · Daily Bonus Box +2'
+          ),
+          extraLog: langText(
+            '[시즌] ROM은 시즌 진행 중 열리는 CODE 안정화·복구 시스템에 사용됩니다.',
+            '[Season] ROM will be used by the CODE stabilization and recovery systems that unlock during the season.',
+            '[シーズン] ROMはシーズン中に開放されるCODE安定化・復旧システムで使用されます。'
+          )
+        });
+      }
+
+      if (!state.claimFlags.pre3ScaleCompensation) {
+        let bundle = null;
+        if (state.claimFlags.pre3ScaleEligible) {
+          const highest = getHighestOwnedRarity();
+          if (highest === 'OPERATION') {
+            bundle = {
+              rom: 50,
+              codeProtection: 1,
+              pickResidualData: 3,
+              tag: 'Pre-3.0 OPERATION Holder'
+            };
+          } else if (highest === 'LEGENDARY') {
+            bundle = {
+              rom: 30,
+              codeProtection: 1,
+              tag: 'Pre-3.0 Veteran'
+            };
+          } else if (['EPIC'].includes(highest)) {
+            bundle = {
+              rom: 15,
+              dailyBonusBox: 2
+            };
+          }
+        }
+        if (bundle) {
+          applyReleaseRewardBundle(bundle);
+          changed = true;
+          notices.push({
+            toast: langText('기존 유저 보상 지급', 'Legacy player grant delivered', '既存プレイヤー補償 지급'),
+            log: langText(
+              `[시즌] 기존 유저 보상 지급: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · 코드 보호권 +1' : ''}${bundle.pickResidualData ? ` · PICK 잔류 데이터 +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`,
+              `[Season] Legacy compensation granted: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · Code Protection +1' : ''}${bundle.pickResidualData ? ` · PICK Residual Data +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`,
+              `[シーズン] 既存プレイヤー補償 지급: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · コード保護券 +1' : ''}${bundle.pickResidualData ? ` · PICK残留データ +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`
+            )
+          });
+        }
+        state.claimFlags.pre3ScaleCompensation = true;
+      }
+
+      return { changed, notices };
+    }
+
+    function flushReleaseNotices(notices) {
+      if (!Array.isArray(notices) || !notices.length) return;
+      notices.forEach((entry, index) => {
+        setTimeout(() => {
+          if (entry.log) log(entry.log, 'system');
+          if (entry.extraLog) log(entry.extraLog, 'system');
+          if (entry.toast) showToast(entry.toast, 'achievement');
+        }, 120 + index * 220);
+      });
     }
 
     function addPassPoints(pts) {
@@ -9828,6 +10011,7 @@ function applyLanguageToUI(){
       try {
         // v3.0.0+: 마이그레이션 적용 — 기존 raw도 백업 유지
         const data = migrateSave(raw) || JSON.parse(raw);
+        const rawHasClaimFlags = !!(data.state && data.state.claimFlags);
         if (source !== 'backup') {
           // 정상 로드 — 마지막으로 성공한 raw를 백업
           try { pushSaveBackup(raw); } catch(e) { console.warn('[SaveBackup] pre-load backup failed:', e); }
@@ -9940,6 +10124,11 @@ function applyLanguageToUI(){
         state.items.zeroDayVulnerability = state.items.zeroDayVulnerability || 0;
         state.items.zeroDayVulnerabilityShard = state.items.zeroDayVulnerabilityShard || 0;
         state.items.oneDay = state.items.oneDay || 0;
+        state.items.dailyBonusBox = state.items.dailyBonusBox || 0;
+        state.items.rom = state.items.rom || 0;
+        state.items.codeProtection = state.items.codeProtection || 0;
+        state.items.pickResidualData = state.items.pickResidualData || 0;
+        state.claimFlags = (state.claimFlags && typeof state.claimFlags === 'object') ? state.claimFlags : {};
 
         state.season = state.season || {};
         state.season.currentKey = state.season.currentKey || 'preseason';
@@ -10034,7 +10223,16 @@ function applyLanguageToUI(){
         state.energy = Math.min(state.energy, state.energyMax);
         applyOfflineEnergyRecovery();
         ensureMissionResets();
+        const releaseResult = maybeApplyReleaseBundles({
+          savedAt: data.savedAt || state.lastSavedAt || state.lastSeenAt || 0,
+          version: data.version || '',
+          source,
+          hasRawClaimFlags: rawHasClaimFlags,
+          forceDetectLegacy: !rawHasClaimFlags
+        });
+        if (releaseResult.changed) saveGame(true);
         refreshUiAfterStateRestore();
+        flushReleaseNotices(releaseResult.notices);
         log(t('saveLoaded'), 'system');
       } catch (e) {
         console.error(e);
@@ -10847,6 +11045,7 @@ function applyLanguageToUI(){
           const backupRaw = getSaveBackup();
 
           // ④ 로컬 또는 백업 세이브 로드 — default state 자동 저장 절대 금지
+          let releaseResult = { changed: false, notices: [] };
           if (mainRaw || oldRaw) {
             loadGame();
           } else if (backupRaw) {
@@ -10857,10 +11056,19 @@ function applyLanguageToUI(){
             state.lastSeenAt = Date.now();
             // v3.0.0+: 기본 상태는 유지하되 자동 저장 안 함
             // (사용자가 행동/저장할 때까지 localStorage 건드리지 않음)
+            releaseResult = maybeApplyReleaseBundles({
+              savedAt: Date.now(),
+              version: CURRENT_VERSION,
+              source: 'fresh',
+              hasRawClaimFlags: false,
+              forceDetectLegacy: true
+            });
+            if (releaseResult.changed) saveGame(true);
           }
 
           // ⑤ UI 렌더
           refreshUiAfterStateRestore();
+          flushReleaseNotices(releaseResult.notices);
 
           log(t('initLog'), 'system');
           maybeShowUpdateOnStart();
