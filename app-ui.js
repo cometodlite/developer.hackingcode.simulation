@@ -421,12 +421,13 @@
 	        <div>
 	          <div class="section-title">LAB</div>
 	          <h2>LAB</h2>
-	          <p>데이터 타워, ZERO-DAY 침투, 다음 실험을 여기서 관리합니다.</p>
+	          <p>데이터 타워, CAMPAIGN 선형 챌린지, ZERO-DAY 침투를 여기서 관리합니다.</p>
 	        </div>
 	        <div class="lab-mode-chip">LAB ONLINE</div>
 	      </div>
 	      <div class="lab-subtabs" id="labSubtabs">
 	        <button type="button" class="active" data-lab-tab="stage">데이터 타워</button>
+	        <button type="button" data-lab-tab="campaign">CAMPAIGN</button>
 	        <button type="button" data-lab-tab="zero">ZERO-DAY</button>
 	        <button type="button" data-lab-tab="coming">COMING SOON</button>
 	      </div>
@@ -450,6 +451,26 @@
 	        </div>
 		        <div class="stage-chapter-list" id="stageChapterList" aria-label="Data Tower chapters"></div>
 		      </section>
+	      <section class="lab-panel" data-lab-panel="campaign">
+	        <div class="stage-head campaign-head">
+	          <div>
+	            <span class="badge">CAMPAIGN</span>
+	            <h3>Foundation Line</h3>
+	            <p>캠페인은 순서대로 열리는 선형 침투 챌린지입니다. 다음 미클리어 노드만 새로 도전할 수 있습니다.</p>
+	          </div>
+	          <div class="stage-summary campaign-summary" id="campaignSummary">
+	            <div><span>CHAPTER</span><strong>1 / 1</strong></div>
+	            <div><span>CLEARED</span><strong>0 / 5</strong></div>
+	            <div><span>STATUS</span><strong>READY</strong></div>
+	          </div>
+	        </div>
+	        <div class="campaign-map" id="campaignNodeList" aria-label="Campaign chapter nodes"></div>
+	        <div class="stage-detail campaign-detail" id="campaignDetail">
+	          <span class="badge">CAMPAIGN</span>
+	          <h4>노드 선택 대기</h4>
+	          <p>첫 챕터는 선형 챌린지입니다. 가장 앞의 미클리어 노드부터 차례대로 진입할 수 있습니다.</p>
+	        </div>
+	      </section>
 	      <section class="lab-panel" data-lab-panel="zero">
 	        <div id="zeroDayPanel"></div>
 	      </section>
