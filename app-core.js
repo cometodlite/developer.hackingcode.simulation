@@ -9810,7 +9810,7 @@ function applyLanguageToUI(){
     // 저장/불러오기
     const OFFLINE_ENERGY_MAX_MS = 60 * 60 * 1000;
 
-    function persistLastSeenAt(ts = Date.now(), silent = true) {
+    function persistLastSeenAt(ts = Date.now(), silent = true, saveOptions = null) {
       state.lastSeenAt = ts;
       try {
         const raw = localStorage.getItem(SAVE_KEY);
@@ -9824,7 +9824,10 @@ function applyLanguageToUI(){
       } catch (e) {
         console.warn('[OfflineEnergy] persistLastSeenAt failed:', e);
       }
-      if (!silent) saveGame(true);
+      if (!silent) {
+        const nextOptions = Object.assign({ critical: true, reason: 'presence-sync' }, saveOptions || {});
+        saveGame(true, nextOptions);
+      }
     }
 
     function applyOfflineEnergyRecovery() {
@@ -9919,7 +9922,7 @@ function applyLanguageToUI(){
       } catch (e) {}
     }
 
-    function saveGame(silent = false) {
+    function saveGame(silent = false, options = {}) {
       state.lastSavedAt = Date.now();
       state.lastSeenAt = state.lastSavedAt;
       state.hackMode = normalizeHackMode(state.hackMode);
@@ -9939,6 +9942,8 @@ function applyLanguageToUI(){
         window.dispatchEvent(new CustomEvent('hcsig:save', {
           detail: {
             silent,
+            critical: !!(options && options.critical),
+            reason: (options && options.reason) || null,
             saveData: JSON.parse(JSON.stringify(saveData))
           }
         }));
@@ -10256,13 +10261,15 @@ function applyLanguageToUI(){
     bind(btnOpenTutorial, 'click', () => openTutorial(true));
 
     bind(document, 'visibilitychange', () => {
-      if (document.visibilityState === 'hidden') persistLastSeenAt(Date.now());
+      if (document.visibilityState === 'hidden') {
+        persistLastSeenAt(Date.now(), false, { critical: true, reason: 'visibility-hidden' });
+      }
     });
     bind(window, 'pagehide', () => {
-      persistLastSeenAt(Date.now());
+      persistLastSeenAt(Date.now(), false, { critical: true, reason: 'pagehide' });
     });
     bind(window, 'beforeunload', () => {
-      persistLastSeenAt(Date.now());
+      persistLastSeenAt(Date.now(), false, { critical: true, reason: 'beforeunload' });
     });
     bind(document, 'pointerdown', unlockSfx, { passive: true });
     bind(document, 'keydown', unlockSfx);

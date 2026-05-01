@@ -3,6 +3,8 @@
   const USERS_COLLECTION = 'users';
   // v3.0.0: 클라우드 쓰기 throttle (Firebase 비용/할당량 보호)
   const CLOUD_SAVE_THROTTLE_MS = 60000; // 60초 (v3.0.1 Save Foundation)
+  const AUTO_SYNC_TIME_SKEW_MS = 15000;
+  const AUTO_SYNC_SCORE_MARGIN = 5;
   let authUser = null;
   let bridgeReady = false;
   let pendingInitialSync = false;
@@ -203,6 +205,15 @@
     return null;
   }
 
+  function _savedAtOf(saveData) {
+    if (!saveData || typeof saveData !== 'object') return 0;
+    return Number(
+      saveData.savedAt ||
+      (saveData.state && (saveData.state.lastSavedAt || saveData.state.lastSeenAt)) ||
+      0
+    ) || 0;
+  }
+
   window.addEventListener('hcsig:auth-changed', async (event)=>{
     authUser = event.detail && event.detail.user ? event.detail.user : null;
     if (!authUser) return;
@@ -243,8 +254,8 @@
 
       const localScore = _scoreOf(localParsed);
       const cloudScore = _scoreOf(cloud);
-      const localTime  = Number((localParsed && localParsed.savedAt) || 0);
-      const cloudTime  = Number((cloud && cloud.savedAt) || 0);
+      const localTime  = _savedAtOf(localParsed);
+      const cloudTime  = _savedAtOf(cloud);
       const isEn = (bridge().getLanguage && bridge().getLanguage() === 'en');
 
       // 점수·시간 완전히 동일하면 충돌 없음 → 로컬 유지
@@ -252,6 +263,43 @@
         auth().setStatus(isEn
           ? 'Local and cloud saves are in sync.'
           : '로컬과 클라우드 저장본이 동기화되어 있습니다.');
+        if (auth().refreshProfile) await auth().refreshProfile();
+        return;
+      }
+
+      const cloudClearlyNewer =
+        cloudTime > localTime + AUTO_SYNC_TIME_SKEW_MS &&
+        cloudScore >= localScore - AUTO_SYNC_SCORE_MARGIN;
+      const cloudClearlyStronger =
+        cloudScore > localScore + AUTO_SYNC_SCORE_MARGIN &&
+        cloudTime >= localTime - AUTO_SYNC_TIME_SKEW_MS;
+      if (cloudClearlyNewer || cloudClearlyStronger) {
+        bridge().loadFromObject(cloud);
+        auth().setStatus(isEn
+          ? `Cloud save applied automatically (${cloudScore} / ${new Date(cloudTime).toLocaleString()}).`
+          : `클라우드 저장본을 자동 적용했습니다 (${cloudScore}점 / ${new Date(cloudTime).toLocaleString()}).`);
+        if (auth().refreshProfile) await auth().refreshProfile();
+        return;
+      }
+
+      const localClearlyNewer =
+        localTime > cloudTime + AUTO_SYNC_TIME_SKEW_MS &&
+        localScore >= cloudScore - AUTO_SYNC_SCORE_MARGIN;
+      const localClearlyStronger =
+        localScore > cloudScore + AUTO_SYNC_SCORE_MARGIN &&
+        localTime >= cloudTime - AUTO_SYNC_TIME_SKEW_MS;
+      if (localClearlyNewer || localClearlyStronger) {
+        try {
+          await saveCloud('auth-auto-keep-local');
+          lastCloudSaveAt = Date.now();
+          auth().setStatus(isEn
+            ? `Local save kept and uploaded automatically (${localScore} / ${new Date(localTime).toLocaleString()}).`
+            : `로컬 저장본을 유지하고 자동 업로드했습니다 (${localScore}점 / ${new Date(localTime).toLocaleString()}).`);
+        } catch (e) {
+          auth().setStatus(isEn
+            ? 'Local save kept, but automatic cloud upload failed.'
+            : '로컬 저장본은 유지했지만 클라우드 자동 업로드에 실패했습니다.');
+        }
         if (auth().refreshProfile) await auth().refreshProfile();
         return;
       }
