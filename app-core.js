@@ -2866,165 +2866,291 @@ function applyLanguageToUI(){
         return [
           {
             title: 'Welcome',
-            goal: 'First loop: code -> active code -> NORMAL hack',
-            text: 'Your first win is simple. Get one code, activate it, then clear one NORMAL server hack.',
-            checklist: ['Energy is spent on scans and hacks.', 'Codes are your equipment.', 'Credits upgrade your setup.'],
-            hint: 'Tap Next to start the first loop.'
+            goal: 'First route: get one code -> equip it -> clear one NORMAL hack',
+            text: 'HCSiG is about breaking servers, earning credits, and growing your tools. Codes are the hacking tools you equip before scans, hacks, Data Tower, and ZERO-DAY.',
+            checklist: ['Codes are your main tools.', 'Credits pay for upgrades and items.', 'Energy recovers over time: 1 energy every 60 seconds, up to 20.'],
+            hint: 'Tap Next and we will walk through the safest first route.'
           },
           {
             title: '1. Scan a Code',
             goal: 'Get your first code',
             text: 'On HOME, press Scan Code. A scan costs 1 energy and gives a small amount of EXP.',
-            checklist: ['A new code is added to CODES.', 'Duplicate codes become shards.', 'Shards are used later for Sync.'],
+            checklist: ['A new code is stored in INVENTORY > CODES.', 'A duplicate becomes shards instead of a new copy.', 'If energy hits 0, wait 60 seconds for 1 point to recover.'],
             hint: 'The guide moves aside while you act. Press Scan Code now, or tap Next to keep reading.',
             waitAction: 'scan'
           },
           {
             title: '2. Activate a Code',
             goal: 'Choose the code you want to use',
-            text: 'Open CODES and select one owned code. The active code affects hacking and Data Tower attempts.',
-            checklist: ['Higher power helps more.', 'Sync raises success bonus.', 'Evolution raises rarity when the code is ready.'],
+            text: 'Open INVENTORY > CODES and select one owned code. The active code is the code used for hacks and Data Tower attempts.',
+            checklist: ['Higher PWR helps right away.', 'Your active code is your current loadout.', 'You do not need Sync or Evolve yet.'],
             hint: 'The guide will not block the screen. Tap a code card, or press Next to continue.',
             waitAction: 'selectCode'
           },
           {
             title: '3. Hack a Server',
             goal: 'Clear one NORMAL hack',
-            text: 'Return HOME, keep NORMAL selected, choose an available server, then press Server Hack.',
-            checklist: ['NORMAL is the safest starting mode.', 'Success gives credits and EXP.', 'Failure only means you try again after recovering energy.'],
+            text: 'Return HOME, keep NORMAL selected, choose a server you can enter now, then press Server Hack.',
+            checklist: ['NORMAL is the safest starting mode.', 'A server is available when you meet its level requirement.', 'Success gives credits and EXP.'],
             hint: 'Keep NORMAL selected and try Server Hack, or press Next to keep reading.',
             waitAction: 'hack'
           },
           {
-            title: 'Hack Modes',
-            goal: 'Pick the right risk level',
-            text: 'NORMAL is stable. RISK lowers success for bigger credits. EXTREME opens at Lv.5 and rewards stronger runs.',
-            checklist: ['Use NORMAL while learning.', 'Use RISK when your success chance feels safe.', 'Use EXTREME after Lv.5 and better upgrades.'],
-            hint: 'You do not need EXTREME at the beginning.'
+            title: '4. EVENT and Beginner Roulette',
+            goal: 'Check your free daily event rewards',
+            text: 'EVENT is where season progress and weekly goals live. New accounts also get Beginner Roulette: one free claim per day for 10 days.',
+            checklist: ['PASS is your monthly season track.', 'WEEKLY CHALLENGE resets every Monday at 05:00 KST.', 'Beginner Roulette is a free daily reward for your first 10 days.'],
+            hint: 'If you want a quick bonus, open EVENT after your first hack.'
           },
           {
-            title: 'CPU and GPU',
-            goal: 'Understand your two upgrade paths',
-            text: 'CPU is control and stability. GPU is reward output for repeated play and harder clears.',
-            checklist: ['CPU helps success and safer runs.', 'GPU boosts repeat/challenge rewards.', 'Upgrade both over time.'],
-            hint: 'Early on, CPU makes the game feel smoother. GPU shines as you repeat content.'
+            title: '5. Hack Modes',
+            goal: 'Use NORMAL first, then branch out later',
+            text: 'NORMAL is the default mode. RISK trades success rate for more credits, and EXTREME unlocks later when your account is stronger.',
+            checklist: ['Stay on NORMAL while learning.', 'Use RISK only when your success rate feels comfortable.', 'You can ignore EXTREME at the beginning.'],
+            hint: 'Your first goal is one stable NORMAL clear, not a risky run.'
           },
           {
-            title: 'Growing Codes',
-            goal: 'Make one favorite code stronger',
-            text: 'CODES is where you Upgrade, Sync, and Evolve codes. Pick a reliable active code and build around it.',
-            checklist: ['Upgrade uses credits.', 'Sync uses duplicate shards.', 'Evolve requires enough level and raises rarity.'],
-            hint: 'A focused code is usually better than many untouched codes.'
+            title: '6. CPU and GPU',
+            goal: 'Know what each upgrade actually does',
+            text: 'CPU helps your hacks feel steadier. GPU boosts the rewards from repeated or harder content.',
+            checklist: ['CPU improves control and stability.', 'GPU is stronger for reward growth later.', 'Early on, one or two CPU upgrades usually feel best.'],
+            hint: 'If you are unsure what to buy first, CPU is the safer early choice.'
           },
           {
-            title: 'SHOP',
+            title: '7. Growing Codes',
+            goal: 'Strengthen one reliable code first',
+            text: 'When you have spare credits or duplicate shards, go back to INVENTORY > CODES and strengthen one code you trust.',
+            checklist: ['Upgrade spends credits for steady PWR.', 'Sync uses duplicate shards later for extra success support.', 'Evolve is a later milestone, not a first-hour task.'],
+            hint: 'One well-built active code is easier to use than many untouched codes.'
+          },
+          {
+            title: '8. SHOP',
             goal: 'Use the shop when progress slows down',
-            text: 'SHOP sells energy, system, economy, and utility items. Filters keep the long list manageable.',
-            checklist: ['Energy packs keep sessions moving.', 'Permanent items help long-term growth.', 'Check daily limits before spending.'],
-            hint: 'If you are stuck with no energy, come back after recovery or use an energy pack.'
+            text: 'SHOP is your supply station. If energy is low or a run feels stuck, use filters and buy only what solves the current problem.',
+            checklist: ['Energy items keep sessions moving.', 'System and utility items smooth out rough runs.', 'Always check daily limits before spending.'],
+            hint: 'You do not need every item. Buy for the problem in front of you.'
           },
           {
-            title: 'LAB',
-            goal: 'Open longer goals',
-            text: 'LAB contains Data Tower and WEEKLY CHALLENGE. These are your main goals after the first hacks.',
-            checklist: ['Data Tower has 100 stages.', 'Weekly Challenge resets Monday 05:00 KST.', 'Rewards are claimed manually.'],
-            hint: 'Do not rush Data Tower. Upgrade first, then climb.'
+            title: '9. LAB and Data Tower',
+            goal: 'See where the long-term challenge lives',
+            text: 'LAB opens your longer goals. Data Tower is a 100-floor climb that is meant to be cleared over time, not in one sitting.',
+            checklist: ['Data Tower is long-term content.', 'You can come back after upgrading.', 'It is normal to leave LAB for later on day one.'],
+            hint: 'Build up through basic hacks first, then start climbing.'
           },
           {
-            title: 'LIST, More, and Cloud',
+            title: '10. ZERO-DAY DISCOVERY',
+            goal: 'Know what ZERO-DAY is before you tap it',
+            text: 'ZERO-DAY DISCOVERY is a short time-attack mode in LAB. You inject data before the patch bar fills, then recover before the cutoff to keep your rewards.',
+            checklist: ['Short, high-focus runs.', 'Recover before the cutoff to secure rewards.', 'It is fine to ignore ZERO-DAY until basic hacks feel comfortable.'],
+            hint: 'Think of ZERO-DAY as a side mode you unlock into, not your first homework.'
+          },
+          {
+            title: '11. LIST, More, and Cloud',
             goal: 'Know where records and account tools live',
-            text: 'LIST contains missions and achievements. More contains codex, logs, settings, cloud account, and tutorial replay.',
-            checklist: ['Cloud account is the main save path.', 'Logs explain what just happened.', 'Tutorial replay is always in More.'],
-            hint: 'GitHub Pages can reload often, so cloud login is the safest way to keep progress.'
+            text: 'LIST contains missions and achievements. More contains Live Net, settings, cloud account, credits, the manual, and tutorial replay.',
+            checklist: ['Cloud save is the safest way to keep progress across refreshes and devices.', 'Live Net and logs explain what just happened.', 'You can replay this guide anytime from More.'],
+            hint: 'If you plan to keep playing, cloud login is the safest save route.'
           },
           {
-            title: 'Ready',
+            title: '12. Ready',
             goal: 'Recommended first route',
-            text: 'Scan until you own a code, activate it, clear NORMAL hacks, then use credits on code and CPU upgrades.',
-            checklist: ['First: Scan Code.', 'Second: select the code in CODES.', 'Third: hack servers on NORMAL.'],
+            text: 'Scan until you own a code, activate it, clear NORMAL hacks, claim Beginner Roulette when it is available, then spend credits on one code and early CPU upgrades.',
+            checklist: ['First: Scan Code.', 'Second: equip the code in INVENTORY > CODES.', 'Third: clear NORMAL hacks and keep momentum.'],
             hint: 'Tap Start. You are ready.'
+          }
+        ];
+      }
+      if (getLang() === 'ja') {
+        return [
+          {
+            title: 'ようこそ',
+            goal: '最初の流れ: コード確保 → 装備 → NORMALハック',
+            text: 'HCSiGではサーバーを突破してクレジットを稼ぎ、装備を育てていきます。コードはスキャン、ハック、データタワー、ZERO-DAYで使うハッキング用の装備です。',
+            checklist: ['コードはあなたの主力装備です。', 'クレジットで成長や補給を進めます。', 'エネルギーは60秒ごとに1回復し、最大20まで溜まります。'],
+            hint: '次へ進むと、最初の安全な進行ルートを案内します。'
+          },
+          {
+            title: '1. コードスキャン',
+            goal: '最初のコードを確保しましょう',
+            text: 'HOMEでコードスキャンを押してください。スキャンはエネルギーを1消費し、少量のEXPを獲得します。',
+            checklist: ['新しいコードは INVENTORY > CODES に保存されます。', '重複コードは新規ではなくシャードになります。', 'エネルギーが0なら60秒待つと1回復します。'],
+            hint: 'ガイドは下に退きます。今すぐコードスキャンを押すか、そのまま次へ進んでも大丈夫です。',
+            waitAction: 'scan'
+          },
+          {
+            title: '2. 使用コードを選ぶ',
+            goal: '使うコードを1つ装備しましょう',
+            text: 'INVENTORY > CODES を開いて、所持コードを1つ選択してください。アクティブコードがハックとデータタワーに使われます。',
+            checklist: ['PWRが高いほどすぐに役立ちます。', '現在のアクティブコードがあなたの装備です。', '今は同期や進化を気にしなくて大丈夫です。'],
+            hint: '画面は塞がれません。コードカードを押すか、次へ進んでください。',
+            waitAction: 'selectCode'
+          },
+          {
+            title: '3. サーバーハック',
+            goal: 'NORMALで1回成功してみましょう',
+            text: 'HOMEに戻り、NORMALを維持したまま、今入れるサーバーを選んでサーバーハックを押してください。',
+            checklist: ['NORMALは最初に最も安定しています。', '必要レベルを満たすサーバーなら今すぐ挑戦できます。', '成功するとクレジットとEXPを獲得します。'],
+            hint: 'まずはNORMALで1回成功すれば十分です。',
+            waitAction: 'hack'
+          },
+          {
+            title: '4. EVENTと初心者ルーレット',
+            goal: '毎日の無料報酬を確認しましょう',
+            text: 'EVENTではシーズン進行と週間目標を管理します。新規アカウントには、10日間毎日1回受け取れる初心者ルーレットもあります。',
+            checklist: ['PASSは月間シーズン進行です。', 'WEEKLY CHALLENGEは毎週月曜05:00 KSTに更新されます。', '初心者ルーレットは最初の10日間の無料報酬です。'],
+            hint: '最初のハックが終わったら、EVENTも一度見てみましょう。'
+          },
+          {
+            title: '5. ハックモード',
+            goal: '最初はNORMALで十分です',
+            text: 'NORMALが基本モードです。RISKは成功率を下げて報酬を上げ、EXTREMEは後半向けの高難度モードです。',
+            checklist: ['慣れるまではNORMALを使いましょう。', '成功率に余裕が出たらRISKへ。', '最初はEXTREMEを無視して大丈夫です。'],
+            hint: '最初の目標は、危険な挑戦ではなく安定した1勝です。'
+          },
+          {
+            title: '6. CPUとGPU',
+            goal: '役割をはっきり分けて覚えましょう',
+            text: 'CPUはハックを安定させ、GPUは周回や高難度での報酬効率を伸ばします。',
+            checklist: ['CPUは安定感を上げます。', 'GPUは後半の報酬効率で強くなります。', '序盤はCPU強化のほうが体感しやすいです。'],
+            hint: 'どちらを上げるか迷ったら、最初はCPUが無難です。'
+          },
+          {
+            title: '7. コード成長',
+            goal: 'まずは1つの主力コードを育てましょう',
+            text: 'クレジットや重複シャードが溜まったら、INVENTORY > CODES に戻って主力コードを育ててください。',
+            checklist: ['強化はクレジットでPWRを安定して伸ばします。', '同期は後から重複シャードで補助性能を上げます。', '進化は後半の目標で、最初から急ぐ必要はありません。'],
+            hint: '浅く広くより、1枚をしっかり育てるほうが序盤は楽です。'
+          },
+          {
+            title: '8. SHOP',
+            goal: '詰まった時だけ必要な補給をしましょう',
+            text: 'SHOPは補給所です。エネルギー不足や進行停滞を感じた時に、今必要なものだけ買えば十分です。',
+            checklist: ['エネルギー系はテンポ維持に便利です。', 'システム/ユーティリティ系は周回を楽にします。', 'デイリー制限を確認して使いましょう。'],
+            hint: '全部を買う必要はありません。今の問題を解決する物だけで十分です。'
+          },
+          {
+            title: '9. LABとデータタワー',
+            goal: '長期目標の場所を知っておきましょう',
+            text: 'LABでは長期コンテンツに触れます。データタワーは100階構成で、1日で終わらせる前提ではありません。',
+            checklist: ['データタワーは長期挑戦です。', '強化してから戻ってきても大丈夫です。', '初日に無理して進めなくて構いません。'],
+            hint: 'まずは基本ハックで育ってから登り始めましょう。'
+          },
+          {
+            title: '10. ZERO-DAY DISCOVERY',
+            goal: '押す前にどんなモードかだけ知っておきましょう',
+            text: 'ZERO-DAY DISCOVERY は LAB の短時間タイムアタックです。パッチバーが埋まる前にデータを注入し、回収して報酬を持ち帰ります。',
+            checklist: ['短時間で集中するサイドモードです。', '締め切り前に回収すると報酬を確保できます。', '基本ハックに慣れるまでは後回しでも大丈夫です。'],
+            hint: '最初の必修ではなく、慣れてから触る挑戦モードだと思ってください。'
+          },
+          {
+            title: '11. LIST・その他・クラウド',
+            goal: '記録とアカウントの場所を覚えましょう',
+            text: 'LISTにはミッションと実績があります。More には Live Net、設定、クラウドアカウント、クレジット、説明書、チュートリアル再表示があります。',
+            checklist: ['クラウド保存が最も安全な進行保存方法です。', 'Live Net とログで直近の出来事を確認できます。', 'このガイドは More からいつでも再表示できます。'],
+            hint: '長く遊ぶなら、クラウドログインを先に済ませるのが安全です。'
+          },
+          {
+            title: '12. 準備完了',
+            goal: '最初のおすすめ進行順',
+            text: 'コードをスキャンして装備し、NORMALハックでクレジットを集め、初心者ルーレットを受け取ってからコードとCPUを強化しましょう。',
+            checklist: ['1つ目: コードスキャン。', '2つ目: INVENTORY > CODES で装備。', '3つ目: NORMALハックで流れを作る。'],
+            hint: '開始を押せばそのまま進められます。'
           }
         ];
       }
       return [
         {
           title: '환영합니다',
-          goal: '첫 루프: 코드 확보 → 활성 코드 선택 → NORMAL 해킹',
-          text: '처음 목표는 간단합니다. 코드 1개를 얻고 활성화한 뒤 NORMAL 서버 해킹 1회를 성공시키면 게임 흐름이 잡힙니다.',
-          checklist: ['에너지는 스캔과 해킹에 사용됩니다.', '코드는 장비처럼 성장합니다.', '크레딧으로 코드와 장비를 강화합니다.'],
-          hint: '다음을 누르면 첫 플레이 루프부터 안내합니다.'
+          goal: '첫 루프: 코드 확보 → 장착 → NORMAL 해킹',
+          text: 'HCSiG는 서버를 뚫어 크레딧을 벌고, 장비를 키워 다음 도전에 올라가는 게임입니다. 코드는 스캔, 해킹, 데이터 타워, ZERO-DAY에서 쓰는 해킹 장비라고 생각하면 됩니다.',
+          checklist: ['코드는 당신의 핵심 장비입니다.', '크레딧으로 성장과 보급을 진행합니다.', '에너지는 60초마다 1칸 회복되고, 최대 20칸까지 찹니다.'],
+          hint: '다음을 누르면 가장 안전한 첫 진행 루트부터 안내합니다.'
         },
         {
           title: '1. 코드 스캔',
           goal: '첫 코드를 확보하세요',
           text: 'HOME에서 코드 스캔 버튼을 누르세요. 스캔은 에너지 1을 사용하고 소량의 EXP를 줍니다.',
-          checklist: ['새 코드는 CODES에 추가됩니다.', '이미 가진 코드는 중복 조각이 됩니다.', '조각은 나중에 동기화에 사용됩니다.'],
+          checklist: ['새 코드는 INVENTORY > CODES에 저장됩니다.', '이미 가진 코드는 새 복사본 대신 조각이 됩니다.', '에너지가 0이면 60초를 기다리면 1칸이 돌아옵니다.'],
           hint: '안내창은 아래로 물러납니다. 지금 코드 스캔을 누르거나, 다음으로 넘겨도 됩니다.',
           waitAction: 'scan'
         },
         {
           title: '2. 활성 코드 선택',
           goal: '사용할 코드를 하나 고르세요',
-          text: 'CODES로 이동해 보유 코드 하나를 선택하세요. 활성 코드는 해킹과 데이터 타워 도전에 영향을 줍니다.',
-          checklist: ['파워가 높을수록 도움이 됩니다.', '동기화는 성공률 보정을 올립니다.', '진화는 준비된 코드를 더 높은 등급으로 올립니다.'],
+          text: 'INVENTORY > CODES로 이동해 보유 코드 하나를 선택하세요. 활성 코드는 해킹과 데이터 타워에서 실제로 사용되는 현재 장비입니다.',
+          checklist: ['파워가 높을수록 바로 체감이 납니다.', '지금은 활성 코드 하나만 정하면 충분합니다.', '동기화와 진화는 나중에 배워도 됩니다.'],
           hint: '안내창이 화면 조작을 막지 않습니다. 코드 카드를 누르거나, 다음으로 넘겨도 됩니다.',
           waitAction: 'selectCode'
         },
         {
           title: '3. 서버 해킹',
           goal: 'NORMAL 해킹 1회를 시도하세요',
-          text: 'HOME으로 돌아와 NORMAL을 유지하고, 입장 가능한 서버를 고른 뒤 서버 해킹 버튼을 누르세요.',
-          checklist: ['NORMAL은 초반에 가장 안정적입니다.', '성공하면 크레딧과 EXP를 얻습니다.', '실패해도 회복 후 다시 시도하면 됩니다.'],
+          text: 'HOME으로 돌아와 NORMAL을 유지하고, 지금 입장 가능한 서버를 고른 뒤 서버 해킹 버튼을 누르세요.',
+          checklist: ['NORMAL은 초반에 가장 안정적입니다.', '서버 이름 옆 요구 레벨을 만족하면 지금 들어갈 수 있습니다.', '성공하면 크레딧과 EXP를 얻습니다.'],
           hint: 'NORMAL을 유지하고 서버 해킹을 눌러보세요. 읽기만 하려면 다음으로 넘겨도 됩니다.',
           waitAction: 'hack'
         },
         {
-          title: '해킹 난이도',
-          goal: '상황에 맞는 위험도를 고르세요',
-          text: 'NORMAL은 안정적입니다. RISK는 성공률이 낮아지는 대신 크레딧이 커지고, EXTREME은 Lv.5부터 열리는 고난도 선택입니다.',
-          checklist: ['처음에는 NORMAL을 추천합니다.', '성공률이 충분하면 RISK를 사용하세요.', 'EXTREME은 Lv.5 이후 성장한 뒤 도전하세요.'],
-          hint: '초반에는 EXTREME을 신경 쓰지 않아도 됩니다.'
+          title: '4. EVENT와 초보자 룰렛',
+          goal: '매일 받을 수 있는 무료 보상을 기억하세요',
+          text: 'EVENT에는 시즌 PASS와 WEEKLY CHALLENGE가 있습니다. 신규 계정은 여기에 더해 10일 동안 매일 1회 무료로 받는 초보자 룰렛도 사용할 수 있습니다.',
+          checklist: ['PASS는 월간 시즌 진행입니다.', 'WEEKLY CHALLENGE는 매주 월요일 05:00 KST에 갱신됩니다.', '초보자 룰렛은 첫 10일 동안의 일일 무료 보상입니다.'],
+          hint: '첫 해킹이 끝나면 EVENT도 한 번 확인해보세요.'
         },
         {
-          title: 'CPU와 GPU',
-          goal: '두 성장 축을 구분하세요',
-          text: 'CPU는 제어와 안정성, GPU는 반복 플레이와 고난도 성공 보상 증폭을 담당합니다.',
-          checklist: ['CPU는 성공률과 안정감에 좋습니다.', 'GPU는 반복/도전 보상을 키웁니다.', '장기적으로 둘 다 올리는 것이 좋습니다.'],
-          hint: '초반 체감은 CPU가 더 부드럽고, GPU는 반복 콘텐츠에서 빛납니다.'
+          title: '5. 해킹 난이도',
+          goal: '처음에는 NORMAL만 생각해도 충분합니다',
+          text: 'NORMAL이 기본 모드입니다. RISK는 성공률을 낮추는 대신 보상을 키우고, EXTREME은 계정이 더 성장한 뒤 열리는 고난도 선택입니다.',
+          checklist: ['처음에는 NORMAL을 추천합니다.', '성공률에 여유가 생기면 RISK를 써도 됩니다.', '초반에는 EXTREME을 신경 쓰지 않아도 됩니다.'],
+          hint: '지금 목표는 위험한 고점이 아니라, 안정적인 첫 승리입니다.'
         },
         {
-          title: '코드 성장',
-          goal: '마음에 드는 코드 하나를 키우세요',
-          text: 'CODES에서는 강화, 동기화, 진화를 진행합니다. 먼저 믿을 만한 활성 코드 하나를 정하고 키우는 것이 좋습니다.',
-          checklist: ['강화는 크레딧을 사용합니다.', '동기화는 중복 조각을 사용합니다.', '진화는 레벨 조건을 만족하면 등급을 올립니다.'],
-          hint: '초반에는 여러 코드를 조금씩보다 한 코드를 확실히 키우는 편이 쉽습니다.'
+          title: '6. CPU와 GPU',
+          goal: '두 성장 축의 역할만 정확히 구분하세요',
+          text: 'CPU는 해킹을 더 안정적으로 만들고, GPU는 반복 플레이와 고난도 보상의 효율을 키웁니다.',
+          checklist: ['CPU는 안정감과 제어에 좋습니다.', 'GPU는 후반 보상 효율에서 빛납니다.', '초반에는 CPU 1~2단계가 체감이 큰 편입니다.'],
+          hint: '무엇부터 올릴지 모르겠다면 초반에는 CPU가 가장 무난합니다.'
         },
         {
-          title: 'SHOP',
-          goal: '막힐 때 상점을 확인하세요',
-          text: 'SHOP에서는 에너지, 시스템, 경제, 유틸 아이템을 구매합니다. 목록이 길면 필터를 사용하세요.',
-          checklist: ['에너지 팩은 플레이 흐름을 이어줍니다.', '영구 아이템은 장기 성장에 좋습니다.', '일일 제한과 1회 제한을 확인하세요.'],
-          hint: '에너지가 부족하면 회복을 기다리거나 에너지 팩을 사용하면 됩니다.'
+          title: '7. 코드 성장',
+          goal: '주력 코드 하나를 먼저 키우세요',
+          text: '크레딧이나 중복 조각이 쌓이면 INVENTORY > CODES로 돌아와 믿을 만한 코드 하나를 집중적으로 키우는 편이 쉽습니다.',
+          checklist: ['강화는 크레딧으로 PWR을 올립니다.', '동기화는 나중에 중복 조각으로 보정을 올립니다.', '진화는 초반 필수 과제가 아니라 후반 목표입니다.'],
+          hint: '여러 코드를 조금씩보다 한 코드를 확실히 키우는 편이 초반에는 편합니다.'
         },
         {
-          title: 'LAB',
-          goal: '장기 목표를 여세요',
-          text: 'LAB에는 데이터 타워와 WEEKLY CHALLENGE가 있습니다. 기본 해킹에 익숙해진 뒤 도전하면 좋습니다.',
-          checklist: ['데이터 타워는 100개 스테이지입니다.', '주간 챌린지는 월요일 05:00 KST에 갱신됩니다.', '주간 보상은 CLAIM 버튼으로 직접 받습니다.'],
-          hint: '데이터 타워는 서두르지 말고 성장 후 올라가면 됩니다.'
+          title: '8. SHOP',
+          goal: '막혔을 때만 필요한 보급을 챙기세요',
+          text: 'SHOP은 보급소입니다. 에너지가 부족하거나 흐름이 끊길 때, 지금 필요한 문제만 해결하는 식으로 쓰면 충분합니다.',
+          checklist: ['에너지 아이템은 세션을 이어가기 좋습니다.', '시스템/유틸 아이템은 도전을 부드럽게 만듭니다.', '구매 전에 일일 제한을 확인하세요.'],
+          hint: '모든 아이템을 살 필요는 없습니다. 지금 막힌 이유를 푸는 물건만 사면 됩니다.'
         },
         {
-          title: 'LIST, 더보기, 클라우드',
-          goal: '기록과 계정 위치를 기억하세요',
-          text: 'LIST에는 미션과 업적이 있습니다. 더보기에는 도감, 로그, 설정, 클라우드 계정, 튜토리얼 다시 보기가 있습니다.',
-          checklist: ['클라우드 계정이 기본 저장 경로입니다.', '로그는 방금 일어난 일을 설명합니다.', '튜토리얼은 더보기에서 다시 볼 수 있습니다.'],
-          hint: 'GitHub Pages는 새로고침이 잦을 수 있으니 클라우드 로그인 상태가 가장 안전합니다.'
+          title: '9. LAB과 데이터 타워',
+          goal: '장기 도전이 어디에 있는지만 먼저 알아두세요',
+          text: 'LAB은 긴 호흡의 콘텐츠를 여는 곳입니다. 데이터 타워는 100층 구성이라 첫날에 끝내는 콘텐츠가 아닙니다.',
+          checklist: ['데이터 타워는 장기 목표입니다.', '성장한 뒤 다시 와도 전혀 늦지 않습니다.', '처음에는 해킹 루프부터 익혀도 충분합니다.'],
+          hint: '처음 며칠은 기본 해킹에 익숙해지고, 그 다음 천천히 올라가세요.'
         },
         {
-          title: '준비 완료',
+          title: '10. ZERO-DAY DISCOVERY',
+          goal: '누르기 전에 어떤 모드인지 정도만 알고 가세요',
+          text: 'ZERO-DAY DISCOVERY는 LAB의 짧은 타임어택 모드입니다. 패치 바가 차기 전에 데이터를 주입하고, 끊기기 전에 회수해 보상을 챙깁니다.',
+          checklist: ['짧고 집중력이 필요한 사이드 모드입니다.', '끊기기 전에 회수하면 보상을 지킬 수 있습니다.', '기본 해킹이 익숙해질 때까지 미뤄도 괜찮습니다.'],
+          hint: '첫 숙제가 아니라, 나중에 열어보는 도전 모드라고 생각하면 됩니다.'
+        },
+        {
+          title: '11. LIST, 더보기, 클라우드',
+          goal: '기록과 계정 기능 위치를 기억하세요',
+          text: 'LIST에는 미션과 업적이 있습니다. 더보기에는 LIVE NET, 설정, 클라우드 계정, 크레딧, 설명서, 튜토리얼 다시 보기가 있습니다.',
+          checklist: ['클라우드 저장이 가장 안전한 저장 경로입니다.', 'LIVE NET과 로그는 방금 무슨 일이 있었는지 설명합니다.', '이 가이드는 더보기에서 언제든 다시 열 수 있습니다.'],
+          hint: '계속 플레이할 생각이라면 클라우드 로그인을 먼저 해두는 편이 안전합니다.'
+        },
+        {
+          title: '12. 준비 완료',
           goal: '추천 첫 진행 순서',
-          text: '코드를 스캔하고, CODES에서 활성화한 뒤, NORMAL 해킹을 반복하며 크레딧으로 코드와 CPU를 강화하세요.',
-          checklist: ['첫째: 코드 스캔.', '둘째: CODES에서 코드 선택.', '셋째: NORMAL 서버 해킹.'],
+          text: '코드를 스캔하고 장착한 뒤, NORMAL 해킹으로 크레딧을 모으고, EVENT에서 초보자 룰렛을 챙긴 뒤 코드와 CPU를 강화하세요.',
+          checklist: ['첫째: 코드 스캔.', '둘째: INVENTORY > CODES에서 장착.', '셋째: NORMAL 서버 해킹으로 흐름 만들기.'],
           hint: '시작하기를 누르면 바로 플레이할 수 있습니다.'
         }
       ];
