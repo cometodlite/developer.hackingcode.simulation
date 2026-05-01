@@ -4072,6 +4072,37 @@ function applyLanguageToUI(){
         const canUseTrace = !!activeRun && traceAmple >= 25 && (activeRun.trace || 0) > 0.01;
         const diffDef = activeRun ? (ZD_DISC_DIFFICULTIES[activeRun.diff] || ZD_DISC_DIFFICULTIES.easy) : null;
         const canUseNull = !!activeRun && nullSeed >= 10 && diffDef && getZdPatch(activeRun, diffDef) > 0.03;
+        const stateText = {
+          ready: langText('사용 가능', 'Ready', '使用可能'),
+          stored: langText('보관 중', 'Stored', '保管中'),
+          needs: langText('준비 필요', 'Needs context', '準備必要'),
+          currency: langText('보유 재화', 'Held currency', '保有通貨'),
+          empty: langText('없음', 'Empty', 'なし')
+        };
+        function itemStateMeta(opts) {
+          const count = Number(opts && opts.count) || 0;
+          if (opts && opts.currency) return { label: stateText.currency, className: 'item-state-currency' };
+          if (opts && opts.ready) return { label: stateText.ready, className: 'item-state-ready' };
+          if (count > 0) {
+            return {
+              label: opts && opts.blockedLabel ? opts.blockedLabel : stateText.stored,
+              className: opts && opts.blockedLabel ? 'item-state-needs' : 'item-state-stored'
+            };
+          }
+          return { label: stateText.empty, className: 'item-state-empty' };
+        }
+        const energyPackState = itemStateMeta({ count: energyPack, ready: canUsePack });
+        const dailyBoxState = itemStateMeta({ count: dailyBonusBox, ready: dailyBonusBox > 0 });
+        const codeProtectionState = itemStateMeta({ count: codeProtection, ready: canProtect, blockedLabel: stateText.needs });
+        const coinState = itemStateMeta({ currency: true });
+        const tokenState = itemStateMeta({ currency: true });
+        const oneDayState = itemStateMeta({ currency: true });
+        const romState = itemStateMeta({ count: rom, ready: canStabilize, blockedLabel: stateText.needs });
+        const vulnState = itemStateMeta({ currency: true });
+        const vulnShardState = itemStateMeta({ currency: true });
+        const traceState = itemStateMeta({ count: traceAmple, ready: canUseTrace, blockedLabel: stateText.needs });
+        const nullSeedState = itemStateMeta({ count: nullSeed, ready: canUseNull, blockedLabel: stateText.needs });
+        const pickResidualState = itemStateMeta({ count: pickResidualData, ready: canTunePick, blockedLabel: stateText.needs });
 
         // AUTO-RUN 상태 계산
         ensureAutoRunDefaults();
@@ -4129,16 +4160,19 @@ function applyLanguageToUI(){
           <div class="items-grid">
             <div class="item-card">
               <div class="item-card-name">${t('todayEnergyPack')}</div>
+              <div class="item-card-state ${energyPackState.className}">${energyPackState.label}</div>
               <div class="item-card-count">×${energyPack}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseEnergyPack" ${canUsePack ? '' : 'disabled'}>${useLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">Daily Bonus Box</div>
+              <div class="item-card-state ${dailyBoxState.className}">${dailyBoxState.label}</div>
               <div class="item-card-count">×${dailyBonusBox}</div>
               <button type="button" class="item-card-btn" id="itemsBtnOpenDailyBox" ${dailyBonusBox > 0 ? '' : 'disabled'}>${openLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${langText('코드 보호권', 'Code Protection', 'コード保護券')}</div>
+              <div class="item-card-state ${codeProtectionState.className}">${codeProtectionState.label}</div>
               <div class="item-card-count">×${codeProtection}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseCodeProtection" ${canProtect ? '' : 'disabled'}>${protectLabel}</button>
             </div>
@@ -4147,27 +4181,33 @@ function applyLanguageToUI(){
           <div class="items-grid">
             <div class="item-card">
               <div class="item-card-name">COIN</div>
+              <div class="item-card-state ${coinState.className}">${coinState.label}</div>
               <div class="item-card-count">×${coin}</div>
             </div>
             <div class="item-card">
               <div class="item-card-name">TOKEN</div>
+              <div class="item-card-state ${tokenState.className}">${tokenState.label}</div>
               <div class="item-card-count">×${weeklyToken}</div>
             </div>
             <div class="item-card">
               <div class="item-card-name">OneDay</div>
+              <div class="item-card-state ${oneDayState.className}">${oneDayState.label}</div>
               <div class="item-card-count">×${oneDay}</div>
             </div>
             <div class="item-card">
               <div class="item-card-name">ROM</div>
+              <div class="item-card-state ${romState.className}">${romState.label}</div>
               <div class="item-card-count">×${rom}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseRom" ${canStabilize ? '' : 'disabled'}>${stabilizeLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('vulnerability')}</div>
+              <div class="item-card-state ${vulnState.className}">${vulnState.label}</div>
               <div class="item-card-count">×${vuln}</div>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('vulnerabilityShard')}</div>
+              <div class="item-card-state ${vulnShardState.className}">${vulnShardState.label}</div>
               <div class="item-card-count">×${vulnShard}</div>
             </div>
           </div>
@@ -4177,8 +4217,10 @@ function applyLanguageToUI(){
               const cnt = (state.items && state.items['timeSwap'+v]) || 0;
               const canUse = cnt > 0;
               const useLabel = getLang() === 'en' ? 'Use' : (getLang() === 'ja' ? '使用' : '사용');
+              const swapState = itemStateMeta({ count: cnt });
               return `<div class="item-card">
                 <div class="item-card-name">${t('timeSwap'+v)}</div>
+                <div class="item-card-state ${swapState.className}">${swapState.label}</div>
                 <div class="item-card-count">×${cnt}</div>
                 <button type="button" class="item-card-btn" data-ts-variant="${v}" ${canUse ? '' : 'disabled'}>${useLabel}</button>
               </div>`;
@@ -4188,16 +4230,19 @@ function applyLanguageToUI(){
           <div class="items-grid">
             <div class="item-card">
               <div class="item-card-name">${t('traceAmpleLabel')}</div>
+              <div class="item-card-state ${traceState.className}">${traceState.label}</div>
               <div class="item-card-count">×${traceAmple}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseTraceAmple" ${canUseTrace ? '' : 'disabled'}>${dampLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${t('nullSeedLabel')}</div>
+              <div class="item-card-state ${nullSeedState.className}">${nullSeedState.label}</div>
               <div class="item-card-count">×${nullSeed}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUseNullSeed" ${canUseNull ? '' : 'disabled'}>${delayLabel}</button>
             </div>
             <div class="item-card">
               <div class="item-card-name">${langText('PICK 잔류 데이터', 'PICK Residual Data', 'PICK残留データ')}</div>
+              <div class="item-card-state ${pickResidualState.className}">${pickResidualState.label}</div>
               <div class="item-card-count">×${pickResidualData}</div>
               <button type="button" class="item-card-btn" id="itemsBtnUsePickResidual" ${canTunePick ? '' : 'disabled'}>${infuseLabel}</button>
             </div>
@@ -4218,9 +4263,9 @@ function applyLanguageToUI(){
             </div>
           </div>
           <div class="items-coming-note small">${langText(
-            '· Daily Bonus Box는 보상 상자를 즉시 개봉합니다.<br/>· ROM은 활성 CODE를 안정화해 PWR을 올립니다. 코드 보호권은 해킹 실패 시 보호 충전을 부여합니다.<br/>· PICK 잔류 데이터는 시즌 PICK CODE를 강화하고, TRACE 앰플과 NULL 시드는 ZERO-DAY DISCOVERY 런에서 사용됩니다.',
-            '· Daily Bonus Box opens a reward crate instantly.<br/>· ROM stabilizes your active code for extra PWR, and Code Protection adds a failure safeguard charge.<br/>· PICK Residual Data boosts season PICK codes, while TRACE Ample and NULL Seed are used during ZERO-DAY DISCOVERY runs.',
-            '· Daily Bonus Boxは即時開封型の報酬箱です。<br/>· ROMはアクティブCODEを安定化してPWRを上げ、コード保護券は失敗時の保護チャージを付与します。<br/>· PICK残留データはシーズンPICK CODEを強化し、TRACEアンプルとNULL SeedはZERO-DAY DISCOVERYランで使用します。'
+            '· ITEMS는 보유 자산 허브입니다. 각 아이템은 사용 가능 / 보관 중 / 준비 필요 상태로 표시됩니다.<br/>· Daily Bonus Box는 즉시 개봉 보상, ROM은 활성 CODE 안정화, 코드 보호권은 실패 보호 충전, PICK 잔류 데이터는 시즌 PICK 조율에 사용됩니다.<br/>· TRACE 앰플과 NULL 시드는 ZERO-DAY DISCOVERY 런 안에서만 사용할 수 있습니다.',
+            '· ITEMS is your asset hub. Every item shows whether it is ready, stored, or still needs context.<br/>· Daily Bonus Box opens instantly, ROM stabilizes the active CODE, Code Protection adds a failure safeguard charge, and PICK Residual Data tunes season PICKs.<br/>· TRACE Ample and NULL Seed can only be used during ZERO-DAY DISCOVERY runs.',
+            '· ITEMSは保有資産ハブです。各アイテムは使用可能 / 保管中 / 準備必要の状態で表示されます。<br/>· Daily Bonus Boxは即時開封、ROMはアクティブCODE安定化、コード保護券は失敗保護チャージ、PICK残留データはシーズンPICK調律に使用されます。<br/>· TRACEアンプルとNULL SeedはZERO-DAY DISCOVERYラン中のみ使用できます。'
           )}</div>
         `;
 
@@ -6693,6 +6738,11 @@ function applyLanguageToUI(){
           <span class="badge">${seasonInfo.seasonLabel}</span>
           ${!isPreseason ? '' : ''}
         </div>
+        <div class="items-coming-note small">${langText(
+          'PASS는 시즌 장기 보상 패널입니다. WEEKLY와 시즌 성과로 얻은 패스 포인트를 여기서 누적하고 티어 보상을 수령합니다.',
+          'PASS is the season-long reward panel. Build pass points through WEEKLY goals and season progress, then claim tier rewards here.',
+          'PASSはシーズン長期報酬パネルです。WEEKLY目標とシーズン進行で得たパスポイントをここで蓄積し、ティア報酬を受け取ります。'
+        )}</div>
         ${isPreseason ? `
         <!-- v3.0.0: 프리시즌 안내 카드 (여백 축소, 정보 밀도 향상) -->
         <div class="pass-preseason-card">
@@ -8696,6 +8746,23 @@ function applyLanguageToUI(){
       shopList.innerHTML = '';
       const lang = getLang();
       const ko = lang !== 'en';
+      const summary = document.createElement('div');
+      summary.className = 'shop-summary-card shop-summary-card-support';
+      summary.innerHTML = `
+        <div class="shop-summary-badge">${langText('유료 상점', 'Paid Shop', '有料ショップ')}</div>
+        <h3>${langText('지원 센터 / 수동 결제', 'Support Desk / Manual Checkout', 'サポートセンター / 手動決済')}</h3>
+        <p>${langText(
+          '이 구역은 크레딧·COIN·OneDay 상점과 다르게 수동 처리되는 유료 신청 허브입니다. 후원 상품, COIN 구매, 크레딧 패키지를 여기서 신청하고 MORE → SUPPORT에서 진행 상태를 확인합니다.',
+          'This area is the manual paid hub, separate from the Credits, COIN, and OneDay shops. Apply for support products, COIN purchases, and credit packages here, then track them in MORE → SUPPORT.',
+          'この領域はクレジット・COIN・OneDayショップとは別の手動処理型有料ハブです。サポート商品、COIN購入、クレジットパッケージをここで申請し、MORE → SUPPORTで進行状況を確認します。'
+        )}</p>
+        <div class="shop-summary-meta">
+          <span>${langText('수동 검수', 'Manual review', '手動確認')}</span>
+          <span>${langText('후원 / 패키지', 'Support / packs', '支援 / パック')}</span>
+          <span>${langText('MORE 연동', 'MORE linked', 'MORE連動')}</span>
+        </div>
+      `;
+      shopList.appendChild(summary);
 
       // 안내 섹션
       const notice = document.createElement('div');
@@ -8833,6 +8900,61 @@ function applyLanguageToUI(){
         renderSupportCenter();
         return;
       }
+
+      const shopTypeMeta = {
+        credits: {
+          badge: langText('일반 / 교환 상점', 'General / Exchange Shop', '一般 / 交換ショップ'),
+          title: langText('지금 바로 쓰는 보급품', 'Immediate support supplies', 'すぐ使える補給品'),
+          body: langText(
+            '크레딧으로 에너지, 시스템, 경제, 유틸 보조품을 구매합니다. 대부분 즉시 적용되거나 INVENTORY > ITEMS에서 사용됩니다.',
+            'Spend credits on energy, system, economy, and utility support goods. Most apply immediately or are later used from INVENTORY > ITEMS.',
+            'クレジットでエネルギー、システム、経済、ユーティリティ補助品を購入します。多くは即時適用されるか、INVENTORY > ITEMSで使用します。'
+          ),
+          meta: [
+            langText('기본 재화', 'Core currency', '基本通貨'),
+            langText('반복 보급', 'Repeat supplies', '反復補給'),
+            langText('ITEMS 연동', 'ITEMS linked', 'ITEMS連動')
+          ]
+        },
+        coin: {
+          badge: langText('재화 상점', 'Currency Shop', '通貨ショップ'),
+          title: langText('시즌·희소 보상 교환', 'Season and rare reward exchange', 'シーズン・希少報酬交換'),
+          body: langText(
+            'COIN은 시즌 보상과 특별 보상으로 얻는 희귀 재화입니다. 프레임, 스킨, 보조 패키지처럼 선택적인 희소 보상을 여기서 교환합니다.',
+            'COIN is a rare currency earned through seasons and special rewards. Exchange it here for optional rare rewards like frames, skins, and support packs.',
+            'COINはシーズン報酬や特別報酬で得る希少通貨です。フレーム、スキン、補助パックなど任意の希少報酬をここで交換します。'
+          ),
+          meta: [
+            'COIN',
+            langText('시즌 보상', 'Season rewards', 'シーズン報酬'),
+            langText('희소 교환', 'Rare exchange', '希少交換')
+          ]
+        },
+        oneday: {
+          badge: langText('재화 상점', 'Currency Shop', '通貨ショップ'),
+          title: langText('ZERO-DAY 성장 보조품', 'ZERO-DAY growth support', 'ZERO-DAY成長補助'),
+          body: langText(
+            'OneDay는 ZERO-DAY DISCOVERY 전용 성장 재화입니다. 취약점 조각과 런 보조품처럼 Discovery 준비와 반복 플레이에 연결된 품목을 다룹니다.',
+            'OneDay is the dedicated growth currency for ZERO-DAY DISCOVERY. Use it for Discovery prep and repeat-run support items such as vulnerability shards and run boosters.',
+            'OneDayはZERO-DAY DISCOVERY専用の成長通貨です。脆弱性シャードやラン補助品など、Discovery準備と反復プレイ向けの品を扱います。'
+          ),
+          meta: [
+            'OneDay',
+            'ZERO-DAY',
+            langText('런 보조품', 'Run support', 'ラン補助')
+          ]
+        }
+      };
+      const meta = shopTypeMeta[shopType] || shopTypeMeta.credits;
+      const summary = document.createElement('div');
+      summary.className = 'shop-summary-card';
+      summary.innerHTML = `
+        <div class="shop-summary-badge">${meta.badge}</div>
+        <h3>${meta.title}</h3>
+        <p>${meta.body}</p>
+        <div class="shop-summary-meta">${meta.meta.map(part => `<span>${part}</span>`).join('')}</div>
+      `;
+      shopList.appendChild(summary);
 
       let currentShopItems = shopItems;
       let currencySymbol = '💰';
@@ -9770,6 +9892,12 @@ function applyLanguageToUI(){
 
       const defs = missionDefs[scope];
       if (!defs) return;
+      const sourceMeta = {
+        daily:   { label: 'DAILY', className: 'mission-source-daily' },
+        weekly:  { label: 'WEEKLY', className: 'mission-source-weekly' },
+        month:   { label: 'SEASON', className: 'mission-source-season' },
+        general: { label: 'GENERAL', className: 'mission-source-general' }
+      }[scope] || { label: scope.toUpperCase(), className: 'mission-source-general' };
 
       const header = document.createElement('div');
       header.style.marginBottom = '4px';
@@ -9788,7 +9916,10 @@ function applyLanguageToUI(){
         const main = document.createElement('div');
         main.className = 'mission-main';
         main.innerHTML = `
-          <div>${localizeMissionName(def)}</div>
+          <div class="mission-title-row">
+            <span class="mission-source-pill ${sourceMeta.className}">${sourceMeta.label}</span>
+            <strong>${localizeMissionName(def)}</strong>
+          </div>
           <div class="mission-progress">${localizeMissionDesc(def)} (${progVal} / ${def.target})</div>
           <div class="mission-reward">${t('reward')}: ${def.rewardCredits ? (t('credits') + ' +' + def.rewardCredits) : ''}${def.rewardEnergyPack ? ((def.rewardCredits ? ' / ' : '') + (t('energyPack') + ' +' + def.rewardEnergyPack)) : ''}${def.rewardCoin ? (((def.rewardCredits || def.rewardEnergyPack) ? ' / ' : '') + 'COIN +' + def.rewardCoin) : ''}${(!def.rewardCredits && !def.rewardEnergyPack && !def.rewardCoin) ? t('none') : ''}</div>
         `;
