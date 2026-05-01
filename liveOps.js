@@ -236,8 +236,8 @@
       id: 'convenience-update-302',
       title: text('HCSiG v3.0.2 — Convenience Update', 'HCSiG v3.0.2 — Convenience Update'),
       body: text(
-        '신규 아이템 타임 스와프(2h/5h/10h) · TRACE 앰플 · NULL 시드가 추가되었습니다. 초보자 한정 룰렛은 EVENT→WEEKLY CHALLENGE 안에서 확인할 수 있습니다. 일일 미션 3종에 COIN 보상이 추가되었습니다. Support Pack 수동 결제 시스템이 MORE→SUPPORT에 추가되었습니다.',
-        'New items: Time Swap (2h/5h/10h), TRACE Ample, and NULL Seed were added. Beginner Roulette is available inside EVENT→WEEKLY CHALLENGE. COIN rewards were added to 3 daily missions. A manual Support Pack payment flow was also added in MORE→SUPPORT.'
+        '신규 아이템 타임 스와프(2h/5h/10h) · TRACE 앰플 · NULL 시드가 추가되었습니다. 초보자 한정 룰렛은 EVENT→ROULETTE 탭에서 확인할 수 있습니다. 일일 미션 3종에 COIN 보상이 추가되었습니다. Support Pack 수동 결제 시스템이 MORE→SUPPORT에 추가되었습니다.',
+        'New items: Time Swap (2h/5h/10h), TRACE Ample, and NULL Seed were added. Beginner Roulette is available in the EVENT→ROULETTE tab. COIN rewards were added to 3 daily missions. A manual Support Pack payment flow was also added in MORE→SUPPORT.'
       ),
       createdAt: 1745798400000, // 2026-04-28
       level: 'UPDATE'

@@ -5357,7 +5357,8 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 }
 
 #eventTabWeekly.active,
-#eventTabPass.active {
+#eventTabPass.active,
+#eventTabRoulette.active {
   display: block !important;
 }
 
@@ -5369,14 +5370,17 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 #eventTabWeekly.active > #weeklyGoalList,
 #eventTabWeekly.active > #weeklyBonusCard,
 #eventTabWeekly.active > #opsShopMount,
-#eventTabPass.active > #passPanel {
+#eventTabPass.active > #passPanel,
+#eventTabRoulette.active > .event-intro,
+#eventTabRoulette.active > #beginnerRouletteMount {
   flex: 0 0 auto !important;
 }
 
 #eventTabWeekly.active > #weeklyGoalList,
 #eventTabWeekly.active > #weeklyBonusCard,
 #eventTabWeekly.active > #opsShopMount,
-#eventTabPass.active > #passPanel {
+#eventTabPass.active > #passPanel,
+#eventTabRoulette.active > #beginnerRouletteMount {
   min-height: auto !important;
   max-height: none !important;
   overflow: visible !important;
