@@ -2184,6 +2184,95 @@ function applyLanguageToUI(){
         rewardLabelEn:  'COIN ×25 + Energy Pack ×5 + Daily Bonus Box ×3',
         desc:   'HCSiG 개발을 더 크게 응원하는 후원입니다.',
         descEn: 'Bigger support for HCSiG development.'
+      },
+      {
+        id: 'support_pro',
+        name: 'Support Pack Pro',
+        price: '₩5,500',
+        tag: 'PRO',
+        rewards: { coin: 50, energyPack: 10, dailyBonusBox: 5 },
+        rewardLabel:    'COIN ×50 + 에너지팩 ×10 + 데일리 보너스 박스 ×5',
+        rewardLabelEn:  'COIN ×50 + Energy Pack ×10 + Daily Bonus Box ×5',
+        desc:   'HCSiG를 진심으로 응원해주시는 분을 위한 후원입니다.',
+        descEn: 'For those who truly support HCSiG development.'
+      },
+      {
+        id: 'support_max',
+        name: 'Support Pack Max',
+        price: '₩16,500',
+        tag: 'MAX',
+        rewards: { coin: 150, energyPack: 30, dailyBonusBox: 15 },
+        rewardLabel:    'COIN ×150 + 에너지팩 ×30 + 데일리 보너스 박스 ×15',
+        rewardLabelEn:  'COIN ×150 + Energy Pack ×30 + Daily Bonus Box ×15',
+        desc:   'HCSiG의 최대 후원자를 위한 최상위 패키지입니다.',
+        descEn: 'The ultimate package for HCSiG\'s top supporters.'
+      }
+    ];
+
+    // ── COIN 구매 상품 정의 (₩ 결제) ───────────────────────────────────────
+    const COIN_PURCHASE_ITEMS = [
+      {
+        id: 'coin_500',
+        label: 'COIN ×500',
+        coin: 500,
+        price: '₩5,500',
+        desc:   '소량의 COIN을 구매합니다.',
+        descEn: 'Purchase a small amount of COIN.'
+      },
+      {
+        id: 'coin_1200',
+        label: 'COIN ×1,200',
+        coin: 1200,
+        price: '₩11,000',
+        desc:   '표준 COIN 패키지입니다.',
+        descEn: 'Standard COIN package.'
+      },
+      {
+        id: 'coin_2000',
+        label: 'COIN ×2,000',
+        coin: 2000,
+        price: '₩16,500',
+        desc:   '넉넉한 COIN을 구매합니다.',
+        descEn: 'Purchase a generous amount of COIN.'
+      },
+      {
+        id: 'coin_5000',
+        label: 'COIN ×5,000',
+        coin: 5000,
+        price: '₩33,000',
+        desc:   '대량 COIN 패키지입니다.',
+        descEn: 'Large COIN bulk package.'
+      }
+    ];
+
+    // ── 크레딧 패키지 정의 (₩ 결제) ────────────────────────────────────────
+    const CREDIT_PACKAGE_ITEMS = [
+      {
+        id: 'credit_pkg_small',
+        label: '소형 크레딧 패키지',
+        labelEn: 'Small Credit Package',
+        credits: 50000,
+        price: '₩1,100',
+        desc:   '크레딧 50,000을 즉시 지급합니다.',
+        descEn: 'Instantly grants 50,000 credits.'
+      },
+      {
+        id: 'credit_pkg_mid',
+        label: '중형 크레딧 패키지',
+        labelEn: 'Medium Credit Package',
+        credits: 150000,
+        price: '₩2,200',
+        desc:   '크레딧 150,000을 즉시 지급합니다.',
+        descEn: 'Instantly grants 150,000 credits.'
+      },
+      {
+        id: 'credit_pkg_large',
+        label: '대형 크레딧 패키지',
+        labelEn: 'Large Credit Package',
+        credits: 500000,
+        price: '₩5,500',
+        desc:   '크레딧 500,000을 즉시 지급합니다.',
+        descEn: 'Instantly grants 500,000 credits.'
       }
     ];
 
@@ -6779,6 +6868,46 @@ function applyLanguageToUI(){
       finishZdDiscRun('abort', run, def);
     }
 
+    // TRACE Ample 사용: TRACE -20%p (활성 런 전용)
+    function doZdUseTraceAmple() {
+      ensureZeroDayDefaults();
+      const run = state.zeroDay.pve.active;
+      if (!run) return;
+      const count = state.items.traceAmple || 0;
+      if (count < 1) {
+        showToast(getLang()==='en' ? 'No TRACE Ample.' : 'TRACE 앰플이 없습니다.', 'warn');
+        return;
+      }
+      state.items.traceAmple = count - 1;
+      const before = run.trace || 0;
+      run.trace = Math.max(0, before - 0.20);
+      const tracePct = Math.round(run.trace * 100);
+      run.log = run.log || [];
+      run.log.push(`AMPLE · TRACE -20% → ${tracePct}%`);
+      if (run.log.length > 12) run.log.shift();
+      updateZdDiscLive();
+      saveGame(true);
+    }
+
+    // NULL Seed 사용: TRACE → 0 완전 초기화 (활성 런 전용)
+    function doZdUseNullSeed() {
+      ensureZeroDayDefaults();
+      const run = state.zeroDay.pve.active;
+      if (!run) return;
+      const count = state.items.nullSeed || 0;
+      if (count < 1) {
+        showToast(getLang()==='en' ? 'No NULL Seed.' : 'NULL 시드가 없습니다.', 'warn');
+        return;
+      }
+      state.items.nullSeed = count - 1;
+      run.trace = 0;
+      run.log = run.log || [];
+      run.log.push('NULL SEED · TRACE → 0%');
+      if (run.log.length > 12) run.log.shift();
+      updateZdDiscLive();
+      saveGame(true);
+    }
+
     // endState: 'clear' | 'cut' | 'traced' | 'abort'
     function finishZdDiscRun(endState, run, def) {
       stopZdDiscTimer();
@@ -6906,6 +7035,15 @@ function applyLanguageToUI(){
         logEl.innerHTML = run.log.slice(-8).map(l => `<div class="zd-disc-log-line">${escapeHtml(l)}</div>`).join('');
         logEl.scrollTop = logEl.scrollHeight;
       }
+      // 아이템 카운트 및 disabled 갱신
+      const traceAmpleCountEl = document.getElementById('zdTraceAmpleCount');
+      const nullSeedCountEl   = document.getElementById('zdNullSeedCount');
+      const traceAmpleBtn     = document.getElementById('zdUseTraceAmpleBtn');
+      const nullSeedBtn       = document.getElementById('zdUseNullSeedBtn');
+      if (traceAmpleCountEl) traceAmpleCountEl.textContent = `×${state.items.traceAmple || 0}`;
+      if (nullSeedCountEl)   nullSeedCountEl.textContent   = `×${state.items.nullSeed   || 0}`;
+      if (traceAmpleBtn)     traceAmpleBtn.disabled        = (state.items.traceAmple || 0) < 1;
+      if (nullSeedBtn)       nullSeedBtn.disabled          = (state.items.nullSeed   || 0) < 1;
     }
 
     // ── ZERO-DAY DISCOVERY v3.0.0: 패널 렌더 ────────────────────────────────
@@ -7004,6 +7142,15 @@ function applyLanguageToUI(){
               </button>
             </div>
 
+            <div class="zd-disc-items-row">
+              <button type="button" id="zdUseTraceAmpleBtn" class="zd-disc-item-btn" ${(state.items.traceAmple||0)<1?'disabled':''}>
+                TRACE Ample <span id="zdTraceAmpleCount">×${state.items.traceAmple||0}</span>
+              </button>
+              <button type="button" id="zdUseNullSeedBtn" class="zd-disc-item-btn zd-item-null" ${(state.items.nullSeed||0)<1?'disabled':''}>
+                NULL Seed <span id="zdNullSeedCount">×${state.items.nullSeed||0}</span>
+              </button>
+            </div>
+
             <div class="zd-disc-log" id="zdDiscLog">${logLines}</div>
           </div>`;
 
@@ -7026,8 +7173,10 @@ function applyLanguageToUI(){
           injectBtn.addEventListener('touchend',    endHold,   { passive: true  });
           injectBtn.addEventListener('touchcancel', endHold,   { passive: true  });
         }
-        el.querySelector('#zdRecoverBtn')?.addEventListener('click', doZdRecover);
-        el.querySelector('#zdAbortBtn')  ?.addEventListener('click', doZdAbort);
+        el.querySelector('#zdRecoverBtn')      ?.addEventListener('click', doZdRecover);
+        el.querySelector('#zdAbortBtn')        ?.addEventListener('click', doZdAbort);
+        el.querySelector('#zdUseTraceAmpleBtn')?.addEventListener('click', doZdUseTraceAmple);
+        el.querySelector('#zdUseNullSeedBtn')  ?.addEventListener('click', doZdUseNullSeed);
         return;
       }
 
@@ -8216,6 +8365,112 @@ function applyLanguageToUI(){
     }, 1000);
 
 
+    // ── 지원 센터 탭 렌더 ───────────────────────────────────────────────────
+    function renderSupportCenter() {
+      if (!shopList) return;
+      shopList.innerHTML = '';
+      const lang = getLang();
+      const ko = lang !== 'en';
+
+      // 안내 섹션
+      const notice = document.createElement('div');
+      notice.className = 'supc-notice';
+      notice.innerHTML = `
+        <div class="supc-notice-title">📋 ${ko ? '지원 센터 안내' : 'Support Center Info'}</div>
+        <ul class="supc-notice-list">
+          <li>${ko ? '이 탭의 모든 결제는 <strong>수동 처리</strong>됩니다.' : 'All purchases in this tab are <strong>manually processed</strong>.'}</li>
+          <li>${ko ? '결제 후 더보기 → SUPPORT에서 신청·내역 확인·코드 입력을 진행해 주세요.' : 'After payment, go to MORE → SUPPORT to submit, track, and redeem codes.'}</li>
+          <li>${ko ? '처리 시간은 최대 24시간 이내입니다.' : 'Processing takes up to 24 hours.'}</li>
+        </ul>
+      `;
+      shopList.appendChild(notice);
+
+      // COIN 구매 섹션
+      const coinSection = document.createElement('div');
+      coinSection.className = 'supc-section';
+      coinSection.innerHTML = `
+        <div class="supc-section-header">
+          <span class="supc-section-badge">COIN 구매</span>
+          <span class="supc-section-sub">${ko ? '₩ 결제 · 수동 처리' : '₩ Payment · Manual'}</span>
+        </div>
+        <div class="supc-cards">
+          ${COIN_PURCHASE_ITEMS.map(p => `
+            <div class="supc-card">
+              <div class="supc-card-label">${p.label}</div>
+              <div class="supc-card-price">${p.price}</div>
+              <div class="supc-card-desc small">${ko ? p.desc : p.descEn}</div>
+              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="coin">${ko ? '신청하기' : 'Apply'}</button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      shopList.appendChild(coinSection);
+
+      // SUPPORT DESK 섹션
+      const supportSection = document.createElement('div');
+      supportSection.className = 'supc-section';
+      supportSection.innerHTML = `
+        <div class="supc-section-header">
+          <span class="supc-section-badge">SUPPORT DESK</span>
+          <span class="supc-section-sub">${ko ? 'HCSiG 개발 후원 · ₩ 결제' : 'Support HCSiG · ₩ Payment'}</span>
+        </div>
+        <div class="supc-cards">
+          ${SUPPORT_PRODUCTS.map(p => `
+            <div class="supc-card">
+              <div class="supc-card-tag supc-tag-${p.tag.toLowerCase()}">${p.tag}</div>
+              <div class="supc-card-label">${p.name}</div>
+              <div class="supc-card-price">${p.price}</div>
+              <div class="supc-card-reward small">${ko ? p.rewardLabel : p.rewardLabelEn}</div>
+              <div class="supc-card-desc small">${ko ? p.desc : p.descEn}</div>
+              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="support">${ko ? '신청하기' : 'Apply'}</button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      shopList.appendChild(supportSection);
+
+      // 크레딧 패키지 섹션
+      const creditSection = document.createElement('div');
+      creditSection.className = 'supc-section';
+      creditSection.innerHTML = `
+        <div class="supc-section-header">
+          <span class="supc-section-badge">크레딧 패키지</span>
+          <span class="supc-section-sub">${ko ? '₩ 결제 · 즉시 지급' : '₩ Payment · Instant Grant'}</span>
+        </div>
+        <div class="supc-cards">
+          ${CREDIT_PACKAGE_ITEMS.map(p => `
+            <div class="supc-card">
+              <div class="supc-card-label">${ko ? p.label : p.labelEn}</div>
+              <div class="supc-card-price">${p.price}</div>
+              <div class="supc-card-desc small">${ko ? p.desc : p.descEn}</div>
+              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="credit">${ko ? '신청하기' : 'Apply'}</button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      shopList.appendChild(creditSection);
+
+      // 모든 신청하기 버튼 → MORE > SUPPORT 이동
+      shopList.querySelectorAll('[data-supc-apply]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pid = btn.dataset.supcApply;
+          const moreModal = document.getElementById('moreModal');
+          if (moreModal) moreModal.classList.remove('hidden');
+          if (typeof setActiveMoreTab === 'function') setActiveMoreTab('support');
+          setTimeout(() => {
+            const applyTab = document.getElementById('btnSupportSubApply');
+            if (applyTab) applyTab.click();
+            const allCards = document.querySelectorAll('#sdProductCards .sd-product-card[data-pid]');
+            allCards.forEach(c => {
+              const isTarget = c.dataset.pid === pid;
+              c.classList.toggle('sd-product-selected', isTarget);
+              c.setAttribute('aria-checked', isTarget ? 'true' : 'false');
+            });
+          }, 80);
+        });
+      });
+    }
+
     function renderShop() {
       if (!shopList) return;
       shopList.innerHTML = '';
@@ -8235,9 +8490,25 @@ function applyLanguageToUI(){
         LEGENDARY: 5
       };
 
-      // SHOP TYPE 선택 (credits/coin/oneday)
+      // SHOP TYPE 선택 (credits/coin/oneday/support)
       state.ui = state.ui || {};
       const shopType = state.ui.shopType || 'credits';
+
+      // 탭 버튼 active 상태 동기화
+      document.querySelectorAll('.shop-type-tab').forEach(btn =>
+        btn.classList.toggle('active', btn.dataset.shopType === shopType)
+      );
+
+      // sort/category 행 표시 여부
+      const shopSortRow = document.querySelector('.shop-sort-row');
+      if (shopSortRow) shopSortRow.style.display = shopType === 'support' ? 'none' : '';
+
+      // 지원 센터 탭: 별도 렌더러로 위임
+      if (shopType === 'support') {
+        renderSupportCenter();
+        return;
+      }
+
       let currentShopItems = shopItems;
       let currencySymbol = '💰';
       let currencyName = 'Credits';
@@ -8266,12 +8537,6 @@ function applyLanguageToUI(){
             renderCodeList();
           });
         }
-      }
-
-      // SHOP TYPE 탭 업데이트
-      const shopTypeTabButtons = document.querySelectorAll('.shop-type-tab');
-      if (shopTypeTabButtons && shopTypeTabButtons.length) {
-        shopTypeTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.shopType === shopType));
       }
 
       // 카테고리 탭 업데이트
@@ -8477,54 +8742,6 @@ function applyLanguageToUI(){
 
         shopList.appendChild(wrapper);
       });
-
-      // ── SUPPORT DESK 섹션 (항상 하단에 표시) ─────────────────────────────
-      const lang = getLang();
-      const supportSection = document.createElement('div');
-      supportSection.className = 'shop-support-section';
-      supportSection.innerHTML = `
-        <div class="shop-support-header">
-          <span class="shop-support-badge">SUPPORT DESK</span>
-          <span class="shop-support-subtitle">${lang === 'en' ? 'Support HCSiG development · Manual payment' : 'HCSiG 개발 후원 · 수동 결제'}</span>
-        </div>
-        <div class="shop-support-cards">
-          ${SUPPORT_PRODUCTS.map(p => `
-            <div class="shop-support-card">
-              <div class="shop-support-card-name">${p.name}</div>
-              <div class="shop-support-card-price">${p.price}</div>
-              <div class="shop-support-card-reward">${lang === 'en' ? p.rewardLabelEn : p.rewardLabel}</div>
-              <div class="shop-support-card-desc small">${lang === 'en' ? p.descEn : p.desc}</div>
-              <button class="shop-support-apply-btn" data-support-apply="${p.id}">${lang === 'en' ? 'Apply' : '신청하기'}</button>
-            </div>
-          `).join('')}
-        </div>
-        <div class="shop-support-note small">${lang === 'en'
-          ? '💡 Go to MORE → SUPPORT to submit, check status, and redeem codes.'
-          : '💡 더보기 → SUPPORT에서 신청·내역 확인·코드 입력이 가능합니다.'}</div>
-      `;
-      // 신청하기 버튼 → MORE > SUPPORT > 신청하기 탭으로 이동
-      supportSection.querySelectorAll('[data-support-apply]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const pid = btn.dataset.supportApply;
-          // MORE 모달 열기 → SUPPORT 탭 열기 → 신청하기 sub-tab
-          const moreModal = document.getElementById('moreModal');
-          if (moreModal) moreModal.classList.remove('hidden');
-          if (typeof setActiveMoreTab === 'function') setActiveMoreTab('support');
-          // 신청하기 sub-tab 선택 및 상품 pre-select
-          setTimeout(() => {
-            const applyTab = document.getElementById('btnSupportSubApply');
-            if (applyTab) applyTab.click();
-            // 해당 상품 카드 선택 상태로 설정
-            const allCards = document.querySelectorAll('#sdProductCards .sd-product-card[data-pid]');
-            allCards.forEach(c => {
-              const isTarget = c.dataset.pid === pid;
-              c.classList.toggle('sd-product-selected', isTarget);
-              c.setAttribute('aria-checked', isTarget ? 'true' : 'false');
-            });
-          }, 80);
-        });
-      });
-      shopList.appendChild(supportSection);
     }
     function rollRarity(effect = {}) {
       const rareBoost = Math.max(0, Number(effect.scanRareBoost || 0));
