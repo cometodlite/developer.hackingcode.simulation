@@ -7484,3 +7484,53 @@ header button.header-glow-reward {
   background: rgba(0,255,136,0.20);
   border-color: rgba(0,255,136,0.50);
 }
+
+/* ── Phase 3: CODE 성장 경로 + PWR 영향도 + 아이템 수급처 ──────────────── */
+
+/* PWR 영향도 한 줄 */
+.code-modal-pwr-impact {
+  font-size: 10.5px;
+  color: rgba(0,255,136,0.65);
+  font-family: 'JetBrains Mono','Courier New',monospace;
+  border-left: 2px solid rgba(0,255,136,0.25);
+  padding: 3px 8px;
+  margin: 4px 0 6px;
+  line-height: 1.5;
+}
+
+/* 성장 경로 (Growth Path) */
+.code-modal-growth-path {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 6px 0 4px;
+  padding: 8px 10px;
+  background: rgba(0,255,136,0.03);
+  border: 1px solid rgba(0,255,136,0.10);
+  border-radius: 8px;
+}
+.cgp-step {
+  font-size: 10.5px;
+  font-family: 'JetBrains Mono','Courier New',monospace;
+  line-height: 1.55;
+  color: rgba(180,220,180,0.70);
+  padding: 1px 0;
+}
+.cgp-step.cgp-done {
+  color: rgba(0,255,136,0.80);
+}
+.cgp-step.cgp-pending {
+  color: rgba(180,200,180,0.55);
+}
+
+/* 아이템 수급처 */
+.item-card-source {
+  font-size: 9.5px;
+  color: rgba(160,200,160,0.50);
+  margin-top: 1px;
+  margin-bottom: 2px;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

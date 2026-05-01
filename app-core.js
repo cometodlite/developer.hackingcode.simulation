@@ -3207,9 +3207,9 @@ function applyLanguageToUI(){
         {
           title: '7. 코드 성장',
           goal: '주력 코드 하나를 먼저 키우세요',
-          text: '크레딧이나 중복 조각이 쌓이면 INVENTORY > CODES로 돌아와 믿을 만한 코드 하나를 집중적으로 키우는 편이 쉽습니다.',
-          checklist: ['강화는 크레딧으로 PWR을 올립니다.', '동기화는 나중에 중복 조각으로 보정을 올립니다.', '진화는 초반 필수 과제가 아니라 후반 목표입니다.'],
-          hint: '여러 코드를 조금씩보다 한 코드를 확실히 키우는 편이 초반에는 편합니다.'
+          text: '코드 성장에는 순서가 있습니다. ① 강화(크레딧 → PWR +5) → ② 동기화(중복 조각 → 해킹 보정) → ③ 진화(Lv.5+ → 등급 상승) → ④ 지원 아이템(ROM 안정화, 보호권, PICK 조율) 순서입니다. INVENTORY > CODES의 코드 상세에서 각 단계와 현재 진행도를 한눈에 확인할 수 있습니다.',
+          checklist: ['① 강화: 크레딧으로 PWR을 올리는 기본 성장입니다.', '② 동기화: 중복 조각으로 해킹 성공률 보정을 높입니다. 초반에는 먼저 안 해도 됩니다.', '③ 진화: Lv.5 이상에서 등급이 오르고 PWR이 크게 상승합니다. 후반 목표입니다.', '④ 지원 아이템: ROM은 PWR +3, 보호권은 실패 보호, PICK 조율은 시즌 PICK 전용입니다.'],
+          hint: '여러 코드를 조금씩보다 한 코드를 ①②③ 순서대로 키우는 것이 초반에는 가장 효율적입니다.'
         },
         {
           title: '8. SHOP',
@@ -4072,7 +4072,7 @@ function applyLanguageToUI(){
           const meta = getExtendMeta(getExtendItemKind(key));
           if (!meta) return '';
           const label = getLang() === 'en' ? meta.en : getLang() === 'ja' ? meta.ja : meta.ko;
-          return `<div class="item-card-extend">EXTEND · ${label}</div>`;
+          return `<div class="item-card-extend">EXTEND · ${label}</div>${getItemSourceHtml(key)}`;
         }
         const canStabilize = !!activeCode && rom >= 5 && (activeCode.romLevel || 0) < 5;
         const canProtect = !!activeCode && codeProtection > 0 && (activeCode.protectionCharges || 0) < 3;
@@ -5996,15 +5996,52 @@ function applyLanguageToUI(){
             protect: `보호 충전: ${code.protectionCharges || 0}`,
             pickTune: `PICK 조율: ${code.pickTuneLevel || 0}/10`
           };
-      const supportMeta = [];
-      if ((code.romLevel || 0) > 0) supportMeta.push(labels.rom);
-      if ((code.protectionCharges || 0) > 0) supportMeta.push(labels.protect);
-      if (isSeasonPickCode(code) || (code.pickTuneLevel || 0) > 0) supportMeta.push(labels.pickTune);
+      // PWR 영향도 텍스트
+      const pwrImpact = lang === 'en'
+        ? `PWR ${code.power} — affects hack success rate, campaign nodes, and Data Tower.`
+        : lang === 'ja'
+          ? `PWR ${code.power} — ハック成功率・キャンペーン・データタワーに影響。`
+          : `PWR ${code.power} — 해킹 성공률 · 캠페인 · 데이터 타워에 직접 영향.`;
+
+      // 성장 단계 (Growth Path) ①②③④
+      const step1Done = code.level >= 5;
+      const step2Done = syncLevel >= 3;
+      const step3Done = code.rarity !== 'COMMON' && code.rarity !== 'UNCOMMON';
+      const romLv   = code.romLevel || 0;
+      const protLv  = code.protectionCharges || 0;
+      const pickLv  = code.pickTuneLevel || 0;
+      const isPickCode = isSeasonPickCode(code);
+
+      const gpLabel = (done, txt) => `<div class="cgp-step ${done ? 'cgp-done' : 'cgp-pending'}">${done ? '✓' : '○'} ${txt}</div>`;
+
+      const step1txt = lang === 'en'
+        ? `① Upgrade — Lv.${code.level} · next ${upgradeCost} cr (+5 PWR)`
+        : lang === 'ja'
+          ? `① 強化 — Lv.${code.level} · 次 ${upgradeCost} cr (+5 PWR)`
+          : `① 강화 — Lv.${code.level} · 다음 ${upgradeCost} cr (+5 PWR)`;
+      const step2txt = lang === 'en'
+        ? `② Sync — Stage ${syncLevel} · next ${syncCost} shards (+${syncBonusText}% success)`
+        : lang === 'ja'
+          ? `② 同期 — ${syncLevel}段階 · 次 ${syncCost}シャード (+${syncBonusText}%)`
+          : `② 동기화 — ${syncLevel}단계 · 다음 조각 ${syncCost}개 (+${syncBonusText}% 보정)`;
+      const step3txt = lang === 'en'
+        ? `③ Evolve — ${evolveReady ? 'Lv.5+ met · +10 PWR' : 'Need Lv.5+ first'}`
+        : lang === 'ja'
+          ? `③ 進化 — ${evolveReady ? 'Lv.5+ 達成 · +10 PWR' : 'Lv.5以上必要'}`
+          : `③ 진화 — ${evolveReady ? 'Lv.5+ 충족 · +10 PWR' : 'Lv.5 이상 필요'}`;
+      const step4parts = [
+        lang === 'en' ? `ROM ${romLv}/5 (+3 PWR ea)` : lang === 'ja' ? `ROM ${romLv}/5 (+3 PWR)` : `ROM ${romLv}/5 (+3 PWR)`,
+        lang === 'en' ? `Protect ${protLv}/3` : lang === 'ja' ? `保護 ${protLv}/3` : `보호 ${protLv}/3`,
+        isPickCode ? (lang === 'en' ? `PICK Tune ${pickLv}/10 (+4 PWR ea)` : lang === 'ja' ? `PICK調律 ${pickLv}/10` : `PICK 조율 ${pickLv}/10 (+4 PWR)`) : null
+      ].filter(Boolean).join(' · ');
+      const step4txt = (lang === 'en' ? '④ Support items — ' : lang === 'ja' ? '④ サポート — ' : '④ 지원 아이템 — ') + step4parts;
+
       return `
         <div class="code-modal-identity">
           <strong class="${rarityClass}">${code.name}</strong>
           <span class="rarity-tag ${rarityClass}">[${localizeRarityLabel(code.rarity)}]</span>
         </div>
+        <div class="code-modal-pwr-impact small">${pwrImpact}</div>
         <div class="code-modal-stat-grid">
           <div class="small">${labels.level}</div>
           <div class="small">${labels.power}</div>
@@ -6012,13 +6049,15 @@ function applyLanguageToUI(){
           <div class="small">${labels.shards}</div>
           <div class="small">${labels.sync}</div>
           ${seasonMeta ? `<div class="small">${seasonMeta}</div>` : ''}
-          ${supportMeta.map(line => `<div class="small">${line}</div>`).join('')}
+        </div>
+        <div class="code-modal-growth-path">
+          ${gpLabel(step1Done, step1txt)}
+          ${gpLabel(step2Done, step2txt)}
+          ${gpLabel(step3Done, step3txt)}
+          ${gpLabel(romLv >= 5 && protLv >= 3, step4txt)}
         </div>
         <div class="code-modal-cost-grid">
-          <div class="small code-next-meta">${labels.upgrade}</div>
-          <div class="small code-next-meta">${labels.syncCost}</div>
           <div class="small code-next-meta">${labels.shard}</div>
-          <div class="small code-next-meta">${labels.evolve}</div>
         </div>
         <div class="code-modal-ability">
           <div class="small">${labels.ability}</div>
@@ -7263,46 +7302,6 @@ function applyLanguageToUI(){
       finishZdDiscRun('abort', run, def);
     }
 
-    // TRACE Ample 사용: TRACE -20%p (활성 런 전용)
-    function doZdUseTraceAmple() {
-      ensureZeroDayDefaults();
-      const run = state.zeroDay.pve.active;
-      if (!run) return;
-      const count = state.items.traceAmple || 0;
-      if (count < 1) {
-        showToast(getLang()==='en' ? 'No TRACE Ample.' : 'TRACE 앰플이 없습니다.', 'warn');
-        return;
-      }
-      state.items.traceAmple = count - 1;
-      const before = run.trace || 0;
-      run.trace = Math.max(0, before - 0.20);
-      const tracePct = Math.round(run.trace * 100);
-      run.log = run.log || [];
-      run.log.push(`AMPLE · TRACE -20% → ${tracePct}%`);
-      if (run.log.length > 12) run.log.shift();
-      updateZdDiscLive();
-      saveGame(true);
-    }
-
-    // NULL Seed 사용: TRACE → 0 완전 초기화 (활성 런 전용)
-    function doZdUseNullSeed() {
-      ensureZeroDayDefaults();
-      const run = state.zeroDay.pve.active;
-      if (!run) return;
-      const count = state.items.nullSeed || 0;
-      if (count < 1) {
-        showToast(getLang()==='en' ? 'No NULL Seed.' : 'NULL 시드가 없습니다.', 'warn');
-        return;
-      }
-      state.items.nullSeed = count - 1;
-      run.trace = 0;
-      run.log = run.log || [];
-      run.log.push('NULL SEED · TRACE → 0%');
-      if (run.log.length > 12) run.log.shift();
-      updateZdDiscLive();
-      saveGame(true);
-    }
-
     // endState: 'clear' | 'cut' | 'traced' | 'abort'
     function finishZdDiscRun(endState, run, def) {
       stopZdDiscTimer();
@@ -7430,15 +7429,6 @@ function applyLanguageToUI(){
         logEl.innerHTML = run.log.slice(-8).map(l => `<div class="zd-disc-log-line">${escapeHtml(l)}</div>`).join('');
         logEl.scrollTop = logEl.scrollHeight;
       }
-      // 아이템 카운트 및 disabled 갱신
-      const traceAmpleCountEl = document.getElementById('zdTraceAmpleCount');
-      const nullSeedCountEl   = document.getElementById('zdNullSeedCount');
-      const traceAmpleBtn     = document.getElementById('zdUseTraceAmpleBtn');
-      const nullSeedBtn       = document.getElementById('zdUseNullSeedBtn');
-      if (traceAmpleCountEl) traceAmpleCountEl.textContent = `×${state.items.traceAmple || 0}`;
-      if (nullSeedCountEl)   nullSeedCountEl.textContent   = `×${state.items.nullSeed   || 0}`;
-      if (traceAmpleBtn)     traceAmpleBtn.disabled        = (state.items.traceAmple || 0) < 1;
-      if (nullSeedBtn)       nullSeedBtn.disabled          = (state.items.nullSeed   || 0) < 1;
     }
 
     // ── ZERO-DAY DISCOVERY v3.0.0: 패널 렌더 ────────────────────────────────
@@ -7534,15 +7524,6 @@ function applyLanguageToUI(){
               </button>
               <button type="button" id="zdAbortBtn" class="zd-disc-abort-btn">
                 ${getLang()==='en' ? '✕ ABORT' : '✕ 중단'}
-              </button>
-            </div>
-
-            <div class="zd-disc-items-row">
-              <button type="button" id="zdUseTraceAmpleBtn" class="zd-disc-item-btn" ${(state.items.traceAmple||0)<1?'disabled':''}>
-                TRACE Ample <span id="zdTraceAmpleCount">×${state.items.traceAmple||0}</span>
-              </button>
-              <button type="button" id="zdUseNullSeedBtn" class="zd-disc-item-btn zd-item-null" ${(state.items.nullSeed||0)<1?'disabled':''}>
-                NULL Seed <span id="zdNullSeedCount">×${state.items.nullSeed||0}</span>
               </button>
             </div>
 
@@ -7954,6 +7935,32 @@ function applyLanguageToUI(){
         autoHack: 'automation'
       };
       return map[key] || 'growth';
+    }
+
+    // 아이템 수급처 메타 (Phase 3: 수급/사용처 명확화)
+    const ITEM_SOURCE_META = {
+      energyPack:               { ko: '상점 · 이벤트 보상 · 보상 박스',       en: 'Shop · Event reward · Bonus Box',        ja: 'ショップ · イベント報酬 · ボーナスボックス' },
+      dailyBonusBox:            { ko: '시즌 패스 · OPS 상점 · 이벤트',         en: 'Season Pass · OPS Shop · Event',          ja: 'シーズンパス · OPSショップ · イベント' },
+      codeProtection:           { ko: '지원 센터 · 상점 · 시즌 보상',           en: 'Support Center · Shop · Season reward',   ja: 'サポートセンター · ショップ · シーズン報酬' },
+      coin:                     { ko: '지원 센터 · 퀘스트 보상 · ZD 런',        en: 'Support Center · Quest reward · ZD run',  ja: 'サポートセンター · クエスト報酬 · ZDラン' },
+      weeklyToken:              { ko: 'WEEKLY 목표 보상',                        en: 'WEEKLY goal reward',                      ja: 'WEEKLYゴール報酬' },
+      oneDay:                   { ko: '상점 · ZD DISCOVERY · 시즌 패스',        en: 'Shop · ZD DISCOVERY · Season Pass',       ja: 'ショップ · ZD DISCOVERY · シーズンパス' },
+      rom:                      { ko: '상점 · 시즌 보상 · Daily Bonus Box',      en: 'Shop · Season reward · Daily Bonus Box',  ja: 'ショップ · シーズン報酬 · Daily Bonus Box' },
+      zeroDayVulnerability:     { ko: 'ZD DISCOVERY 런 보상',                   en: 'ZD DISCOVERY run reward',                 ja: 'ZD DISCOVERYラン報酬' },
+      zeroDayVulnerabilityShard:{ ko: 'ZD DISCOVERY 런 보상',                   en: 'ZD DISCOVERY run reward',                 ja: 'ZD DISCOVERYラン報酬' },
+      timeSwap2h:               { ko: '상점 · 이벤트',                           en: 'Shop · Event',                            ja: 'ショップ · イベント' },
+      timeSwap5h:               { ko: '상점 · 이벤트',                           en: 'Shop · Event',                            ja: 'ショップ · イベント' },
+      timeSwap10h:              { ko: '상점 · 이벤트',                           en: 'Shop · Event',                            ja: 'ショップ · イベント' },
+      traceAmple:               { ko: 'Daily Bonus Box · 시즌 보상',             en: 'Daily Bonus Box · Season reward',         ja: 'Daily Bonus Box · シーズン報酬' },
+      nullSeed:                 { ko: 'Daily Bonus Box · 시즌 보상',             en: 'Daily Bonus Box · Season reward',         ja: 'Daily Bonus Box · シーズン報酬' },
+      pickResidualData:         { ko: '시즌 패스 · OPS 상점 · PICK 진행',        en: 'Season Pass · OPS Shop · PICK progress',  ja: 'シーズンパス · OPSショップ · PICK進行' }
+    };
+
+    function getItemSourceHtml(key) {
+      const meta = ITEM_SOURCE_META[key];
+      if (!meta) return '';
+      const label = getLang() === 'en' ? meta.en : getLang() === 'ja' ? meta.ja : meta.ko;
+      return `<div class="item-card-source">📦 ${label}</div>`;
     }
 
     function getShopExtendKind(item, shopType) {
