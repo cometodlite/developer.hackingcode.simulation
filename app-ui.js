@@ -421,15 +421,9 @@
 	        <div>
 	          <div class="section-title">LAB</div>
 	          <h2>LAB</h2>
-	          <p>데이터 타워, CAMPAIGN 선형 챌린지, ZERO-DAY 침투를 여기서 관리합니다.</p>
+	          <p>데이터 타워 등반과 챕터 보상을 이곳에서 관리합니다.</p>
 	        </div>
 	        <div class="lab-mode-chip">LAB ONLINE</div>
-	      </div>
-	      <div class="lab-subtabs" id="labSubtabs">
-	        <button type="button" class="active" data-lab-tab="stage">데이터 타워</button>
-	        <button type="button" data-lab-tab="campaign">CAMPAIGN</button>
-	        <button type="button" data-lab-tab="zero">ZERO-DAY</button>
-	        <button type="button" data-lab-tab="coming">COMING SOON</button>
 	      </div>
       <section class="lab-panel active" data-lab-panel="stage">
         <div class="stage-head">
@@ -451,56 +445,7 @@
 	        </div>
 		        <div class="stage-chapter-list" id="stageChapterList" aria-label="Data Tower chapters"></div>
 		      </section>
-	      <section class="lab-panel" data-lab-panel="campaign">
-	        <div class="stage-head campaign-head">
-	          <div>
-	            <span class="badge">CAMPAIGN</span>
-	            <h3>Foundation Line</h3>
-	            <p>캠페인은 순서대로 열리는 선형 침투 챌린지입니다. 다음 미클리어 노드만 새로 도전할 수 있습니다.</p>
-	          </div>
-	          <div class="stage-summary campaign-summary" id="campaignSummary">
-	            <div><span>CHAPTER</span><strong>1 / 1</strong></div>
-	            <div><span>CLEARED</span><strong>0 / 5</strong></div>
-	            <div><span>STATUS</span><strong>READY</strong></div>
-	          </div>
-	        </div>
-	        <div class="campaign-map" id="campaignNodeList" aria-label="Campaign chapter nodes"></div>
-	        <div class="stage-detail campaign-detail" id="campaignDetail">
-	          <span class="badge">CAMPAIGN</span>
-	          <h4>노드 선택 대기</h4>
-	          <p>첫 챕터는 선형 챌린지입니다. 가장 앞의 미클리어 노드부터 차례대로 진입할 수 있습니다.</p>
-	        </div>
-	      </section>
-	      <section class="lab-panel" data-lab-panel="zero">
-	        <div id="zeroDayPanel"></div>
-	      </section>
-	      <section class="lab-panel" data-lab-panel="coming">
-	        <span class="badge">ROADMAP</span>
-        <h3>확장 로드맵</h3>
-        <p>LAB은 장기 도전과 다음 실험 콘텐츠를 준비하는 확장 허브입니다.</p>
-        <div class="lab-preview-grid">
-          <div><strong>BOSS RUSH</strong><span>연속 보스전</span></div>
-	          <div><strong>CODE PRESET</strong><span>빌드 저장 슬롯</span></div>
-          <div><strong>SEASON CODE</strong><span>시즌 한정 코드</span></div>
-          <div><strong>ZERO-DAY SEASON</strong><span>시즌 규칙 확장</span></div>
-        </div>
-      </section>
     `;
-    const labTabs = views.lab.querySelectorAll('[data-lab-tab]');
-    const labPanels = views.lab.querySelectorAll('[data-lab-panel]');
-    labTabs.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tab = btn.dataset.labTab || 'stage';
-        labTabs.forEach(item => item.classList.toggle('active', item === btn));
-        labPanels.forEach(panel => panel.classList.toggle('active', panel.dataset.labPanel === tab));
-        // Notify app-core to re-render the ZD panel when zero tab is selected
-        if (tab === 'zero') {
-          try { document.dispatchEvent(new CustomEvent('hcsig:zd-tab-open')); } catch(e) {}
-        }
-        // BGM: 랩 서브탭 전환 알림
-        try { document.dispatchEvent(new CustomEvent('hcsig:lab-tab', { detail: { tab } })); } catch(e) {}
-      });
-    });
   }
   buildLab();
   try { document.dispatchEvent(new CustomEvent('hcsig:lab-ready')); } catch(e) {}
@@ -510,26 +455,71 @@
     views.coming.innerHTML = `
       <div class="lab-hero coming-hero" id="comingContent">
         <div>
-          <div class="section-title">COMING SOON</div>
-          <h2>준비 중</h2>
-          <p>다음 업데이트에서 열릴 콘텐츠를 모아둡니다.</p>
+          <div class="section-title">EXTEND</div>
+          <h2>EXTEND</h2>
+          <p>CAMPAIGN, ZERO-DAY DISCOVERY, 특수전을 한 곳에서 관리하는 확장 패널입니다.</p>
         </div>
-        <div class="lab-mode-chip">NEXT</div>
+        <div class="lab-mode-chip">EXPAND</div>
       </div>
-      <section class="coming-panel">
-        <span class="badge">QUEUE</span>
-        <h3>예정 콘텐츠</h3>
-	        <p>보스 러시, 코드 프리셋, 특수 서버 이벤트를 준비합니다.</p>
-        <div class="lab-preview-grid coming-preview-grid">
-          <div><strong>BOSS RUSH</strong><span>연속 도전</span></div>
-	          <div><strong>CODE PRESET</strong><span>빌드 저장</span></div>
-          <div><strong>PRESETS</strong><span>코드 조합 저장</span></div>
-          <div><strong>SEASON CODE</strong><span>한정 코드</span></div>
+      <div class="lab-subtabs" id="extendSubtabs">
+        <button type="button" class="active" data-extend-tab="campaign">CAMPAIGN</button>
+        <button type="button" data-extend-tab="zero">ZERO-DAY</button>
+        <button type="button" data-extend-tab="special">${label('extendSpecial', '특수전')}</button>
+      </div>
+      <section class="lab-panel active" data-extend-panel="campaign">
+        <div class="stage-head campaign-head">
+          <div>
+            <span class="badge">CAMPAIGN</span>
+            <h3>Foundation Line</h3>
+            <p>캠페인은 순서대로 열리는 선형 침투 챌린지입니다. 다음 미클리어 노드만 새로 도전할 수 있습니다.</p>
+          </div>
+          <div class="stage-summary campaign-summary" id="campaignSummary">
+            <div><span>CHAPTER</span><strong>1 / 1</strong></div>
+            <div><span>CLEARED</span><strong>0 / 5</strong></div>
+            <div><span>STATUS</span><strong>READY</strong></div>
+          </div>
+        </div>
+        <div class="campaign-map" id="campaignNodeList" aria-label="Campaign chapter nodes"></div>
+        <div class="stage-detail campaign-detail" id="campaignDetail">
+          <span class="badge">CAMPAIGN</span>
+          <h4>노드 선택 대기</h4>
+          <p>첫 챕터는 선형 챌린지입니다. 가장 앞의 미클리어 노드부터 차례대로 진입할 수 있습니다.</p>
         </div>
       </section>
+      <section class="lab-panel" data-extend-panel="zero">
+        <div id="zeroDayPanel"></div>
+      </section>
+      <section class="lab-panel" data-extend-panel="special">
+        <section class="coming-panel">
+          <span class="badge">SPECIAL OPS</span>
+          <h3>${label('extendSpecial', '특수전')}</h3>
+          <p>제한 규칙이 걸린 짧은 작전과 계절 이벤트를 이곳에 모읍니다.</p>
+          <div class="lab-preview-grid coming-preview-grid">
+            <div><strong>${label('extendSpecialSoonA', '전파 차단')}</strong><span>에너지 회복 제한</span></div>
+            <div><strong>${label('extendSpecialSoonB', '야간 침투')}</strong><span>TRACE 상승 가속</span></div>
+            <div><strong>${label('extendSpecialSoonC', '무인 감시')}</strong><span>자동 경보 노드</span></div>
+          </div>
+        </section>
+      </section>
     `;
+    const extendTabs = views.coming.querySelectorAll('[data-extend-tab]');
+    const extendPanels = views.coming.querySelectorAll('[data-extend-panel]');
+    extendTabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.extendTab || 'campaign';
+        extendTabs.forEach(item => item.classList.toggle('active', item === btn));
+        extendPanels.forEach(panel => panel.classList.toggle('active', panel.dataset.extendPanel === tab));
+        if (tab === 'campaign') {
+          try { document.dispatchEvent(new CustomEvent('hcsig:campaign-tab-open')); } catch(e) {}
+        }
+        if (tab === 'zero') {
+          try { document.dispatchEvent(new CustomEvent('hcsig:zd-tab-open')); } catch(e) {}
+        }
+      });
+    });
   }
   buildComing();
+  try { document.dispatchEvent(new CustomEvent('hcsig:extend-ready')); } catch(e) {}
 
   const nav = document.createElement('nav');
   nav.id = 'appMainNav';
@@ -539,7 +529,7 @@
     <button type="button" data-main-view="codes">${label('mobileInventory', 'INVENTORY')}</button>
     <button type="button" data-main-view="home">${label('mobileHome', 'HOME')}</button>
     <button type="button" data-main-view="lab">${label('mobileLab', 'LAB')}</button>
-    <button type="button" data-main-view="coming" data-nav-coming="1">${label('mobileComing', 'COMING SOON')}</button>
+    <button type="button" data-main-view="coming">${label('mobileComing', 'EXTEND')}</button>
   `;
   const header = document.querySelector('header');
   if(header && header.nextSibling) header.parentNode.insertBefore(nav, header.nextSibling);
@@ -588,10 +578,6 @@
 
   nav.querySelectorAll('[data-main-view]').forEach(btn => {
     btn.addEventListener('click', () => {
-      if(btn.dataset.navComing === '1'){
-        showComingToast();
-        return;
-      }
       setView(btn.dataset.mainView);
     });
   });
@@ -606,7 +592,7 @@
     nav.querySelector('[data-main-view="codes"]').textContent = label('mobileInventory', 'INVENTORY');
     nav.querySelector('[data-main-view="home"]').textContent = label('mobileHome', 'HOME');
     nav.querySelector('[data-main-view="lab"]').textContent = label('mobileLab', 'LAB');
-    nav.querySelector('[data-main-view="coming"]').textContent = label('mobileComing', 'COMING SOON');
+    nav.querySelector('[data-main-view="coming"]').textContent = label('mobileComing', 'EXTEND');
     // 서브탭 라벨 동기화
     try {
       const subtabsEl = document.getElementById('inventorySubtabs');
