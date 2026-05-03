@@ -1,7 +1,7 @@
 
 /**
- * HCSiG v3.0.0 — ZERO-DAY DISCOVERY
- * ZERO-DAY 모드 타임어택 코어 루프 / SUPPORT 패널 버그픽스 / 즉시 클리어 버그픽스
+ * HCSiG v3.1.0 — SHOP 재편 / PASS 독립 패널 / 미션 버그픽스 / EVENT 글로우 분리
+ * SHOP 3분류, PASS 버튼, 신규 미션, 타워/로그인 미션 추적, LINK 분류 태그
  */
 
 // 전역 초기화 상태 변수
@@ -737,6 +737,22 @@ function applyLanguageToUI(){
 
     // 업데이트 로그
     const updateLogs = [
+
+      {
+        version: 'v3.1.0',
+        lines: [
+          'SHOP 3분류 재편: 일반/교환 상점, 재화 상점(COIN/OneDay 서브탭), 유료 상점으로 구분했습니다.',
+          'PASS 독립 패널: 헤더 PASS 버튼 추가. 시즌/캠페인 패스 탭 구분. 수령 완료 티어는 자동 숨김.',
+          'EVENT 탭: PASS 제거 → 특별 출석 탭 추가.',
+          '신규 DAILY/WEEKLY 미션 5개씩 추가: 일일 접속, 코드 레벨업, 상점 이용, 타워 도전 등.',
+          '미션 버그 수정: 일일 접속(05:00 이후 자동 클리어), 타워 5층 도전 카운트, 코드 기어(미구현 → stub 처리).',
+          'EVENT 글로우 버그 수정: PASS 티어 미수령 시 PASS 버튼이 빛나도록 분리.',
+          '데이터 타워: 클리어 스테이지 자동 가림 — 마지막 클리어 + 미클리어만 표시.',
+          'FLOW 분류 태그: 기존 EXTEND 아이템 태그를 FLOW로 명칭 변경 — 5번 EXTEND 패널과 혼동 방지.',
+          'SUPPORT: 입금자명 자동 저장(localStorage), Firebase 권한 오류 시 대체 문의 경로 안내.',
+          '설명서 업데이트: ZERO-DAY DISCOVERY 플레이 방법 상세 기재, FLOW 분류 / EXTEND 패널 설명.'
+        ]
+      },
 
       {
         version: 'v3.0.0',
@@ -2328,7 +2344,7 @@ function applyLanguageToUI(){
         { id: 'daily_login',         name: '일일 접속',       type: 'loginDaily',      target: 1,   rewardCredits: 50,  rewardCoin: 1,  desc: '오늘 게임에 접속하기' },
         { id: 'daily_normal_shop1',  name: '일반 상점 이용',  type: 'shopPurchases',   target: 1,   rewardCredits: 60,  desc: '상점에서 1회 구매하기 (일반/교환 상점 포함)' },
         { id: 'daily_code_levelup1', name: '코드 레벨 업',    type: 'codeLevelUp',     target: 1,   rewardCredits: 80,  desc: '코드 강화로 레벨을 1회 올리기' },
-        { id: 'daily_gear_enhance3', name: '코드 기어 강화',  type: 'gearEnhance',     target: 3,   rewardCredits: 70,  desc: '코드 기어를 3회 강화하기' },
+        { id: 'daily_gear_enhance3', name: '코드 기어 강화',  type: 'gearEnhance',     target: 3,   rewardCredits: 70,  desc: '코드 기어를 3회 강화하기', stub: true },
         { id: 'daily_tower5',        name: '타워 5층 도전',   type: 'towerAttempts',   target: 5,   rewardCredits: 90,  desc: '데이터 타워 5회 도전하기' }
       ],
       weekly: [
@@ -2349,7 +2365,7 @@ function applyLanguageToUI(){
       ,
         { id: 'weekly_login5',          name: '연속 접속',          type: 'loginStreak',          target: 5,   rewardCredits: 200, desc: '이번 주 5일 이상 접속하기' },
         { id: 'weekly_normal_shop10',   name: '주간 상점 이용',      type: 'shopPurchases',        target: 10,  rewardCredits: 180, desc: '상점에서 10회 구매하기' },
-        { id: 'weekly_gear_enhance15',  name: '주간 기어 강화',      type: 'gearEnhance',          target: 15,  rewardCredits: 220, desc: '코드 기어를 15회 강화하기' },
+        { id: 'weekly_gear_enhance15',  name: '주간 기어 강화',      type: 'gearEnhance',          target: 15,  rewardCredits: 220, desc: '코드 기어를 15회 강화하기', stub: true },
         { id: 'weekly_tower35',         name: '주간 타워 도전',      type: 'towerAttempts',        target: 35,  rewardCredits: 250, desc: '데이터 타워 35회 도전하기' },
         { id: 'weekly_daily_mission40', name: '일일 미션 달성',      type: 'dailyMissionsCompleted', target: 40, rewardCredits: 300, rewardCoin: 5, desc: '이번 주 일일 미션 40개 완료하기' }
       ],
@@ -3984,20 +4000,27 @@ function applyLanguageToUI(){
       try {
         ensureMissionResets();
         const prog = state.missionProgress.daily || {};
+        // stub 미션 제외하여 실제 클리어 가능한 미션 수만 카운트 (#19 fix)
         const incompleteDailyCount = missionDefs.daily
-          ? missionDefs.daily.filter(def => !prog.completed || !prog.completed[def.id]).length
+          ? missionDefs.daily.filter(def => !def.stub && (!prog.completed || !prog.completed[def.id])).length
           : 0;
 
-        const rewardReady = isWeeklyBonusClaimable() || hasUnclaimedPassTiers();
+        // PASS 티어 보상은 PASS 버튼으로 분리 (#19 fix)
+        const eventRewardReady = isWeeklyBonusClaimable();
+        const passRewardReady  = hasUnclaimedPassTiers();
 
         const btnListEl  = document.getElementById('btnList');
         const btnEventEl = document.getElementById('btnEvent');
+        const btnPassEl  = document.getElementById('btnPass');
 
         // LIST 버튼 — 일일 미션 남음 (action 필요)
         if (btnListEl) btnListEl.classList.toggle('header-glow-action', incompleteDailyCount > 0);
 
-        // EVENT 버튼 — 수령 가능한 보상 있음 (reward ready)
-        if (btnEventEl) btnEventEl.classList.toggle('header-glow-reward', rewardReady);
+        // EVENT 버튼 — 위클리 보너스 수령 가능할 때만 (#19 fix: PASS 티어는 제외)
+        if (btnEventEl) btnEventEl.classList.toggle('header-glow-reward', eventRewardReady);
+
+        // PASS 버튼 — 미수령 패스 티어 있음 (#19 fix)
+        if (btnPassEl) btnPassEl.classList.toggle('header-glow-reward', passRewardReady);
 
         // TODAY 박스 글로우
         const todayBox = document.getElementById('todaySummaryBox');
@@ -4015,10 +4038,11 @@ function applyLanguageToUI(){
       try {
         ensureMissionResets();
         const prog = state.missionProgress.daily || {};
+        // stub 미션 제외 (#19 관련: 실제 클리어 가능한 미션 수만 카운트)
         const completedCount = missionDefs.daily
-          ? missionDefs.daily.filter(def => prog.completed && prog.completed[def.id]).length
+          ? missionDefs.daily.filter(def => !def.stub && prog.completed && prog.completed[def.id]).length
           : 0;
-        const totalCount = missionDefs.daily ? missionDefs.daily.length : 0;
+        const totalCount = missionDefs.daily ? missionDefs.daily.filter(def => !def.stub).length : 0;
 
         const weeklyProg = state.weeklyChallenge || {};
         const weeklyGoals = Array.isArray(weeklyProg.goals) ? weeklyProg.goals : [];
@@ -4949,6 +4973,7 @@ function applyLanguageToUI(){
               <div class="sd-form-row">
                 <label class="sd-form-label" for="supportPayerName">${lang === 'en' ? 'Payer Name' : '입금자명'}</label>
                 <input class="sd-form-input" id="supportPayerName" type="text" maxlength="20"
+                  value="${(() => { try { return localStorage.getItem('hcsig_payerName') || ''; } catch(e) { return ''; } })()}"
                   placeholder="${lang === 'en' ? 'Name used for payment' : '결제 시 사용한 이름'}"/>
               </div>
               <div class="sd-form-how small">
@@ -5015,6 +5040,14 @@ function applyLanguageToUI(){
           card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectCard(); } });
         });
 
+        // ── 입금자명 localStorage 자동 저장 (#9) ────────────────────────────
+        const payerInput = el.querySelector('#supportPayerName');
+        if (payerInput) {
+          payerInput.addEventListener('input', () => {
+            try { localStorage.setItem('hcsig_payerName', payerInput.value); } catch(e) {}
+          });
+        }
+
         // ── 계좌 복사 버튼 ──────────────────────────────────────────────────
         const bankCopyBtn = el.querySelector('#btnSdBankCopy');
         if (bankCopyBtn) {
@@ -5064,9 +5097,21 @@ function applyLanguageToUI(){
                 ? `✅ Submitted! (ID: ${result.claimId.slice(0,8)}…) We'll review within 24h.`
                 : `✅ 신청이 접수되었습니다! (ID: ${result.claimId.slice(0,8)}…) 24시간 내 검토 후 코드를 발급해드립니다.`;
               submitMsg.className = 'sd-submit-msg sd-msg-ok';
-              el.querySelector('#supportPayerName').value = '';
+              // 제출 성공 시 입금자명 초기화 + localStorage 정리 (#9)
+              const pInput = el.querySelector('#supportPayerName');
+              if (pInput) pInput.value = '';
+              try { localStorage.removeItem('hcsig_payerName'); } catch(e) {}
             } else {
-              submitMsg.textContent = '⚠ ' + result.err;
+              // #10: Firebase 권한 오류 시 대체 연락 방법 안내
+              const errMsg = result.err || '';
+              const isPermErr = /permission|Permission|PERMISSION|insufficient/i.test(errMsg);
+              if (isPermErr) {
+                submitMsg.innerHTML = lang === 'en'
+                  ? `⚠ Submission failed (server error). Please contact us directly:<br>토스뱅크 1002-3349-0522 조용완 after transfer → KakaoTalk or email with your account ID`
+                  : `⚠ 서버 오류로 자동 신청에 실패했습니다.<br>이체 후 <strong>입금자명 + 계정 ID</strong>를 카카오톡 또는 이메일로 직접 문의해주세요.<br>계정 ID는 위 "내 계정 정보 복사" 버튼으로 확인하세요.`;
+              } else {
+                submitMsg.textContent = '⚠ ' + errMsg;
+              }
               submitMsg.className = 'sd-submit-msg sd-msg-error';
             }
           });
@@ -6841,22 +6886,28 @@ function applyLanguageToUI(){
           <span>${ptsInTier} / ${PASS_POINTS_PER_TIER} pts</span>
         </div>
         <div class="pass-tier-list">
-          ${passTierRewards.map(r => {
-            const reached  = tier >= r.tier;
-            const claimed  = !!state.season.passClaimed[String(r.tier)];
-            const canClaim = reached && !claimed;
-            const parts = [];
-            if (r.credits)     parts.push(`+${r.credits}cr`);
-            if (r.energyPack)  parts.push(`+${r.energyPack}EP`);
-            if (r.weeklyToken) parts.push(`+${r.weeklyToken}TK`);
-            if (r.coin)        parts.push(`+${r.coin}COIN`);
-            if (r.pickCode)    parts.push(`PICK ZERO_TRACE`);
-            return `<div class="pass-tier-row ${claimed ? 'claimed' : ''} ${canClaim ? 'can-claim' : ''} ${reached && !claimed ? 'reached' : ''}">
-              <span class="pass-tier-num">T${r.tier}</span>
-              <span class="pass-tier-reward">${parts.join(' ')}</span>
-              <button type="button" data-claim-tier="${r.tier}" ${canClaim ? '' : 'disabled'}>${claimed ? (getLang()==='en' ? 'Claimed' : '수령') : (getLang()==='en' ? 'Claim' : '수령')}</button>
-            </div>`;
-          }).join('')}
+          ${(() => {
+            // #6: 수령 완료 티어 숨김, 마지막 수령 티어만 접혀서 표시
+            const lastClaimed = [...passTierRewards].reverse().find(r => !!state.season.passClaimed[String(r.tier)]);
+            return passTierRewards.map(r => {
+              const reached  = tier >= r.tier;
+              const claimed  = !!state.season.passClaimed[String(r.tier)];
+              // 수령 완료된 티어 중 마지막 수령 티어가 아니면 숨김 (#6)
+              if (claimed && (!lastClaimed || r.tier !== lastClaimed.tier)) return '';
+              const canClaim = reached && !claimed;
+              const parts = [];
+              if (r.credits)     parts.push(`+${r.credits}cr`);
+              if (r.energyPack)  parts.push(`+${r.energyPack}EP`);
+              if (r.weeklyToken) parts.push(`+${r.weeklyToken}TK`);
+              if (r.coin)        parts.push(`+${r.coin}COIN`);
+              if (r.pickCode)    parts.push(`PICK ZERO_TRACE`);
+              return `<div class="pass-tier-row ${claimed ? 'claimed' : ''} ${canClaim ? 'can-claim' : ''} ${reached && !claimed ? 'reached' : ''}">
+                <span class="pass-tier-num">T${r.tier}</span>
+                <span class="pass-tier-reward">${parts.join(' ')}${claimed ? ` · ${getLang()==='en' ? 'Claimed' : '수령 완료'}` : ''}</span>
+                ${!claimed ? `<button type="button" data-claim-tier="${r.tier}" ${canClaim ? '' : 'disabled'}>${getLang()==='en' ? 'Claim' : '수령'}</button>` : ''}
+              </div>`;
+            }).join('');
+          })()}
         </div>
         `}
       `;
@@ -8703,18 +8754,27 @@ function applyLanguageToUI(){
               <em>${chapter.from}-${chapter.to} · ${(STAGE_CHANNEL_META[chapter.theme] ? (getLang() === 'en' ? STAGE_CHANNEL_META[chapter.theme].en : STAGE_CHANNEL_META[chapter.theme].ko) : chapter.theme)} · ${clearedInChapter}/10 · ${claimed ? stageCopy('보상 수령', 'Reward claimed') : getStageChapterRewardText(chapter.index)}</em>
             </button>
             <div class="stage-list" ${open ? '' : 'hidden'}>
-              ${stages.map(stage => {
-                const cleared = !!getStageClearInfo(stage);
-                const active = stage.id === selectedStage.id;
-                const status = cleared ? stageCopy('CLEAR', 'CLEAR') : stageCopy('READY', 'READY');
-                return `
-                  <button type="button" class="stage-card ${active ? 'active' : ''} ${cleared ? 'is-cleared' : ''} ${stage.boss ? 'is-boss' : ''}" data-stage-id="${stage.id}">
-                    <span class="stage-card-top"><strong>${String(stage.number).padStart(3, '0')}</strong><em>${stage.boss ? 'BOSS' : chapter.theme}</em></span>
-                    <span class="stage-card-meta">Lv.${stage.recommendedLevel} · PWR ${stage.recommendedPower}</span>
-                    <span class="stage-card-status">${status}</span>
-                  </button>
-                `;
-              }).join('')}
+              ${(() => {
+                // #12: 클리어 스테이지 자동 가림 — 마지막 클리어 스테이지 + 미클리어 스테이지만 표시
+                const clearedStages = stages.filter(s => !!getStageClearInfo(s));
+                const lastClearedNum = clearedStages.length > 0
+                  ? Math.max(...clearedStages.map(s => s.number))
+                  : -1;
+                return stages.map(stage => {
+                  const cleared = !!getStageClearInfo(stage);
+                  // 클리어된 스테이지 중 마지막 클리어가 아니면 숨김 (#12)
+                  if (cleared && stage.number !== lastClearedNum) return '';
+                  const active = stage.id === selectedStage.id;
+                  const status = cleared ? stageCopy('CLEAR', 'CLEAR') : stageCopy('READY', 'READY');
+                  return `
+                    <button type="button" class="stage-card ${active ? 'active' : ''} ${cleared ? 'is-cleared' : ''} ${stage.boss ? 'is-boss' : ''}" data-stage-id="${stage.id}">
+                      <span class="stage-card-top"><strong>${String(stage.number).padStart(3, '0')}</strong><em>${stage.boss ? 'BOSS' : chapter.theme}</em></span>
+                      <span class="stage-card-meta">Lv.${stage.recommendedLevel} · PWR ${stage.recommendedPower}</span>
+                      <span class="stage-card-status">${status}</span>
+                    </button>
+                  `;
+                }).join('');
+              })()}
             </div>
           </section>
         `;
@@ -8824,6 +8884,12 @@ function applyLanguageToUI(){
       state.stage.activeBattle = activeBattle;
       state.stats.stageAttemptCount = (state.stats.stageAttemptCount || 0) + 1;
       code.usage = (code.usage || 0) + 1;
+      // Phase 1: 타워 도전 미션 추적 (#17 fix)
+      ensureMissionResets();
+      state.missionProgress.daily.towerAttempts = (state.missionProgress.daily.towerAttempts || 0) + 1;
+      state.missionProgress.weekly.towerAttempts = (state.missionProgress.weekly.towerAttempts || 0) + 1;
+      checkMissions('daily');
+      checkMissions('weekly');
 
       // 5. UI 갱신 + 저장
       renderStagePanel();
@@ -10299,6 +10365,11 @@ function applyLanguageToUI(){
       if (state.missionProgress.daily.loginDaily === undefined) {
         state.missionProgress.daily.loginDaily = true;
       }
+      // loginDaily가 true인데 미션이 아직 완료 처리 안 됐으면 즉시 체크 (#20 fix)
+      if (state.missionProgress.daily.loginDaily &&
+          !(state.missionProgress.daily.completed && state.missionProgress.daily.completed['daily_login'])) {
+        try { checkMissions('daily'); } catch(e) {}
+      }
       if (state.missionProgress.daily.energy0Reached === undefined) {
         state.missionProgress.daily.energy0Reached = false;
       }
@@ -10411,6 +10482,7 @@ function applyLanguageToUI(){
       let anyCompleted = false;
 
       defs.forEach(def => {
+        if (def.stub) return; // 미구현 미션 건너뜀 (#16 fix)
         if (prog.completed[def.id]) return;
 
         // energy0Flag는 getMissionProgressValue에서 통합 처리 (prog.energy0Reached 플래그 사용)
@@ -10504,6 +10576,7 @@ function applyLanguageToUI(){
       missionListEl.appendChild(header);
 
       defs.forEach(def => {
+        if (def.stub) return; // 미구현 미션 숨김 (#16)
         const progVal = getMissionProgressValue(scope, def.type);
         const progObj = state.missionProgress[scope];
         const completed = !!(progObj && progObj.completed && progObj.completed[def.id]);
