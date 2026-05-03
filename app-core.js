@@ -8637,6 +8637,12 @@ function applyLanguageToUI(){
         if (chEl) chEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
 
+      // ── #12/#14: 전역 프론티어 계산 ────────────────────────────────────────
+      // frontierStage = 전체 타워에서 아직 클리어하지 않은 첫 번째 스테이지
+      const frontierStage = stageDefs.find(s => !state.stage.cleared[s.id]);
+      const frontierNum = frontierStage ? frontierStage.number : 101; // 전체 클리어 시 101
+      const prevNum = frontierNum - 1; // 반복 보상 대상: 프론티어 바로 전 스테이지
+
       const clearInfo = getStageClearInfo(selectedStage);
       const activeCode = getActiveCodeInstance();
       const successInfo = getStageSuccessInfo(selectedStage, activeCode);
@@ -8644,11 +8650,15 @@ function applyLanguageToUI(){
       const enoughEnergy = state.energy >= selectedStage.energyCost;
       const canAttempt = !!activeCode && enoughEnergy;
       const activeEffect = getCodeEffect(activeCode);
-      const repeatPreview = applyGpuReward({
-        credits: Math.max(1, Math.round(selectedStage.repeatReward.credits * (1 + Number(activeEffect.stageRepeatCreditBonus || 0)))),
-        exp: Math.max(1, Math.round(selectedStage.repeatReward.exp * (1 + Number(activeEffect.stageRepeatExpBonus || 0)))),
-        energyPack: selectedStage.repeatReward.energyPack
-      });
+      // #14: 반복 보상은 프론티어 직전 스테이지(prevNum)만 해당
+      const isRepeatEligible = !clearInfo || selectedStage.number === prevNum;
+      const repeatPreview = isRepeatEligible
+        ? applyGpuReward({
+            credits: Math.max(1, Math.round(selectedStage.repeatReward.credits * (1 + Number(activeEffect.stageRepeatCreditBonus || 0)))),
+            exp: Math.max(1, Math.round(selectedStage.repeatReward.exp * (1 + Number(activeEffect.stageRepeatExpBonus || 0)))),
+            energyPack: selectedStage.repeatReward.energyPack
+          })
+        : { credits: 0, exp: 0, energyPack: 0 };
       const statusText = clearInfo
         ? stageCopy(`클리어 ${clearInfo.clears || 1}회`, `Cleared ${clearInfo.clears || 1} time(s)`)
         : stageCopy('첫 클리어 대기', 'First clear pending');
@@ -8723,7 +8733,9 @@ function applyLanguageToUI(){
             </div>
             <div>
               <span>${stageCopy('반복 보상', 'Repeat Reward')}</span>
-              <strong>${getStageRewardText(repeatPreview)}</strong>
+              <strong>${clearInfo && !isRepeatEligible
+                ? stageCopy('해당 없음 (이전 구간)', 'N/A (past section)')
+                : getStageRewardText(repeatPreview)}</strong>
             </div>
             <div>
               <span>${stageCopy('챕터 보상', 'Chapter Reward')}</span>
@@ -8747,34 +8759,41 @@ function applyLanguageToUI(){
         const clearedInChapter = stages.filter(stage => !!getStageClearInfo(stage)).length;
         const complete = clearedInChapter === stages.length;
         const claimed = !!state.stage.chapterRewardsClaimed[String(chapter.index)];
+
+        // #12 재설계: 스테이지 가시성 결정
+        // - CH. 전체 클리어 시 → 스테이지 전체 가림 (BOSS 포함)
+        // - 부분 클리어 시 → 프론티어 이후 스테이지 + prevNum(직전 1개)만 표시
+        // - 미도전 CH. → 전체 표시
+        const stageCards = (() => {
+          if (complete) {
+            // 챕터 전체 클리어 → 스테이지 목록 완전 숨김
+            return '';
+          }
+          return stages.map(stage => {
+            const cleared = !!getStageClearInfo(stage);
+            // 클리어된 스테이지는 prevNum(프론티어 직전 1개)만 표시, 나머지 숨김
+            if (cleared && stage.number !== prevNum) return '';
+            const active = stage.id === selectedStage.id;
+            const status = cleared ? stageCopy('CLEAR', 'CLEAR') : stageCopy('READY', 'READY');
+            const isThePrev = cleared && stage.number === prevNum;
+            return `
+              <button type="button" class="stage-card ${active ? 'active' : ''} ${cleared ? 'is-cleared' : ''} ${stage.boss ? 'is-boss' : ''} ${isThePrev ? 'is-prev-stage' : ''}" data-stage-id="${stage.id}">
+                <span class="stage-card-top"><strong>${String(stage.number).padStart(3, '0')}</strong><em>${stage.boss ? 'BOSS' : chapter.theme}</em></span>
+                <span class="stage-card-meta">Lv.${stage.recommendedLevel} · PWR ${stage.recommendedPower}</span>
+                <span class="stage-card-status">${status}${isThePrev ? ` · ${stageCopy('반복가능', 'Repeat')}` : ''}</span>
+              </button>
+            `;
+          }).join('');
+        })();
+
         return `
           <section class="stage-chapter ${open ? 'open' : ''} ${complete ? 'is-complete' : ''}" data-stage-chapter="${chapter.index}">
             <button type="button" class="stage-chapter-head" data-stage-chapter-toggle="${chapter.index}">
               <span><strong>CH.${chapter.index}</strong> ${getLang() === 'en' ? chapter.titleEn : chapter.title}</span>
-              <em>${chapter.from}-${chapter.to} · ${(STAGE_CHANNEL_META[chapter.theme] ? (getLang() === 'en' ? STAGE_CHANNEL_META[chapter.theme].en : STAGE_CHANNEL_META[chapter.theme].ko) : chapter.theme)} · ${clearedInChapter}/10 · ${claimed ? stageCopy('보상 수령', 'Reward claimed') : getStageChapterRewardText(chapter.index)}</em>
+              <em>${chapter.from}-${chapter.to} · ${(STAGE_CHANNEL_META[chapter.theme] ? (getLang() === 'en' ? STAGE_CHANNEL_META[chapter.theme].en : STAGE_CHANNEL_META[chapter.theme].ko) : chapter.theme)} · ${clearedInChapter}/10 · ${complete ? stageCopy('✅ 완료', '✅ Done') : (claimed ? stageCopy('보상 수령', 'Reward claimed') : getStageChapterRewardText(chapter.index))}</em>
             </button>
             <div class="stage-list" ${open ? '' : 'hidden'}>
-              ${(() => {
-                // #12: 클리어 스테이지 자동 가림 — 마지막 클리어 스테이지 + 미클리어 스테이지만 표시
-                const clearedStages = stages.filter(s => !!getStageClearInfo(s));
-                const lastClearedNum = clearedStages.length > 0
-                  ? Math.max(...clearedStages.map(s => s.number))
-                  : -1;
-                return stages.map(stage => {
-                  const cleared = !!getStageClearInfo(stage);
-                  // 클리어된 스테이지 중 마지막 클리어가 아니면 숨김 (#12)
-                  if (cleared && stage.number !== lastClearedNum) return '';
-                  const active = stage.id === selectedStage.id;
-                  const status = cleared ? stageCopy('CLEAR', 'CLEAR') : stageCopy('READY', 'READY');
-                  return `
-                    <button type="button" class="stage-card ${active ? 'active' : ''} ${cleared ? 'is-cleared' : ''} ${stage.boss ? 'is-boss' : ''}" data-stage-id="${stage.id}">
-                      <span class="stage-card-top"><strong>${String(stage.number).padStart(3, '0')}</strong><em>${stage.boss ? 'BOSS' : chapter.theme}</em></span>
-                      <span class="stage-card-meta">Lv.${stage.recommendedLevel} · PWR ${stage.recommendedPower}</span>
-                      <span class="stage-card-status">${status}</span>
-                    </button>
-                  `;
-                }).join('');
-              })()}
+              ${stageCards}
             </div>
           </section>
         `;
@@ -8975,11 +8994,17 @@ function applyLanguageToUI(){
         const previous = getStageClearInfo(stage);
         const firstClear = !previous;
         const effect = getCodeEffect(code);
-        const baseRepeatReward = {
+        // #14: 반복 보상은 전역 프론티어 바로 전 스테이지만 해당
+        // (state.stage.cleared는 아직 업데이트 전이므로 현재 frontier 기준이 정확)
+        const battleFrontierStage = stageDefs.find(s => !state.stage.cleared[s.id]);
+        const battleFrontierNum = battleFrontierStage ? battleFrontierStage.number : 101;
+        const battlePrevNum = battleFrontierNum - 1;
+        const isRepeatRewardEligible = stage.number === battlePrevNum;
+        const baseRepeatReward = isRepeatRewardEligible ? {
           credits: Math.max(1, Math.round(stage.repeatReward.credits * (1 + Number(effect.stageRepeatCreditBonus || 0)))),
           exp: Math.max(1, Math.round(stage.repeatReward.exp * (1 + Number(effect.stageRepeatExpBonus || 0)))),
           energyPack: stage.repeatReward.energyPack
-        };
+        } : { credits: 0, exp: 0, energyPack: 0 };
         const reward = firstClear ? stage.firstReward : applyGpuReward(baseRepeatReward);
         const now = Date.now();
         state.credits += reward.credits;
