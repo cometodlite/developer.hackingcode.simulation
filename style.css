@@ -708,6 +708,36 @@ button:hover {
       flex: 1 1 auto;
     }
 
+    /* 업적 아이콘 (#achievement-illustrations) */
+    .achievement-icon-wrap {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .achievement-icon-wrap.is-unlocked {
+      border-color: rgba(0,255,136,0.30);
+      box-shadow: 0 0 6px rgba(0,255,136,0.14);
+    }
+    .achievement-icon-img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      display: block;
+      filter: grayscale(1) brightness(0.45);
+      transition: filter 0.2s;
+    }
+    .achievement-icon-wrap.is-unlocked .achievement-icon-img {
+      filter: grayscale(0) brightness(1);
+    }
+
     .mission-title-row {
       display: flex;
       align-items: center;

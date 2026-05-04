@@ -10833,6 +10833,112 @@ function applyLanguageToUI(){
       });
     }
 
+    // ── 업적 아이콘 매핑 (#achievement-illustrations) ─────────────────────────
+    function getAchievementIconSrc(def) {
+      const id  = def.id;
+      const b   = 'assets/achievements/hcsig_achievement_';
+      // 레벨
+      if (id === 'reach_level3' || id === 'reach_level10' || id.startsWith('level_total_') || id.startsWith('v200_progress_'))
+        return b + '01_level.svg';
+      // 데일리 미션 / 일반 퀘스트
+      if (id === 'daily_mission_clear1' || id === 'mission_10' || id.startsWith('missions_total_') || id.startsWith('v200_hidden_mission_'))
+        return b + '03_daily_mission_complete.svg';
+      // 위클리 미션
+      if (id === 'weekly_mission_clear1')
+        return b + '04_weekly_mission_complete.svg';
+      // 월간 미션
+      if (id === 'month_mission_all')
+        return b + '05_monthly_mission_master.svg';
+      // 코드 스캔
+      if (id.startsWith('scan_') || id.startsWith('v200_scan_'))
+        return b + '08_code_scanner.svg';
+      // 코드 보유
+      if (id === 'collector_beginner')
+        return b + '09_code_owned.svg';
+      // 코드 도감
+      if (id.startsWith('codex_total_') || id.startsWith('v200_codex_') || id.startsWith('v200_hidden_codex_'))
+        return b + '10_codex_discovery.svg';
+      // 고급 코드 (EPIC)
+      if (id === 'get_epic_code')
+        return b + '11_high_grade_code.svg';
+      // EPIC+ 코드
+      if (id.startsWith('v200_hidden_epic_'))
+        return b + '12_epic_plus_code.svg';
+      // LEGENDARY 코드
+      if (id.startsWith('v200_hidden_legend_'))
+        return b + '13_legendary_code.svg';
+      // 코드 레벨
+      if (id.startsWith('code_level_'))
+        return b + '14_code_level_reach.svg';
+      // 코드 파워
+      if (id.startsWith('code_power_') || id.startsWith('v200_power_'))
+        return b + '15_code_power_reach.svg';
+      // 코드 진화
+      if (id.startsWith('code_evolve_'))
+        return b + '16_code_evolution.svg';
+      // 코드 강화
+      if (id.startsWith('code_upgrade_') || id.startsWith('v200_code_upgrade_'))
+        return b + '19_code_enhance.svg';
+      // 코드 동기화 횟수
+      if (id.startsWith('code_sync_') || id.startsWith('v200_code_sync_'))
+        return b + '21_code_sync.svg';
+      // 동기화 단계
+      if (id.startsWith('sync_level_'))
+        return b + '22_sync_stage_reach.svg';
+      // 중복 조각
+      if (id.startsWith('shards_total_'))
+        return b + '23_duplicate_piece_collect.svg';
+      // 일반 해킹
+      if (id === 'first_hack_success' || id === 'hack_30_success' || id.startsWith('hack_total_') || id.startsWith('v200_hack_'))
+        return b + '24_hacking_success.svg';
+      // RISK 해킹
+      if (id === 'risk_10_success' || id.startsWith('risk_total_') || id.startsWith('v200_risk_'))
+        return b + '25_risk_hacking_success.svg';
+      // EXTREME 해킹
+      if (id.startsWith('v200_extreme_') || id.startsWith('v200_hidden_extreme_'))
+        return b + '26_extreme_hacking_success.svg';
+      // 데이터 타워 반복 클리어 (repeat보다 먼저 체크)
+      if (id.startsWith('v200_stage_repeat_') || id.startsWith('v200_hidden_stage_repeat_'))
+        return b + '30_data_tower_victory.svg';
+      // 데이터 타워 스테이지 도달
+      if (id.startsWith('v200_stage_'))
+        return b + '31_data_tower_floor_reach.svg';
+      // 챕터 보상
+      if (id.startsWith('v200_chapter_reward_'))
+        return b + '32_chapter_reward_claim.svg';
+      // 크레딧 누적 획득
+      if (id === 'credits_5000' || id === 'credits_20000' || id.startsWith('credits_total_') || id.startsWith('v200_economy_'))
+        return b + '33_credits_total_owned.svg';
+      // 상점 구매
+      if (id === 'shop_first_buy' || id.startsWith('shop_total_') || id.startsWith('v200_shop_'))
+        return b + '37_shop_purchase.svg';
+      // 에너지 소모
+      if (id.startsWith('energy_spent_') || id.startsWith('v200_hidden_energy_'))
+        return b + '38_energy_spent.svg';
+      // 에너지 최대치
+      if (id === 'energy_max_25')
+        return b + '39_energy_max_reach.svg';
+      // 에너지 팩 사용
+      if (id === 'energy_pack_1' || id.startsWith('v200_hidden_pack_'))
+        return b + '40_energy_pack_use.svg';
+      // 기진맥진 (에너지 0)
+      if (id === 'energy_zero')
+        return b + '41_exhausted.svg';
+      // CPU 티어
+      if (id === 'cpu_tier_5' || id.startsWith('v200_cpu_'))
+        return b + '42_cpu_tier_reach.svg';
+      // GPU 티어
+      if (id.startsWith('v200_gpu_'))
+        return b + '43_gpu_tier_reach.svg';
+      // 듀얼 (하이브리드) 티어
+      if (id.startsWith('v200_hybrid_'))
+        return b + '44_cpu_gpu_dual_tier.svg';
+      // 메타 업적 (업적 N개 달성)
+      if (id.startsWith('gen_achieve_'))
+        return b + '45_overclocker.svg';
+      return null;
+    }
+
     function renderAchievements() {
       if (!achievementListEl) return;
       achievementListEl.innerHTML = '';
@@ -10862,6 +10968,20 @@ function applyLanguageToUI(){
 
         const item = document.createElement('div');
         item.className = 'achievement-item';
+
+        // 아이콘 (#achievement-illustrations)
+        const iconSrc = getAchievementIconSrc(def);
+        if (iconSrc) {
+          const iconWrap = document.createElement('div');
+          iconWrap.className = 'achievement-icon-wrap' + (completed ? ' is-unlocked' : '');
+          const img = document.createElement('img');
+          img.className = 'achievement-icon-img';
+          img.src = iconSrc;
+          img.alt = '';
+          img.loading = 'lazy';
+          iconWrap.appendChild(img);
+          item.appendChild(iconWrap);
+        }
 
         const main = document.createElement('div');
         main.className = 'achievement-main';
