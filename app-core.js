@@ -1107,7 +1107,7 @@ function applyLanguageToUI(){
           'HOME 화면에 "오늘 할 일" 요약이 추가되었습니다. 에너지, 일일 미션 진행도, 주간 목표를 한 화면에서 확인할 수 있습니다.',
           'CODES 탭이 INVENTORY로 이름이 바뀌었습니다. 내부에 CODES / ITEMS 두 패널로 분리되었습니다.',
           'ITEMS 패널에 AUTO-RUN 시스템이 추가되었습니다. 자동 스캔(10 COIN, 10초마다, 1시간)과 자동 해킹(15 COIN, 20초마다, 30분)을 각각 일일 3회 사용할 수 있습니다. 에너지 소진 시 에너지 팩을 자동 사용합니다.',
-          'ITEMS 패널에서 에너지 팩, COIN, TOKEN, Daily Bonus Box, ROM 보유 현황을 확인할 수 있습니다.',
+          'ITEMS 패널에서 에너지 팩, COIN, TOKEN, ROM, 취약점(조각 50개 합성 가능) 보유 현황을 확인할 수 있습니다.',
           'DAILY / WEEKLY 미션 완료 상태가 새로고침 후에도 유지되도록 저장 로직을 강화했습니다.',
           'LIVE NET에 Foundation Prep Update 공지가 추가되었습니다.'
         ]
@@ -8115,14 +8115,14 @@ function applyLanguageToUI(){
       coin:                     { ko: '지원 센터 · 퀘스트 보상 · ZD 런',        en: 'Support Center · Quest reward · ZD run',  ja: 'サポートセンター · クエスト報酬 · ZDラン' },
       weeklyToken:              { ko: 'WEEKLY 목표 보상',                        en: 'WEEKLY goal reward',                      ja: 'WEEKLYゴール報酬' },
       oneDay:                   { ko: '상점 · ZD DISCOVERY · 시즌 패스',        en: 'Shop · ZD DISCOVERY · Season Pass',       ja: 'ショップ · ZD DISCOVERY · シーズンパス' },
-      rom:                      { ko: '상점 · 시즌 보상 · Daily Bonus Box',      en: 'Shop · Season reward · Daily Bonus Box',  ja: 'ショップ · シーズン報酬 · Daily Bonus Box' },
+      rom:                      { ko: '상점 · 시즌 보상',                          en: 'Shop · Season reward',                    ja: 'ショップ · シーズン報酬' },
       zeroDayVulnerability:     { ko: 'ZD DISCOVERY 런 보상',                   en: 'ZD DISCOVERY run reward',                 ja: 'ZD DISCOVERYラン報酬' },
       zeroDayVulnerabilityShard:{ ko: 'ZD DISCOVERY 런 보상',                   en: 'ZD DISCOVERY run reward',                 ja: 'ZD DISCOVERYラン報酬' },
       timeSwap2h:               { ko: '상점 · 이벤트',                           en: 'Shop · Event',                            ja: 'ショップ · イベント' },
       timeSwap5h:               { ko: '상점 · 이벤트',                           en: 'Shop · Event',                            ja: 'ショップ · イベント' },
       timeSwap10h:              { ko: '상점 · 이벤트',                           en: 'Shop · Event',                            ja: 'ショップ · イベント' },
-      traceAmple:               { ko: 'Daily Bonus Box · 시즌 보상',             en: 'Daily Bonus Box · Season reward',         ja: 'Daily Bonus Box · シーズン報酬' },
-      nullSeed:                 { ko: 'Daily Bonus Box · 시즌 보상',             en: 'Daily Bonus Box · Season reward',         ja: 'Daily Bonus Box · シーズン報酬' },
+      traceAmple:               { ko: 'ZD DISCOVERY · 시즌 보상',                 en: 'ZD DISCOVERY · Season reward',            ja: 'ZD DISCOVERY · シーズン報酬' },
+      nullSeed:                 { ko: 'ZD DISCOVERY · 시즌 보상',                 en: 'ZD DISCOVERY · Season reward',            ja: 'ZD DISCOVERY · シーズン報酬' },
       pickResidualData:         { ko: '시즌 패스 · OPS 상점 · PICK 진행',        en: 'Season Pass · OPS Shop · PICK progress',  ja: 'シーズンパス · OPSショップ · PICK進行' }
     };
 

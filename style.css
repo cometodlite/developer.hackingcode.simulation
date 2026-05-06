@@ -5787,7 +5787,11 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   opacity: 0.35;
   cursor: not-allowed;
 }
-/* Combined Vulnerability card */
+/* Combined Vulnerability card — 전체 너비 차지 (flex 컨테이너) */
+.item-card-vuln {
+  flex: 0 0 100%;
+  width: 100%;
+}
 .item-card-vuln-row {
   display: flex;
   align-items: center;
@@ -5803,7 +5807,11 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   padding: 1px 5px;
   white-space: nowrap;
 }
-/* Combined Time Swap card */
+/* Combined Time Swap card — 전체 너비 차지 (flex 컨테이너) */
+.item-card-timeswap {
+  flex: 0 0 100%;
+  width: 100%;
+}
 .item-card-ts-counts {
   display: flex;
   align-items: center;
