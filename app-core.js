@@ -79,7 +79,7 @@ const I18N = {
     saveStateSaved:'게임 상태가 클라우드 캐시에 저장되었습니다.', saveComplete:'클라우드 캐시 저장 완료', autosaveComplete:'✅ 자동 캐시 저장 완료', noSavedData:'저장된 데이터가 없습니다.', saveLoaded:'저장된 데이터를 불러왔습니다.', saveLoadError:'저장 데이터를 불러오는 중 오류가 발생했습니다.', saveDeleted:'저장 데이터가 삭제되었습니다.', exportFail:'내보내기 실패 (콘솔 확인)', hackModeLog:'해킹 모드: {mode}', riskPenaltyLog:'RISK 실패 페널티: 에너지가 추가로 1 소모되었습니다.', extremePenaltyLog:'EXTREME 실패 페널티: 에너지가 추가로 2 소모되었습니다.', gpuUpgradeLog:'GPU 업그레이드 완료! 현재 티어: {tier} (소모 크레딧 {cost})', gpuUpgradeFail:'GPU 업그레이드 실패: 크레딧이 부족합니다. (필요: {cost})', loadoutSaved:'로드아웃 슬롯 {slot}에 현재 설정을 저장했습니다.', loadoutEmpty:'로드아웃 슬롯 {slot}에 저장된 설정이 없습니다.', loadoutLoaded:'로드아웃 슬롯 {slot}을 불러왔습니다.',
     toastAchievement:'업적 달성: {name}', achievementLog:'[업적 달성] {name}', activeCode:'활성 코드 변경: {name}', levelUpLog:'레벨 업! Lv.{lv} 달성. 크레딧 +50 지급.', noEnergyPack:'에너지 팩이 없습니다.', energyFull:'이미 에너지가 가득 찼습니다.', usedEnergyPack:'에너지 팩 1개를 사용해 에너지를 최대치까지 회복했습니다.',
     noCodeSync:'동기화할 코드가 없습니다.', syncFailShards:'코드 동기화 실패: 중복 조각이 부족합니다. (필요: {need}, 보유: {have})', syncDone:'코드 동기화 완료: {name} 동기화 {lv}단계 달성. 파워 +{pwr}, 성공률 보정 +{rate}%.', syncToast:'{name} 동기화 {lv}단계', noCodeUpgrade:'강화할 코드가 없습니다. 먼저 코드를 스캔하세요.', upgradeFailCredits:'코드 강화 실패: 크레딧이 부족합니다. (필요: {cost})', upgradeDone:'코드 강화: {name} Lv.{lv} (파워 +5 → {pwr}), 크레딧 -{cost}.', noCodeEvolve:'진화할 코드가 없습니다.', maxRarity:'이미 최상위 희귀도(LEGENDARY)입니다. 더 이상 진화할 수 없습니다.', evolveNeedLv:'코드 진화 실패: 진화에는 최소 Lv.5 이상이 필요합니다.', evolveCannot:'진화를 처리할 수 없습니다.', evolveDone:'코드 진화 성공: {name}가 {rarity} 등급으로 승급, 파워 +10 → {pwr}.', shardEnhanceFail:'조각 강화 실패: 조각이 부족합니다. (필요: {need}, 보유: {have})', shardEnhanceDone:'조각 강화: {name} PWR +2 → {pwr}. 조각 -{cost}.', shardEnhanceCost:'조각 강화 비용: 조각 {cost} / PWR +2',
-    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'데이터 타워', mobileComing:'EXTEND', tutorialReplay:'튜토리얼 다시 보기', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY', rarityOperation:'OPERATION', routeExternal:'외부 루트', routeInternal:'내부 루트', routeCore:'코어 루트', targetRoute:'루트', upgradeTarget:'업그레이드 대상', systemStatus:'시스템 상태', creditsTab:'CREDITS', manualTab:'설명서', extendSpecial:'특수전', extendSpecialSoonA:'전파 차단', extendSpecialSoonB:'야간 침투', extendSpecialSoonC:'무인 감시', difficultyIntro:'입문', difficultyGeneral:'일반', difficultyStandard:'보통', difficultyHard:'어려움', difficultyChaos:'혼돈', difficultyImpossible:'불가능', passTab:'PASS', weeklyTab:'WEEKLY', seasonPass:'시즌 패스', passPoints:'패스 포인트', passTier:'패스 티어', seasonShop:'시즌 상점', opsShop:'OPS 상점', zeroDayOnboarding:'온보딩', zeroDayPve:'PVE', zeroDayPvp:'PVP', zeroDaySingle:'싱글', zeroDayCompete:'경쟁', vulnerability:'취약점', vulnerabilityShard:'취약점 조각', oneDay:'OneDay', coin:'COIN', token:'TOKEN', accountStatus:'계정 및 클라우드 상태', accountCustom:'계정 커스텀', comingSoonToastShort:'준비 중입니다.', zeroDayCmdLocale:'ZERO-DAY 명령어 표시', zdCmdAuto:'auto', zdCmdEn:'english', zdCmdKo:'korean', energyRecoveryDesc:'에너지 1칸 = 60초', todayTitle:'오늘 할 일', todayEnergy:'에너지', todayDailyMissions:'일일 미션', todayWeeklyGoals:'WEEKLY 목표', todayEnergyPack:'에너지 팩', todayComplete:'완료', todayRemaining:'남음', mobileInventory:'INVENTORY', inventoryCodesTab:'CODES', inventoryItemsTab:'ITEMS', itemsConsumables:'소모품', itemsCurrency:'재화', itemsComingSoon:'· 취약점 조각 50개를 모으면 취약점 1개로 합성할 수 있습니다.', autoRunLabel:'AUTO-RUN', autoScanLabel:'자동 스캔', autoHackLabel:'자동 해킹', autoRunStop:'중지', autoRunActive:'진행 중', autoRunUsesLeft:'남은 횟수', autoRunStartScan:'자동 스캔을 시작합니다. (10초마다 / 1시간)', autoRunStartHack:'자동 해킹을 시작합니다. (20초마다 / 30분)', autoRunStopped:'자동 실행이 중단되었습니다.', autoRunEnded:'자동 실행이 완료되었습니다.', autoRunNoEnergy:'에너지와 에너지 팩이 모두 소진되어 자동 실행을 중단합니다.', autoRunNoCoin:'COIN이 부족합니다.', autoRunDailyLimit:'오늘 자동 실행 횟수를 모두 사용했습니다. (일일 3회)', autoRunAlreadyActive:'이미 자동 실행이 진행 중입니다. 먼저 중지해주세요.', autoRunPause:'일시 중지', autoRunResume:'재개', autoRunEnd:'종료', autoRunPaused:'일시 중지됨', timeSwapLabel:'타임 스와프', timeSwap2h:'타임 스와프 2h', timeSwap5h:'타임 스와프 5h', timeSwap10h:'타임 스와프 10h', timeSwapUseAutoRun:'AUTO-RUN 연장', timeSwapUseEnergy:'에너지 회복 단축', timeSwapExtended:'AUTO-RUN 시간이 연장되었습니다.', timeSwapEnergySkipped:'에너지 회복 대기시간이 단축되었습니다.', timeSwapNone:'타임 스와프가 없습니다.', timeSwapFull:'에너지가 이미 최대이고 AUTO-RUN이 비활성 상태입니다.', traceAmpleLabel:'TRACE 앰플', nullSeedLabel:'NULL 시드', itemsGrowth:'성장 재료', rouletteTab:'룰렛', rouletteTitle:'초보자 한정 룰렛', rouletteDesc:'신규 계정 기준 10일간 매일 1회 수령할 수 있는 한정 룰렛입니다.', rouletteClaim:'오늘의 룰렛 뽑기', rouletteAlreadyClaimed:'오늘은 이미 수령했습니다. 내일 다시 오세요.', rouletteExpired:'초보자 한정 룰렛 기간이 종료되었습니다.', rouletteDayCount:'{cur} / 10일 완료', rouletteGuaranteed:'확정 보상', rouletteBonus:'랜덤 추가 보상', supportTab:'SUPPORT', supportTitle:'HCSiG 후원하기', supportDesc:'HCSiG를 응원해주시면 개발 지속에 큰 힘이 됩니다. 수동 처리 방식으로 운영자가 직접 확인 후 보상을 지급합니다.', supportHow:'구매 방법', supportHowDesc:'상품을 선택하고, 계정 정보를 복사하여 아래 문의 채널로 전달해주세요. 운영자 확인 후 보상이 지급됩니다.', supportContact:'문의하기', supportPending:'처리 대기 중', supportYourId:'내 계정 정보'
+    noEnergyScan:'에너지가 부족하여 코드 스캔을 수행할 수 없습니다.', noEnergyHack:'에너지가 부족하여 서버 해킹을 수행할 수 없습니다.', energyPackToast:'에너지 팩 +1 (보유: {v})', offlineRecoverLog:'오프라인 동안 에너지 {v} 회복 ({label} 경과)', offlineRecoverToast:'오프라인 회복: 에너지 +{v}', exportDone:'저장 데이터 내보내기 완료', importDone:'저장 데이터 불러오기 완료', importFail:'불러오기 실패: JSON 형식을 확인하세요.', emptyText:'텍스트가 비어 있습니다.', logsHide:'로그 숨기기', logsShow:'로그 보이기', initLog:'HCSiG 초기화 완료. (언어 설정, 중복 조각/코드 동기화, 모바일 UI, 상점 분류 적용)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'데이터 타워', mobileComing:'EXTEND', tutorialReplay:'튜토리얼 다시 보기', comingSoonToast:'Coming Soon - 준비 중인 기능입니다.', buy:'구매', buyDone:'구매 완료', buyUnavailable:'구매 불가', buySpendTitle:'구매하면 크레딧이 소모됩니다.', buyDailyLimit:'오늘 구매 제한에 도달했습니다.', buyOnceLimit:'이미 구매한 영구 아이템입니다.', notEnoughCredits:'크레딧이 부족합니다.', shopLog:'[상점] {msg}', shopBought:'{name} 구매 (💰 -{cost})', missionDoneToast:'미션 완료: {name} ({reward})', missionDoneCredits:'크레딧 +{v}', missionDoneEnergyPack:'에너지 팩 +{v}', missionDoneBoth:'크레딧 +{c} / 에너지 팩 +{e}', serverOption:'{name} (보안 {sec}, Lv{lv}+)', serverLevelNeed:'해당 서버를 해킹하려면 최소 Lv.{lv} 이상이어야 합니다.', noOwnedCodes:'보유 코드가 없습니다. 먼저 코드 스캔으로 코드를 확보하세요.', scanFound:'새 코드 발견! {name} [{rarity}]', scanDuplicate:'중복 코드 감지: {name} [{rarity}] → 중복 조각 +{gain} (보유 {have}).', scanDone:'코드 스캔 완료: 경험치 +{exp}.', hackSuccessLog:'서버 해킹 성공! [{server}] 성공 확률 {chance}%. 크레딧 +{credits}, EXP +{exp}.', hackFailLog:'서버 해킹 실패. [{server}] 성공 확률 {chance}%였음.', logDailyShopReset:'[시스템] 일일 상점 제한이 초기화되었습니다. (05:00 리셋)', loadoutSlot:'슬롯 {n}', logPinHint:'로그 항목 클릭 → 핀/해제', saveToLocal:'현재 상태를 브라우저 LocalStorage에 저장합니다.', loadFromLocal:'LocalStorage에서 저장된 데이터를 불러옵니다.', deleteSave:'저장 데이터를 삭제합니다.', exportJson:'현재 저장 데이터를 JSON 파일로 내보냅니다.', importJsonFile:'JSON 저장 파일을 불러옵니다.', importJsonText:'텍스트(JSON)로 저장 데이터를 불러옵니다.', languageTitle:'게임 언어를 선택합니다.', uiScaleTitle:'전체 UI 배율을 조정합니다.', toastTitle:'화면 알림(토스트) 표시 시간을 설정합니다.', shopSortTitle:'상점 아이템 정렬 기준을 선택합니다.', codeSortTitle:'코드 인벤토리 정렬 기준을 선택합니다.', dailyResetLabel:'05:00 리셋 ({n}회)', onceLabel:'1회', dailyShort:'일일', onceShort:'1회', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY', rarityOperation:'OPERATION', routeExternal:'외부 루트', routeInternal:'내부 루트', routeCore:'코어 루트', targetRoute:'루트', upgradeTarget:'업그레이드 대상', systemStatus:'시스템 상태', creditsTab:'CREDITS', manualTab:'설명서', extendSpecial:'특수전', extendSpecialSoonA:'전파 차단', extendSpecialSoonB:'야간 침투', extendSpecialSoonC:'무인 감시', difficultyIntro:'입문', difficultyGeneral:'일반', difficultyStandard:'보통', difficultyHard:'어려움', difficultyChaos:'혼돈', difficultyImpossible:'불가능', passTab:'PASS', weeklyTab:'WEEKLY', seasonPass:'시즌 패스', passPoints:'패스 포인트', passTier:'패스 티어', seasonShop:'시즌 상점', opsShop:'OPS 상점', zeroDayOnboarding:'온보딩', zeroDayPve:'PVE', zeroDayPvp:'PVP', zeroDaySingle:'싱글', zeroDayCompete:'경쟁', vulnerability:'취약점', vulnerabilityShard:'취약점 조각', oneDay:'OneDay', coin:'COIN', token:'TOKEN', accountStatus:'계정 및 클라우드 상태', accountCustom:'계정 커스텀', comingSoonToastShort:'준비 중입니다.', zeroDayCmdLocale:'ZERO-DAY 명령어 표시', zdCmdAuto:'auto', zdCmdEn:'english', zdCmdKo:'korean', energyRecoveryDesc:'에너지 1칸 = 60초', todayTitle:'오늘 할 일', todayEnergy:'에너지', todayDailyMissions:'일일 미션', todayWeeklyGoals:'WEEKLY 목표', todayEnergyPack:'에너지 팩', todayComplete:'완료', todayRemaining:'남음', mobileInventory:'INVENTORY', inventoryCodesTab:'CODES', inventoryItemsTab:'ITEMS', itemsConsumables:'소모품', itemsCurrency:'재화', itemsComingSoon:'· 취약점 조각 50개를 모으면 취약점 1개로 합성할 수 있습니다.', autoRunLabel:'AUTO-RUN', autoScanLabel:'자동 스캔', autoHackLabel:'자동 해킹', autoRunStop:'중지', autoRunActive:'진행 중', autoRunUsesLeft:'남은 횟수', autoRunStartScan:'자동 스캔을 시작합니다. (10초마다 / 1시간)', autoRunStartHack:'자동 해킹을 시작합니다. (20초마다 / 30분)', autoRunStopped:'자동 실행이 중단되었습니다.', autoRunEnded:'자동 실행이 완료되었습니다.', autoRunNoEnergy:'에너지와 에너지 팩이 모두 소진되어 자동 실행을 중단합니다.', autoRunNoCoin:'COIN이 부족합니다.', autoRunDailyLimit:'오늘 자동 실행 횟수를 모두 사용했습니다. (일일 3회)', autoRunAlreadyActive:'이미 자동 실행이 진행 중입니다. 먼저 중지해주세요.', autoRunPause:'일시 중지', autoRunResume:'재개', autoRunEnd:'종료', autoRunPaused:'일시 중지됨', timeSwapLabel:'타임 스와프', timeSwap2h:'타임 스와프 2h', timeSwap5h:'타임 스와프 5h', timeSwap10h:'타임 스와프 10h', timeSwapUseAutoRun:'AUTO-RUN 연장', timeSwapUseEnergy:'에너지 회복 단축', timeSwapExtended:'AUTO-RUN 시간이 연장되었습니다.', timeSwapEnergySkipped:'에너지 회복 대기시간이 단축되었습니다.', timeSwapNone:'타임 스와프가 없습니다.', timeSwapFull:'에너지가 이미 최대이고 AUTO-RUN이 비활성 상태입니다.', traceAmpleLabel:'TRACE 앰플', nullSeedLabel:'NULL 시드', itemsGrowth:'성장 재료', rouletteTab:'룰렛', rouletteTitle:'초보자 한정 룰렛', rouletteDesc:'신규 계정 기준 10일간 매일 1회 수령할 수 있는 한정 룰렛입니다.', rouletteClaim:'오늘의 룰렛 뽑기', rouletteAlreadyClaimed:'오늘은 이미 수령했습니다. 내일 다시 오세요.', rouletteExpired:'초보자 한정 룰렛 기간이 종료되었습니다.', rouletteDayCount:'{cur} / 10일 완료', rouletteGuaranteed:'확정 보상', rouletteBonus:'랜덤 추가 보상', supportTab:'SUPPORT', supportTitle:'HCSiG 후원하기', supportDesc:'HCSiG를 응원해주시면 개발 지속에 큰 힘이 됩니다. 수동 처리 방식으로 운영자가 직접 확인 후 보상을 지급합니다.', supportHow:'구매 방법', supportHowDesc:'상품을 선택하고, 계정 정보를 복사하여 아래 문의 채널로 전달해주세요. 운영자 확인 후 보상이 지급됩니다.', supportContact:'문의하기', supportPending:'처리 대기 중', supportYourId:'내 계정 정보',cashBalance:'캐시',cashShop:'캐시 상점',cashCharge:'캐시 충전',cashChargeRequest:'충전 신청',cashChargeNote:'계좌 이체 후 아래 연락처로 입금 확인 요청을 보내주세요. 운영자 확인 후 캐시가 지급됩니다.',cashBuy:'구매',cashNotEnough:'캐시가 부족합니다.',cashBought:'{name} 구매 완료 (캐시 -{cost} C)',cashChargeBonus:'보너스 +{pct}%',cashChargeTotal:'지급 캐시',cashShopDesc:'캐시로 인게임 유료 아이템을 즉시 구매할 수 있습니다. 캐시는 충전 신청 후 운영자 확인 시 지급됩니다.',cashCurrentBalance:'현재 잔액'
   },
   en: {
     appTitle: 'HCSiG - Hacking Code Simulator Game', subtitle: 'Hacking Code Simulator Game', list:'LIST', listTitle:'LIST', event:'EVENT', eventTitle:'EVENT', more: 'More ▾', moreTitle: 'More', status:'Status', shop:'Shop', actions:'Actions', codeInventory:'Code Inventory', codeDetail:'Code Detail',
@@ -99,7 +99,7 @@ const I18N = {
     saveStateSaved:'Game state saved to cloud cache.', saveComplete:'Cloud cache saved', autosaveComplete:'✅ Autosave cache complete', noSavedData:'No saved data found.', saveLoaded:'Saved data loaded.', saveLoadError:'An error occurred while loading save data.', saveDeleted:'Save data deleted.', exportFail:'Export failed (check console)', hackModeLog:'Hack Mode: {mode}', riskPenaltyLog:'RISK failure penalty consumed 1 additional energy.', extremePenaltyLog:'EXTREME failure penalty consumed 2 additional energy.', gpuUpgradeLog:'GPU upgrade complete! Current tier: {tier} (Credits -{cost})', gpuUpgradeFail:'GPU upgrade failed: not enough credits. (Need: {cost})', loadoutSaved:'Saved current setup to loadout slot {slot}.', loadoutEmpty:'There is no saved setup in loadout slot {slot}.', loadoutLoaded:'Loaded loadout slot {slot}.',
     toastAchievement:'Achievement unlocked: {name}', achievementLog:'[Achievement] {name}', activeCode:'Active code changed: {name}', levelUpLog:'Level up! Reached Lv.{lv}. Credits +50.', noEnergyPack:'No energy packs available.', energyFull:'Energy is already full.', usedEnergyPack:'Used 1 energy pack and fully restored energy.',
     noCodeSync:'There is no code to sync.', syncFailShards:'Code sync failed: not enough duplicate shards. (Need: {need}, Have: {have})', syncDone:'Code sync complete: {name} reached sync stage {lv}. Power +{pwr}, success bonus +{rate}%.', syncToast:'{name} sync stage {lv}', noCodeUpgrade:'There is no code to upgrade. Scan a code first.', upgradeFailCredits:'Code upgrade failed: not enough credits. (Need: {cost})', upgradeDone:'Code upgraded: {name} Lv.{lv} (Power +5 → {pwr}), Credits -{cost}.', noCodeEvolve:'There is no code to evolve.', maxRarity:'Already at the highest rarity (LEGENDARY). It cannot evolve further.', evolveNeedLv:'Code evolution failed: evolution requires at least Lv.5.', evolveCannot:'Cannot process evolution.', evolveDone:'Code evolution success: {name} advanced to {rarity}, Power +10 → {pwr}.', shardEnhanceFail:'Shard boost failed: not enough shards. (Need: {need}, Have: {have})', shardEnhanceDone:'Shard boost: {name} PWR +2 → {pwr}. Shards -{cost}.', shardEnhanceCost:'Shard boost cost: {cost} shards / PWR +2',
-    noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'EXTEND', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY', rarityOperation:'OPERATION', routeExternal:'External Route', routeInternal:'Internal Route', routeCore:'Core Route', targetRoute:'Route', upgradeTarget:'Upgrade Target', systemStatus:'System Status', creditsTab:'CREDITS', manualTab:'Manual', extendSpecial:'Special Ops', extendSpecialSoonA:'Signal Blackout', extendSpecialSoonB:'Night Breach', extendSpecialSoonC:'Sentinel Grid', difficultyIntro:'Intro', difficultyGeneral:'General', difficultyStandard:'Standard', difficultyHard:'Hard', difficultyChaos:'Chaos', difficultyImpossible:'Impossible', passTab:'PASS', weeklyTab:'WEEKLY', seasonPass:'Season Pass', passPoints:'Pass Points', passTier:'Pass Tier', seasonShop:'Season Shop', opsShop:'OPS Shop', zeroDayOnboarding:'Onboarding', zeroDayPve:'PVE', zeroDayPvp:'PVP', zeroDaySingle:'Single', zeroDayCompete:'Compete', vulnerability:'Vulnerability', vulnerabilityShard:'Vuln. Shard', oneDay:'OneDay', coin:'COIN', token:'TOKEN', accountStatus:'Account & Cloud Status', accountCustom:'Account Custom', comingSoonToastShort:'In preparation.', zeroDayCmdLocale:'ZERO-DAY Command Display', zdCmdAuto:'auto', zdCmdEn:'english', zdCmdKo:'korean', energyRecoveryDesc:'1 energy = 60 seconds', todayTitle:'Today', todayEnergy:'Energy', todayDailyMissions:'Daily Missions', todayWeeklyGoals:'WEEKLY Goals', todayEnergyPack:'Energy Pack', todayComplete:'complete', todayRemaining:'remaining', mobileInventory:'INVENTORY', inventoryCodesTab:'CODES', inventoryItemsTab:'ITEMS', itemsConsumables:'Consumables', itemsCurrency:'Currency', itemsComingSoon:'· Collect 50 Vuln. Shards to craft 1 Vulnerability.', autoRunLabel:'AUTO-RUN', autoScanLabel:'Auto Scan', autoHackLabel:'Auto Hack', autoRunStop:'Stop', autoRunActive:'Active', autoRunUsesLeft:'Uses left', autoRunStartScan:'Auto Scan started. (every 10s / 1 hour)', autoRunStartHack:'Auto Hack started. (every 20s / 30 min)', autoRunStopped:'Auto-run stopped.', autoRunEnded:'Auto-run completed.', autoRunNoEnergy:'Auto-run stopped: no energy or energy packs remaining.', autoRunNoCoin:'Not enough COIN.', autoRunDailyLimit:'Daily auto-run uses exhausted. (3/day)', autoRunAlreadyActive:'Auto-run is already active. Stop it first.', autoRunPause:'Pause', autoRunResume:'Resume', autoRunEnd:'End', autoRunPaused:'Paused', timeSwapLabel:'Time Swap', timeSwap2h:'Time Swap 2h', timeSwap5h:'Time Swap 5h', timeSwap10h:'Time Swap 10h', timeSwapUseAutoRun:'Extend AUTO-RUN', timeSwapUseEnergy:'Skip Energy Recovery', timeSwapExtended:'AUTO-RUN time extended.', timeSwapEnergySkipped:'Energy recovery time skipped.', timeSwapNone:'No Time Swap available.', timeSwapFull:'Energy is full and AUTO-RUN is inactive.', traceAmpleLabel:'TRACE Ample', nullSeedLabel:'NULL Seed', itemsGrowth:'Growth Materials', rouletteTab:'Roulette', rouletteTitle:'Beginner Roulette', rouletteDesc:'A limited roulette available once a day for 10 days from your first login.', rouletteClaim:"Today's Roll", rouletteAlreadyClaimed:'Already claimed today. Come back tomorrow.', rouletteExpired:'Beginner roulette period has ended.', rouletteDayCount:'{cur} / 10 days', rouletteGuaranteed:'Guaranteed', rouletteBonus:'Random Bonus', supportTab:'SUPPORT', supportTitle:'Support HCSiG', supportDesc:'Your support helps keep HCSiG running. Rewards are processed manually by the operator after confirmation.', supportHow:'How to Purchase', supportHowDesc:'Select a product and send your account info to the contact channel below. Rewards will be delivered after operator review.', supportContact:'Contact Us', supportPending:'Pending', supportYourId:'Your Account Info'
+    noEnergyScan:'Not enough energy to scan a code.', noEnergyHack:'Not enough energy to hack the server.', energyPackToast:'Energy Pack +1 (Owned: {v})', offlineRecoverLog:'Recovered {v} energy while offline ({label} elapsed)', offlineRecoverToast:'Offline recovery: Energy +{v}', exportDone:'Save data exported.', importDone:'Save data imported.', importFail:'Import failed: please check the JSON format.', emptyText:'The text box is empty.', logsHide:'Hide Logs', logsShow:'Show Logs', initLog:'HCSiG initialized. (language setting, duplicate shards/code sync, mobile UI, shop categories enabled)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileComing:'EXTEND', comingSoonToast:'Coming Soon - This feature is in preparation.', buy:'Buy', buyDone:'Purchase complete', buyUnavailable:'Unavailable', buySpendTitle:'Buying this item will consume credits.', buyDailyLimit:'You have reached today\'s purchase limit.', buyOnceLimit:'This permanent item has already been purchased.', notEnoughCredits:'Not enough credits.', shopLog:'[Shop] {msg}', shopBought:'Purchased {name} (💰 -{cost})', missionDoneToast:'Mission complete: {name} ({reward})', missionDoneCredits:'Credits +{v}', missionDoneEnergyPack:'Energy Pack +{v}', missionDoneBoth:'Credits +{c} / Energy Pack +{e}', serverOption:'{name} (Security {sec}, Lv{lv}+)', serverLevelNeed:'You must be at least Lv.{lv} to hack this server.', noOwnedCodes:'You do not own any codes yet. Scan codes first.', scanFound:'New code discovered! {name} [{rarity}]', scanDuplicate:'Duplicate code detected: {name} [{rarity}] → Duplicate Shards +{gain} (Owned {have}).', scanDone:'Code scan complete: EXP +{exp}.', hackSuccessLog:'Server hack success! [{server}] Success chance {chance}%. Credits +{credits}, EXP +{exp}.', hackFailLog:'Server hack failed. [{server}] Success chance was {chance}%.', logDailyShopReset:'[System] Daily shop limits have been reset. (05:00 reset)', loadoutSlot:'Slot {n}', logPinHint:'Click a log entry to pin/unpin it', saveToLocal:'Save the current state to browser LocalStorage.', loadFromLocal:'Load saved data from LocalStorage.', deleteSave:'Delete the saved data.', exportJson:'Export the current save data as a JSON file.', importJsonFile:'Load a JSON save file.', importJsonText:'Load save data from text (JSON).', languageTitle:'Select the game language.', uiScaleTitle:'Adjust the overall UI scale.', toastTitle:'Set how long toast notifications remain on screen.', shopSortTitle:'Choose how shop items are sorted.', codeSortTitle:'Choose how the code inventory is sorted.', dailyResetLabel:'05:00 reset ({n})', onceLabel:'one-time', dailyShort:'daily', onceShort:'once', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY', rarityOperation:'OPERATION', routeExternal:'External Route', routeInternal:'Internal Route', routeCore:'Core Route', targetRoute:'Route', upgradeTarget:'Upgrade Target', systemStatus:'System Status', creditsTab:'CREDITS', manualTab:'Manual', extendSpecial:'Special Ops', extendSpecialSoonA:'Signal Blackout', extendSpecialSoonB:'Night Breach', extendSpecialSoonC:'Sentinel Grid', difficultyIntro:'Intro', difficultyGeneral:'General', difficultyStandard:'Standard', difficultyHard:'Hard', difficultyChaos:'Chaos', difficultyImpossible:'Impossible', passTab:'PASS', weeklyTab:'WEEKLY', seasonPass:'Season Pass', passPoints:'Pass Points', passTier:'Pass Tier', seasonShop:'Season Shop', opsShop:'OPS Shop', zeroDayOnboarding:'Onboarding', zeroDayPve:'PVE', zeroDayPvp:'PVP', zeroDaySingle:'Single', zeroDayCompete:'Compete', vulnerability:'Vulnerability', vulnerabilityShard:'Vuln. Shard', oneDay:'OneDay', coin:'COIN', token:'TOKEN', accountStatus:'Account & Cloud Status', accountCustom:'Account Custom', comingSoonToastShort:'In preparation.', zeroDayCmdLocale:'ZERO-DAY Command Display', zdCmdAuto:'auto', zdCmdEn:'english', zdCmdKo:'korean', energyRecoveryDesc:'1 energy = 60 seconds', todayTitle:'Today', todayEnergy:'Energy', todayDailyMissions:'Daily Missions', todayWeeklyGoals:'WEEKLY Goals', todayEnergyPack:'Energy Pack', todayComplete:'complete', todayRemaining:'remaining', mobileInventory:'INVENTORY', inventoryCodesTab:'CODES', inventoryItemsTab:'ITEMS', itemsConsumables:'Consumables', itemsCurrency:'Currency', itemsComingSoon:'· Collect 50 Vuln. Shards to craft 1 Vulnerability.', autoRunLabel:'AUTO-RUN', autoScanLabel:'Auto Scan', autoHackLabel:'Auto Hack', autoRunStop:'Stop', autoRunActive:'Active', autoRunUsesLeft:'Uses left', autoRunStartScan:'Auto Scan started. (every 10s / 1 hour)', autoRunStartHack:'Auto Hack started. (every 20s / 30 min)', autoRunStopped:'Auto-run stopped.', autoRunEnded:'Auto-run completed.', autoRunNoEnergy:'Auto-run stopped: no energy or energy packs remaining.', autoRunNoCoin:'Not enough COIN.', autoRunDailyLimit:'Daily auto-run uses exhausted. (3/day)', autoRunAlreadyActive:'Auto-run is already active. Stop it first.', autoRunPause:'Pause', autoRunResume:'Resume', autoRunEnd:'End', autoRunPaused:'Paused', timeSwapLabel:'Time Swap', timeSwap2h:'Time Swap 2h', timeSwap5h:'Time Swap 5h', timeSwap10h:'Time Swap 10h', timeSwapUseAutoRun:'Extend AUTO-RUN', timeSwapUseEnergy:'Skip Energy Recovery', timeSwapExtended:'AUTO-RUN time extended.', timeSwapEnergySkipped:'Energy recovery time skipped.', timeSwapNone:'No Time Swap available.', timeSwapFull:'Energy is full and AUTO-RUN is inactive.', traceAmpleLabel:'TRACE Ample', nullSeedLabel:'NULL Seed', itemsGrowth:'Growth Materials', rouletteTab:'Roulette', rouletteTitle:'Beginner Roulette', rouletteDesc:'A limited roulette available once a day for 10 days from your first login.', rouletteClaim:"Today's Roll", rouletteAlreadyClaimed:'Already claimed today. Come back tomorrow.', rouletteExpired:'Beginner roulette period has ended.', rouletteDayCount:'{cur} / 10 days', rouletteGuaranteed:'Guaranteed', rouletteBonus:'Random Bonus', supportTab:'SUPPORT', supportTitle:'Support HCSiG', supportDesc:'Your support helps keep HCSiG running. Rewards are processed manually by the operator after confirmation.', supportHow:'How to Purchase', supportHowDesc:'Select a product and send your account info to the contact channel below. Rewards will be delivered after operator review.', supportContact:'Contact Us', supportPending:'Pending', supportYourId:'Your Account Info',cashBalance:'Cash',cashShop:'Cash Shop',cashCharge:'Cash Charge',cashChargeRequest:'Request Charge',cashChargeNote:'After bank transfer, please send a confirmation request to the contact below. Cash will be granted after operator verification.',cashBuy:'Buy',cashNotEnough:'Not enough cash.',cashBought:'Purchased {name} (Cash -{cost} C)',cashChargeBonus:'Bonus +{pct}%',cashChargeTotal:'Cash to Receive',cashShopDesc:'Use Cash to instantly purchase paid in-game items. Cash is granted after you request a charge and the operator confirms.',cashCurrentBalance:'Current Balance'
     ,mobileMore:'MORE', mobileLab:'LAB', mobileStage:'DATA TOWER', tutorialReplay:'Replay Tutorial'
   },
   ja: {
@@ -120,7 +120,7 @@ const I18N = {
     saveStateSaved:'ゲーム状態がクラウドキャッシュに保存されました。', saveComplete:'クラウドキャッシュ保存完了', autosaveComplete:'✅ 自動キャッシュ保存完了', noSavedData:'保存データがありません。', saveLoaded:'保存データを読み込みました。', saveLoadError:'保存データの読み込み中にエラーが発生しました。', saveDeleted:'保存データを削除しました。', exportFail:'エクスポート失敗 (コンソール確認)', hackModeLog:'ハッキングモード: {mode}', riskPenaltyLog:'RISK失敗ペナルティ: エネルギーが追加で1消費されました。', extremePenaltyLog:'EXTREME失敗ペナルティ: エネルギーが追加で2消費されました。', gpuUpgradeLog:'GPUアップグレード完了！ 現在のティア: {tier} (消費クレジット {cost})', gpuUpgradeFail:'GPUアップグレード失敗: クレジットが不足しています。 (必要: {cost})', loadoutSaved:'ロードアウトスロット {slot} に現在の設定を保存しました。', loadoutEmpty:'ロードアウトスロット {slot} に保存された設定がありません。', loadoutLoaded:'ロードアウトスロット {slot} を読み込みました。',
     toastAchievement:'実績達成: {name}', achievementLog:'[実績達成] {name}', activeCode:'アクティブコード変更: {name}', levelUpLog:'レベルアップ！ Lv.{lv} 達成。 クレジット +50 付与。', noEnergyPack:'エネルギーパックがありません。', energyFull:'すでにエネルギーが満タンです。', usedEnergyPack:'エネルギーパックを1個使用してエネルギーを最大まで回復しました。',
     noCodeSync:'同期するコードがありません。', syncFailShards:'コード同期失敗: 重複シャードが不足しています。 (必要: {need}, 所持: {have})', syncDone:'コード同期完了: {name} 同期 {lv}段階達成。 パワー +{pwr}, 成功率補正 +{rate}%。', syncToast:'{name} 同期 {lv}段階', noCodeUpgrade:'強化するコードがありません。先にコードをスキャンしてください。', upgradeFailCredits:'コード強化失敗: クレジットが不足しています。 (必要: {cost})', upgradeDone:'コード強化: {name} Lv.{lv} (パワー +5 → {pwr}), クレジット -{cost}。', noCodeEvolve:'進化するコードがありません。', maxRarity:'すでに最上位レアリティ(LEGENDARY)です。これ以上進化できません。', evolveNeedLv:'コード進化失敗: 進化には最低Lv.5以上が必要です。', evolveCannot:'進化を処理できません。', evolveDone:'コード進化成功: {name} が {rarity} に昇格、 パワー +10 → {pwr}。', shardEnhanceFail:'シャード強化失敗: シャードが不足しています。 (必要: {need}, 所持: {have})', shardEnhanceDone:'シャード強化: {name} PWR +2 → {pwr}。 シャード -{cost}。', shardEnhanceCost:'シャード強化コスト: シャード {cost} / PWR +2',
-    noEnergyScan:'エネルギーが不足しているためコードスキャンを実行できません。', noEnergyHack:'エネルギーが不足しているためサーバーハッキングを実行できません。', energyPackToast:'エネルギーパック +1 (所持: {v})', offlineRecoverLog:'オフライン中にエネルギー {v} 回復 ({label} 経過)', offlineRecoverToast:'オフライン回復: エネルギー +{v}', exportDone:'保存データのエクスポート完了', importDone:'保存データの読込完了', importFail:'読込失敗: JSON形式を確認してください。', emptyText:'テキストが空です。', logsHide:'ログを隠す', logsShow:'ログを表示', initLog:'HCSiG 初期化完了。 (言語設定、重複シャード/コード同期、モバイルUI、ショップ分類適用)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'データタワー', mobileComing:'EXTEND', tutorialReplay:'チュートリアル再表示', comingSoonToast:'Coming Soon - 準備中の機能です。', buy:'購入', buyDone:'購入完了', buyUnavailable:'購入不可', buySpendTitle:'購入するとクレジットが消費されます。', buyDailyLimit:'本日の購入制限に達しました。', buyOnceLimit:'すでに購入済みの永久アイテムです。', notEnoughCredits:'クレジットが不足しています。', shopLog:'[ショップ] {msg}', shopBought:'{name} 購入 (💰 -{cost})', missionDoneToast:'ミッション完了: {name} ({reward})', missionDoneCredits:'クレジット +{v}', missionDoneEnergyPack:'エネルギーパック +{v}', missionDoneBoth:'クレジット +{c} / エネルギーパック +{e}', serverOption:'{name} (セキュリティ {sec}, Lv{lv}+)', serverLevelNeed:'このサーバーをハックするには最低 Lv.{lv} 以上が必要です。', noOwnedCodes:'所持コードがありません。先にコードスキャンでコードを取得してください。', scanFound:'新コード発見！ {name} [{rarity}]', scanDuplicate:'重複コード検出: {name} [{rarity}] → 重複シャード +{gain} (所持 {have})。', scanDone:'コードスキャン完了: 経験値 +{exp}。', hackSuccessLog:'サーバーハッキング成功！ [{server}] 成功確率 {chance}%。 クレジット +{credits}, EXP +{exp}。', hackFailLog:'サーバーハッキング失敗。 [{server}] 成功確率 {chance}% でした。', logDailyShopReset:'[システム] デイリーショップ制限がリセットされました。 (05:00 リセット)', loadoutSlot:'スロット {n}', logPinHint:'ログ項目クリック → ピン留め/解除', saveToLocal:'現在の状態をブラウザの LocalStorage に保存します。', loadFromLocal:'LocalStorage から保存データを読み込みます。', deleteSave:'保存データを削除します。', exportJson:'現在の保存データを JSON ファイルにエクスポートします。', importJsonFile:'JSON 保存ファイルを読み込みます。', importJsonText:'テキスト(JSON)で保存データを読み込みます。', languageTitle:'ゲーム言語を選択します。', uiScaleTitle:'全体UIサイズを調整します。', toastTitle:'画面通知(トースト)の表示時間を設定します。', shopSortTitle:'ショップアイテムの並び順を選択します。', codeSortTitle:'コードインベントリの並び順を選択します。', dailyResetLabel:'05:00 リセット ({n}回)', onceLabel:'1回', dailyShort:'デイリー', onceShort:'1回', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY', rarityOperation:'OPERATION', routeExternal:'外部ルート', routeInternal:'内部ルート', routeCore:'コアルート', targetRoute:'ルート', upgradeTarget:'アップグレード対象', systemStatus:'システム状態', creditsTab:'CREDITS', manualTab:'マニュアル', extendSpecial:'特務作戦', extendSpecialSoonA:'電波遮断', extendSpecialSoonB:'夜間侵入', extendSpecialSoonC:'無人監視', difficultyIntro:'入門', difficultyGeneral:'一般', difficultyStandard:'普通', difficultyHard:'難しい', difficultyChaos:'混沌', difficultyImpossible:'不可能', passTab:'PASS', weeklyTab:'WEEKLY', seasonPass:'シーズンパス', passPoints:'パスポイント', passTier:'パスティア', seasonShop:'シーズンショップ', opsShop:'OPSショップ', zeroDayOnboarding:'オンボーディング', zeroDayPve:'PVE', zeroDayPvp:'PVP', zeroDaySingle:'シングル', zeroDayCompete:'競争', vulnerability:'脆弱性', vulnerabilityShard:'脆弱性シャード', oneDay:'OneDay', coin:'COIN', token:'TOKEN', accountStatus:'アカウントとクラウドステータス', accountCustom:'アカウントカスタム', comingSoonToastShort:'準備中です。', zeroDayCmdLocale:'ZERO-DAY コマンド表示', zdCmdAuto:'auto', zdCmdEn:'english', zdCmdKo:'korean', energyRecoveryDesc:'エネルギー1 = 60秒', todayTitle:'本日のタスク', todayEnergy:'エネルギー', todayDailyMissions:'デイリーミッション', todayWeeklyGoals:'WEEKLYゴール', todayEnergyPack:'エネルギーパック', todayComplete:'完了', todayRemaining:'残り', mobileInventory:'INVENTORY', inventoryCodesTab:'CODES', inventoryItemsTab:'ITEMS', itemsConsumables:'消耗品', itemsCurrency:'通貨', itemsComingSoon:'· 脆弱性シャード50個を集めると脆弱性1個に合成できます。', autoRunLabel:'AUTO-RUN', autoScanLabel:'自動スキャン', autoHackLabel:'自動ハック', autoRunStop:'停止', autoRunActive:'進行中', autoRunUsesLeft:'残り回数', autoRunStartScan:'自動スキャンを開始します。(10秒ごと / 1時間)', autoRunStartHack:'自動ハックを開始します。(20秒ごと / 30分)', autoRunStopped:'自動実行が中断されました。', autoRunEnded:'自動実行が完了しました。', autoRunNoEnergy:'エネルギーとエネルギーパックが不足したため自動実行を停止します。', autoRunNoCoin:'COINが不足しています。', autoRunDailyLimit:'本日の自動実行回数を使い切りました。(1日3回)', autoRunAlreadyActive:'すでに自動実行が進行中です。先に停止してください。', autoRunPause:'一時停止', autoRunResume:'再開', autoRunEnd:'終了', autoRunPaused:'一時停止中', timeSwapLabel:'タイムスワップ', timeSwap2h:'タイムスワップ 2h', timeSwap5h:'タイムスワップ 5h', timeSwap10h:'タイムスワップ 10h', timeSwapUseAutoRun:'AUTO-RUN延長', timeSwapUseEnergy:'エネルギー回復短縮', timeSwapExtended:'AUTO-RUN時間が延長されました。', timeSwapEnergySkipped:'エネルギー回復待機時間が短縮されました。', timeSwapNone:'タイムスワップがありません。', timeSwapFull:'エネルギーが最大でAUTO-RUNも非活性です。', traceAmpleLabel:'TRACEアンプル', nullSeedLabel:'NULLシード', itemsGrowth:'成長素材', rouletteTab:'ルーレット', rouletteTitle:'初心者限定ルーレット', rouletteDesc:'新規アカウントから10日間、毎日1回受け取れる限定ルーレットです。', rouletteClaim:'本日のルーレット', rouletteAlreadyClaimed:'本日はすでに受け取り済みです。明日またお越しください。', rouletteExpired:'初心者限定ルーレット期間が終了しました。', rouletteDayCount:'{cur} / 10日完了', rouletteGuaranteed:'確定報酬', rouletteBonus:'ランダム追加報酬', supportTab:'SUPPORT', supportTitle:'HCSiGをサポート', supportDesc:'HCSiGへのご支援が開発継続の力になります。運営者が確認後、手動で報酬を支給します。', supportHow:'購入方法', supportHowDesc:'商品を選択し、アカウント情報を下記の問い合わせ先にお送りください。運営者確認後に報酬が支給されます。', supportContact:'お問い合わせ', supportPending:'処理待ち', supportYourId:'アカウント情報'
+    noEnergyScan:'エネルギーが不足しているためコードスキャンを実行できません。', noEnergyHack:'エネルギーが不足しているためサーバーハッキングを実行できません。', energyPackToast:'エネルギーパック +1 (所持: {v})', offlineRecoverLog:'オフライン中にエネルギー {v} 回復 ({label} 経過)', offlineRecoverToast:'オフライン回復: エネルギー +{v}', exportDone:'保存データのエクスポート完了', importDone:'保存データの読込完了', importFail:'読込失敗: JSON形式を確認してください。', emptyText:'テキストが空です。', logsHide:'ログを隠す', logsShow:'ログを表示', initLog:'HCSiG 初期化完了。 (言語設定、重複シャード/コード同期、モバイルUI、ショップ分類適用)', mobileHome:'HOME', mobileCodes:'CODES', mobileShop:'SHOP', mobileMore:'MORE', mobileLab:'LAB', mobileStage:'データタワー', mobileComing:'EXTEND', tutorialReplay:'チュートリアル再表示', comingSoonToast:'Coming Soon - 準備中の機能です。', buy:'購入', buyDone:'購入完了', buyUnavailable:'購入不可', buySpendTitle:'購入するとクレジットが消費されます。', buyDailyLimit:'本日の購入制限に達しました。', buyOnceLimit:'すでに購入済みの永久アイテムです。', notEnoughCredits:'クレジットが不足しています。', shopLog:'[ショップ] {msg}', shopBought:'{name} 購入 (💰 -{cost})', missionDoneToast:'ミッション完了: {name} ({reward})', missionDoneCredits:'クレジット +{v}', missionDoneEnergyPack:'エネルギーパック +{v}', missionDoneBoth:'クレジット +{c} / エネルギーパック +{e}', serverOption:'{name} (セキュリティ {sec}, Lv{lv}+)', serverLevelNeed:'このサーバーをハックするには最低 Lv.{lv} 以上が必要です。', noOwnedCodes:'所持コードがありません。先にコードスキャンでコードを取得してください。', scanFound:'新コード発見！ {name} [{rarity}]', scanDuplicate:'重複コード検出: {name} [{rarity}] → 重複シャード +{gain} (所持 {have})。', scanDone:'コードスキャン完了: 経験値 +{exp}。', hackSuccessLog:'サーバーハッキング成功！ [{server}] 成功確率 {chance}%。 クレジット +{credits}, EXP +{exp}。', hackFailLog:'サーバーハッキング失敗。 [{server}] 成功確率 {chance}% でした。', logDailyShopReset:'[システム] デイリーショップ制限がリセットされました。 (05:00 リセット)', loadoutSlot:'スロット {n}', logPinHint:'ログ項目クリック → ピン留め/解除', saveToLocal:'現在の状態をブラウザの LocalStorage に保存します。', loadFromLocal:'LocalStorage から保存データを読み込みます。', deleteSave:'保存データを削除します。', exportJson:'現在の保存データを JSON ファイルにエクスポートします。', importJsonFile:'JSON 保存ファイルを読み込みます。', importJsonText:'テキスト(JSON)で保存データを読み込みます。', languageTitle:'ゲーム言語を選択します。', uiScaleTitle:'全体UIサイズを調整します。', toastTitle:'画面通知(トースト)の表示時間を設定します。', shopSortTitle:'ショップアイテムの並び順を選択します。', codeSortTitle:'コードインベントリの並び順を選択します。', dailyResetLabel:'05:00 リセット ({n}回)', onceLabel:'1回', dailyShort:'デイリー', onceShort:'1回', rarityCommon:'COMMON', rarityUncommon:'UNCOMMON', rarityRare:'RARE', rarityEpic:'EPIC', rarityLegendary:'LEGENDARY', rarityOperation:'OPERATION', routeExternal:'外部ルート', routeInternal:'内部ルート', routeCore:'コアルート', targetRoute:'ルート', upgradeTarget:'アップグレード対象', systemStatus:'システム状態', creditsTab:'CREDITS', manualTab:'マニュアル', extendSpecial:'特務作戦', extendSpecialSoonA:'電波遮断', extendSpecialSoonB:'夜間侵入', extendSpecialSoonC:'無人監視', difficultyIntro:'入門', difficultyGeneral:'一般', difficultyStandard:'普通', difficultyHard:'難しい', difficultyChaos:'混沌', difficultyImpossible:'不可能', passTab:'PASS', weeklyTab:'WEEKLY', seasonPass:'シーズンパス', passPoints:'パスポイント', passTier:'パスティア', seasonShop:'シーズンショップ', opsShop:'OPSショップ', zeroDayOnboarding:'オンボーディング', zeroDayPve:'PVE', zeroDayPvp:'PVP', zeroDaySingle:'シングル', zeroDayCompete:'競争', vulnerability:'脆弱性', vulnerabilityShard:'脆弱性シャード', oneDay:'OneDay', coin:'COIN', token:'TOKEN', accountStatus:'アカウントとクラウドステータス', accountCustom:'アカウントカスタム', comingSoonToastShort:'準備中です。', zeroDayCmdLocale:'ZERO-DAY コマンド表示', zdCmdAuto:'auto', zdCmdEn:'english', zdCmdKo:'korean', energyRecoveryDesc:'エネルギー1 = 60秒', todayTitle:'本日のタスク', todayEnergy:'エネルギー', todayDailyMissions:'デイリーミッション', todayWeeklyGoals:'WEEKLYゴール', todayEnergyPack:'エネルギーパック', todayComplete:'完了', todayRemaining:'残り', mobileInventory:'INVENTORY', inventoryCodesTab:'CODES', inventoryItemsTab:'ITEMS', itemsConsumables:'消耗品', itemsCurrency:'通貨', itemsComingSoon:'· 脆弱性シャード50個を集めると脆弱性1個に合成できます。', autoRunLabel:'AUTO-RUN', autoScanLabel:'自動スキャン', autoHackLabel:'自動ハック', autoRunStop:'停止', autoRunActive:'進行中', autoRunUsesLeft:'残り回数', autoRunStartScan:'自動スキャンを開始します。(10秒ごと / 1時間)', autoRunStartHack:'自動ハックを開始します。(20秒ごと / 30分)', autoRunStopped:'自動実行が中断されました。', autoRunEnded:'自動実行が完了しました。', autoRunNoEnergy:'エネルギーとエネルギーパックが不足したため自動実行を停止します。', autoRunNoCoin:'COINが不足しています。', autoRunDailyLimit:'本日の自動実行回数を使い切りました。(1日3回)', autoRunAlreadyActive:'すでに自動実行が進行中です。先に停止してください。', autoRunPause:'一時停止', autoRunResume:'再開', autoRunEnd:'終了', autoRunPaused:'一時停止中', timeSwapLabel:'タイムスワップ', timeSwap2h:'タイムスワップ 2h', timeSwap5h:'タイムスワップ 5h', timeSwap10h:'タイムスワップ 10h', timeSwapUseAutoRun:'AUTO-RUN延長', timeSwapUseEnergy:'エネルギー回復短縮', timeSwapExtended:'AUTO-RUN時間が延長されました。', timeSwapEnergySkipped:'エネルギー回復待機時間が短縮されました。', timeSwapNone:'タイムスワップがありません。', timeSwapFull:'エネルギーが最大でAUTO-RUNも非活性です。', traceAmpleLabel:'TRACEアンプル', nullSeedLabel:'NULLシード', itemsGrowth:'成長素材', rouletteTab:'ルーレット', rouletteTitle:'初心者限定ルーレット', rouletteDesc:'新規アカウントから10日間、毎日1回受け取れる限定ルーレットです。', rouletteClaim:'本日のルーレット', rouletteAlreadyClaimed:'本日はすでに受け取り済みです。明日またお越しください。', rouletteExpired:'初心者限定ルーレット期間が終了しました。', rouletteDayCount:'{cur} / 10日完了', rouletteGuaranteed:'確定報酬', rouletteBonus:'ランダム追加報酬', supportTab:'SUPPORT', supportTitle:'HCSiGをサポート', supportDesc:'HCSiGへのご支援が開発継続の力になります。運営者が確認後、手動で報酬を支給します。', supportHow:'購入方法', supportHowDesc:'商品を選択し、アカウント情報を下記の問い合わせ先にお送りください。運営者確認後に報酬が支給されます。', supportContact:'お問い合わせ', supportPending:'処理待ち', supportYourId:'アカウント情報',cashBalance:'キャッシュ',cashShop:'キャッシュショップ',cashCharge:'キャッシュチャージ',cashChargeRequest:'チャージ申請',cashChargeNote:'振込後、下記の連絡先に入金確認リクエストをお送りください。運営者確認後にキャッシュが支給されます。',cashBuy:'購入',cashNotEnough:'キャッシュが不足しています。',cashBought:'{name} 購入完了 (キャッシュ -{cost} C)',cashChargeBonus:'ボーナス +{pct}%',cashChargeTotal:'支給キャッシュ',cashShopDesc:'キャッシュでインゲーム有料アイテムを即座に購入できます。キャッシュはチャージ申請後、運営者確認後に支給されます。',cashCurrentBalance:'現在残高'
   }
 };
 function getLang(){ return (state && state.ui && state.ui.lang) ? state.ui.lang : 'ko'; }
@@ -513,7 +513,7 @@ function applyLanguageToUI(){
   try{ document.documentElement.lang = getLang(); document.title = t('appTitle'); }catch(e){}
   setText('subtitleText', t('subtitle')); setText('btnList', t('list')); setText('listTitle', t('listTitle')); setText('btnEvent', t('event')); setText('eventTitle', t('eventTitle')); setText('btnMore', t('more')); setText('moreTitle', t('moreTitle')); setText('btnOpenTutorial', t('tutorialReplay'));
   setText('titleStatus', t('status')); setText('titleShop', t('shop')); setText('titleActions', t('actions')); setText('titleCodeInventory', t('codeInventory')); setText('titleCodeDetail', t('codeDetail'));
-  setText('labelLevel', t('level')); setText('labelExp', t('exp')); setText('labelCredits', t('credits')); setText('labelCpuTier', t('cpuTier')); setText('labelGpuTier', t('gpuTier')); setText('labelEnergy', t('energy')); setText('labelEnergyTimer', t('nextRecovery')); setText('labelEnergyPack', t('energyPack')); setText('labelLastSave', t('lastSave')); setText('btnUseEnergyPack', t('use'));
+  setText('labelLevel', t('level')); setText('labelExp', t('exp')); setText('labelCredits', t('credits')); setText('labelCashBalance', t('cashBalance')); setText('labelCpuTier', t('cpuTier')); setText('labelGpuTier', t('gpuTier')); setText('labelEnergy', t('energy')); setText('labelEnergyTimer', t('nextRecovery')); setText('labelEnergyPack', t('energyPack')); setText('labelLastSave', t('lastSave')); setText('btnUseEnergyPack', t('use'));
   setText('shopSortLabel', t('sort')); setText('shopCategoryLabel', t('category')); setText('shopCatAll', t('all')); setText('shopCatEnergy', t('energy')); setText('shopCatSystem', t('system')); setText('shopCatEconomy', t('economy')); setText('shopCatUtility', t('utility'));
   setText('btnScan', t('codeScan')); setText('btnHack', t('serverHack')); setText('btnUpgradeCpu', t('cpuUpgrade')); setText('btnUpgradeGpu', t('gpuUpgrade')); setText('labelTargetServer', t('targetServer')); setText('labelTargetRoute', t('targetRoute')); setText('labelUpgradeTarget', t('upgradeTarget')); setText('labelLoadout', t('loadout')); setText('btnSaveLoadout', t('saveSlot')); setText('btnLoadLoadout', t('loadSlot')); setText('labelHackMode', t('hackMode'));
   setText('btnUpgrade', getLang()==='en' ? 'Upgrade' : getLang()==='ja' ? 'アップグレード' : '업그레이드');
@@ -1273,6 +1273,7 @@ function applyLanguageToUI(){
         claimedDays: []
       },
       supporterTags: [],
+      cashBalance: 0,
       claimFlags: { firstLogin_3_0_0: false, pre3ScaleCompensation: false, pre3ScaleEligible: false }
     };
 
@@ -2263,6 +2264,28 @@ function applyLanguageToUI(){
       }
     ];
 
+    // ── 캐시 충전 단계 ───────────────────────────────────────────────────────
+    const CASH_CHARGE_TIERS = [
+      { id: 'cash_1000',  krw: 1000,  cash: 1000,  bonusPct: 0  },
+      { id: 'cash_5000',  krw: 5000,  cash: 5500,  bonusPct: 10 },
+      { id: 'cash_10000', krw: 10000, cash: 12000, bonusPct: 20 },
+      { id: 'cash_30000', krw: 30000, cash: 38000, bonusPct: 27 },
+      { id: 'cash_50000', krw: 50000, cash: 65000, bonusPct: 30 },
+    ];
+
+    // ── 캐시 상점 아이템 ──────────────────────────────────────────────────────
+    const CASH_SHOP_ITEMS = [
+      { id: 'cs_energy5',   name: '에너지 팩 ×5',      nameEn: 'Energy Pack ×5',      nameJa: 'エナジーパック ×5',      price: 1000, reward: { energyPack: 5 } },
+      { id: 'cs_energy15',  name: '에너지 팩 ×15',     nameEn: 'Energy Pack ×15',     nameJa: 'エナジーパック ×15',     price: 2500, reward: { energyPack: 15 } },
+      { id: 'cs_ts2h',      name: '타임 스와프 2h ×3', nameEn: 'Time Swap 2h ×3',     nameJa: 'タイムスワップ 2h ×3',   price: 1500, reward: { timeSwap2h: 3 } },
+      { id: 'cs_ts_pack',   name: '타임 스와프 패키지', nameEn: 'Time Swap Pack',      nameJa: 'タイムスワップパック',    price: 4000, reward: { timeSwap2h: 3, timeSwap5h: 2, timeSwap10h: 1 } },
+      { id: 'cs_coin500',   name: 'COIN ×500',          nameEn: 'COIN ×500',           nameJa: 'COIN ×500',              price: 3000, reward: { coin: 500 } },
+      { id: 'cs_coin1500',  name: 'COIN ×1,500',        nameEn: 'COIN ×1,500',         nameJa: 'COIN ×1,500',            price: 8000, reward: { coin: 1500 } },
+      { id: 'cs_vuln5',     name: '취약점 ×5',          nameEn: 'Vulnerability ×5',    nameJa: '脆弱性 ×5',              price: 2000, reward: { zeroDayVulnerability: 5 } },
+      { id: 'cs_protect3',  name: '코드 보호권 ×3',     nameEn: 'Code Protection ×3',  nameJa: 'コード保護券 ×3',        price: 3500, reward: { codeProtection: 3 } },
+      { id: 'cs_starter',   name: '스타터 번들',        nameEn: 'Starter Bundle',      nameJa: 'スターターバンドル',      price: 5000, reward: { energyPack: 10, coin: 300, codeProtection: 2 } },
+    ];
+
     // ── 크레딧 패키지 정의 (₩ 결제) ────────────────────────────────────────
     const CREDIT_PACKAGE_ITEMS = [
       {
@@ -2811,6 +2834,7 @@ function applyLanguageToUI(){
     const statLevel = document.getElementById('statLevel');
     const statExp = document.getElementById('statExp');
     const statCredits = document.getElementById('statCredits');
+    const statCashBalance = document.getElementById('statCashBalance');
     const statCpuTier = document.getElementById('statCpuTier');
     const statGpuTier = document.getElementById('statGpuTier');
     const statEnergyValue = document.getElementById('statEnergyValue');
@@ -4678,6 +4702,7 @@ function applyLanguageToUI(){
     function ensureSupportDefaults() {
       if (!Array.isArray(state.supporterTags)) state.supporterTags = [];
       if (typeof state.items.dailyBonusBox !== 'number') state.items.dailyBonusBox = 0;
+      if (typeof state.cashBalance !== 'number' || isNaN(state.cashBalance)) state.cashBalance = 0;
     }
 
     function isBeginnerRouletteActive() {
@@ -4896,6 +4921,29 @@ function applyLanguageToUI(){
         if (data.status === 'redeemed') return { ok: false, err: '이미 사용된 코드입니다.' };
         if (data.status !== 'active') return { ok: false, err: '현재 사용할 수 없는 코드입니다.' };
         if (data.uid && data.uid !== cu.uid) return { ok: false, err: '이 코드는 다른 계정 전용입니다.' };
+
+        // ── 캐시 충전 코드 처리 ──────────────────────────────────────────────
+        if (data.type === 'cash') {
+          const cashAmount = Number(data.cashAmount || 0);
+          if (!cashAmount || cashAmount <= 0) return { ok: false, err: '캐시 금액 정보가 올바르지 않습니다.' };
+          ensureSupportDefaults();
+          state.cashBalance = (state.cashBalance || 0) + cashAmount;
+          await docRef.update({
+            status: 'redeemed',
+            redeemedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            redeemedByUid: cu.uid,
+            redeemedByEmail: cu.email || ''
+          });
+          saveGame(true);
+          updateStatsUI();
+          renderCashShopPanel();
+          showToast(langText(
+            `캐시 +${cashAmount.toLocaleString()} C 충전 완료!`,
+            `Cash +${cashAmount.toLocaleString()} C charged!`,
+            `キャッシュ +${cashAmount.toLocaleString()} C チャージ完了!`
+          ), 'achievement');
+          return { ok: true, type: 'cash', cashAmount };
+        }
 
         const product = SUPPORT_PRODUCTS.find(p => p.id === data.productId);
         if (!product) return { ok: false, err: '보상 정보를 찾을 수 없습니다. 관리자에게 문의하세요.' };
@@ -5243,6 +5291,7 @@ function applyLanguageToUI(){
       setNodeText(statLevel, state.level);
       setNodeText(statExp, state.exp + ' / ' + state.requiredExp);
       setNodeText(statCredits, state.credits);
+      if (statCashBalance) statCashBalance.textContent = (state.cashBalance || 0).toLocaleString() + ' C';
       setNodeText(statCpuTier, state.cpuTier);
       setNodeText(statGpuTier, state.gpuTier || 1);
       setNodeText(statEnergyValue, `${state.energy} / ${state.energyMax}`);
@@ -9391,71 +9440,157 @@ function applyLanguageToUI(){
     }, 1000);
 
 
-    // ── 지원 센터 탭 렌더 ───────────────────────────────────────────────────
-    function renderSupportCenter() {
+    // ── 캐시 아이템 구매 ────────────────────────────────────────────────────
+    function buyCashItem(itemId) {
+      ensureSupportDefaults();
+      const item = CASH_SHOP_ITEMS.find(i => i.id === itemId);
+      if (!item) return;
+      const balance = state.cashBalance || 0;
+      if (balance < item.price) {
+        showToast(t('cashNotEnough'), 'warn');
+        return;
+      }
+      state.cashBalance = balance - item.price;
+
+      // 보상 지급
+      const r = item.reward;
+      if (typeof r.energyPack === 'number')          { state.items.energyPack        = (state.items.energyPack        || 0) + r.energyPack; }
+      if (typeof r.timeSwap2h === 'number')          { state.items.timeSwap2h         = (state.items.timeSwap2h         || 0) + r.timeSwap2h; }
+      if (typeof r.timeSwap5h === 'number')          { state.items.timeSwap5h         = (state.items.timeSwap5h         || 0) + r.timeSwap5h; }
+      if (typeof r.timeSwap10h === 'number')         { state.items.timeSwap10h        = (state.items.timeSwap10h        || 0) + r.timeSwap10h; }
+      if (typeof r.coin === 'number')                { state.coin                     = (state.coin                     || 0) + r.coin; }
+      if (typeof r.zeroDayVulnerability === 'number'){ state.items.zeroDayVulnerability= (state.items.zeroDayVulnerability|| 0) + r.zeroDayVulnerability; }
+      if (typeof r.codeProtection === 'number')      { state.items.codeProtection     = (state.items.codeProtection     || 0) + r.codeProtection; }
+
+      saveGame(true);
+      updateStatsUI();
+      renderCashShopPanel();
+
+      const itemName = getLang() === 'en' ? item.nameEn : (getLang() === 'ja' ? item.nameJa : item.name);
+      showToast(
+        t('cashBought', { name: itemName, cost: item.price.toLocaleString() }),
+        'achievement'
+      );
+      addLog(`[캐시 상점] ${itemName} 구매 완료. 잔액 ${state.cashBalance.toLocaleString()} C`);
+    }
+
+    // ── 캐시 상점 패널 렌더 ─────────────────────────────────────────────────
+    function renderCashShopPanel() {
       if (!shopList) return;
       shopList.innerHTML = '';
       const lang = getLang();
-      const ko = lang !== 'en';
-      const summary = document.createElement('div');
-      summary.className = 'shop-summary-card shop-summary-card-support';
-      summary.innerHTML = `
-        <div class="shop-summary-badge">${langText('유료 상점', 'Paid Shop', '有料ショップ')}</div>
-        <h3>${langText('지원 센터 / 수동 결제', 'Support Desk / Manual Checkout', 'サポートセンター / 手動決済')}</h3>
-        <p>${langText(
-          '이 구역은 크레딧·COIN·OneDay 상점과 다르게 수동 처리되는 유료 신청 허브입니다. 후원 상품, COIN 구매, 크레딧 패키지를 여기서 신청하고 MORE → SUPPORT에서 진행 상태를 확인합니다.',
-          'This area is the manual paid hub, separate from the Credits, COIN, and OneDay shops. Apply for support products, COIN purchases, and credit packages here, then track them in MORE → SUPPORT.',
-          'この領域はクレジット・COIN・OneDayショップとは別の手動処理型有料ハブです。サポート商品、COIN購入、クレジットパッケージをここで申請し、MORE → SUPPORTで進行状況を確認します。'
-        )}</p>
-        <div class="shop-summary-meta">
-          <span>${langText('수동 검수', 'Manual review', '手動確認')}</span>
-          <span>${langText('후원 / 패키지', 'Support / packs', '支援 / パック')}</span>
-          <span>${langText('MORE 연동', 'MORE linked', 'MORE連動')}</span>
+
+      // ① 헤더 카드
+      const headerCard = document.createElement('div');
+      headerCard.className = 'shop-summary-card cs-header-card';
+      headerCard.innerHTML = `
+        <div class="shop-summary-badge">${t('cashShop')}</div>
+        <h3 style="margin:6px 0 4px;">${t('cashShop')}</h3>
+        <p style="margin:0 0 8px; font-size:12px; color:var(--text-dim,#aaa);">${t('cashShopDesc')}</p>
+        <div class="cs-balance-row">
+          <span class="cs-balance-label">${t('cashCurrentBalance')}</span>
+          <span class="cs-balance-value">${(state.cashBalance || 0).toLocaleString()} C</span>
         </div>
       `;
-      shopList.appendChild(summary);
+      shopList.appendChild(headerCard);
 
-      // 안내 섹션
-      const notice = document.createElement('div');
-      notice.className = 'supc-notice';
-      notice.innerHTML = `
-        <div class="supc-notice-title">📋 ${ko ? '지원 센터 안내' : 'Support Center Info'}</div>
-        <ul class="supc-notice-list">
-          <li>${ko ? '이 탭의 모든 결제는 <strong>수동 처리</strong>됩니다.' : 'All purchases in this tab are <strong>manually processed</strong>.'}</li>
-          <li>${ko ? '결제 후 더보기 → SUPPORT에서 신청·내역 확인·코드 입력을 진행해 주세요.' : 'After payment, go to MORE → SUPPORT to submit, track, and redeem codes.'}</li>
-          <li>${ko ? '처리 시간은 최대 24시간 이내입니다.' : 'Processing takes up to 24 hours.'}</li>
-        </ul>
+      // ② 캐시 충전 안내 섹션
+      const chargeSection = document.createElement('div');
+      chargeSection.className = 'supc-section';
+      chargeSection.innerHTML = `
+        <div class="supc-section-header">
+          <span class="supc-section-badge cs-badge-charge">${t('cashCharge')}</span>
+          <span class="supc-section-sub">${langText('계좌이체 · 수동 지급', 'Bank Transfer · Manual Grant', '振込 · 手動支給')}</span>
+        </div>
+        <div class="cs-charge-notice">${t('cashChargeNote')}</div>
+        <div class="supc-cards cs-tier-cards">
+          ${CASH_CHARGE_TIERS.map(tier => `
+            <div class="supc-card cs-tier-card">
+              <div class="cs-tier-krw">₩${tier.krw.toLocaleString()}</div>
+              <div class="cs-tier-cash">${tier.cash.toLocaleString()} C</div>
+              ${tier.bonusPct > 0 ? `<div class="cs-tier-bonus">${t('cashChargeBonus', { pct: tier.bonusPct })}</div>` : '<div class="cs-tier-bonus-placeholder"></div>'}
+              <div class="cs-tier-total-label">${t('cashChargeTotal')}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="cs-charge-cta">
+          <button class="supc-apply-btn cs-charge-contact-btn" id="csBtnChargeContact">
+            ${langText('충전 문의하기', 'Contact for Charge', 'チャージお問い合わせ')}
+          </button>
+          <div class="cs-charge-redeem-hint">${langText(
+            '충전 코드를 받으셨나요? 더보기 → SUPPORT → 코드 입력에서 사용하세요.',
+            'Got a charge code? Go to MORE → SUPPORT → Redeem Code.',
+            'チャージコードを受け取りましたか？MORE → SUPPORT → コード入力から使用できます。'
+          )}</div>
+        </div>
       `;
-      shopList.appendChild(notice);
+      shopList.appendChild(chargeSection);
 
-      // COIN 구매 섹션
-      const coinSection = document.createElement('div');
-      coinSection.className = 'supc-section';
-      coinSection.innerHTML = `
+      // ③ 아이템 구매 섹션
+      const itemSection = document.createElement('div');
+      itemSection.className = 'supc-section';
+      itemSection.innerHTML = `
+        <div class="supc-section-header">
+          <span class="supc-section-badge cs-badge-items">${langText('캐시 아이템', 'Cash Items', 'キャッシュアイテム')}</span>
+          <span class="supc-section-sub">${langText('즉시 구매 · 잔액 차감', 'Instant · Balance deducted', '即時購入 · 残高から差引')}</span>
+        </div>
+        <div class="supc-cards cs-item-cards">
+          ${CASH_SHOP_ITEMS.map(item => {
+            const nm = lang === 'en' ? item.nameEn : (lang === 'ja' ? item.nameJa : item.name);
+            const canBuy = (state.cashBalance || 0) >= item.price;
+            const rewardStr = Object.entries(item.reward).map(([k, v]) => `${k} ×${v}`).join(', ');
+            return `
+              <div class="supc-card cs-item-card ${canBuy ? '' : 'cs-item-disabled'}">
+                <div class="supc-card-label">${nm}</div>
+                <div class="cs-item-reward small">${rewardStr}</div>
+                <div class="cs-item-price">${item.price.toLocaleString()} C</div>
+                <button class="supc-apply-btn cs-buy-btn ${canBuy ? '' : 'disabled'}"
+                  data-cs-buy="${item.id}" ${canBuy ? '' : 'disabled'}>
+                  ${t('cashBuy')}
+                </button>
+              </div>`;
+          }).join('')}
+        </div>
+      `;
+      shopList.appendChild(itemSection);
+
+      // ④ 기존 지원 센터 (접힘) — COIN / SUPPORT / 크레딧 패키지 신청
+      const legacyWrap = document.createElement('details');
+      legacyWrap.className = 'cs-legacy-details';
+      legacyWrap.innerHTML = `<summary class="cs-legacy-summary">${langText('기타 지원 센터 (COIN · 후원 · 크레딧 패키지)', 'Other Support (COIN · Sponsor · Credit Pack)', 'その他サポート (COIN · 後援 · クレジットパック)')}</summary>`;
+      shopList.appendChild(legacyWrap);
+
+      const legacyInner = document.createElement('div');
+      legacyInner.className = 'cs-legacy-inner';
+      legacyWrap.appendChild(legacyInner);
+
+      // COIN 구매
+      const coinDiv = document.createElement('div');
+      coinDiv.className = 'supc-section';
+      coinDiv.innerHTML = `
         <div class="supc-section-header">
           <span class="supc-section-badge">COIN 구매</span>
-          <span class="supc-section-sub">${ko ? '₩ 결제 · 수동 처리' : '₩ Payment · Manual'}</span>
+          <span class="supc-section-sub">${langText('₩ 결제 · 수동 처리', '₩ Payment · Manual', '₩ 決済 · 手動処理')}</span>
         </div>
         <div class="supc-cards">
           ${COIN_PURCHASE_ITEMS.map(p => `
             <div class="supc-card">
               <div class="supc-card-label">${p.label}</div>
               <div class="supc-card-price">${p.price}</div>
-              <div class="supc-card-desc small">${ko ? p.desc : p.descEn}</div>
-              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="coin">${ko ? '신청하기' : 'Apply'}</button>
+              <div class="supc-card-desc small">${lang === 'en' ? p.descEn : p.desc}</div>
+              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="coin">${langText('신청하기', 'Apply', '申請する')}</button>
             </div>
           `).join('')}
-        </div>
-      `;
-      shopList.appendChild(coinSection);
+        </div>`;
+      legacyInner.appendChild(coinDiv);
 
-      // SUPPORT DESK 섹션
-      const supportSection = document.createElement('div');
-      supportSection.className = 'supc-section';
-      supportSection.innerHTML = `
+      // SUPPORT DESK
+      const supportDiv = document.createElement('div');
+      supportDiv.className = 'supc-section';
+      supportDiv.innerHTML = `
         <div class="supc-section-header">
           <span class="supc-section-badge">SUPPORT DESK</span>
-          <span class="supc-section-sub">${ko ? 'HCSiG 개발 후원 · ₩ 결제' : 'Support HCSiG · ₩ Payment'}</span>
+          <span class="supc-section-sub">${langText('HCSiG 개발 후원', 'Support HCSiG Dev', 'HCSiG開発後援')}</span>
         </div>
         <div class="supc-cards">
           ${SUPPORT_PRODUCTS.map(p => `
@@ -9463,37 +9598,35 @@ function applyLanguageToUI(){
               <div class="supc-card-tag supc-tag-${p.tag.toLowerCase()}">${p.tag}</div>
               <div class="supc-card-label">${p.name}</div>
               <div class="supc-card-price">${p.price}</div>
-              <div class="supc-card-reward small">${ko ? p.rewardLabel : p.rewardLabelEn}</div>
-              <div class="supc-card-desc small">${ko ? p.desc : p.descEn}</div>
-              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="support">${ko ? '신청하기' : 'Apply'}</button>
+              <div class="supc-card-reward small">${lang === 'en' ? p.rewardLabelEn : p.rewardLabel}</div>
+              <div class="supc-card-desc small">${lang === 'en' ? p.descEn : p.desc}</div>
+              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="support">${langText('신청하기', 'Apply', '申請する')}</button>
             </div>
           `).join('')}
-        </div>
-      `;
-      shopList.appendChild(supportSection);
+        </div>`;
+      legacyInner.appendChild(supportDiv);
 
-      // 크레딧 패키지 섹션
-      const creditSection = document.createElement('div');
-      creditSection.className = 'supc-section';
-      creditSection.innerHTML = `
+      // 크레딧 패키지
+      const creditDiv = document.createElement('div');
+      creditDiv.className = 'supc-section';
+      creditDiv.innerHTML = `
         <div class="supc-section-header">
-          <span class="supc-section-badge">크레딧 패키지</span>
-          <span class="supc-section-sub">${ko ? '₩ 결제 · 즉시 지급' : '₩ Payment · Instant Grant'}</span>
+          <span class="supc-section-badge">${langText('크레딧 패키지', 'Credit Package', 'クレジットパック')}</span>
+          <span class="supc-section-sub">${langText('₩ 결제 · 즉시 지급', '₩ Payment · Instant Grant', '₩ 決済 · 即時支給')}</span>
         </div>
         <div class="supc-cards">
           ${CREDIT_PACKAGE_ITEMS.map(p => `
             <div class="supc-card">
-              <div class="supc-card-label">${ko ? p.label : p.labelEn}</div>
+              <div class="supc-card-label">${lang === 'en' ? p.labelEn : p.label}</div>
               <div class="supc-card-price">${p.price}</div>
-              <div class="supc-card-desc small">${ko ? p.desc : p.descEn}</div>
-              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="credit">${ko ? '신청하기' : 'Apply'}</button>
+              <div class="supc-card-desc small">${lang === 'en' ? p.descEn : p.desc}</div>
+              <button class="supc-apply-btn" data-supc-apply="${p.id}" data-supc-type="credit">${langText('신청하기', 'Apply', '申請する')}</button>
             </div>
           `).join('')}
-        </div>
-      `;
-      shopList.appendChild(creditSection);
+        </div>`;
+      legacyInner.appendChild(creditDiv);
 
-      // 모든 신청하기 버튼 → MORE > SUPPORT 이동
+      // 신청 버튼 이벤트: MORE → SUPPORT로 이동
       shopList.querySelectorAll('[data-supc-apply]').forEach(btn => {
         btn.addEventListener('click', () => {
           const pid = btn.dataset.supcApply;
@@ -9503,8 +9636,7 @@ function applyLanguageToUI(){
           setTimeout(() => {
             const applyTab = document.getElementById('btnSupportSubApply');
             if (applyTab) applyTab.click();
-            const allCards = document.querySelectorAll('#sdProductCards .sd-product-card[data-pid]');
-            allCards.forEach(c => {
+            document.querySelectorAll('#sdProductCards .sd-product-card[data-pid]').forEach(c => {
               const isTarget = c.dataset.pid === pid;
               c.classList.toggle('sd-product-selected', isTarget);
               c.setAttribute('aria-checked', isTarget ? 'true' : 'false');
@@ -9512,7 +9644,27 @@ function applyLanguageToUI(){
           }, 80);
         });
       });
+
+      // 캐시 구매 버튼 이벤트
+      shopList.querySelectorAll('[data-cs-buy]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (!btn.disabled) buyCashItem(btn.dataset.csBuy);
+        });
+      });
+
+      // 충전 문의 버튼 → MORE → SUPPORT
+      const contactBtn = shopList.querySelector('#csBtnChargeContact');
+      if (contactBtn) {
+        contactBtn.addEventListener('click', () => {
+          const moreModal = document.getElementById('moreModal');
+          if (moreModal) moreModal.classList.remove('hidden');
+          if (typeof setActiveMoreTab === 'function') setActiveMoreTab('support');
+        });
+      }
     }
+
+    // renderSupportCenter는 renderCashShopPanel로 교체됨 — 하위 호환 alias 유지
+    function renderSupportCenter() { renderCashShopPanel(); }
 
     function renderShop() {
       if (!shopList) return;
