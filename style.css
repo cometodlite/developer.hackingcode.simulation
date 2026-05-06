@@ -5787,6 +5787,43 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
   opacity: 0.35;
   cursor: not-allowed;
 }
+/* Combined Vulnerability card */
+.item-card-vuln-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  margin: 2px 0 4px;
+}
+.item-card-shard-badge {
+  font-size: 9px;
+  color: var(--text-dim, #888);
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+/* Combined Time Swap card */
+.item-card-ts-counts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--text-dim, #aaa);
+  margin: 2px 0 4px;
+}
+.item-card-ts-btns {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 2px;
+}
+.item-card-btn-sm {
+  font-size: 10px;
+  padding: 3px 8px;
+  min-width: 36px;
+}
 .items-coming-note {
   margin-top: 12px;
   color: var(--text-dim, #666);
