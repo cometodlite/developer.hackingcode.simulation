@@ -4912,12 +4912,86 @@ function applyLanguageToUI(){
     }
 
     async function redeemSupportCode(rawCode) {
-      if (!window.HCSIG_FB || !window.HCSIG_FIREBASE_READY) return { ok: false, err: 'Firebase에 연결되어 있지 않습니다.' };
       const cu = window.HCSIG_CURRENT_USER;
       if (!cu) return { ok: false, err: '로그인이 필요합니다.' };
 
       const code = rawCode.trim().toUpperCase();
-      if (!code.startsWith('HCSIG-')) return { ok: false, err: '코드 형식이 올바르지 않습니다. (HCSIG-XXXX-XXXXXX)' };
+      if (!code) return { ok: false, err: '코드를 입력해 주세요.' };
+
+      ensureSupportDefaults();
+
+      // ── 1차: Cloudflare Workers D1 코드 교환 ─────────────────────────────
+      if (window.HCSIG_API) {
+        try {
+          const apiResult = await window.HCSIG_API.redeem(code);
+          if (apiResult.ok && apiResult.data) {
+            const { type, result } = apiResult.data;
+
+            if (type === 'cash' && result.cashBalance) {
+              const amt = result.cashBalance;
+              state.cashBalance = (state.cashBalance || 0) + amt;
+              saveGame(true);
+              updateStatsUI();
+              renderCashShopPanel();
+              showToast(langText(
+                `캐시 +${amt.toLocaleString()} C 충전 완료! (D1)`,
+                `Cash +${amt.toLocaleString()} C charged! (D1)`,
+                `キャッシュ +${amt.toLocaleString()} C チャージ完了! (D1)`
+              ), 'achievement');
+              return { ok: true, type: 'cash', cashAmount: amt };
+            }
+
+            if (type === 'credit' && result.credits) {
+              const amt = result.credits;
+              state.credits = (state.credits || 0) + amt;
+              saveGame(true);
+              updateStatsUI();
+              showToast(langText(
+                `크레딧 +${amt.toLocaleString()} 지급 완료! (D1)`,
+                `Credits +${amt.toLocaleString()} granted! (D1)`,
+                `クレジット +${amt.toLocaleString()} 付与完了! (D1)`
+              ), 'achievement');
+              return { ok: true, type: 'credit', credits: amt };
+            }
+
+            if (type === 'product') {
+              // result = { itemKey: amount, ... }
+              Object.entries(result).forEach(([k, v]) => {
+                if (k in state.items) {
+                  state.items[k] = (state.items[k] || 0) + Number(v);
+                }
+              });
+              saveGame(true);
+              updateStatsUI();
+              showToast(langText('아이템 지급 완료! (D1)', 'Items granted! (D1)', 'アイテム付与完了! (D1)'), 'achievement');
+              return { ok: true, type: 'product', result };
+            }
+
+            // 알 수 없는 타입 — 성공으로 처리
+            saveGame(true);
+            return { ok: true };
+          }
+
+          // Workers가 NOT_FOUND를 반환하면 Firestore fallback
+          if (apiResult.code === 'NOT_FOUND') {
+            // Firestore에서 시도 (아래 코드로 fall-through)
+            console.log('[HCSiG API] D1 코드 없음 — Firestore fallback');
+          } else {
+            // 실제 오류(만료, 사용 초과, 중복 등) — 즉시 반환
+            return { ok: false, err: apiResult.err || '코드 교환 실패' };
+          }
+        } catch (apiErr) {
+          console.warn('[HCSiG API] redeem 호출 실패, Firestore fallback:', apiErr);
+        }
+      }
+
+      // ── 2차: Firestore 코드 교환 (레거시 코드 / Workers 미사용 시) ─────────
+      if (!window.HCSIG_FB || !window.HCSIG_FIREBASE_READY) {
+        return { ok: false, err: '코드를 찾을 수 없습니다.' };
+      }
+      if (!code.startsWith('HCSIG-')) {
+        return { ok: false, err: '코드 형식이 올바르지 않습니다. (HCSIG-XXXX-XXXXXX)' };
+      }
 
       try {
         const snap = await window.HCSIG_FB.db.collection('redeemCodes')
@@ -4937,7 +5011,6 @@ function applyLanguageToUI(){
         if (data.type === 'cash') {
           const cashAmount = Number(data.cashAmount || 0);
           if (!cashAmount || cashAmount <= 0) return { ok: false, err: '캐시 금액 정보가 올바르지 않습니다.' };
-          ensureSupportDefaults();
           state.cashBalance = (state.cashBalance || 0) + cashAmount;
           await docRef.update({
             status: 'redeemed',
