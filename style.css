@@ -2042,6 +2042,39 @@ body.app-shell-ui .section-title{
   50%{ box-shadow:0 0 8px 2px rgba(239,68,68,.45); }
 }
 
+/* HUD flash alert */
+.run-hud-flash{
+  display:none;
+  padding:7px 12px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.04em;
+  opacity:0;
+  transition:opacity .25s ease;
+  pointer-events:none;
+}
+.run-hud-flash.show{
+  display:block;
+  opacity:1;
+}
+.run-hud-flash-warn{
+  background:rgba(120,53,15,.72);
+  border:1px solid rgba(252,211,77,.4);
+  color:#fde68a;
+}
+.run-hud-flash-danger{
+  background:rgba(127,29,29,.82);
+  border:1px solid rgba(252,165,165,.5);
+  color:#fca5a5;
+  animation: hud-danger-pulse 1s ease-in-out infinite;
+}
+.run-hud-flash-ok{
+  background:rgba(6,78,59,.72);
+  border:1px solid rgba(52,211,153,.4);
+  color:#6ee7b7;
+}
+
 /* Primary action block — dominant */
 .run-hud-primary{
   order:1;

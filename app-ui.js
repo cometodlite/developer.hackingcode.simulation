@@ -761,7 +761,77 @@
     }
     _prevHackTotal = newHackTotal;
 
-    updateHudDom();
+    updateHudDomFull();
+  }
+
+  // Poll game state every second (decay + poll unified after updateHudDomFull is defined)
+  setInterval(pollStats, 1000);
+
+  // HUD-local flash alert (no dependency on core's showToast)
+  let _flashTimeout = null;
+  function hudFlash(msg, kind){
+    let el = document.getElementById('runHudFlash');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'runHudFlash';
+      el.className = 'run-hud-flash';
+      const hudBar = document.getElementById('runHudBar');
+      if(hudBar && hudBar.parentElement) hudBar.parentElement.insertBefore(el, hudBar.nextSibling);
+    }
+    el.textContent = msg;
+    el.className = 'run-hud-flash run-hud-flash-' + kind + ' show';
+    clearTimeout(_flashTimeout);
+    _flashTimeout = setTimeout(() => { el.classList.remove('show'); }, 3500);
+  }
+
+  // State transition alerts — fire once per threshold crossing
+  let _lastAlertState = '';
+  function checkAlerts(label){
+    if(label === _lastAlertState) return;
+    _lastAlertState = label;
+    const lang = (typeof getLang === 'function') ? getLang() : 'ko';
+    const isKo = lang !== 'en';
+    if(label === 'RISK'){
+      hudFlash(isKo ? '⚠ 추적 위험 — 활동을 줄이십시오' : '⚠ TRACE RISK — reduce activity', 'warn');
+    } else if(label === 'DANGER'){
+      hudFlash(isKo ? '🚨 위험 수위 초과 — 즉시 중단' : '🚨 DANGER — cease operations', 'danger');
+    } else if(label === 'IDLE' && _lastAlertState === ''){
+      // suppress initial idle
+    } else if(label === 'IDLE'){
+      // recovered
+      hudFlash(isKo ? '✓ 추적 해제됨' : '✓ Trace cleared', 'ok');
+    }
+  }
+
+  // Full HUD update — includes state machine + alert triggers
+  function updateHudDomFull(){
+    const traceBar = document.getElementById('runTraceBar');
+    const heatBar  = document.getElementById('runHeatBar');
+    const tracePct = document.getElementById('runTracePct');
+    const heatPct  = document.getElementById('runHeatPct');
+    const chip     = document.getElementById('runStateChip');
+    if(!traceBar) return;
+
+    traceBar.style.width = _trace + '%';
+    heatBar.style.width  = _heat  + '%';
+    if(tracePct) tracePct.textContent = Math.round(_trace) + '%';
+    if(heatPct)  heatPct.textContent  = Math.round(_heat)  + '%';
+
+    if(!chip) return;
+    const combined = (_trace * 0.6) + (_heat * 0.4);
+    let label, cls;
+    if(combined < 15){
+      label = 'IDLE'; cls = '';
+    } else if(combined < 55){
+      label = 'ACTIVE'; cls = 'active';
+    } else if(combined < 80){
+      label = 'RISK'; cls = 'risk';
+    } else {
+      label = 'DANGER'; cls = 'danger';
+    }
+    chip.textContent = label;
+    chip.className = 'run-hud-state' + (cls ? ' ' + cls : '');
+    checkAlerts(label);
   }
 
   // Decay tick
@@ -769,13 +839,10 @@
     if(_trace > 0 || _heat > 0){
       _trace = clamp(_trace - TRACE_DECAY);
       _heat  = clamp(_heat  - HEAT_DECAY);
-      updateHudDom();
+      updateHudDomFull();
     }
   }, DECAY_INTERVAL);
 
-  // Poll game state every second
-  setInterval(pollStats, 1000);
-
   // Initial render
-  updateHudDom();
+  updateHudDomFull();
 })();
