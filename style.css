@@ -2035,6 +2035,8 @@ body.app-shell-ui .section-title{
   white-space:nowrap;
 }
 .run-hud-state.active{ background:rgba(21,128,61,.82); border-color:rgba(134,239,172,.52); color:#bbf7d0; }
+.run-hud-state.auto-run-active{ border-style:dashed; animation: auto-run-blink .9s step-start infinite; }
+@keyframes auto-run-blink{ 50%{ opacity:.6; } }
 .run-hud-state.risk{ background:rgba(133,77,14,.82); border-color:rgba(252,211,77,.52); color:#fde68a; }
 .run-hud-state.danger{ background:rgba(127,29,29,.82); border-color:rgba(252,165,165,.52); color:#fca5a5; animation: hud-danger-pulse 1s ease-in-out infinite; }
 @keyframes hud-danger-pulse{

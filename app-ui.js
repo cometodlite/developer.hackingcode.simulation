@@ -831,14 +831,27 @@
     }
     chip.textContent = label;
     chip.className = 'run-hud-state' + (cls ? ' ' + cls : '');
+    // AUTO-RUN 표시
+    try {
+      const ar = window.state && window.state.autoRun;
+      if(ar && ar.type && !ar.paused){
+        const suffix = ar.type === 'scan' ? ' AUTO-S' : ' AUTO-H';
+        chip.textContent = label + suffix;
+        chip.classList.add('auto-run-active');
+      } else {
+        chip.classList.remove('auto-run-active');
+      }
+    } catch(e){}
     checkAlerts(label);
   }
 
-  // Decay tick
+  // Decay tick — halved during AUTO-RUN
   setInterval(function(){
     if(_trace > 0 || _heat > 0){
-      _trace = clamp(_trace - TRACE_DECAY);
-      _heat  = clamp(_heat  - HEAT_DECAY);
+      const autoRunning = !!(window.state && window.state.autoRun && window.state.autoRun.type && !window.state.autoRun.paused);
+      const decayMult = autoRunning ? 0.5 : 1;
+      _trace = clamp(_trace - TRACE_DECAY * decayMult);
+      _heat  = clamp(_heat  - HEAT_DECAY  * decayMult);
       updateHudDomFull();
     }
   }, DECAY_INTERVAL);
