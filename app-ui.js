@@ -312,11 +312,35 @@
     homeCockpit.className = 'home-cockpit';
     views.home.insertBefore(homeCockpit, views.home.firstChild);
   }
-  [statusTitle, statusBox, actionBox].forEach(el => {
+  // Phase 1 redesign: actionBox dominant at top, status secondary below
+  // Insert run-hud bar first
+  if(!document.getElementById('runHudBar')){
+    const hudBar = document.createElement('div');
+    hudBar.id = 'runHudBar';
+    hudBar.className = 'run-hud-bar';
+    hudBar.innerHTML = `
+      <div class="run-hud-trace">
+        <span class="run-hud-label">TRACE</span>
+        <div class="run-hud-track"><div class="run-hud-fill run-hud-trace-fill" id="runTraceBar" style="width:0%"></div></div>
+        <span class="run-hud-pct" id="runTracePct">0%</span>
+      </div>
+      <div class="run-hud-heat">
+        <span class="run-hud-label">HEAT</span>
+        <div class="run-hud-track"><div class="run-hud-fill run-hud-heat-fill" id="runHeatBar" style="width:0%"></div></div>
+        <span class="run-hud-pct" id="runHeatPct">0%</span>
+      </div>
+      <div class="run-hud-state" id="runStateChip">IDLE</div>
+    `;
+    homeCockpit.appendChild(hudBar);
+  }
+
+  // actionBox first (primary), then statusTitle + statusBox (secondary)
+  [actionBox, statusTitle, statusBox].forEach(el => {
     if(el && el.parentElement !== homeCockpit) homeCockpit.appendChild(el);
   });
   if(scanOverlay && scanOverlay.parentElement !== views.home) views.home.appendChild(scanOverlay);
-  if(statusBox) statusBox.classList.add('home-status-grid');
+  if(statusBox) statusBox.classList.add('home-status-grid', 'run-status-secondary');
+  if(actionBox) actionBox.classList.add('run-hud-primary');
 
   // v3.0.1: "오늘 할 일" 요약 카드
   if(!document.getElementById('todaySummaryBox')){
@@ -632,4 +656,126 @@
   }
   window.addEventListener('hcsig:language-applied', syncMobileTabLabels);
   window.addEventListener('load', () => setTimeout(syncMobileTabLabels, 0));
+})();
+
+
+// === Run HUD state machine (Phase B) ===
+(function(){
+  // Trace/Heat decay and accumulation model
+  // Scan: +heat slightly, hack: +trace (success), hack fail: +heat spike
+  // Both decay over time toward 0
+  // State: IDLE < 15%, ACTIVE 15-60%, RISK 60-85%, DANGER 85-100%
+
+  const DECAY_INTERVAL = 3000; // ms
+  const TRACE_DECAY = 2;       // % per tick
+  const HEAT_DECAY  = 3;       // % per tick
+
+  let _trace = 0;
+  let _heat  = 0;
+  let _prevScanCount = null;
+  let _prevHackSuccess = null;
+  let _prevHackTotal = null;
+
+  function clamp(v){ return Math.max(0, Math.min(100, v)); }
+
+  function getState(){
+    if(typeof window.state === 'undefined') return null;
+    return window.state;
+  }
+
+  function getStats(){
+    const s = getState();
+    return s && s.stats ? s.stats : null;
+  }
+
+  function updateHudDom(){
+    const traceBar = document.getElementById('runTraceBar');
+    const heatBar  = document.getElementById('runHeatBar');
+    const tracePct = document.getElementById('runTracePct');
+    const heatPct  = document.getElementById('runHeatPct');
+    const chip     = document.getElementById('runStateChip');
+    if(!traceBar) return;
+
+    traceBar.style.width = _trace + '%';
+    heatBar.style.width  = _heat  + '%';
+    if(tracePct) tracePct.textContent = Math.round(_trace) + '%';
+    if(heatPct)  heatPct.textContent  = Math.round(_heat)  + '%';
+
+    if(!chip) return;
+    const combined = (_trace * 0.6) + (_heat * 0.4);
+    let label, cls;
+    if(combined < 15){
+      label = 'IDLE'; cls = '';
+    } else if(combined < 55){
+      label = 'ACTIVE'; cls = 'active';
+    } else if(combined < 80){
+      label = 'RISK'; cls = 'risk';
+    } else {
+      label = 'DANGER'; cls = 'danger';
+    }
+    chip.textContent = label;
+    chip.className = 'run-hud-state' + (cls ? ' ' + cls : '');
+  }
+
+  function pollStats(){
+    const stats = getStats();
+    if(!stats) return;
+
+    const scanCount    = stats.scanCount        || 0;
+    const hackSuccess  = stats.hackSuccessCount  || 0;
+    // total hacks = scan missions proxy — fallback to daily.hacks
+    const dailyHacks   = (getState() && getState().missionProgress && getState().missionProgress.daily)
+      ? (getState().missionProgress.daily.hacks || 0) : 0;
+
+    // Init baseline on first call
+    if(_prevScanCount === null){
+      _prevScanCount   = scanCount;
+      _prevHackSuccess = hackSuccess;
+      _prevHackTotal   = dailyHacks;
+      return;
+    }
+
+    // New scans
+    const newScans = scanCount - _prevScanCount;
+    if(newScans > 0){
+      _heat  = clamp(_heat  + newScans * 5);
+      _trace = clamp(_trace + newScans * 2);
+      _prevScanCount = scanCount;
+    }
+
+    // New hack successes
+    const newSuccess = hackSuccess - _prevHackSuccess;
+    if(newSuccess > 0){
+      _trace = clamp(_trace + newSuccess * 12);
+      _heat  = clamp(_heat  + newSuccess * 3);
+      _prevHackSuccess = hackSuccess;
+    }
+
+    // Hack failures (total daily hacks - successes delta)
+    const newHackTotal = dailyHacks;
+    const hackDelta    = newHackTotal - _prevHackTotal;
+    const failDelta    = hackDelta - newSuccess;
+    if(failDelta > 0){
+      _heat  = clamp(_heat  + failDelta * 8);
+      _trace = clamp(_trace + failDelta * 2);
+    }
+    _prevHackTotal = newHackTotal;
+
+    updateHudDom();
+  }
+
+  // Decay tick
+  setInterval(function(){
+    if(_trace > 0 || _heat > 0){
+      _trace = clamp(_trace - TRACE_DECAY);
+      _heat  = clamp(_heat  - HEAT_DECAY);
+      updateHudDom();
+    }
+  }, DECAY_INTERVAL);
+
+  // Poll game state every second
+  setInterval(pollStats, 1000);
+
+  // Initial render
+  updateHudDom();
 })();

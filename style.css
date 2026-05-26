@@ -1954,19 +1954,18 @@ body.app-shell-ui .section-title{
   letter-spacing:.08em;
 }
 .home-cockpit{
-  display:grid;
-  grid-template-columns:minmax(260px,.86fr) minmax(330px,1.14fr);
-  gap:14px;
-  align-items:start;
-  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:14px;
   border:1px solid rgba(94,234,212,.18);
   border-radius:8px;
   background:linear-gradient(180deg, rgba(10,16,14,.94), rgba(6,10,9,.96));
   box-shadow:0 14px 36px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03);
 }
 .home-cockpit > #titleStatus{
-  grid-column:1 / -1;
   margin:0;
+  order:3;
 }
 .home-cockpit > .stat-box{
   margin:0;
@@ -1974,6 +1973,100 @@ body.app-shell-ui .section-title{
   background:transparent !important;
   box-shadow:none !important;
   padding:0;
+}
+
+/* Run HUD bar — topmost strip */
+.run-hud-bar{
+  order:0;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 12px;
+  border:1px solid rgba(94,234,212,.14);
+  border-radius:6px;
+  background:rgba(6,12,11,.72);
+}
+.run-hud-trace,
+.run-hud-heat{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex:1;
+  min-width:0;
+}
+.run-hud-label{
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.1em;
+  color:#6ee7b7;
+  white-space:nowrap;
+}
+.run-hud-track{
+  flex:1;
+  height:5px;
+  border-radius:3px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.run-hud-fill{
+  height:100%;
+  border-radius:3px;
+  transition:width .4s ease;
+}
+.run-hud-trace-fill{ background:linear-gradient(90deg,#22c55e,#86efac); }
+.run-hud-heat-fill{ background:linear-gradient(90deg,#f97316,#fca5a5); }
+.run-hud-pct{
+  font-size:10px;
+  font-weight:700;
+  color:#a7f3d0;
+  white-space:nowrap;
+  min-width:28px;
+  text-align:right;
+}
+.run-hud-state{
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.12em;
+  padding:3px 8px;
+  border-radius:4px;
+  background:rgba(20,83,45,.64);
+  border:1px solid rgba(134,239,172,.24);
+  color:#6ee7b7;
+  white-space:nowrap;
+}
+.run-hud-state.active{ background:rgba(21,128,61,.82); border-color:rgba(134,239,172,.52); color:#bbf7d0; }
+.run-hud-state.risk{ background:rgba(133,77,14,.82); border-color:rgba(252,211,77,.52); color:#fde68a; }
+.run-hud-state.danger{ background:rgba(127,29,29,.82); border-color:rgba(252,165,165,.52); color:#fca5a5; animation: hud-danger-pulse 1s ease-in-out infinite; }
+@keyframes hud-danger-pulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(239,68,68,.0); }
+  50%{ box-shadow:0 0 8px 2px rgba(239,68,68,.45); }
+}
+
+/* Primary action block — dominant */
+.run-hud-primary{
+  order:1;
+}
+body.app-shell-ui .home-actions-box.run-hud-primary .button-row > button{
+  min-height:60px;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.06em;
+}
+body.app-shell-ui #btnScan,
+body.app-shell-ui #btnHack{
+  background:linear-gradient(135deg, rgba(21,128,61,.92), rgba(13,148,136,.72)) !important;
+  border-color:rgba(134,239,172,.42) !important;
+  box-shadow:0 4px 18px rgba(20,184,166,.18);
+}
+body.app-shell-ui #btnScan:hover,
+body.app-shell-ui #btnHack:hover{
+  box-shadow:0 4px 24px rgba(20,184,166,.38);
+}
+
+/* Secondary status — collapsed visual weight */
+.run-status-secondary{
+  order:4;
+  opacity:.82;
 }
 body.app-shell-ui .home-status-grid{
   display:grid;
@@ -2045,13 +2138,9 @@ body.app-shell-ui .home-actions-box .action-upgrade-button{
   min-width:0 !important;
   min-height:38px;
 }
-body.app-shell-ui #btnScan,
-body.app-shell-ui #btnHack{
-  background:linear-gradient(135deg, rgba(21,128,61,.92), rgba(13,148,136,.72));
-  border-color:rgba(134,239,172,.42);
-}
 .home-live-hint{
-  grid-column:1 / -1;
+  width:100%;
+  order:2;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -5611,7 +5700,8 @@ details.systemStatusDetails[open] summary::before { content: '▼ '; }
 
 /* ── TODAY SUMMARY ─────────────────────────────────────────── */
 .today-summary-box {
-  margin-top: 8px;
+  margin-top: 0;
+  order:5;
 }
 .today-summary-header {
   display: flex;
