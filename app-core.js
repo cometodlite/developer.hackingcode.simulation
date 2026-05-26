@@ -4099,10 +4099,21 @@ function applyLanguageToUI(){
           text: seasonInfo.todaySummary
         });
 
-        el.innerHTML = items.map(item =>
-          `<div class="${item.cls}"><span class="today-item-text">${item.text}</span></div>`
-        ).join('');
-      } catch(e) { console.warn('[TodaySummary]', e); }
+        const validItems = items.filter(item => item && item.text);
+        if(validItems.length === 0){
+          el.innerHTML = `<div class="today-item today-item-muted"><span class="today-item-text">${getLang()==='en' ? 'Loading status…' : '상태 불러오는 중…'}</span></div>`;
+        } else {
+          el.innerHTML = validItems.map(item =>
+            `<div class="${item.cls}"><span class="today-item-text">${item.text}</span></div>`
+          ).join('');
+        }
+      } catch(e) {
+        console.warn('[TodaySummary]', e);
+        const el2 = document.getElementById('todaySummaryContent');
+        if(el2 && !el2.innerHTML.trim()){
+          el2.innerHTML = `<div class="today-item today-item-muted"><span class="today-item-text">${(typeof getLang === 'function' && getLang()==='en') ? 'Status unavailable' : '상태 정보를 불러올 수 없습니다'}</span></div>`;
+        }
+      }
     }
 
     // ── v3.0.1: INVENTORY → ITEMS 패널 ──────────────────────────────────────
