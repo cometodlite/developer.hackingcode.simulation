@@ -10379,6 +10379,19 @@ function applyLanguageToUI(){
       successChance += successChanceBonus;
       successChance = Math.max(0.05, Math.min(0.95, successChance));
 
+      // Run HUD DANGER penalty: -15% success chance
+      try {
+        const hudState = window.runHudState;
+        if(hudState && hudState.label === 'DANGER'){
+          successChance = Math.max(0.05, successChance - 0.15);
+          log(getLang() === 'en'
+            ? '⚠ DANGER: trace too high — hack chance -15%'
+            : '⚠ 위험 수위 초과 — 해킹 성공률 -15%', 'warn');
+        } else if(hudState && hudState.label === 'RISK'){
+          successChance = Math.max(0.05, successChance - 0.07);
+        }
+      } catch(e){}
+
       ensureCodeSupportState(code);
       const success = Math.random() < successChance;
       code.usage = (code.usage || 0) + 1;
