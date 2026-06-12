@@ -9537,7 +9537,7 @@ function applyLanguageToUI(){
 
 
     // ── 캐시 아이템 구매 ────────────────────────────────────────────────────
-    function buyCashItem(itemId) {
+    async function buyCashItem(itemId) {
       ensureSupportDefaults();
       const item = CASH_SHOP_ITEMS.find(i => i.id === itemId);
       if (!item) return;
@@ -9546,7 +9546,32 @@ function applyLanguageToUI(){
         showToast(t('cashNotEnough'), 'warn');
         return;
       }
-      state.cashBalance = balance - item.price;
+
+      // 캐시 잔액은 서버(D1) 권위 — 로그인 상태면 서버 차감 성공이 구매 조건
+      if (window.HCSIG_API && window.HCSIG_CURRENT_USER) {
+        let res;
+        try { res = await window.HCSIG_API.spendCash(item.price, itemId); }
+        catch (e) { res = { ok: false, err: String((e && e.message) || e) }; }
+
+        if (!res.ok && res.code === 'NOT_FOUND') {
+          // D1 미등록(마이그레이션 전) — 로컬 차감으로 진행
+          state.cashBalance = balance - item.price;
+        } else if (!res.ok) {
+          if (res.code === 'INSUFFICIENT' && res.data && typeof res.data.cashBalance === 'number') {
+            state.cashBalance = res.data.cashBalance; // 서버 잔액으로 교정
+            updateStatsUI();
+            renderCashShopPanel();
+          }
+          showToast('⚠ ' + (res.err || t('cashNotEnough')), 'warn');
+          return;
+        } else {
+          state.cashBalance = (res.data && typeof res.data.cashBalance === 'number')
+            ? res.data.cashBalance
+            : balance - item.price;
+        }
+      } else {
+        state.cashBalance = balance - item.price;
+      }
 
       // 보상 지급
       const r = item.reward;
@@ -12847,6 +12872,13 @@ function applyLanguageToUI(){
             energy: state.energy,
             lastSavedAt: state.lastSavedAt || 0
           }),
+          // 캐시 잔액 서버 권위 — hcsig-api.js 가 로그인 시 D1 잔액을 주입
+          setCashBalance: (v) => {
+            const n = Math.max(0, Math.floor(Number(v) || 0));
+            if (state.cashBalance === n) return;
+            state.cashBalance = n;
+            updateStatsUI();
+          },
           toast: (message, type = 'save') => showToast(message, type),
           log: (message, type = 'system') => log(message, type),
           refresh: () => {

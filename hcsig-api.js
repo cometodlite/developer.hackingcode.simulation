@@ -67,6 +67,29 @@
     }
   }
 
+  // ── 닉네임 동봉 — Firestore 프로필 닉네임을 sync 페이로드에 포함 ─────────
+  function enrichWithNickname(saveData) {
+    try {
+      const auth = window.HCSIG_AUTH;
+      const profile = auth && auth.getProfile ? auth.getProfile() : null;
+      if (profile && typeof profile.nickname === 'string' && profile.nickname.trim()) {
+        saveData.nickname = profile.nickname.trim();
+      }
+    } catch (e) { /* noop */ }
+    return saveData;
+  }
+
+  // ── 서버 캐시 잔액 채택 — cashBalance 는 서버(D1)가 권위 ─────────────────
+  async function adoptServerCash() {
+    const res = await apiGet('/api/player/me');
+    if (res.ok && res.data && typeof res.data.cashBalance === 'number') {
+      const bridge = window.HCSIG_BRIDGE;
+      if (bridge && typeof bridge.setCashBalance === 'function') {
+        bridge.setCashBalance(res.data.cashBalance);
+      }
+    }
+  }
+
   // ── Migration (최초 1회) ──────────────────────────────────────────────────
   async function tryMigrate() {
     if (_migrated) return;
@@ -75,7 +98,7 @@
 
     const saveEnvelope = bridge.getCurrentSaveData();
     // saveEnvelope = { version, savedAt, state, ownedCodes, modifiers }
-    const saveData = saveEnvelope.state || saveEnvelope;
+    const saveData = enrichWithNickname(saveEnvelope.state || saveEnvelope);
 
     const result = await apiPost('/api/migrate', { saveData });
     if (result.ok) {
@@ -92,7 +115,7 @@
 
   // ── Save Sync (D1) ────────────────────────────────────────────────────────
   async function doSync(saveData) {
-    const result = await apiPost('/api/player/sync', { saveData });
+    const result = await apiPost('/api/player/sync', { saveData: enrichWithNickname(saveData) });
     if (!result.ok) {
       console.warn('[HCSiG API] sync 실패:', result.err);
     }
@@ -152,6 +175,8 @@
     // HCSIG_BRIDGE 준비 대기 (init()에서 설정하므로 약간 지연 가능)
     setTimeout(async () => {
       if (!_migrated) await tryMigrate();
+      // 마이그레이션 직후가 아니라면 서버 캐시 잔액을 채택 (서버 권위)
+      await adoptServerCash();
     }, 800);
   });
 
@@ -174,6 +199,10 @@
   window.HCSIG_API = {
     // 코드 교환 (Workers D1 우선, NOT_FOUND면 호출자가 Firestore fallback 처리)
     redeem: redeemCode,
+
+    // 캐시 차감 (서버 권위) — { ok, data: { cashBalance, spent } } | { ok:false, code }
+    spendCash: (amount, itemId) =>
+      apiPost('/api/cash/spend', { amount, itemId }),
 
     // 지금 즉시 D1 동기화 (UI 버튼 등에서 수동 호출 가능)
     syncNow: async () => {
