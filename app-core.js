@@ -5336,10 +5336,22 @@ function applyLanguageToUI(){
             redeemBtn.disabled = false;
             if (result.ok) {
               if (redeemInput) redeemInput.value = '';
-              const r = result.product.rewards;
-              const rLabel = lang === 'en'
-                ? `COIN +${r.coin}, Energy Pack +${r.energyPack}, Daily Bonus Box +${r.dailyBonusBox}`
-                : `COIN +${r.coin}, 에너지팩 +${r.energyPack}, 데일리 보너스 박스 +${r.dailyBonusBox}`;
+              // 코드 타입별 보상 라벨 — cash/credit/D1 product 는 product.rewards 가 없음
+              let rLabel;
+              if (result.product && result.product.rewards) {
+                const r = result.product.rewards;
+                rLabel = lang === 'en'
+                  ? `COIN +${r.coin}, Energy Pack +${r.energyPack}, Daily Bonus Box +${r.dailyBonusBox}`
+                  : `COIN +${r.coin}, 에너지팩 +${r.energyPack}, 데일리 보너스 박스 +${r.dailyBonusBox}`;
+              } else if (result.type === 'cash') {
+                rLabel = (lang === 'en' ? 'Cash +' : '캐시 +') + (result.cashAmount || 0).toLocaleString() + ' C';
+              } else if (result.type === 'credit') {
+                rLabel = (lang === 'en' ? 'Credits +' : '크레딧 +') + (result.credits || 0).toLocaleString();
+              } else if (result.result && typeof result.result === 'object') {
+                rLabel = Object.entries(result.result).map(([k, v]) => `${k} +${v}`).join(', ');
+              } else {
+                rLabel = lang === 'en' ? 'Reward granted.' : '보상이 지급되었습니다.';
+              }
               redeemMsg.innerHTML = `<strong>${lang === 'en' ? '🎉 Code redeemed!' : '🎉 코드 적용 완료!'}</strong><br>${rLabel}`;
               redeemMsg.className = 'sd-redeem-msg sd-msg-ok';
               showToast(lang === 'en' ? '🎁 Support reward received!' : '🎁 후원 보상이 지급되었습니다!', 'system');
