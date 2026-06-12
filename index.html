@@ -934,5 +934,22 @@
 <script src="app-ui.js?v=3.0.2d"></script>
 <script src="liveOps.js?v=3.0.2d"></script>
 <script src="bgm.js?v=3.0.2d"></script>
+<script>
+// 도메인 이전 안내 — github.io에서 플레이 중인 유저에게만 표시 (세이브는 양쪽 모두 유지됨)
+(function(){
+  if (!/\.github\.io$/.test(location.hostname)) return;
+  window.addEventListener('hcsig:ready', function(){
+    setTimeout(function(){
+      var b = window.HCSIG_BRIDGE;
+      if (!b) return;
+      var isEn = b.getLanguage && b.getLanguage() === 'en';
+      b.log(isEn
+        ? 'Notice: HCSiG has a new official address — https://hcsig.pages.dev (log in to cloud sync your save before moving)'
+        : '공지: HCSiG 공식 주소가 https://hcsig.pages.dev 로 이전되었습니다. 클라우드 로그인 후 이동하시면 세이브가 그대로 유지됩니다.', 'system');
+      b.toast(isEn ? 'New address: hcsig.pages.dev' : '새 주소: hcsig.pages.dev (터미널 로그 참고)', 'save');
+    }, 4000);
+  });
+})();
+</script>
 </body>
 </html>
