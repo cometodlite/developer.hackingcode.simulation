@@ -1,6 +1,6 @@
 
 /**
- * HCSiG v3.1.0 — SHOP 재편 / PASS 독립 패널 / 미션 버그픽스 / EVENT 글로우 분리
+ * HCSiG v4.0.0 — HACK DIVE 안정화 / 랜덤 보안 펄스 / 공통 해킹 계산기
  * SHOP 3분류, PASS 버튼, 신규 미션, 타워/로그인 미션 추적, LINK 분류 태그
  */
 
@@ -56,7 +56,7 @@ function getSaveScore(saveObj) {
 
 // 기존 loadGame을 래핑하거나 로직 보강 필요 (여기서는 핵심 로직 가이드만 포함)
 console.log('[Stability Patch] Loaded');
-const CURRENT_VERSION = '3.1.0';
+const CURRENT_VERSION = '4.0.0';
 const TUTORIAL_VERSION = 6;
     const ENERGY_INTERVAL_MS = 60000; // 에너지 1칸당 60초
     const SAVE_KEY = 'HCSiG_SAVE_v17';
@@ -739,6 +739,16 @@ function applyLanguageToUI(){
     const updateLogs = [
 
       {
+        version: 'v4.0.0',
+        lines: [
+          'HACK DIVE를 짧은 홀드형 고위험 보너스 런으로 정리했습니다. 깊이와 TRACE가 함께 오르며, 85% 이상에서 회수하면 정식 성공으로 기록됩니다.',
+          '보안 펄스가 약 0.36초 주기로 깊이와 TRACE 진행에 변화를 줍니다. 같은 성공률에서도 매 런의 안전 구간과 회수 타이밍이 달라집니다.',
+          '일반 서버 해킹과 HACK DIVE가 동일한 코드 효과·CPU/GPU·모드·HUD 압박 계산을 사용하도록 통합했습니다.',
+          '일반 해킹과 HACK DIVE의 진입 에너지를 2로 통일하고, HACK DIVE 시작 화면과 설명서에 비용을 표시했습니다.'
+        ]
+      },
+
+      {
         version: 'v3.1.0',
         lines: [
           'SHOP 3분류 재편: 일반/교환 상점, 재화 상점(COIN/OneDay 서브탭), 유료 상점으로 구분했습니다.',
@@ -1149,6 +1159,7 @@ function applyLanguageToUI(){
       stage: { selectedId: 'stage_001', chapterFilter: '1', highestCleared: 0, cleared: {}, chapterRewardsClaimed: {}, activeBattle: null },
       campaign: { chapterId: 'campaign_ch1', selectedId: 'campaign_ch1_node1', highestCleared: 0, cleared: {}, activeEncounter: null },
       extend: { highlightsSeen: {}, lastUsedCategory: null },
+      hackDiveRun: null,
       targeting: { serverId: 'school_lab', route: 'internal' },
       zeroDay: {
         onboardingCompleted: false, recommendationState: null,
@@ -1168,6 +1179,9 @@ function applyLanguageToUI(){
           scans: 0,
           actions: 0,
           hackSuccess: 0,
+          hackDiveRuns: 0,
+          hackDiveSecures: 0,
+          hackDiveOverdrives: 0,
           riskHackSuccess: 0,
           shopPurchases: 0,
           energySpent: 0,
@@ -1177,7 +1191,11 @@ function applyLanguageToUI(){
         },
         weekly: {
           scans: 0,
+          actions: 0,
           hackSuccess: 0,
+          hackDiveRuns: 0,
+          hackDiveSecures: 0,
+          hackDiveOverdrives: 0,
           riskHackSuccess: 0,
           shopPurchases: 0,
           energySpent: 0,
@@ -1188,7 +1206,11 @@ function applyLanguageToUI(){
         },
         month: {
           scans: 0,
+          actions: 0,
           hackSuccess: 0,
+          hackDiveRuns: 0,
+          hackDiveSecures: 0,
+          hackDiveOverdrives: 0,
           riskHackSuccess: 0,
           shopPurchases: 0,
           energySpent: 0,
@@ -1257,7 +1279,9 @@ function applyLanguageToUI(){
         codeShardsSpentTotal: 0,
         routeExternalHackSuccessCount: 0,
         routeInternalHackSuccessCount: 0,
-        routeCoreHackSuccessCount: 0
+        routeCoreHackSuccessCount: 0,
+        hackDiveBestDepth: 0,
+        hackDiveBestReward: 0
       },
       autoRun: {
         type: null,
@@ -2368,7 +2392,9 @@ function applyLanguageToUI(){
         { id: 'daily_normal_shop1',  name: '일반 상점 이용',  type: 'shopPurchases',   target: 1,   rewardCredits: 60,  desc: '상점에서 1회 구매하기 (일반/교환 상점 포함)' },
         { id: 'daily_code_levelup1', name: '코드 레벨 업',    type: 'codeLevelUp',     target: 1,   rewardCredits: 80,  desc: '코드 강화로 레벨을 1회 올리기' },
         { id: 'daily_gear_enhance3', name: '코드 기어 강화',  type: 'gearEnhance',     target: 3,   rewardCredits: 70,  desc: '코드 기어를 3회 강화하기', stub: true },
-        { id: 'daily_tower5',        name: '타워 5층 도전',   type: 'towerAttempts',   target: 5,   rewardCredits: 90,  desc: '데이터 타워 5회 도전하기' }
+        { id: 'daily_tower5',        name: '타워 5층 도전',   type: 'towerAttempts',   target: 5,   rewardCredits: 90,  desc: '데이터 타워 5회 도전하기' },
+        { id: 'daily_hackdive_run1', name: '다이브 예열',      type: 'hackDiveRuns',    target: 1,   rewardCredits: 70,  desc: 'HACK DIVE 1회 시작하기' },
+        { id: 'daily_hackdive_deep1',name: '딥 링크 확보',     type: 'hackDiveSecures', target: 1,   rewardCredits: 110, desc: 'HACK DIVE에서 DEEP 이상으로 1회 회수' }
       ],
       weekly: [
         { id: 'weekly_scan30',   name: '주간 스캐너',        type: 'scans',       target: 30,  rewardCredits: 120, desc: '코드 스캔 30회 수행' },
@@ -2390,7 +2416,8 @@ function applyLanguageToUI(){
         { id: 'weekly_normal_shop10',   name: '주간 상점 이용',      type: 'shopPurchases',        target: 10,  rewardCredits: 180, desc: '상점에서 10회 구매하기' },
         { id: 'weekly_gear_enhance15',  name: '주간 기어 강화',      type: 'gearEnhance',          target: 15,  rewardCredits: 220, desc: '코드 기어를 15회 강화하기', stub: true },
         { id: 'weekly_tower35',         name: '주간 타워 도전',      type: 'towerAttempts',        target: 35,  rewardCredits: 250, desc: '데이터 타워 35회 도전하기' },
-        { id: 'weekly_daily_mission40', name: '일일 미션 달성',      type: 'dailyMissionsCompleted', target: 40, rewardCredits: 300, rewardCoin: 5, desc: '이번 주 일일 미션 40개 완료하기' }
+        { id: 'weekly_daily_mission40', name: '일일 미션 달성',      type: 'dailyMissionsCompleted', target: 40, rewardCredits: 300, rewardCoin: 5, desc: '이번 주 일일 미션 40개 완료하기' },
+        { id: 'weekly_hackdive_over1',  name: '오버다이브 주간',      type: 'hackDiveOverdrives',   target: 1,   rewardCredits: 240, rewardCoin: 3, desc: 'HACK DIVE에서 OVERDIVE 1회 회수' }
       ],
       month: [
         { id: 'month_scan100',     name: '월간 스캐너',        type: 'scans',           target: 100, rewardCredits: 300, desc: '코드 스캔 100회 수행' },
@@ -2454,7 +2481,9 @@ function applyLanguageToUI(){
         { id: 'gen_mission_40',    name: '퀘스트 매니악',        type: 'missionsCompleted', target: 40,   rewardCredits: 800,  desc: '누적 퀘스트 40개 완료' },
 
         { id: 'gen_risk_10',       name: '위험 친화 I',          type: 'riskHackSuccess',   target: 10,   rewardCredits: 400,  desc: '위험 해킹 모드로 해킹 성공 10회' },
-        { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' }
+        { id: 'gen_risk_25',       name: '위험 친화 II',         type: 'riskHackSuccess',   target: 25,   rewardCredits: 700,  desc: '위험 해킹 모드로 해킹 성공 25회' },
+        { id: 'gen_hackdive_5',    name: '링크 다이버 I',        type: 'hackDiveSecuresTotal', target: 5,   rewardCredits: 320,  desc: 'HACK DIVE에서 DEEP 이상 회수 5회' },
+        { id: 'gen_hackdive_15',   name: '링크 다이버 II',       type: 'hackDiveSecuresTotal', target: 15,  rewardCredits: 780,  desc: 'HACK DIVE에서 DEEP 이상 회수 15회' }
       ,
 
         { id: 'gen_scan_500',       name: '분석가 III',          type: 'scans',             target: 500,  rewardCredits: 700,  desc: '누적 코드 스캔 500회' },
@@ -2610,6 +2639,11 @@ function applyLanguageToUI(){
       { id: 'shards_total_10', name: '조각 수집 I', desc: '중복 조각을 누적 10개 획득했습니다.', difficulty: 'easy', hidden: false },
       { id: 'shards_total_30', name: '조각 수집 II', desc: '중복 조각을 누적 30개 획득했습니다.', difficulty: 'normal', hidden: false },
       { id: 'energy_pack_1', name: '비상 보급', desc: '에너지 팩을 1회 사용했습니다.', difficulty: 'easy', hidden: true },
+      { id: 'hackdive_run_1', name: '첫 링크 다이브', desc: 'HACK DIVE를 처음 시작했습니다.', difficulty: 'easy', hidden: false, metric: 'hackDiveRuns', target: 1 },
+      { id: 'hackdive_secure_1', name: '딥 시큐어', desc: 'HACK DIVE에서 DEEP 이상으로 1회 회수했습니다.', difficulty: 'easy', hidden: false, metric: 'hackDiveSecures', target: 1 },
+      { id: 'hackdive_secure_5', name: '링크 다이버', desc: 'HACK DIVE에서 DEEP 이상으로 5회 회수했습니다.', difficulty: 'normal', hidden: false, metric: 'hackDiveSecures', target: 5 },
+      { id: 'hackdive_overdrive_1', name: '오버다이브 진입', desc: 'HACK DIVE에서 OVERDIVE를 처음 회수했습니다.', difficulty: 'hard', hidden: false, metric: 'hackDiveOverdrives', target: 1 },
+      { id: 'hackdive_overdrive_5', name: '과부하 수거반', desc: 'HACK DIVE에서 OVERDIVE를 5회 회수했습니다.', difficulty: 'chaos', hidden: true, metric: 'hackDiveOverdrives', target: 5 },
     ];
     achievementDefs.push(...extraAchievementDefs);
 
@@ -2848,17 +2882,21 @@ function applyLanguageToUI(){
 
     const btnScan = document.getElementById('btnScan');
     const btnHack = document.getElementById('btnHack');
+    const btnUpgradeMain = document.getElementById('btnUpgrade');
     const btnUpgradeCpu = document.getElementById('btnUpgradeCpu');
     const btnUpgradeGpu = document.getElementById('btnUpgradeGpu');
     const btnUpgradeCode = document.getElementById('btnUpgradeCode');
     const btnSyncCode = document.getElementById('btnSyncCode');
     const btnEvolveCode = document.getElementById('btnEvolveCode');
+    const hackDivePanel = document.getElementById('hackDivePanel');
 
     const shopList = document.getElementById('shopList');
     const shopSortSelect = document.getElementById('shopSortSelect');
     const shopCategoryTabs = document.getElementById('shopCategoryTabs');
     const shopCategoryTabButtons = document.querySelectorAll('.shop-category-tab');
     const serverSelect = document.getElementById('serverSelect');
+    const routeSelectMain = document.getElementById('routeSelect');
+    const upgradeTargetSelectMain = document.getElementById('upgradeTargetSelect');
 
     const codeListEl = document.getElementById('codeList');
     const codeDetailEl = document.getElementById('codeDetail');
@@ -3011,6 +3049,662 @@ function applyLanguageToUI(){
     let scanRunning = false;
     let tutorialOpenedOnce = false;
     let autoRunIntervalId = null;
+    let hackDiveRun = null;
+    let hackDiveHoldTimer = null;
+    let hackDivePersistedAt = 0;
+
+    const HACK_DIVE_DEPTH_CAP = 140;
+    const HACK_ACTION_ENERGY_COST = 2;
+    const HACK_DIVE_RESTORE_MAX_MS = 10 * 60 * 1000;
+    const HACK_DIVE_BANDS = [
+      { id: 'abort', min: 0, max: 15, multiplier: 0, label: 'ABORT' },
+      { id: 'shallow', min: 15, max: 50, multiplier: 0.4, label: 'SHALLOW' },
+      { id: 'standard', min: 50, max: 85, multiplier: 0.8, label: 'STANDARD' },
+      { id: 'deep', min: 85, max: 100, multiplier: 1.0, label: 'DEEP' },
+      { id: 'overdive', min: 100, max: HACK_DIVE_DEPTH_CAP, multiplier: 1.6, label: 'OVERDIVE' }
+    ];
+    const HACK_DIVE_MISSION_TYPES = new Set(['hackDiveRuns', 'hackDiveSecures', 'hackDiveOverdrives', 'hackDiveSecuresTotal']);
+
+    function stopHackDiveHold() {
+      if (hackDiveHoldTimer !== null) {
+        clearInterval(hackDiveHoldTimer);
+        hackDiveHoldTimer = null;
+      }
+    }
+
+    function serializeHackDiveRun(run = hackDiveRun) {
+      if (!run) return null;
+      return {
+        startedAt: Number(run.startedAt || Date.now()),
+        depth: Math.max(0, Math.min(HACK_DIVE_DEPTH_CAP, Number(run.depth || 0))),
+        trace: Math.max(0, Math.min(100, Number(run.trace || 0))),
+        successChance: Math.max(0.05, Math.min(0.95, Number(run.successChance || 0.5))),
+        baseCredits: Math.max(1, Math.round(Number(run.baseCredits || 1))),
+        baseExp: Math.max(1, Math.round(Number(run.baseExp || 1))),
+        modeId: normalizeHackMode(run.modeId || state.hackMode || 'normal'),
+        serverId: run.server && run.server.id ? run.server.id : (state.targeting && state.targeting.serverId) || 'school_lab',
+        codeId: run.code && run.code.id ? run.code.id : (state.activeCodeId || null),
+        nullSeedTicks: Math.max(0, Math.round(Number(run.nullSeedTicks || 0))),
+        logCount: Math.max(0, Math.round(Number(run.logCount || 0))),
+        persistedAt: Date.now()
+      };
+    }
+
+    function syncHackDiveSaveState() {
+      state.hackDiveRun = serializeHackDiveRun(hackDiveRun);
+    }
+
+    function persistHackDiveRun(reason = 'tick', force = false) {
+      if (!hackDiveRun) {
+        state.hackDiveRun = null;
+        saveGame(true, { reason: `hack-dive-${reason}` });
+        return;
+      }
+      const now = Date.now();
+      if (!force && now - hackDivePersistedAt < 3000) return;
+      syncHackDiveSaveState();
+      hackDivePersistedAt = now;
+      saveGame(true, { reason: `hack-dive-${reason}` });
+    }
+
+    function restoreHackDiveRunFromState(showNotice = false) {
+      const saved = state.hackDiveRun;
+      if (!saved || hackDiveRun) return false;
+      const persistedAt = Number(saved.persistedAt || saved.startedAt || 0);
+      const ageMs = persistedAt > 0 ? Math.max(0, Date.now() - persistedAt) : 0;
+      if (persistedAt > 0 && ageMs > HACK_DIVE_RESTORE_MAX_MS) {
+        state.hackDiveRun = null;
+        log('[HACK DIVE] SESSION EXPIRED · stale run cleared after reload', 'hack');
+        if (showNotice) {
+          showToast(
+            langText(
+              '이전 HACK DIVE 세션이 만료되어 정리되었습니다.',
+              'Previous HACK DIVE session expired and was cleared.',
+              '以前のHACK DIVEセッションは期限切れのため整理されました。'
+            ),
+            'warn'
+          );
+        }
+        return false;
+      }
+      const codeId = saved.codeId || state.activeCodeId || null;
+      const code = codeId ? getOwnedCode(codeId) : null;
+      const server = servers.find((entry) => entry.id === saved.serverId) || getSelectedServer() || servers[0];
+      if (!code || !server) {
+        state.hackDiveRun = null;
+        return false;
+      }
+      const modeId = normalizeHackMode(saved.modeId || state.hackMode || 'normal');
+      state.activeCodeId = code.id;
+      state.targeting = state.targeting || { serverId: server.id, route: 'internal' };
+      state.targeting.serverId = server.id;
+      state.hackMode = modeId;
+      state.riskMode = modeId === 'risk';
+      hackDiveRun = {
+        startedAt: Number(saved.startedAt || Date.now()),
+        depth: Math.max(0, Math.min(HACK_DIVE_DEPTH_CAP, Number(saved.depth || 0))),
+        trace: Math.max(0, Math.min(100, Number(saved.trace || 0))),
+        successChance: Math.max(0.05, Math.min(0.95, Number(saved.successChance || 0.5))),
+        baseCredits: Math.max(1, Math.round(Number(saved.baseCredits || 1))),
+        baseExp: Math.max(1, Math.round(Number(saved.baseExp || 1))),
+        modeId,
+        server,
+        code,
+        nullSeedTicks: Math.max(0, Math.round(Number(saved.nullSeedTicks || 0))),
+        pulseTicks: 0,
+        lastPulse: 'steady',
+        logCount: Math.max(0, Math.round(Number(saved.logCount || 0))),
+        restored: true
+      };
+      hackDivePersistedAt = Date.now();
+      syncHackDiveSaveState();
+      if (showNotice) {
+        log('[HACK DIVE] SESSION RESTORED · resumed after reload', 'hack');
+        showToast(
+          langText(
+            'HACK DIVE 진행 상황을 복구했습니다.',
+            'Restored your HACK DIVE run.',
+            'HACK DIVEの進行状況を復元しました。'
+          ),
+          'system'
+        );
+      }
+      return true;
+    }
+
+    function getHackDiveBand(depth) {
+      const current = Number(depth || 0);
+      if (current < 15) return HACK_DIVE_BANDS[0];
+      if (current < 50) return HACK_DIVE_BANDS[1];
+      if (current < 85) return HACK_DIVE_BANDS[2];
+      if (current < 100) return HACK_DIVE_BANDS[3];
+      return HACK_DIVE_BANDS[4];
+    }
+
+    function getHackDiveMultiplier(depth) {
+      const current = Number(depth || 0);
+      if (current < 15) return 0;
+      if (current < 50) return 0.4;
+      if (current < 85) return 0.8;
+      if (current < 100) return 1.0;
+      const overflow = Math.max(0, Math.min(HACK_DIVE_DEPTH_CAP, current) - 100);
+      return Math.min(1.6, 1 + (overflow / 40) * 0.6);
+    }
+
+    function formatHackDiveMultiplier(depth) {
+      return `×${getHackDiveMultiplier(depth).toFixed(2).replace(/\.00$/, '')}`;
+    }
+
+    function getHackDiveOverdriveLabel(depth) {
+      const band = getHackDiveBand(depth);
+      if (band.id !== 'overdive') return band.label;
+      return `${band.label} ${formatHackDiveMultiplier(depth)}`;
+    }
+
+    function getHackDiveResultState(depth) {
+      const band = getHackDiveBand(depth);
+      if (!band) return 'abort';
+      if (band.id === 'abort') return 'abort';
+      if (band.id === 'shallow') return 'shallow';
+      if (band.id === 'standard') return 'standard';
+      if (band.id === 'deep') return 'deep';
+      return 'overdrive';
+    }
+
+    function getHackDiveResultDetail(depth, rewardCredits, rewardExp, trace) {
+      const resultState = getHackDiveResultState(depth);
+      const traceText = `TRACE ${Math.min(100, Math.round(trace || 0))}%`;
+      const rewardText = `${rewardCredits} CR · ${rewardExp} EXP`;
+      if (resultState === 'shallow') {
+        return langText(
+          `안전 회수 · ${traceText} · ${rewardText}`,
+          `Safety cash-out · ${traceText} · ${rewardText}`,
+          `安全回収 · ${traceText} · ${rewardText}`
+        );
+      }
+      if (resultState === 'standard') {
+        return langText(
+          `중간 회수 · ${traceText} · ${rewardText}`,
+          `Mid secure · ${traceText} · ${rewardText}`,
+          `中間回収 · ${traceText} · ${rewardText}`
+        );
+      }
+      if (resultState === 'deep') {
+        return langText(
+          `정식 회수 · ${traceText} · ${rewardText}`,
+          `Full secure · ${traceText} · ${rewardText}`,
+          `正式回収 · ${traceText} · ${rewardText}`
+        );
+      }
+      return langText(
+        `고위험 회수 · ${traceText} · ${rewardText}`,
+        `High-risk secure · ${traceText} · ${rewardText}`,
+        `高リスク回収 · ${traceText} · ${rewardText}`
+      );
+    }
+
+    function getHackDiveResultAdvice(stateId, depth, trace) {
+      const currentDepth = Number(depth || 0);
+      const currentTrace = Number(trace || 0);
+      if (stateId === 'trace') {
+        return langText(
+          '다음 런은 85% 전후에서 먼저 회수 타이밍을 익히는 편이 안전합니다.',
+          'On the next run, it is safer to learn the secure timing around 85% first.',
+          '次のランでは、まず85%前後で回収タイミングを覚える方が安全です。'
+        );
+      }
+      if (stateId === 'abort' && currentDepth < 15) {
+        return langText(
+          '진입 확인용 런이었습니다. 다음에는 15%를 넘겨 STANDARD까지 밀어보세요.',
+          'That was a probe run. Next time, push past 15% and try reaching STANDARD.',
+          '進入確認用ランでした。次は15%を超えてSTANDARDまで押してみてください。'
+        );
+      }
+      if (stateId === 'abort') {
+        return langText(
+          '15% 이후 중단은 무보상입니다. 위험하면 회수 쪽이 더 낫습니다.',
+          'After 15%, aborting gives no payout. If it feels risky, securing is the better choice.',
+          '15%以降の中断は無報酬です。危険なら中断より回収の方が得です。'
+        );
+      }
+      if (stateId === 'shallow') {
+        return langText(
+          '안전 회수는 성공적입니다. 다음에는 50% 이상 STANDARD 구간을 노려도 괜찮습니다.',
+          'Safe secures are working. On the next run, it is reasonable to aim for STANDARD above 50%.',
+          '安全回収は成功です。次は50%以上のSTANDARD帯を狙っても大丈夫です。'
+        );
+      }
+      if (stateId === 'standard') {
+        return langText(
+          currentTrace >= 70
+            ? 'TRACE가 높게 끝났습니다. 다음에는 85% 직전보다 조금 일찍 회수해도 됩니다.'
+            : '안정적인 회수였습니다. TRACE가 얌전하면 다음에는 85% DEEP를 노려보세요.',
+          currentTrace >= 70
+            ? 'TRACE ended high. Next time, you can secure a little earlier instead of stretching toward 85%.'
+            : 'That was a stable secure. If TRACE stays calm, try pushing to DEEP at 85% next time.',
+          currentTrace >= 70
+            ? 'TRACEが高めで終わりました。次は85%直前より少し早く回収しても構いません。'
+            : '安定した回収でした。TRACEが穏やかなら次は85%のDEEPを狙ってみてください。'
+        );
+      }
+      if (stateId === 'deep') {
+        return langText(
+          currentTrace >= 75
+            ? '정식 회수는 확보했습니다. TRACE가 높았다면 다음에도 85~95% 구간 회수가 효율적입니다.'
+            : '좋은 회수였습니다. TRACE가 안정적이었다면 100% OVERDIVE도 시도해볼 만합니다.',
+          currentTrace >= 75
+            ? 'You secured a full clear. If TRACE felt high, staying in the 85–95% band is efficient next time.'
+            : 'That was a strong secure. If TRACE stayed stable, trying for 100% OVERDIVE is reasonable next time.',
+          currentTrace >= 75
+            ? '正式回収は確保できました。TRACEが高かったなら、次も85〜95%帯の回収が効率的です。'
+            : '良い回収でした。TRACEが安定していたなら、次は100% OVERDIVEも狙えます。'
+        );
+      }
+      return langText(
+        '고보상 회수에 성공했습니다. 다음에도 90% 이후에는 TRACE 변화를 먼저 보고 짧게 판단하세요.',
+        'You landed a high-value secure. On future runs, watch TRACE first once you pass 90% and make shorter decisions.',
+        '高報酬回収に成功しました。次回も90%以降はTRACE変化を見て短く判断してください。'
+      );
+    }
+
+    function getHackDiveNextThreshold(depth) {
+      const current = Number(depth || 0);
+      if (current < 15) {
+        return {
+          value: 15,
+          label: 'SHALLOW',
+          detail: langText('환불 구간 종료', 'Refund band ends', '返金帯終了')
+        };
+      }
+      if (current < 50) {
+        return {
+          value: 50,
+          label: 'STANDARD',
+          detail: langText('안정 회수 구간', 'Stable payout band', '安定回収帯')
+        };
+      }
+      if (current < 85) {
+        return {
+          value: 85,
+          label: 'DEEP',
+          detail: langText('정식 회수 시작', 'Full secure begins', '正式回収開始')
+        };
+      }
+      if (current < 100) {
+        return {
+          value: 100,
+          label: 'OVERDIVE',
+          detail: langText('고배율 위험 구간', 'High-multiplier risk band', '高倍率リスク帯')
+        };
+      }
+      return {
+        value: HACK_DIVE_DEPTH_CAP,
+        label: 'MAX',
+        detail: langText('최대 배율 구간 유지', 'Hold for max multiplier', '最大倍率帯を維持')
+      };
+    }
+
+    function getHackDiveTraceState(trace) {
+      const current = Number(trace || 0);
+      if (current >= 90) {
+        return {
+          id: 'critical',
+          label: langText('임계', 'Critical', '臨界'),
+          detail: langText('즉시 회수하지 않으면 전손 위험이 큽니다.', 'Secure immediately or risk a total loss.', '即時回収しないと全損の危険が高まります。')
+        };
+      }
+      if (current >= 70) {
+        return {
+          id: 'danger',
+          label: langText('위험', 'Danger', '危険'),
+          detail: langText('TRACE가 가파르게 상승 중입니다.', 'TRACE is climbing aggressively now.', 'TRACEが急激に上昇しています。')
+        };
+      }
+      if (current >= 45) {
+        return {
+          id: 'caution',
+          label: langText('주의', 'Caution', '注意'),
+          detail: langText('이제부터 회수 타이밍을 의식해야 합니다.', 'From here, timing your secure matters.', 'ここからは回収タイミングを意識する必要があります。')
+        };
+      }
+      return {
+        id: 'stable',
+        label: langText('안정', 'Stable', '安定'),
+        detail: langText('아직은 비교적 안정적인 잠수 구간입니다.', 'You are still in a relatively stable dive window.', 'まだ比較的安定した潜行帯です。')
+      };
+    }
+
+    function getHackDiveLiveActionState(depth, trace) {
+      const currentDepth = Number(depth || 0);
+      const traceState = getHackDiveTraceState(trace);
+      const secure =
+        currentDepth < 15
+          ? {
+              key: 'refund',
+              label: langText('환불 종료', 'Refund Exit', '返金終了'),
+              detail: langText(`에너지 ${HACK_ACTION_ENERGY_COST} 환불`, `Refunds ${HACK_ACTION_ENERGY_COST} energy`, `エネルギー${HACK_ACTION_ENERGY_COST}返金`)
+            }
+          : currentDepth < 50
+            ? {
+                key: 'shallow',
+                label: langText('부분 회수', 'Partial Secure', '部分回収'),
+                detail: `${formatHackDiveMultiplier(currentDepth)} · ${langText('안전 프리미엄', 'safe premium', '安全プレミアム')}`
+              }
+            : currentDepth < 85
+              ? {
+                  key: 'standard',
+                  label: langText('표준 회수', 'Standard Secure', '標準回収'),
+                  detail: `${formatHackDiveMultiplier(currentDepth)} · ${langText('기본 진행권', 'standard progress', '基本進行圏')}`
+                }
+              : currentDepth < 100
+                ? {
+                    key: 'deep',
+                    label: langText('정식 회수', 'Full Secure', '正式回収'),
+                    detail: `${formatHackDiveMultiplier(currentDepth)} · ${langText('성공 판정', 'full clear', '成功判定')}`
+                  }
+                : {
+                    key: 'overdive',
+                    label: langText('OVERDIVE 회수', 'Overdrive Secure', 'OVERDIVE回収'),
+                    detail: `${formatHackDiveMultiplier(currentDepth)} · ${langText('고배율 위험 보너스', 'high-risk bonus', '高倍率リスクボーナス')}`
+                  };
+      const abort =
+        currentDepth < 15
+          ? {
+              label: langText('중단 + 환불', 'Abort + Refund', '中断 + 返金'),
+            detail: langText(`15% 미만은 에너지 ${HACK_ACTION_ENERGY_COST} 환불`, `Below 15% refunds ${HACK_ACTION_ENERGY_COST} energy`, `15%未満はエネルギー${HACK_ACTION_ENERGY_COST}返金`)
+            }
+          : {
+              label: langText('무보상 중단', 'Abort (No Payout)', '無報酬中断'),
+              detail: langText('15% 이후 중단은 보상 없음', 'No payout after 15%', '15%以降の中断は無報酬')
+            };
+      const liveCall =
+        traceState.id === 'critical'
+          ? langText('지금 회수 권장 · TRACE 임계', 'Secure now · TRACE critical', '今すぐ回収推奨 · TRACE臨界')
+          : traceState.id === 'danger' && currentDepth >= 85
+            ? langText('지금 회수 권장 · 성공권 확보', 'Secure now · clear band secured', '今すぐ回収推奨 · 成功圏確保')
+            : traceState.id === 'danger'
+              ? langText('짧게 더 잠수 가능 · TRACE 급상승 주의', 'Short extra push possible · TRACE rising fast', '短く追加潜行可能 · TRACE急上昇注意')
+              : currentDepth >= 100
+                ? langText('보상 욕심 구간 · TRACE 관리 필수', 'Greed band · manage TRACE carefully', '欲張り区間 · TRACE管理必須')
+                : currentDepth >= 85
+                  ? langText('이미 성공권 · 더 욕심낼지 결정', 'Already in the clear band · decide whether to push', 'すでに成功圏 · さらに押すか判断')
+                  : currentDepth >= 50
+                    ? langText('안정 회수 가능 · 85%까지 밀어도 됨', 'Stable secure available · you can still push to 85%', '安定回収可能 · 85%まで押してもよい')
+                    : currentDepth >= 15
+                      ? langText('부분 회수 가능 · 아직은 짧은 잠수 구간', 'Partial secure available · still an early dive', '部分回収可能 · まだ序盤の潜行')
+                      : langText('아직 환불 구간 · 진입 확인용 잠수', 'Still in refund band · probe before committing', 'まだ返金帯 · 進入確認用の潜行');
+      const hold =
+        traceState.id === 'critical'
+          ? {
+              label: langText('한 틱만 더 잠수', 'One More Tick', 'あと1ティック潜行'),
+              detail: langText('즉시 회수 권장', 'Secure immediately after this', 'この後すぐ回収推奨'),
+              tone: 'critical'
+            }
+          : traceState.id === 'danger'
+            ? {
+                label: langText('짧게 더 잠수', 'Short Push', '短く追加潜行'),
+                detail: langText('TRACE 급상승 주의', 'TRACE spike warning', 'TRACE急上昇注意'),
+                tone: 'danger'
+              }
+            : currentDepth >= 100
+              ? {
+                  label: langText('탐욕 잠수', 'Greed Dive', '欲張り潜行'),
+                  detail: langText('고배율 · 고위험', 'high reward · high risk', '高倍率・高危険'),
+                  tone: 'overdive'
+                }
+              : currentDepth >= 85
+                ? {
+                    label: langText('조금 더 잠수', 'Push a Little More', 'もう少し潜行'),
+                    detail: langText('이미 성공권 확보', 'clear band secured', '成功圏確保済み'),
+                    tone: 'deep'
+                  }
+                : {
+                    label: langText('길게 눌러 잠수', 'Hold to Dive', '長押しで潜行'),
+                    detail: langText('깊이 상승', 'increase depth', '深度上昇'),
+                    tone: 'normal'
+                  };
+      return { secure, abort, hold, traceState, liveCall };
+    }
+
+    function renderHackDiveThresholds(currentDepth = 0) {
+      const steps = [
+        { value: 15, label: '15%', tone: 'abort' },
+        { value: 50, label: '50%', tone: 'shallow' },
+        { value: 85, label: '85%', tone: 'deep' },
+        { value: 100, label: '100%', tone: 'overdive' }
+      ];
+      return `
+        <div class="hack-dive-thresholds" aria-hidden="true">
+          ${steps.map((step) => `
+            <span class="hack-dive-threshold ${Number(currentDepth || 0) >= step.value ? 'is-hit' : ''} ${step.tone}" style="left:${(step.value / HACK_DIVE_DEPTH_CAP) * 100}%">
+              <i></i>
+              <b>${step.label}</b>
+            </span>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function handleHackDiveBandShift(prevDepth, nextDepth) {
+      const prevBand = getHackDiveBand(prevDepth);
+      const nextBand = getHackDiveBand(nextDepth);
+      if (!prevBand || !nextBand || prevBand.id === nextBand.id) return;
+      if (nextBand.id === 'shallow') {
+        log('[HACK DIVE] SHALLOW · refund line cleared', 'hack');
+        showToast(
+          langText(
+            'SHALLOW 진입 — 환불 구간을 벗어났습니다.',
+            'Entered SHALLOW — refund band cleared.',
+            'SHALLOW突入 — 返金帯を抜けました。'
+          ),
+          'system'
+        );
+        return;
+      }
+      if (nextBand.id === 'standard') {
+        log('[HACK DIVE] STANDARD · stable payout band', 'hack');
+        showToast(
+          langText(
+            'STANDARD 진입 — 안정적인 회수 구간입니다.',
+            'Entered STANDARD — stable payout band.',
+            'STANDARD突入 — 安定回収帯です。'
+          ),
+          'system'
+        );
+        return;
+      }
+      if (nextBand.id === 'deep') {
+        log('[HACK DIVE] DEEP · full secure threshold unlocked', 'hack');
+        showToast(
+          langText(
+            'DEEP 진입 — 이제 정식 회수로 기록됩니다.',
+            'Entered DEEP — secures now count as full clears.',
+            'DEEP突入 — ここから正式回収として記録されます。'
+          ),
+          'achievement'
+        );
+        return;
+      }
+      if (nextBand.id === 'overdive') {
+        log('[HACK DIVE] OVERDIVE · trace surge expected', 'hack');
+        showToast(
+          langText(
+            'OVERDIVE 진입 — 보상은 커지지만 TRACE가 급상승합니다.',
+            'Entered OVERDIVE — payout rises, but TRACE surges hard.',
+            'OVERDIVE突入 — 報酬は増えますがTRACEが急上昇します。'
+          ),
+          'warn'
+        );
+      }
+    }
+
+    function handleHackDiveTraceShift(prevTrace, nextTrace) {
+      const before = Number(prevTrace || 0);
+      const after = Number(nextTrace || 0);
+      if (before < 45 && after >= 45) {
+        log('[HACK DIVE] TRACE CAUTION · secure timing now matters', 'hack');
+        showToast(
+          langText(
+            'TRACE 주의 — 이제부터는 회수 타이밍을 의식해야 합니다.',
+            'TRACE caution — from here, secure timing starts to matter.',
+            'TRACE注意 — ここからは回収タイミングを意識する必要があります。'
+          ),
+          'system'
+        );
+      }
+      if (before < 70 && after >= 70) {
+        const hasTraceAmple = Number((state.items && state.items.traceAmple) || 0) >= 25;
+        log('[HACK DIVE] TRACE DANGER · secure window narrowing', 'hack');
+        showToast(
+          hasTraceAmple
+            ? langText(
+                'TRACE 위험 — 회수를 우선 고려하세요. TRACE 앰플로 한 번 더 버틸 수 있습니다.',
+                'TRACE danger — prioritize securing now. TRACE Ample can buy you one more push.',
+                'TRACE危険 — まず回収を優先してください。TRACEアンプルであと一押しできます。'
+              )
+            : langText(
+                'TRACE 위험 — 회수를 우선 고려하세요. 여기서 더 밀면 급격히 위험해집니다.',
+                'TRACE danger — prioritize securing now. Pushing further gets dangerous quickly.',
+                'TRACE危険 — まず回収を優先してください。ここから先は急激に危険になります。'
+              ),
+          'warn'
+        );
+      }
+      if (before < 90 && after >= 90) {
+        const hasNullSeed = Number((state.items && state.items.nullSeed) || 0) >= 10;
+        log('[HACK DIVE] TRACE CRITICAL · immediate secure advised', 'hack');
+        showToast(
+          hasNullSeed
+            ? langText(
+                'TRACE 임계 — 지금 회수하지 않으면 전손 위험이 큽니다. NULL 시드는 최후 보정용입니다.',
+                'TRACE critical — secure now or risk a total loss. NULL Seed is only a last-second buffer.',
+                'TRACE臨界 — 今すぐ回収しないと全損の危険が高いです。NULL Seedは最後の保険です。'
+              )
+            : langText(
+                'TRACE 임계 — 지금 회수하지 않으면 전손 위험이 큽니다.',
+                'TRACE critical — secure now or risk a total loss.',
+                'TRACE臨界 — 今すぐ回収しないと全損の危険が高いです。'
+              ),
+          'warn'
+        );
+      }
+    }
+
+    function getHackDiveObjectiveText() {
+      const runs = state.stats.hackDiveRunCount || 0;
+      const secures = state.stats.hackDiveSecureCount || 0;
+      const overdrives = state.stats.hackDiveOverdriveCount || 0;
+      const bestDepth = Number(state.stats.hackDiveBestDepth || 0);
+      if (runs < 1) {
+        return langText('첫 목표: 85%까지 진입해 DEEP 회수를 경험하세요.', 'First target: reach 85% and feel your first DEEP secure.', '最初の目標: 85%まで到達して最初のDEEP回収を体験しましょう。');
+      }
+      if (secures < 1) {
+        return langText('다음 목표: 85% 이상에서 한 번 회수해 성공 구간을 익히세요.', 'Next target: secure once at 85% or higher to learn the success band.', '次の目標: 85%以上で1回回収して成功帯を覚えましょう。');
+      }
+      if (overdrives < 1) {
+        return langText('다음 목표: 100%를 넘겨 첫 OVERDIVE 회수를 기록하세요.', 'Next target: push past 100% and record your first OVERDIVE secure.', '次の目標: 100%を超えて最初のOVERDIVE回収を記録しましょう。');
+      }
+      if (bestDepth < 120) {
+        return langText('다음 목표: 120% 이상에서 TRACE를 버티며 고배율 회수를 노려보세요.', 'Next target: survive beyond 120% and secure a higher multiplier.', '次の目標: 120%以上でTRACEに耐え、高倍率回収を狙いましょう。');
+      }
+      return langText('현재 목표: 보상 회수 타이밍을 더 다듬어 최고 보상을 갱신하세요.', 'Current target: refine your timing and beat your best payout.', '現在の目標: 回収タイミングを磨いて最高報酬を更新しましょう。');
+    }
+
+    function recordHackDiveBest(run, rewardCredits = 0) {
+      if (!run) {
+        return {
+          newBestDepth: false,
+          newBestReward: false,
+          bestDepth: Number(state.stats.hackDiveBestDepth || 0),
+          bestReward: Number(state.stats.hackDiveBestReward || 0)
+        };
+      }
+      const prevBestDepth = Number(state.stats.hackDiveBestDepth || 0);
+      const prevBestReward = Number(state.stats.hackDiveBestReward || 0);
+      const nextDepth = Number(run.depth || 0);
+      const nextReward = Number(rewardCredits || 0);
+      const newBestDepth = nextDepth > prevBestDepth;
+      const newBestReward = nextReward > 0 && nextReward > prevBestReward;
+      state.stats.hackDiveBestDepth = Math.max(prevBestDepth, nextDepth);
+      if (rewardCredits > 0) {
+        state.stats.hackDiveBestReward = Math.max(prevBestReward, nextReward);
+      }
+      return {
+        newBestDepth,
+        newBestReward,
+        bestDepth: Number(state.stats.hackDiveBestDepth || 0),
+        bestReward: Number(state.stats.hackDiveBestReward || 0)
+      };
+    }
+
+    function isHackDiveMission(def) {
+      return !!(def && HACK_DIVE_MISSION_TYPES.has(def.type));
+    }
+
+    function getNextHackDiveMissionHint() {
+      const scopes = ['daily', 'weekly'];
+      for (const scope of scopes) {
+        const defs = missionDefs[scope] || [];
+        const progObj = state.missionProgress[scope] || {};
+        for (const def of defs) {
+          if (def.stub || !isHackDiveMission(def)) continue;
+          const completed = !!(progObj.completed && progObj.completed[def.id]);
+          if (completed) continue;
+          const progress = getMissionProgressValue(scope, def.type);
+          return `HACK DIVE · ${localizeMissionName(def)} (${progress}/${def.target})`;
+        }
+      }
+      return '';
+    }
+
+    function getHackDiveScopeLabel(scope) {
+      if (scope === 'daily') return 'DAILY';
+      if (scope === 'weekly') return 'WEEKLY';
+      if (scope === 'general') return 'GENERAL';
+      return String(scope || '').toUpperCase();
+    }
+
+    function getHackDiveProjectedMissionValue(scope, def, preview = null) {
+      const current = Math.min(Number(def.target || 0), Number(getMissionProgressValue(scope, def.type) || 0));
+      if (!preview) return current;
+      let delta = 0;
+      if (def.type === 'hackDiveSecures' || def.type === 'hackDiveSecuresTotal') {
+        delta = preview.securedDeep ? 1 : 0;
+      } else if (def.type === 'hackDiveOverdrives') {
+        delta = preview.securedOverdrive ? 1 : 0;
+      } else if (def.type === 'hackDiveRuns') {
+        delta = 0;
+      }
+      return Math.min(Number(def.target || 0), current + delta);
+    }
+
+    function getHackDiveTrackerEntries(maxEntries = 3, preview = null) {
+      const scopes = ['daily', 'weekly', 'general'];
+      const entries = [];
+      for (const scope of scopes) {
+        const defs = missionDefs[scope] || [];
+        const progObj = state.missionProgress[scope] || {};
+        for (const def of defs) {
+          if (def.stub || !isHackDiveMission(def)) continue;
+          const completed = !!(progObj.completed && progObj.completed[def.id]);
+          if (completed) continue;
+          const progress = Math.min(Number(def.target || 0), Number(getMissionProgressValue(scope, def.type) || 0));
+          const projected = getHackDiveProjectedMissionValue(scope, def, preview);
+          entries.push({
+            scope,
+            scopeLabel: getHackDiveScopeLabel(scope),
+            name: localizeMissionName(def),
+            progress,
+            projected,
+            willCompleteOnSecure: !!preview && progress < Number(def.target || 0) && projected >= Number(def.target || 0),
+            target: Number(def.target || 0)
+          });
+          break;
+        }
+        if (entries.length >= maxEntries) break;
+      }
+      return entries;
+    }
 
     function getTutorialSteps() {
       if (getLang() === 'en') {
@@ -3018,7 +3712,7 @@ function applyLanguageToUI(){
           {
             title: 'Welcome',
             goal: 'First route: get one code -> equip it -> clear one NORMAL hack',
-            text: 'HCSiG is about breaking servers, earning credits, and growing your tools. Codes are the hacking tools you equip before scans, hacks, Data Tower, and ZERO-DAY.',
+            text: 'HCSiG is about breaking servers, earning credits, and growing your tools. Codes are the hacking tools you equip before scans, hacks, Data Tower, and HACK DIVE.',
             checklist: ['Codes are your main tools.', 'Credits pay for upgrades and items.', 'Energy recovers over time: 1 energy every 60 seconds, up to 20.'],
             hint: 'Tap Next and we will walk through the safest first route.'
           },
@@ -3089,11 +3783,11 @@ function applyLanguageToUI(){
             hint: 'Build up through basic hacks first, then start climbing.'
           },
           {
-            title: '10. ZERO-DAY DISCOVERY',
-            goal: 'Know what ZERO-DAY is before you tap it',
-            text: 'ZERO-DAY DISCOVERY is a short time-attack mode in LAB. You inject data before the patch bar fills, then recover before the cutoff to keep your rewards.',
-            checklist: ['Short, high-focus runs.', 'Recover before the cutoff to secure rewards.', 'It is fine to ignore ZERO-DAY until basic hacks feel comfortable.'],
-            hint: 'Think of ZERO-DAY as a side mode you unlock into, not your first homework.'
+            title: '10. HACK DIVE',
+            goal: 'Know the quick high-risk loop before you touch it',
+            text: 'HACK DIVE is a short hold-to-dive mode on HOME. Hold DATA INJECT to go deeper, secure at 85% or higher to keep full clears, and push past 100% only if you can survive the TRACE spike.',
+            checklist: [`Below 15%, aborting refunds ${HACK_ACTION_ENERGY_COST} energy.`, 'At 85% or higher, the run counts as a proper secure clear.', 'At 100%+, OVERDIVE starts and rewards jump, but TRACE rises much faster.'],
+            hint: 'Treat HACK DIVE as a short burst challenge you can dip into after normal hacks feel steady.'
           },
           {
             title: '11. LIST, More, and Cloud',
@@ -3116,7 +3810,7 @@ function applyLanguageToUI(){
           {
             title: 'ようこそ',
             goal: '最初の流れ: コード確保 → 装備 → NORMALハック',
-            text: 'HCSiGではサーバーを突破してクレジットを稼ぎ、装備を育てていきます。コードはスキャン、ハック、データタワー、ZERO-DAYで使うハッキング用の装備です。',
+            text: 'HCSiGではサーバーを突破してクレジットを稼ぎ、装備を育てていきます。コードはスキャン、ハック、データタワー、HACK DIVEで使うハッキング用の装備です。',
             checklist: ['コードはあなたの主力装備です。', 'クレジットで成長や補給を進めます。', 'エネルギーは60秒ごとに1回復し、最大20まで溜まります。'],
             hint: '次へ進むと、最初の安全な進行ルートを案内します。'
           },
@@ -3187,11 +3881,11 @@ function applyLanguageToUI(){
             hint: 'まずは基本ハックで育ってから登り始めましょう。'
           },
           {
-            title: '10. ZERO-DAY DISCOVERY',
-            goal: '押す前にどんなモードかだけ知っておきましょう',
-            text: 'ZERO-DAY DISCOVERY は LAB の短時間タイムアタックです。パッチバーが埋まる前にデータを注入し、回収して報酬を持ち帰ります。',
-            checklist: ['短時間で集中するサイドモードです。', '締め切り前に回収すると報酬を確保できます。', '基本ハックに慣れるまでは後回しでも大丈夫です。'],
-            hint: '最初の必修ではなく、慣れてから触る挑戦モードだと思ってください。'
+            title: '10. HACK DIVE',
+            goal: '触る前に短い高難度ループを把握しましょう',
+            text: 'HACK DIVE は HOME にある短時間のホールド型モードです。DATA INJECT を押し続けて深く潜り、85%以上で回収すると本番クリア扱いになります。100%を超えると OVERDIVE に入り、報酬は増えますが TRACE も急上昇します。',
+          checklist: [`15%未満で中断するとエネルギー${HACK_ACTION_ENERGY_COST}が返ってきます。`, '85%以上で回収すると正式な確保成功として記録されます。', '100%以上は OVERDIVE で、見返りも危険も大きくなります。'],
+            hint: '通常ハックに慣れてから差し込む、短く強い挑戦モードだと思えば十分です。'
           },
           {
             title: '11. LIST・その他・クラウド',
@@ -3213,7 +3907,7 @@ function applyLanguageToUI(){
         {
           title: '환영합니다',
           goal: '첫 루프: 코드 확보 → 장착 → NORMAL 해킹',
-          text: 'HCSiG는 서버를 뚫어 크레딧을 벌고, 장비를 키워 다음 도전에 올라가는 게임입니다. 코드는 스캔, 해킹, 데이터 타워, ZERO-DAY에서 쓰는 해킹 장비라고 생각하면 됩니다.',
+          text: 'HCSiG는 서버를 뚫어 크레딧을 벌고, 장비를 키워 다음 도전에 올라가는 게임입니다. 코드는 스캔, 해킹, 데이터 타워, HACK DIVE에서 쓰는 해킹 장비라고 생각하면 됩니다.',
           checklist: ['코드는 당신의 핵심 장비입니다.', '크레딧으로 성장과 보급을 진행합니다.', '에너지는 60초마다 1칸 회복되고, 최대 20칸까지 찹니다.'],
           hint: '다음을 누르면 가장 안전한 첫 진행 루트부터 안내합니다.'
         },
@@ -3284,11 +3978,11 @@ function applyLanguageToUI(){
           hint: '처음 며칠은 기본 해킹에 익숙해지고, 그 다음 천천히 올라가세요.'
         },
         {
-          title: '10. ZERO-DAY DISCOVERY',
-          goal: '누르기 전에 어떤 모드인지 정도만 알고 가세요',
-          text: 'ZERO-DAY DISCOVERY는 LAB의 짧은 타임어택 모드입니다. 패치 바가 차기 전에 데이터를 주입하고, 끊기기 전에 회수해 보상을 챙깁니다.',
-          checklist: ['짧고 집중력이 필요한 사이드 모드입니다.', '끊기기 전에 회수하면 보상을 지킬 수 있습니다.', '기본 해킹이 익숙해질 때까지 미뤄도 괜찮습니다.'],
-          hint: '첫 숙제가 아니라, 나중에 열어보는 도전 모드라고 생각하면 됩니다.'
+          title: '10. HACK DIVE',
+          goal: '누르기 전에 짧은 고위험 루프만 이해하세요',
+          text: 'HACK DIVE는 HOME에 있는 짧은 홀드형 다이브 모드입니다. DATA INJECT를 누르고 버티며 깊이를 올리고, 85% 이상에서 회수하면 제대로 성공한 런으로 기록됩니다. 100%를 넘기면 OVERDIVE에 들어가 보상은 커지지만 TRACE도 급격히 오릅니다.',
+          checklist: [`15% 미만에서 중단하면 에너지 ${HACK_ACTION_ENERGY_COST}이 환불됩니다.`, '85% 이상에서 회수하면 주요 HACK DIVE 미션과 업적이 진행됩니다.', '100% 이상은 OVERDIVE 구간이라 보상도 크지만 실패 위험도 크게 뛰어오릅니다.'],
+          hint: '기본 해킹 흐름이 편해진 뒤, 짧게 집중해서 치고 빠지는 도전 모드라고 생각하면 됩니다.'
         },
         {
           title: '11. LIST, 더보기, 클라우드',
@@ -4071,6 +4765,9 @@ function applyLanguageToUI(){
         const weeklyProg = state.weeklyChallenge || {};
         const weeklyGoals = Array.isArray(weeklyProg.goals) ? weeklyProg.goals : [];
         const weeklyLeft = weeklyGoals.filter(g => !g.done).length;
+        const hackDiveHint = !hackDiveRun
+          ? (getNextHackDiveMissionHint() || `HACK DIVE · ${getHackDiveObjectiveText()}`)
+          : '';
         const seasonInfo = getSeasonPhaseInfo();
 
         const energyCurrent = state.energy || 0;
@@ -4089,8 +4786,28 @@ function applyLanguageToUI(){
         const missionsOk = completedCount >= totalCount;
         items.push({ cls: missionsOk ? 'today-item today-item-ok' : 'today-item today-item-action', text: missionsLabel });
 
-        // 주간 목표 (남은 게 있을 때만)
-        if (weeklyLeft > 0) {
+        if (hackDiveRun) {
+          const diveBand = getHackDiveBand(hackDiveRun.depth);
+          const traceState = getHackDiveTraceState(hackDiveRun.trace);
+          const resumedLabel = hackDiveRun.restored ? langText('RESUMED', 'RESUMED', '復帰') : '';
+          items.push({
+            cls: `today-item ${traceState.id === 'critical'
+              ? 'today-item-danger'
+              : traceState.id === 'danger'
+                ? 'today-item-warn'
+                : hackDiveRun.restored
+                  ? 'today-item-special'
+                  : 'today-item-action'}`,
+            text: resumedLabel
+              ? `HACK DIVE ${resumedLabel} · ${diveBand.label} ${hackDiveRun.depth.toFixed(0)}% · TRACE ${hackDiveRun.trace.toFixed(0)}%`
+              : `HACK DIVE ${diveBand.label} ${hackDiveRun.depth.toFixed(0)}% · TRACE ${hackDiveRun.trace.toFixed(0)}%`
+          });
+        } else if (hackDiveHint) {
+          items.push({
+            cls: 'today-item today-item-action today-item-special',
+            text: hackDiveHint
+          });
+        } else if (weeklyLeft > 0) {
           items.push({ cls: 'today-item today-item-action', text: `${t('todayWeeklyGoals')} ${weeklyLeft} ${t('todayRemaining')}` });
         }
 
@@ -4099,7 +4816,7 @@ function applyLanguageToUI(){
           text: seasonInfo.todaySummary
         });
 
-        const validItems = items.filter(item => item && item.text);
+        const validItems = items.filter(item => item && item.text).slice(0, 4);
         if(validItems.length === 0){
           el.innerHTML = `<div class="today-item today-item-muted"><span class="today-item-text">${getLang()==='en' ? 'Loading status…' : '상태 불러오는 중…'}</span></div>`;
         } else {
@@ -4137,6 +4854,7 @@ function applyLanguageToUI(){
         const nullSeed = (state.items && state.items.nullSeed) || 0;
         const activeCode = ensureCodeSupportState(getActiveCodeInstance());
         const activeRun = state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active;
+        const activeDiveRun = hackDiveRun || activeRun;
         const canUsePack = energyPack > 0 && state.energy < state.energyMax;
         const useLabel = getLang() === 'en' ? 'Use' : (getLang() === 'ja' ? '使用' : '사용');
         const openLabel = langText('열기', 'Open', '開封');
@@ -4154,9 +4872,11 @@ function applyLanguageToUI(){
         const canStabilize = !!activeCode && rom >= 5 && (activeCode.romLevel || 0) < 5;
         const canProtect = !!activeCode && codeProtection > 0 && (activeCode.protectionCharges || 0) < 3;
         const canTunePick = !!activeCode && isSeasonPickCode(activeCode) && pickResidualData > 0 && (activeCode.pickTuneLevel || 0) < 10;
-        const canUseTrace = !!activeRun && traceAmple >= 25 && (activeRun.trace || 0) > 0.01;
+        const canUseTrace = !!activeDiveRun && traceAmple >= 25 && (activeDiveRun.trace || 0) > (hackDiveRun ? 1 : 0.01);
         const diffDef = activeRun ? (ZD_DISC_DIFFICULTIES[activeRun.diff] || ZD_DISC_DIFFICULTIES.easy) : null;
-        const canUseNull = !!activeRun && nullSeed >= 10 && diffDef && getZdPatch(activeRun, diffDef) > 0.03;
+        const canUseNull = hackDiveRun
+          ? !!hackDiveRun && nullSeed >= 10 && ((hackDiveRun.depth || 0) >= 15 || (hackDiveRun.trace || 0) >= 8)
+          : (!!activeRun && nullSeed >= 10 && diffDef && getZdPatch(activeRun, diffDef) > 0.03);
         const stateText = {
           ready: langText('사용 가능', 'Ready', '使用可能'),
           stored: langText('보관 중', 'Stored', '保管中'),
@@ -4378,9 +5098,9 @@ function applyLanguageToUI(){
 
           <!-- 도움말 (#optimization: 내용 현행화) -->
           <div class="items-coming-note small">${langText(
-            '· ITEMS는 보유 자산 허브입니다. 각 아이템은 사용 가능 / 보관 중 / 준비 필요 상태로 표시됩니다.<br/>· 에너지 팩은 에너지 즉시 회복, ROM은 활성 CODE 안정화, 코드 보호권은 실패 보호 충전, PICK 잔류 데이터는 시즌 PICK 조율에 사용됩니다.<br/>· 취약점 조각 50개마다 합성 버튼으로 취약점 1개를 만들 수 있습니다. TRACE 앰플·NULL 시드는 ZERO-DAY DISCOVERY 런 안에서만 사용 가능합니다.',
-            '· ITEMS is your asset hub. Every item shows whether it is ready, stored, or still needs context.<br/>· Energy Packs restore energy instantly, ROM stabilizes the active CODE, Code Protection adds a failure safeguard charge, and PICK Residual Data tunes season PICKs.<br/>· Use the Craft button to convert 50 Vuln. Shards into 1 Vulnerability. TRACE Ample and NULL Seed can only be used during ZERO-DAY DISCOVERY runs.',
-            '· ITEMSは保有資産ハブです。各アイテムは使用可能 / 保管中 / 準備必要の状態で表示されます。<br/>· エネルギーパックはエネルギーを即時回復、ROMはアクティブCODE安定化、コード保護券は失敗保護チャージ、PICK残留データはシーズンPICK調律に使用されます。<br/>· シャード50個ごとに合成ボタンで脆弱性1個を作成できます。TRACEアンプル・NULL SeedはZERO-DAY DISCOVERYラン中のみ使用可能です。'
+            '· ITEMS는 보유 자산 허브입니다. 각 아이템은 사용 가능 / 보관 중 / 준비 필요 상태로 표시됩니다.<br/>· 에너지 팩은 에너지 즉시 회복, ROM은 활성 CODE 안정화, 코드 보호권은 실패 보호 충전, PICK 잔류 데이터는 시즌 PICK 조율에 사용됩니다.<br/>· 취약점 조각 50개마다 합성 버튼으로 취약점 1개를 만들 수 있습니다. TRACE 앰플·NULL 시드는 활성 HACK DIVE 또는 DISCOVERY 런에서만 사용 가능합니다.',
+            '· ITEMS is your asset hub. Every item shows whether it is ready, stored, or still needs context.<br/>· Energy Packs restore energy instantly, ROM stabilizes the active CODE, Code Protection adds a failure safeguard charge, and PICK Residual Data tunes season PICKs.<br/>· Use the Craft button to convert 50 Vuln. Shards into 1 Vulnerability. TRACE Ample and NULL Seed can only be used during active HACK DIVE or DISCOVERY runs.',
+            '· ITEMSは保有資産ハブです。各アイテムは使用可能 / 保管中 / 準備必要の状態で表示されます。<br/>· エネルギーパックはエネルギーを即時回復、ROMはアクティブCODE安定化、コード保護券は失敗保護チャージ、PICK残留データはシーズンPICK調律に使用されます。<br/>· シャード50個ごとに合成ボタンで脆弱性1個を作成できます。TRACEアンプル・NULL SeedはアクティブなHACK DIVEまたはDISCOVERYラン中のみ使用可能です。'
           )}</div>
         `;
 
@@ -5404,6 +6124,25 @@ function applyLanguageToUI(){
       if (energyBarInner) energyBarInner.style.width = (ratio * 100) + '%';
 
       renderHackModeUI();
+      const hackDiveBusy = !!hackDiveRun;
+      if (serverSelect) serverSelect.disabled = hackDiveBusy;
+      if (routeSelectMain) routeSelectMain.disabled = hackDiveBusy;
+      if (upgradeTargetSelectMain) upgradeTargetSelectMain.disabled = hackDiveBusy;
+      if (btnUpgradeMain) btnUpgradeMain.disabled = hackDiveBusy;
+      setNodeDisabled(btnScan, hackDiveBusy || scanRunning);
+      setNodeDisabled(btnHack, hackDiveBusy || scanRunning);
+      hackModeButtons.forEach(btn => {
+        const mode = normalizeHackMode(btn.dataset.hackMode || 'normal');
+        const locked = mode === 'extreme' && state.level < 5;
+        btn.disabled = hackDiveBusy || locked;
+      });
+      if (hackModeHint && hackDiveBusy) {
+        hackModeHint.textContent = langText(
+          'HACK DIVE 진행 중에는 서버 설정과 해킹 모드가 잠깁니다.',
+          'Server targeting and hack mode are locked during HACK DIVE.',
+          'HACK DIVE中はサーバー設定とハックモードがロックされます。'
+        );
+      }
 
       // 에너지 팩 UI
       const packCount = state.items && typeof state.items.energyPack === 'number' ? state.items.energyPack : 0;
@@ -5432,6 +6171,14 @@ function applyLanguageToUI(){
       renderZeroDayPanel();
       renderTodaySummary();
       renderItemsPanel();
+      // Keep the idle start button stable. Replacing it on every HUD tick makes
+      // a tap race with DOM recreation and causes intermittent missed clicks.
+      // Live runs still rerender here so their meters remain responsive.
+      if (!hackDiveRun && !document.getElementById('btnHackDiveStart')) {
+        renderHackDivePanel();
+      } else if (hackDiveRun) {
+        updateHackDiveLiveUi();
+      }
       updateHeaderGlow();
       renderBeginnerRoulette();
       // v3.0.2d: SUPPORT 패널은 로그인 상태 변경 시에만 재렌더 (폼 입력 보호)
@@ -5781,6 +6528,7 @@ function applyLanguageToUI(){
       renderStagePanel();
       renderWeeklyPanel();
       renderZeroDayPanel();
+      renderHackDivePanel();
     }
 
     function refreshProgressUiAndSave() {
@@ -5792,6 +6540,7 @@ function applyLanguageToUI(){
       renderStagePanel();
       renderWeeklyPanel();
       renderZeroDayPanel();
+      renderHackDivePanel();
       scheduleSilentSave();
     }
 
@@ -6576,9 +7325,29 @@ function applyLanguageToUI(){
 
     function useTraceAmple() {
       ensureZeroDayDefaults();
+      if (hackDiveRun) {
+        const cost = 25;
+        if ((state.items.traceAmple || 0) < cost) {
+          showToast(langText(`TRACE 앰플이 부족합니다. (필요 ${cost})`, `Need ${cost} TRACE Ample.`, `TRACEアンプルが不足しています。(${cost}必要)`), 'warn');
+          return;
+        }
+        const before = Number(hackDiveRun.trace || 0);
+        if (before <= 1) {
+          showToast(langText('현재 TRACE가 안정적입니다.', 'TRACE is already stable.', '現在TRACEは安定しています。'), 'warn');
+          return;
+        }
+      state.items.traceAmple -= cost;
+      hackDiveRun.trace = Math.max(0, before - 18);
+      log(`[HACK DIVE] TRACE AMPLE · TRACE -${Math.round(before - hackDiveRun.trace)}%`, 'hack');
+      showToast(langText('TRACE 완화 적용', 'TRACE dampening applied', 'TRACE緩和を適用しました'), 'achievement');
+      renderItemsPanel();
+      renderHackDivePanel();
+      persistHackDiveRun('trace-ample', true);
+      return;
+      }
       const run = state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active;
       if (!run) {
-        showToast(langText('TRACE 앰플은 ZERO-DAY 런 중에만 사용할 수 있습니다.', 'TRACE Ample can only be used during a ZERO-DAY run.', 'TRACEアンプルはZERO-DAYラン中にのみ使用できます。'), 'warn');
+        showToast(langText('TRACE 앰플은 활성 다이브 런 중에만 사용할 수 있습니다.', 'TRACE Ample can only be used during an active dive run.', 'TRACEアンプルはアクティブなダイブラン中にのみ使用できます。'), 'warn');
         return;
       }
       const cost = 25;
@@ -6604,9 +7373,29 @@ function applyLanguageToUI(){
 
     function useNullSeed() {
       ensureZeroDayDefaults();
+      if (hackDiveRun) {
+        const cost = 10;
+        if ((state.items.nullSeed || 0) < cost) {
+          showToast(langText(`NULL 시드가 부족합니다. (필요 ${cost})`, `Need ${cost} NULL Seed.`, `NULL Seedが不足しています。(${cost}必要)`), 'warn');
+          return;
+        }
+        if ((hackDiveRun.depth || 0) < 15 && (hackDiveRun.trace || 0) < 8) {
+          showToast(langText('지금은 NULL 시드를 써도 체감이 거의 없습니다.', 'NULL Seed would barely matter right now.', '今はNULL Seedの体感効果がほとんどありません。'), 'warn');
+          return;
+        }
+      state.items.nullSeed -= cost;
+      hackDiveRun.nullSeedTicks = Math.min(40, Number(hackDiveRun.nullSeedTicks || 0) + 16);
+      hackDiveRun.trace = Math.max(0, Number(hackDiveRun.trace || 0) - 4);
+      log(`[HACK DIVE] NULL SEED · TRACE -4% · SOFTEN ${hackDiveRun.nullSeedTicks}T`, 'hack');
+      showToast(langText('NULL 시드 적용', 'NULL Seed applied', 'NULL Seedを適用しました'), 'achievement');
+      renderItemsPanel();
+      renderHackDivePanel();
+      persistHackDiveRun('null-seed', true);
+      return;
+      }
       const run = state.zeroDay && state.zeroDay.pve && state.zeroDay.pve.active;
       if (!run) {
-        showToast(langText('NULL 시드는 ZERO-DAY 런 중에만 사용할 수 있습니다.', 'NULL Seed can only be used during a ZERO-DAY run.', 'NULL SeedはZERO-DAYラン中にのみ使用できます。'), 'warn');
+        showToast(langText('NULL 시드는 활성 다이브 런 중에만 사용할 수 있습니다.', 'NULL Seed can only be used during an active dive run.', 'NULL Seedはアクティブなダイブラン中にのみ使用できます。'), 'warn');
         return;
       }
       const cost = 10;
@@ -6918,9 +7707,102 @@ function applyLanguageToUI(){
             bundle = {
               rom: 15,
               dailyBonusBox: 2
-            };
-          }
-        }
+        };
+      }
+    }
+
+    function getHackDiveProfile(ctx) {
+      if (!ctx || !ctx.ok) return null;
+      const success = Number(ctx.successChance || 0);
+      const credits = Number(ctx.baseCredits || 0);
+      const modeId = (ctx.modeInfo && ctx.modeInfo.id) || 'normal';
+      const stabilityTag = success >= 0.78
+        ? langText('고안정', 'High stability', '高安定')
+        : success >= 0.63
+          ? langText('균형 안정', 'Balanced stability', '均衡安定')
+          : langText('저안정', 'Low stability', '低安定');
+      const payoutTag = credits >= 150
+        ? langText('고보상', 'High payout', '高報酬')
+        : credits >= 95
+          ? langText('중보상', 'Mid payout', '中報酬')
+          : langText('안정 수익', 'Steady payout', '安定収益');
+      const pressureTag = modeId === 'extreme'
+        ? 'EXTREME PRESSURE'
+        : modeId === 'risk'
+          ? 'RISK PRESSURE'
+          : langText('기본 압박', 'Base pressure', '基本圧迫');
+
+      if (success >= 0.82 && (modeId !== 'normal' || credits >= 130)) {
+        return {
+          title: langText('오버드라이브 헌터', 'Overdrive hunter', 'オーバードライブ狩り'),
+          summary: langText('안정도와 수익이 모두 높습니다. 100%를 넘겨 OVERDIVE를 노릴 가치가 충분합니다.', 'This setup has both stability and payout. Pushing past 100% into OVERDIVE is worth it.', 'この構成は安定度と収益の両方が高く、100%を超えてOVERDIVEを狙う価値があります。'),
+          secureAt: '100%+',
+          secureLabel: 'OVERDIVE',
+          tags: [stabilityTag, payoutTag, pressureTag]
+        };
+      }
+      if (success >= 0.68) {
+        return {
+          title: langText('정석 다이버', 'Steady diver', '定石ダイバー'),
+          summary: langText('가장 무난한 조합입니다. 85% 이상 DEEP 회수를 기본으로 잡고, TRACE가 얌전하면 더 밀어도 됩니다.', 'This is the most reliable setup. Aim for a DEEP secure at 85%+, then push further only if TRACE stays calm.', 'もっとも安定した構成です。85%以上のDEEP回収を基本にし、TRACEが穏やかな時だけさらに押してください。'),
+          secureAt: '85%+',
+          secureLabel: 'DEEP',
+          tags: [stabilityTag, payoutTag, pressureTag]
+        };
+      }
+      return {
+        title: langText('보수 잠수형', 'Conservative diver', '保守潜行型'),
+        summary: langText('성공률이 낮은 편입니다. STANDARD 근처에서 짧게 회수하며 안전하게 반복하는 편이 좋습니다.', 'Stability is on the lower side. Repeating shorter runs near STANDARD is the safer play.', '安定度がやや低めです。STANDARD付近で短く回収し、反復で稼ぐ方が安全です。'),
+        secureAt: '50–85%',
+        secureLabel: 'STANDARD',
+        tags: [stabilityTag, payoutTag, pressureTag]
+      };
+    }
+
+    function getHackDiveSecureFeedback(stateId, label, traceText, rewardCredits, rewardExp) {
+      if (stateId === 'shallow') {
+        return {
+          logLabel: 'SAFE CASH-OUT',
+          toast: langText(
+            `${label} 회수 · 안전 회수 성공 · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`,
+            `${label} secured · safe cash-out · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`,
+            `${label} 回収 · 安全回収成功 · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`
+          ),
+          toastType: 'system'
+        };
+      }
+      if (stateId === 'standard') {
+        return {
+          logLabel: 'STANDARD SECURE',
+          toast: langText(
+            `${label} 회수 · 표준 수익 확보 · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`,
+            `${label} secured · standard payout locked · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`,
+            `${label} 回収 · 標準収益確保 · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`
+          ),
+          toastType: 'achievement'
+        };
+      }
+      if (stateId === 'deep') {
+        return {
+          logLabel: 'DEEP SECURE',
+          toast: langText(
+            `${label} 회수 · 정식 성공 기록 · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`,
+            `${label} secured · full clear recorded · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`,
+            `${label} 回収 · 正式成功として記録 · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`
+          ),
+          toastType: 'achievement'
+        };
+      }
+      return {
+        logLabel: 'OVERDIVE SECURE',
+        toast: langText(
+          `${label} 회수 · 고위험 회수 성공 · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`,
+          `${label} secured · high-risk payout locked · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`,
+          `${label} 回収 · 高リスク回収成功 · ${traceText} · ${rewardCredits} CR / ${rewardExp} EXP`
+        ),
+        toastType: 'achievement'
+      };
+    }
         if (bundle) {
           applyReleaseRewardBundle(bundle);
           changed = true;
@@ -10401,44 +11283,8 @@ function applyLanguageToUI(){
       return servers.find(s => s.id === id) || servers[0];
     }
 
-    function doHack() {
-      ensureMissionResets();
-
-      const code = getActiveCodeInstance();
-      if (!code) {
-        log(t('noOwnedCodes'), 'hack');
-        return;
-      }
+    function getHackResolutionContext(code, server, modeInfo, options = {}) {
       const def = codeDefs[code.id];
-      const server = getSelectedServer();
-      if (!server) {
-        log(getLang()==='en' ? 'Failed to select a target server.' : '타겟 서버 선택에 실패했습니다.', 'hack');
-        return;
-      }
-      if (state.level < server.minLevel) {
-        log(t('serverLevelNeed', { lv: server.minLevel }), 'hack');
-        return;
-      }
-      state.hackMode = normalizeHackMode(state.hackMode);
-      if (state.hackMode === 'extreme' && state.level < 5) {
-        state.hackMode = 'risk';
-        renderHackModeUI();
-        log(getLang()==='en' ? 'EXTREME unlocks at Lv.5.' : 'EXTREME은 Lv.5 이상에서 해금됩니다.', 'hack');
-        return;
-      }
-      const modeInfo = getHackModeInfo();
-
-      const energyCost = 2;
-      if (!consumeEnergy(energyCost)) {
-        log(t('noEnergyHack'), 'hack');
-        return;
-      }
-
-      state.missionProgress.daily.actions++;
-      state.missionProgress.weekly.actions = (state.missionProgress.weekly.actions || 0) + 1;
-      state.missionProgress.month.actions = (state.missionProgress.month.actions || 0) + 1;
-      onTutorialAction('hack');
-
       let serverSec = server.security;
       let creditMultiplier = modifiers.creditMultiplierSession * modifiers.creditMultiplierPermanent;
       let successChanceBonus = getSyncSuccessBonus(code.syncLevel || 0);
@@ -10489,18 +11335,740 @@ function applyLanguageToUI(){
       successChance += successChanceBonus;
       successChance = Math.max(0.05, Math.min(0.95, successChance));
 
-      // Run HUD DANGER penalty: -15% success chance
+      // Both regular hacks and HACK DIVE use the same live HUD penalty.
+      // The caller can suppress the log when this context is only being rendered.
+      let hudPenalty = 0;
       try {
         const hudState = window.runHudState;
-        if(hudState && hudState.label === 'DANGER'){
-          successChance = Math.max(0.05, successChance - 0.15);
+        if (hudState && hudState.label === 'DANGER') hudPenalty = 0.15;
+        else if (hudState && hudState.label === 'RISK') hudPenalty = 0.07;
+      } catch (e) {}
+      if (hudPenalty > 0) {
+        successChance = Math.max(0.05, successChance - hudPenalty);
+        if (options.announceHud) {
           log(getLang() === 'en'
-            ? '⚠ DANGER: trace too high — hack chance -15%'
-            : '⚠ 위험 수위 초과 — 해킹 성공률 -15%', 'warn');
-        } else if(hudState && hudState.label === 'RISK'){
-          successChance = Math.max(0.05, successChance - 0.07);
+            ? `DANGER/RISK: live run pressure applied (-${Math.round(hudPenalty * 100)}%)`
+            : `위험 수위 적용: 실시간 압박으로 성공률 -${Math.round(hudPenalty * 100)}%`, 'warn');
         }
-      } catch(e){}
+      }
+
+      const baseRewardRaw = server.minReward + (server.maxReward - server.minReward) * 0.5;
+      const economyNerf = modeInfo.id === 'normal' ? 0.65 : 0.8;
+      let baseCredits = Math.max(1, Math.round(baseRewardRaw * creditMultiplier * economyNerf * getGpuCreditMultiplier()));
+      let baseExp = Math.max(1, Math.round(6 * expMultiplier * getGpuExpMultiplier()));
+      if (def && def.id === 'cache_sniffer') baseCredits += 5;
+      if (def && def.id === 'rapid_exploit') baseExp += 3;
+
+      return {
+        code,
+        def,
+        server,
+        modeInfo,
+        effect,
+        successChance,
+        baseCredits,
+        baseExp,
+        effectivePower,
+        serverSec,
+        creditMultiplier,
+        expMultiplier,
+        hudPenalty
+      };
+    }
+
+    function getHackDiveContext() {
+      const code = getActiveCodeInstance();
+      if (!code) {
+        return { ok: false, reason: getLang()==='en' ? 'Select an active code first.' : getLang()==='ja' ? '先にアクティブコードを選択してください。' : '먼저 활성 코드를 선택하세요.' };
+      }
+      const server = getSelectedServer();
+      if (!server) {
+        return { ok: false, reason: getLang()==='en' ? 'Select a target server first.' : getLang()==='ja' ? '先にターゲットサーバーを選択してください。' : '먼저 타겟 서버를 선택하세요.' };
+      }
+      if (state.level < server.minLevel) {
+        return { ok: false, reason: t('serverLevelNeed', { lv: server.minLevel }) };
+      }
+
+      const modeInfo = getHackModeInfo();
+      return {
+        ok: true,
+        ...getHackResolutionContext(code, server, modeInfo)
+      };
+    }
+
+    function updateHackDiveLiveUi() {
+      if (!hackDiveRun) return;
+      const card = document.getElementById('hackDiveLiveCard');
+      if (!card) return;
+      const depth = Number(hackDiveRun.depth || 0);
+      const trace = Number(hackDiveRun.trace || 0);
+      const band = getHackDiveBand(depth);
+      const traceState = getHackDiveTraceState(trace);
+      const actionState = getHackDiveLiveActionState(depth, trace);
+      const projectedCredits = Math.max(0, Math.round(hackDiveRun.baseCredits * getHackDiveMultiplier(depth)));
+      const projectedExp = Math.max(0, Math.round(hackDiveRun.baseExp * getHackDiveMultiplier(depth)));
+      const pulseHint = hackDiveRun.lastPulse === 'spike'
+        ? langText('보안 펄스 감지: TRACE가 급상승했습니다.', 'Security pulse detected: TRACE surged.', 'セキュリティパルス検知: TRACEが急上昇しました。')
+        : hackDiveRun.lastPulse === 'quiet'
+          ? langText('보안 펄스가 잠잠합니다. 짧게 더 잠수할 수 있습니다.', 'Security pulse is quiet. You have a short dive window.', 'セキュリティパルスが静かです。短く潜る余地があります。')
+          : '';
+      const supportHint = (hackDiveRun.nullSeedTicks || 0) > 0
+        ? langText(`NULL 시드 활성 · ${hackDiveRun.nullSeedTicks}틱 동안 TRACE 상승이 완화됩니다.`, `NULL Seed active · TRACE gain is softened for ${hackDiveRun.nullSeedTicks} more ticks.`, `NULL Seed発動中 · あと${hackDiveRun.nullSeedTicks}ティックの間TRACE上昇が緩和されます。`)
+        : '';
+      const nextHintCore = depth < 15
+        ? langText('15%를 넘기면 환불 구간을 벗어납니다.', 'Cross 15% to leave the refund band.', '15%を超えると返金帯を抜けます。')
+        : depth < 50
+          ? langText('50%까지는 안전 프리미엄 구간입니다.', 'Up to 50% is the safe premium band.', '50%までは安全プレミアム帯です。')
+          : depth < 85
+            ? langText('85%부터 성공 판정과 주요 HACK DIVE 미션 진행이 시작됩니다.', 'At 85%, successful clears and core HACK DIVE mission progress begin.', '85%から成功判定と主要HACK DIVEミッション進行が始まります。')
+            : depth < 100
+              ? langText('이미 성공권입니다. 100%를 넘기면 OVERDIVE 보너스와 전용 업적이 열립니다.', 'You are already in the success band. Push past 100% for OVERDIVE bonuses and dedicated achievements.', 'すでに成功圏です。100%を超えるとOVERDIVEボーナスと専用実績が開きます。')
+              : langText('OVERDIVE 구간입니다. TRACE 상승이 매우 가팔라집니다.', 'You are in OVERDIVE. TRACE now ramps much faster.', 'OVERDIVE帯です。TRACE上昇が非常に急になります。');
+      const nextHint = [actionState.liveCall, pulseHint, supportHint, nextHintCore].filter(Boolean).join(' · ');
+      const nextThreshold = getHackDiveNextThreshold(depth);
+
+      card.className = `hack-dive-card is-live is-trace-${traceState.id}`;
+      setNodeText(document.getElementById('hackDiveDepthValue'), `${depth.toFixed(1)}%`);
+      setNodeText(document.getElementById('hackDiveTraceValue'), `${trace.toFixed(1)}%`);
+      setNodeText(document.getElementById('hackDiveBandValue'), `${band.label} ${formatHackDiveMultiplier(depth)}`);
+      setNodeText(document.getElementById('hackDiveProjectedReward'), `${projectedCredits} CR · ${projectedExp} EXP`);
+      setNodeText(document.getElementById('hackDiveChip'), getHackDiveOverdriveLabel(depth));
+      setNodeText(document.getElementById('hackDiveNextThresholdLabel'), `${nextThreshold.label} ${nextThreshold.value >= HACK_DIVE_DEPTH_CAP ? `${HACK_DIVE_DEPTH_CAP}%` : `${nextThreshold.value}%`}`);
+      setNodeText(document.getElementById('hackDiveNextThresholdDetail'), nextThreshold.detail);
+
+      const depthFill = document.getElementById('hackDiveDepthFill');
+      if (depthFill) depthFill.style.width = `${Math.min(HACK_DIVE_DEPTH_CAP, depth) / HACK_DIVE_DEPTH_CAP * 100}%`;
+      const traceFill = document.getElementById('hackDiveTraceFill');
+      if (traceFill) {
+        traceFill.style.width = `${Math.min(100, trace)}%`;
+        traceFill.className = `hack-dive-fill trace ${trace >= 70 ? 'danger' : ''}`;
+      }
+      const traceNote = document.getElementById('hackDiveTraceNote');
+      if (traceNote) {
+        traceNote.className = `hack-dive-trace-note is-${traceState.id}`;
+        setNodeText(document.getElementById('hackDiveTraceStateLabel'), `${langText('TRACE 상태', 'TRACE state', 'TRACE状態')} · ${traceState.label}`);
+        setNodeText(document.getElementById('hackDiveTraceStateDetail'), traceState.detail);
+      }
+      const thresholdNodes = card.querySelectorAll('.hack-dive-threshold');
+      [15, 50, 85, 100].forEach((threshold, index) => thresholdNodes[index]?.classList.toggle('is-hit', depth >= threshold));
+      setNodeText(document.getElementById('hackDiveNextHint'), nextHint);
+      setNodeText(document.getElementById('hackDiveSecureFlow'), `${actionState.secure.label} · ${actionState.secure.detail}`);
+      setNodeText(document.getElementById('hackDiveAbortFlow'), `${actionState.abort.label} · ${actionState.abort.detail}`);
+
+      const holdBtn = document.getElementById('btnHackDiveHold');
+      if (holdBtn) {
+        holdBtn.textContent = actionState.hold.label;
+        holdBtn.className = `hold hold-${actionState.hold.tone}`;
+      }
+      const secureBtn = document.getElementById('btnHackDiveSecure');
+      if (secureBtn) {
+        secureBtn.textContent = actionState.secure.label;
+        secureBtn.className = `secure-${actionState.secure.key}`;
+      }
+      const abortBtn = document.getElementById('btnHackDiveAbort');
+      if (abortBtn) {
+        abortBtn.textContent = actionState.abort.label;
+        abortBtn.className = depth < 15 ? 'abort-refund' : 'abort-hard';
+      }
+    }
+
+    function renderHackDivePanel() {
+      if (!hackDivePanel) return;
+      const ctx = getHackDiveContext();
+      if (!hackDiveRun) {
+        const lastResult = renderHackDivePanel._lastResult || null;
+        const profile = getHackDiveProfile(ctx);
+        const trackerEntries = getHackDiveTrackerEntries(3);
+        const bestDepth = Number(state.stats.hackDiveBestDepth || 0);
+        const secureCount = Number(state.stats.hackDiveSecureCount || 0);
+        const overdriveCount = Number(state.stats.hackDiveOverdriveCount || 0);
+        const bestReward = Number(state.stats.hackDiveBestReward || 0);
+        const traceStock = Number((state.items && state.items.traceAmple) || 0);
+        const nullStock = Number((state.items && state.items.nullSeed) || 0);
+        const objectiveText = getHackDiveObjectiveText();
+        hackDivePanel.innerHTML = `
+          <div class="hack-dive-card">
+            <div class="hack-dive-top">
+              <div>
+                <span class="badge">HACK DIVE</span>
+                <h3>HACK DIVE</h3>
+                <p>${langText('누르고 있으면 더 깊이 들어갑니다. TRACE 100%가 되면 보상을 전부 잃습니다.', 'Hold to dive deeper. If TRACE reaches 100%, you lose the full payout.', '長押しで深く潜ります。TRACEが100%に達すると報酬をすべて失います。')}</p>
+              </div>
+              <div class="hack-dive-chip">${ctx.ok ? `${Math.round(ctx.successChance * 100)}% LINK` : 'READY'}</div>
+            </div>
+            <div class="hack-dive-grid">
+              <div><span>${langText('기준 보상', 'Base reward', '基準報酬')}</span><strong>${ctx.ok ? `${ctx.baseCredits} CR · ${ctx.baseExp} EXP` : '--'}</strong></div>
+              <div><span>${langText('최고 도달', 'Best reach', '最高到達')}</span><strong>${bestDepth > 0 ? `${bestDepth.toFixed(1).replace(/\.0$/, '')}%` : '--'}</strong></div>
+              <div><span>${langText('DEEP 회수', 'DEEP secures', 'DEEP回収')}</span><strong>${secureCount}</strong></div>
+              <div><span>${langText('OVERDIVE', 'OVERDIVE', 'OVERDIVE')}</span><strong>${overdriveCount}</strong></div>
+            </div>
+            <div class="hack-dive-band-row" aria-hidden="true">
+              <span class="abort">ABORT &lt;15%</span>
+              <span class="shallow">SHALLOW</span>
+              <span class="standard">STANDARD</span>
+              <span class="deep">DEEP</span>
+              <span class="overdive">OVERDIVE</span>
+            </div>
+            <div class="hack-dive-career-row">
+              <span class="hack-dive-career-label">${langText('최고 회수', 'Best payout', '最高回収')}</span>
+              <strong>${bestReward > 0 ? `${bestReward} CR` : '--'}</strong>
+              <em>${objectiveText}</em>
+            </div>
+            <div class="hack-dive-support-row">
+              <span>${langText('보조품', 'Support items', '補助アイテム')}</span>
+              <strong>TRACE ×${traceStock}</strong>
+              <strong>NULL ×${nullStock}</strong>
+            </div>
+            <div class="hack-dive-note">
+              ${ctx.ok
+                ? `${langText('대상', 'Target', '対象')}: ${localizeServerName(ctx.server)} · ${ctx.modeInfo.label} · ${ctx.code.name}`
+                : ctx.reason}
+            </div>
+            ${profile ? `
+              <div class="hack-dive-profile">
+                <span>${langText('진입 분석', 'Dive profile', '潜行分析')}</span>
+                <strong>${profile.title}</strong>
+                <em>${profile.summary}</em>
+                <div class="hack-dive-profile-meta">
+                  <b>${langText('추천 회수선', 'Recommended secure', '推奨回収線')} · ${profile.secureLabel} ${profile.secureAt}</b>
+                  ${profile.tags.map((tag) => `<b>${tag}</b>`).join('')}
+                </div>
+              </div>
+            ` : ''}
+            <div class="hack-dive-goals">
+              <span>${langText('현재 목표', 'Current targets', '現在の目標')}</span>
+              ${trackerEntries.length ? trackerEntries.map((entry) => `
+                <div class="hack-dive-goal${entry.willCompleteOnSecure ? ' is-complete-next' : ''}">
+                  <b>${entry.scopeLabel}</b>
+                  <strong>${entry.name}</strong>
+                  <em>${entry.willCompleteOnSecure ? langText('이번 회수 완료', 'Completes on secure', '今回の回収で完了') : `${entry.progress} / ${entry.target}`}</em>
+                </div>
+              `).join('') : `
+                <div class="hack-dive-goal is-complete">
+                  <strong>${langText('HACK DIVE 관련 주요 목표를 모두 완료했습니다.', 'All primary HACK DIVE targets are currently complete.', 'HACK DIVE関連の主要目標は現在すべて完了しています。')}</strong>
+                </div>
+              `}
+            </div>
+            <div class="hack-dive-flow">
+              <div>
+                <span>${langText('1. 잠수', '1. Dive', '1. 潜行')}</span>
+                <strong>${langText('길게 눌러 깊이 상승', 'Hold to raise depth', '長押しで深度上昇')}</strong>
+                <em>${langText('깊이가 오를수록 예상 보상이 커지지만 TRACE도 같이 오릅니다.', 'The deeper you go, the bigger the projected payout and TRACE become.', '深く潜るほど予想報酬とTRACEが一緒に上がります。')}</em>
+              </div>
+              <div>
+                <span>${langText('2. 회수', '2. Secure', '2. 回収')}</span>
+                <strong>${langText('85% 이상부터 본격 회수', 'Full secure starts at 85%', '85%以上で本格回収')}</strong>
+                <em>${langText('85% 이상은 주요 미션과 업적이 기록되고, 100% 이상은 OVERDIVE로 취급됩니다.', 'At 85% your major missions and achievements start counting, and 100% becomes OVERDIVE.', '85%以上で主要ミッションと実績が記録され、100%以上はOVERDIVE扱いになります。')}</em>
+              </div>
+              <div>
+                <span>${langText('3. 중단', '3. Abort', '3. 中断')}</span>
+                <strong>${langText('15% 미만은 환불, 그 외는 무보상', 'Below 15% refunds, otherwise no payout', '15%未満は返金、それ以外は無報酬')}</strong>
+                <em>${langText('너무 늦었다 싶으면 끊을 수 있지만, 15%를 넘긴 뒤 중단하면 보상 없이 끝납니다.', 'You can bail out if the run feels bad, but aborting after 15% ends the run without payout.', '危険だと感じたら切れますが、15%を超えてから中断すると報酬なしで終了します。')}</em>
+              </div>
+            </div>
+            <div class="hack-dive-tip-list">
+              <div>${langText('목표선: 85%부터 성공 판정, 100%부터 OVERDIVE 보너스와 전용 미션이 열립니다.', 'Target line: success starts at 85%, and OVERDIVE bonuses plus dedicated missions start at 100%.', '目標ライン: 85%から成功判定、100%からOVERDIVEボーナスと専用ミッションが始まります。')}</div>
+              <div>${langText(`15% 미만에서 멈추면 에너지 ${HACK_ACTION_ENERGY_COST}이 환불됩니다.`, `Stop below 15% to refund ${HACK_ACTION_ENERGY_COST} energy.`, `15%未満で止めるとエネルギー${HACK_ACTION_ENERGY_COST}が返金されます。`)}</div>
+              <div>${langText('50–85%는 AUTO-RUN 기준, 85–100%는 기존 해킹 기준 보상입니다.', '50–85% matches AUTO-RUN pacing, while 85–100% matches classic hack rewards.', '50–85%はAUTO-RUN基準、85–100%は従来ハック基準報酬です。')}</div>
+              <div>${langText('100%를 넘기면 보상은 더 커지지만 TRACE 상승이 가팔라집니다.', 'Past 100%, rewards grow faster but TRACE rises sharply.', '100%を超えると報酬は増えますが、TRACE上昇も急になります。')}</div>
+            </div>
+            ${lastResult ? `
+              <div class="hack-dive-last is-${lastResult.state}">
+                <span>${langText('직전 결과', 'Last result', '直前結果')}</span>
+                <strong>${lastResult.label}</strong>
+                <span>${lastResult.detail}</span>
+                ${lastResult.advice ? `<em>${lastResult.advice}</em>` : ''}
+                ${typeof lastResult.depth === 'number' ? `
+                  <div class="hack-dive-last-metrics">
+                    <b>${langText('깊이', 'Depth', '深度')} ${lastResult.depth.toFixed(1).replace(/\.0$/, '')}%</b>
+                    <b>${langText('TRACE', 'TRACE', 'TRACE')} ${Math.round(lastResult.trace || 0)}%</b>
+                    <b>${langText('회수', 'Payout', '回収')} ${Math.max(0, Number(lastResult.credits || 0))} CR</b>
+                    ${lastResult.newBestDepth ? `<b class="record">${langText('최고 깊이 갱신', 'New best depth', '最高深度更新')}</b>` : ''}
+                    ${lastResult.newBestReward ? `<b class="record">${langText('최고 회수 갱신', 'New best payout', '最高回収更新')}</b>` : ''}
+                  </div>
+                ` : ''}
+              </div>` : ''}
+            <div class="hack-dive-actions">
+              <button type="button" id="btnHackDiveStart" ${ctx.ok ? '' : 'disabled'}>${langText('HACK DIVE 시작 · 에너지 2', 'Start HACK DIVE · 2 energy', 'HACK DIVE開始 · エネルギー2')}</button>
+            </div>
+          </div>
+        `;
+        const startBtn = document.getElementById('btnHackDiveStart');
+        if (startBtn) {
+          startBtn.addEventListener('click', () => startHackDive());
+        }
+        return;
+      }
+
+      const band = getHackDiveBand(hackDiveRun.depth);
+      const projectedCredits = Math.max(0, Math.round(hackDiveRun.baseCredits * getHackDiveMultiplier(hackDiveRun.depth)));
+      const projectedExp = Math.max(0, Math.round(hackDiveRun.baseExp * getHackDiveMultiplier(hackDiveRun.depth)));
+      const traceStock = Number((state.items && state.items.traceAmple) || 0);
+      const nullStock = Number((state.items && state.items.nullSeed) || 0);
+      const canUseTraceSupport = traceStock >= 25 && (hackDiveRun.trace || 0) > 1;
+      const canUseNullSupport = nullStock >= 10 && ((hackDiveRun.depth || 0) >= 15 || (hackDiveRun.trace || 0) >= 8);
+      const supportHint = (hackDiveRun.nullSeedTicks || 0) > 0
+        ? langText(`NULL 시드 활성 · ${hackDiveRun.nullSeedTicks}틱 동안 TRACE 상승이 완화됩니다.`, `NULL Seed active · TRACE gain is softened for ${hackDiveRun.nullSeedTicks} more ticks.`, `NULL Seed発動中 · あと${hackDiveRun.nullSeedTicks}ティックの間TRACE上昇が緩和されます。`)
+        : '';
+      const sessionHint = hackDiveRun.restored
+        ? langText('복구된 세션입니다. 서버/모드가 잠긴 상태로 이어서 진행됩니다.', 'Recovered session. Server and mode stay locked while you continue.', '復元されたセッションです。サーバーとモードは固定されたまま続行します。')
+        : '';
+      const traceState = getHackDiveTraceState(hackDiveRun.trace);
+      const actionState = getHackDiveLiveActionState(hackDiveRun.depth, hackDiveRun.trace);
+      const pulseHint = hackDiveRun.lastPulse === 'spike'
+        ? langText('보안 펄스 감지: TRACE가 급상승했습니다.', 'Security pulse detected: TRACE surged.', 'セキュリティパルス検知: TRACEが急上昇しました。')
+        : hackDiveRun.lastPulse === 'quiet'
+          ? langText('보안 펄스가 잠잠합니다. 짧게 더 잠수할 수 있습니다.', 'Security pulse is quiet. You have a short dive window.', 'セキュリティパルスが静かです。短く潜る余地があります。')
+          : '';
+      const nextHintCore = hackDiveRun.depth < 15
+        ? langText('15%를 넘기면 환불 구간을 벗어납니다.', 'Cross 15% to leave the refund band.', '15%を超えると返金帯を抜けます。')
+        : hackDiveRun.depth < 50
+          ? langText('50%까지는 안전 프리미엄 구간입니다.', 'Up to 50% is the safe premium band.', '50%までは安全プレミアム帯です。')
+          : hackDiveRun.depth < 85
+            ? langText('85%부터 성공 판정과 주요 HACK DIVE 미션 진행이 시작됩니다.', 'At 85%, successful clears and core HACK DIVE mission progress begin.', '85%から成功判定と主要HACK DIVEミッション進行が始まります。')
+            : hackDiveRun.depth < 100
+            ? langText('이미 성공권입니다. 100%를 넘기면 OVERDIVE 보너스와 전용 업적이 열립니다.', 'You are already in the success band. Push past 100% for OVERDIVE bonuses and dedicated achievements.', 'すでに成功圏です。100%を超えるとOVERDIVEボーナスと専用実績が開きます。')
+              : langText('OVERDIVE 구간입니다. TRACE 상승이 매우 가팔라집니다.', 'You are in OVERDIVE. TRACE now ramps much faster.', 'OVERDIVE帯です。TRACE上昇が非常に急になります。');
+      const nextHint = [actionState.liveCall, pulseHint, sessionHint, supportHint, nextHintCore].filter(Boolean).join(' · ');
+      const nextThreshold = getHackDiveNextThreshold(hackDiveRun.depth);
+      const liveTrackerEntries = getHackDiveTrackerEntries(3, {
+        securedDeep: hackDiveRun.depth >= 85,
+        securedOverdrive: hackDiveRun.depth >= 100
+      });
+      hackDivePanel.innerHTML = `
+        <div class="hack-dive-card is-live is-trace-${traceState.id}" id="hackDiveLiveCard">
+          <div class="hack-dive-top">
+            <div>
+              <span class="badge">HACK DIVE</span>
+              <h3>${langText('침투 진행 중', 'Dive in progress', '潜行進行中')}</h3>
+              <p>${langText('버튼을 누르고 있으면 깊이가 오르고, TRACE가 함께 상승합니다.', 'Hold the button to increase depth while TRACE rises with it.', 'ボタン長押しで深度が上がり、TRACEも一緒に上昇します。')}</p>
+            </div>
+            <div class="hack-dive-chip" id="hackDiveChip">${getHackDiveOverdriveLabel(hackDiveRun.depth)}</div>
+          </div>
+          <div class="hack-dive-meter-block">
+            <div class="hack-dive-meter-head"><span>DEPTH</span><strong id="hackDiveDepthValue">${hackDiveRun.depth.toFixed(1)}%</strong></div>
+            <div class="hack-dive-meter"><span class="hack-dive-fill depth" id="hackDiveDepthFill" style="width:${Math.min(HACK_DIVE_DEPTH_CAP, hackDiveRun.depth) / HACK_DIVE_DEPTH_CAP * 100}%"></span></div>
+            ${renderHackDiveThresholds(hackDiveRun.depth)}
+            <div class="hack-dive-threshold-note">
+              <span>${langText('다음 목표선', 'Next threshold', '次の目標線')}</span>
+              <strong id="hackDiveNextThresholdLabel">${nextThreshold.label} ${nextThreshold.value >= HACK_DIVE_DEPTH_CAP ? `${HACK_DIVE_DEPTH_CAP}%` : `${nextThreshold.value}%`}</strong>
+              <em id="hackDiveNextThresholdDetail">${nextThreshold.detail}</em>
+            </div>
+          </div>
+          <div class="hack-dive-meter-block">
+            <div class="hack-dive-meter-head"><span>TRACE</span><strong id="hackDiveTraceValue">${hackDiveRun.trace.toFixed(1)}%</strong></div>
+            <div class="hack-dive-meter"><span class="hack-dive-fill trace ${hackDiveRun.trace >= 70 ? 'danger' : ''}" id="hackDiveTraceFill" style="width:${Math.min(100, hackDiveRun.trace)}%"></span></div>
+            <div class="hack-dive-trace-note is-${traceState.id}" id="hackDiveTraceNote">
+              <span id="hackDiveTraceStateLabel">${langText('TRACE 상태', 'TRACE state', 'TRACE状態')} · ${traceState.label}</span>
+              <em id="hackDiveTraceStateDetail">${traceState.detail}</em>
+            </div>
+          </div>
+          <div class="hack-dive-grid">
+            <div><span>${langText('현재 구간', 'Current band', '現在帯')}</span><strong id="hackDiveBandValue">${band.label} ${formatHackDiveMultiplier(hackDiveRun.depth)}</strong></div>
+            <div><span>${langText('예상 보상', 'Projected reward', '予想報酬')}</span><strong id="hackDiveProjectedReward">${projectedCredits} CR · ${projectedExp} EXP</strong></div>
+            <div><span>${langText('대상', 'Target', '対象')}</span><strong>${localizeServerName(hackDiveRun.server)}</strong></div>
+            <div><span>${langText('안정도', 'Stability', '安定度')}</span><strong>${Math.round(hackDiveRun.successChance * 100)}%</strong></div>
+          </div>
+          <div class="hack-dive-support-row">
+            <span>${langText('보조품', 'Support items', '補助アイテム')}</span>
+            <strong>TRACE ×${traceStock}</strong>
+            <strong>NULL ×${nullStock}</strong>
+          </div>
+          <div class="hack-dive-goals is-live">
+            <span>${langText('이번 회수 시 진행', 'Progress on secure', '今回の回収進行')}</span>
+            ${liveTrackerEntries.length ? liveTrackerEntries.map((entry) => `
+              <div class="hack-dive-goal${entry.willCompleteOnSecure ? ' is-complete-next' : ''}">
+                <b>${entry.scopeLabel}</b>
+                <strong>${entry.name}</strong>
+                <em>${entry.willCompleteOnSecure
+                  ? langText(`${entry.progress} → 완료`, `${entry.progress} → complete`, `${entry.progress} → 完了`)
+                  : entry.projected > entry.progress
+                    ? `${entry.progress} → ${entry.projected}`
+                    : `${entry.progress} / ${entry.target}`}</em>
+              </div>
+            `).join('') : `
+              <div class="hack-dive-goal is-complete">
+                <strong>${langText('현재 HACK DIVE 핵심 목표가 모두 완료된 상태입니다.', 'Current HACK DIVE core targets are already complete.', '現在のHACK DIVE主要目標はすでに完了しています。')}</strong>
+              </div>
+            `}
+          </div>
+          <div class="hack-dive-flow is-live">
+            <div>
+              <span>${langText('잠수', 'Dive', '潜行')}</span>
+              <strong>${langText('길게 누르는 동안만 진행', 'Progress only while held', '長押し中のみ進行')}</strong>
+            </div>
+            <div>
+              <span>${langText('회수', 'Secure', '回収')}</span>
+              <strong id="hackDiveSecureFlow">${actionState.secure.label} · ${actionState.secure.detail}</strong>
+            </div>
+            <div>
+              <span>${langText('중단', 'Abort', '中断')}</span>
+              <strong id="hackDiveAbortFlow">${actionState.abort.label} · ${actionState.abort.detail}</strong>
+            </div>
+          </div>
+          <div class="hack-dive-note" id="hackDiveNextHint">
+            ${nextHint}
+          </div>
+          <div class="hack-dive-actions is-live">
+            <button type="button" id="btnHackDiveHold" class="hold hold-${actionState.hold.tone}">${actionState.hold.label}</button>
+            <button type="button" id="btnHackDiveSecure" class="secure-${actionState.secure.key}">${actionState.secure.label}</button>
+            <button type="button" id="btnHackDiveAbort" class="${hackDiveRun.depth < 15 ? 'abort-refund' : 'abort-hard'}">${actionState.abort.label}</button>
+            <button type="button" id="btnHackDiveTraceAmple" class="support" ${canUseTraceSupport ? '' : 'disabled'}>${langText('TRACE 완화 (25)', 'TRACE Dampen (25)', 'TRACE緩和 (25)')}</button>
+            <button type="button" id="btnHackDiveNullSeed" class="support" ${canUseNullSupport ? '' : 'disabled'}>${langText('NULL 시드 (10)', 'NULL Seed (10)', 'NULL Seed (10)')}</button>
+          </div>
+        </div>
+      `;
+      const holdBtn = document.getElementById('btnHackDiveHold');
+      if (holdBtn) {
+        const markPressed = () => holdBtn.classList.add('is-pressed');
+        const clearPressed = () => holdBtn.classList.remove('is-pressed');
+        const startHold = (e) => {
+          e.preventDefault();
+          markPressed();
+          doHackDiveTick();
+          stopHackDiveHold();
+          hackDiveHoldTimer = setInterval(doHackDiveTick, 120);
+        };
+        const stopHold = () => {
+          stopHackDiveHold();
+          clearPressed();
+        };
+        holdBtn.addEventListener('mousedown', startHold);
+        holdBtn.addEventListener('mouseup', stopHold);
+        holdBtn.addEventListener('mouseleave', stopHold);
+        holdBtn.addEventListener('touchstart', startHold, { passive: false });
+        holdBtn.addEventListener('touchend', stopHold, { passive: true });
+        holdBtn.addEventListener('touchcancel', stopHold, { passive: true });
+      }
+      document.getElementById('btnHackDiveSecure')?.addEventListener('click', finishHackDive);
+      document.getElementById('btnHackDiveAbort')?.addEventListener('click', abortHackDive);
+      document.getElementById('btnHackDiveTraceAmple')?.addEventListener('click', useTraceAmple);
+      document.getElementById('btnHackDiveNullSeed')?.addEventListener('click', useNullSeed);
+    }
+
+    function startHackDive() {
+      ensureMissionResets();
+      if (hackDiveRun) {
+        showToast(langText('이미 HACK DIVE가 진행 중입니다.', 'A HACK DIVE run is already active.', 'すでにHACK DIVEが進行中です。'), 'warn');
+        return;
+      }
+      const ctx = getHackDiveContext();
+      if (!ctx.ok) {
+        showToast(ctx.reason, 'warn');
+        renderHackDivePanel();
+        return;
+      }
+      if (!consumeEnergy(HACK_ACTION_ENERGY_COST)) {
+        log(t('noEnergyHack'), 'hack');
+        return;
+      }
+
+      hackDiveRun = {
+        startedAt: Date.now(),
+        depth: 0,
+        trace: 0,
+        successChance: ctx.successChance,
+        baseCredits: ctx.baseCredits,
+        baseExp: ctx.baseExp,
+        modeId: ctx.modeInfo.id,
+        server: ctx.server,
+        code: ctx.code,
+        nullSeedTicks: 0,
+        pulseTicks: 0,
+        lastPulse: 'steady',
+        logCount: 0,
+        restored: false
+      };
+      state.stats.hackDiveRunCount = (state.stats.hackDiveRunCount || 0) + 1;
+      state.missionProgress.daily.hackDiveRuns = (state.missionProgress.daily.hackDiveRuns || 0) + 1;
+      state.missionProgress.weekly.hackDiveRuns = (state.missionProgress.weekly.hackDiveRuns || 0) + 1;
+      state.missionProgress.month.hackDiveRuns = (state.missionProgress.month.hackDiveRuns || 0) + 1;
+      syncHackDiveSaveState();
+      playSfx('hack');
+      log(`[HACK DIVE] LINK OPEN · ${localizeServerName(ctx.server)} · ${ctx.modeInfo.label} · ${Math.round(ctx.successChance * 100)}%`, 'hack');
+      checkMissions('daily');
+      checkMissions('weekly');
+      checkMissions('month');
+      checkAchievements('hackDive');
+      persistHackDiveRun('start', true);
+      renderHackDivePanel();
+    }
+
+    function doHackDiveTick() {
+      if (!hackDiveRun) return;
+      const successChance = hackDiveRun.successChance || 0.5;
+      const stability = Math.max(0.05, successChance);
+      const prevDepth = hackDiveRun.depth;
+      const prevTrace = hackDiveRun.trace;
+      const modePressure = hackDiveRun.modeId === 'extreme' ? 1.3 : hackDiveRun.modeId === 'risk' ? 1.1 : 1.0;
+      hackDiveRun.pulseTicks = (hackDiveRun.pulseTicks || 0) + 1;
+      let pulseMultiplier = 1;
+      let pulseShock = 0;
+      let depthPulse = 1;
+      // Security conditions change roughly every 0.36s while the hold is active.
+      // The pulse is deliberately runtime-only: it changes the run's tension without
+      // adding a second persisted RNG state to the save format.
+      if (hackDiveRun.pulseTicks % 3 === 0) {
+        const pulseRoll = Math.random();
+        if (pulseRoll < 0.12) {
+          hackDiveRun.lastPulse = 'spike';
+          pulseMultiplier = 1.65 + Math.random() * 0.7;
+          pulseShock = (5 + (1 - stability) * 8.5 + prevDepth * 0.032) * modePressure;
+          depthPulse = 0.78 + Math.random() * 0.18;
+          log('[HACK DIVE] SECURITY PULSE · trace spike detected', 'warn');
+        } else if (pulseRoll > 0.88) {
+          hackDiveRun.lastPulse = 'quiet';
+          pulseMultiplier = 0.62 + Math.random() * 0.22;
+          depthPulse = 1.08 + Math.random() * 0.18;
+        } else {
+          hackDiveRun.lastPulse = 'steady';
+          pulseMultiplier = 0.88 + Math.random() * 0.26;
+          depthPulse = 0.9 + Math.random() * 0.2;
+        }
+      }
+      const depthGain = (1.5 + stability * 3.0 + (hackDiveRun.depth >= 100 ? 0.65 : 0)) * depthPulse;
+      const lateSurge = hackDiveRun.depth >= 60 ? ((Math.min(100, hackDiveRun.depth) - 60) / 40) * 1.65 : 0;
+      const overdrivePenalty = hackDiveRun.depth > 100 ? ((Math.min(140, hackDiveRun.depth) - 100) / 40) * 2.4 : 0;
+      const nullSeedFactor = (hackDiveRun.nullSeedTicks || 0) > 0 ? 0.68 : 1;
+      const traceBase = (0.85 + (1 - stability) * 1.25 + lateSurge + overdrivePenalty * 1.9) * modePressure;
+      const traceGain = Math.max(0.18, (traceBase * pulseMultiplier + pulseShock) * nullSeedFactor);
+
+      hackDiveRun.depth = Math.min(HACK_DIVE_DEPTH_CAP, hackDiveRun.depth + depthGain);
+      hackDiveRun.trace = Math.min(100, hackDiveRun.trace + traceGain);
+      handleHackDiveBandShift(prevDepth, hackDiveRun.depth);
+      handleHackDiveTraceShift(prevTrace, hackDiveRun.trace);
+      if ((hackDiveRun.nullSeedTicks || 0) > 0) {
+        hackDiveRun.nullSeedTicks = Math.max(0, hackDiveRun.nullSeedTicks - 1);
+      }
+      if (hackDiveRun.restored) hackDiveRun.restored = false;
+      hackDiveRun.logCount = (hackDiveRun.logCount || 0) + 1;
+      if (hackDiveRun.logCount % 5 === 0) {
+        log(`[HACK DIVE] DEPTH ${hackDiveRun.depth.toFixed(1)}% · TRACE ${hackDiveRun.trace.toFixed(1)}%`, 'hack');
+      }
+      if (hackDiveRun.trace >= 100) {
+        stopHackDiveHold();
+        const bestResult = recordHackDiveBest(hackDiveRun, 0);
+        const lostCredits = hackDiveRun.baseCredits;
+        renderHackDivePanel._lastResult = {
+          state: 'trace',
+          label: 'TRACE COMPLETE',
+          detail: langText(`전량 손실 · 기준 보상 ${lostCredits} CR`, `Total loss · base reward ${lostCredits} CR`, `全損失 · 基準報酬 ${lostCredits} CR`),
+          advice: getHackDiveResultAdvice('trace', hackDiveRun.depth, hackDiveRun.trace),
+          depth: Number(hackDiveRun.depth || 0),
+          trace: Number(hackDiveRun.trace || 100),
+          credits: 0,
+          exp: 0,
+          newBestDepth: !!bestResult.newBestDepth,
+          newBestReward: false
+        };
+        hackDiveRun = null;
+        state.hackDiveRun = null;
+        playSfx('fail');
+        log('[HACK DIVE] TRACE COMPLETE · payload lost', 'hack');
+        showToast(langText('TRACE 100% — 보상을 모두 잃었습니다.', 'TRACE 100% — all rewards lost.', 'TRACE 100% — 報酬をすべて失いました。'), 'warn');
+        saveGame(true, { reason: 'hack-dive-trace' });
+        renderHackDivePanel();
+        return;
+      }
+      persistHackDiveRun('tick');
+      updateHackDiveLiveUi();
+    }
+
+    function finishHackDive() {
+      if (!hackDiveRun) return;
+      stopHackDiveHold();
+      const depth = hackDiveRun.depth;
+      const modeId = hackDiveRun.modeId || 'normal';
+      const countAsHackSuccess = depth >= 85;
+      if (depth < 15) {
+        state.energy = Math.min(state.energyMax, state.energy + HACK_ACTION_ENERGY_COST);
+        if (state.energy >= state.energyMax) state.energyTimerMs = 0;
+        const bestResult = recordHackDiveBest(hackDiveRun, 0);
+        renderHackDivePanel._lastResult = {
+          state: 'abort',
+          label: 'ABORT',
+          detail: langText(`깊이 15% 미만 · 에너지 ${HACK_ACTION_ENERGY_COST} 환불`, `Below 15% depth · refunded ${HACK_ACTION_ENERGY_COST} energy`, `深度15%未満 · エネルギー${HACK_ACTION_ENERGY_COST}返金`),
+          advice: getHackDiveResultAdvice('abort', hackDiveRun.depth, hackDiveRun.trace),
+          depth: Number(hackDiveRun.depth || 0),
+          trace: Number(hackDiveRun.trace || 0),
+          credits: 0,
+          exp: 0,
+          newBestDepth: !!bestResult.newBestDepth,
+          newBestReward: false
+        };
+        log('[HACK DIVE] ABORT · energy refunded', 'hack');
+        showToast(langText(`ABORT — 에너지 ${HACK_ACTION_ENERGY_COST}을 환불했습니다.`, `ABORT — refunded ${HACK_ACTION_ENERGY_COST} energy.`, `ABORT — エネルギー${HACK_ACTION_ENERGY_COST}を返金しました。`), 'system');
+        hackDiveRun = null;
+        state.hackDiveRun = null;
+        saveGame(true, { reason: 'hack-dive-refund-abort' });
+        updateStatsUI();
+        renderHackDivePanel();
+        return;
+      }
+
+      const multiplier = getHackDiveMultiplier(depth);
+      const rewardCredits = Math.max(1, Math.round(hackDiveRun.baseCredits * multiplier));
+      const rewardExp = Math.max(1, Math.round(hackDiveRun.baseExp * multiplier));
+      const securedDeep = depth >= 85;
+      const securedOverdrive = depth >= 100;
+      const secureLabel = getHackDiveOverdriveLabel(depth);
+      const resultState = getHackDiveResultState(depth);
+      const traceText = `TRACE ${Math.min(100, Math.round(hackDiveRun.trace))}%`;
+      const secureFeedback = getHackDiveSecureFeedback(resultState, secureLabel, traceText, rewardCredits, rewardExp);
+      const bestResult = recordHackDiveBest(hackDiveRun, rewardCredits);
+      state.credits += rewardCredits;
+      state.stats.creditsEarnedTotal += rewardCredits;
+      addExp(rewardExp);
+      renderHackDivePanel._lastResult = {
+        state: resultState,
+        label: secureLabel,
+        detail: getHackDiveResultDetail(depth, rewardCredits, rewardExp, hackDiveRun.trace),
+        advice: getHackDiveResultAdvice(resultState, depth, hackDiveRun.trace),
+        depth: Number(depth || 0),
+        trace: Number(hackDiveRun.trace || 0),
+        credits: Number(rewardCredits || 0),
+        exp: Number(rewardExp || 0),
+        newBestDepth: !!bestResult.newBestDepth,
+        newBestReward: !!bestResult.newBestReward
+      };
+      if (securedDeep) {
+        state.stats.hackDiveSecureCount = (state.stats.hackDiveSecureCount || 0) + 1;
+        state.missionProgress.daily.hackDiveSecures = (state.missionProgress.daily.hackDiveSecures || 0) + 1;
+        state.missionProgress.weekly.hackDiveSecures = (state.missionProgress.weekly.hackDiveSecures || 0) + 1;
+        state.missionProgress.month.hackDiveSecures = (state.missionProgress.month.hackDiveSecures || 0) + 1;
+      }
+      if (securedOverdrive) {
+        state.stats.hackDiveOverdriveCount = (state.stats.hackDiveOverdriveCount || 0) + 1;
+        state.missionProgress.daily.hackDiveOverdrives = (state.missionProgress.daily.hackDiveOverdrives || 0) + 1;
+        state.missionProgress.weekly.hackDiveOverdrives = (state.missionProgress.weekly.hackDiveOverdrives || 0) + 1;
+        state.missionProgress.month.hackDiveOverdrives = (state.missionProgress.month.hackDiveOverdrives || 0) + 1;
+      }
+      if (countAsHackSuccess) {
+        state.stats.hackSuccessCount++;
+        state.missionProgress.daily.hackSuccess++;
+        state.missionProgress.weekly.hackSuccess++;
+        state.missionProgress.month.hackSuccess++;
+        if (modeId === 'risk') {
+          state.stats.riskHackSuccessCount++;
+          state.missionProgress.daily.riskHackSuccess = (state.missionProgress.daily.riskHackSuccess || 0) + 1;
+          state.missionProgress.weekly.riskHackSuccess = (state.missionProgress.weekly.riskHackSuccess || 0) + 1;
+          state.missionProgress.month.riskHackSuccess = (state.missionProgress.month.riskHackSuccess || 0) + 1;
+        } else if (modeId === 'extreme' || depth >= 100) {
+          state.stats.extremeHackSuccessCount = (state.stats.extremeHackSuccessCount || 0) + 1;
+          state.missionProgress.daily.extremeHackSuccess = (state.missionProgress.daily.extremeHackSuccess || 0) + 1;
+          state.missionProgress.weekly.extremeHackSuccess = (state.missionProgress.weekly.extremeHackSuccess || 0) + 1;
+          state.missionProgress.month.extremeHackSuccess = (state.missionProgress.month.extremeHackSuccess || 0) + 1;
+        }
+        emitActivity((modeId === 'extreme' || depth >= 100) ? 'extreme_success' : 'hack_success', {
+          mode: modeId,
+          serverId: hackDiveRun.server.id,
+          refId: `hack-dive:${hackDiveRun.server.id}`,
+          codeId: hackDiveRun.code.id,
+          value: rewardCredits
+        });
+        trackWeeklyChallenge('hack_success', {
+          mode: modeId === 'extreme' || depth >= 100 ? 'extreme' : modeId,
+          serverId: hackDiveRun.server.id,
+          codeId: hackDiveRun.code.id,
+          credits: rewardCredits
+        });
+        checkMissions('daily');
+        checkMissions('weekly');
+        checkMissions('month');
+        checkMissions('general');
+        if (state.stats.hackSuccessCount === 1) unlockAchievement('first_hack_success');
+        if (state.stats.hackSuccessCount >= 30) unlockAchievement('hack_30_success');
+        if ((state.stats.riskHackSuccessCount || 0) >= 10) unlockAchievement('risk_10_success');
+      }
+      playSfx('success');
+      log(`[HACK DIVE] ${secureFeedback.logLabel} · ${secureLabel} · ${traceText} · credits +${rewardCredits} · EXP +${rewardExp}`, 'hack');
+      const toastWithRecord = [
+        secureFeedback.toast,
+        bestResult.newBestDepth ? langText('신기록: 최고 깊이 갱신', 'New record: best depth updated', '新記録: 最高深度更新') : '',
+        bestResult.newBestReward ? langText('신기록: 최고 회수 갱신', 'New record: best payout updated', '新記録: 最高回収更新') : ''
+      ].filter(Boolean).join(' · ');
+      showToast(toastWithRecord, secureFeedback.toastType);
+      hackDiveRun = null;
+      state.hackDiveRun = null;
+      checkAchievements(countAsHackSuccess ? 'hack' : 'system');
+      refreshProgressUiAndSave();
+    }
+
+    function abortHackDive() {
+      if (!hackDiveRun) return;
+      stopHackDiveHold();
+      const shouldRefund = hackDiveRun.depth < 15;
+      const bestResult = recordHackDiveBest(hackDiveRun, 0);
+      if (shouldRefund) {
+        state.energy = Math.min(state.energyMax, state.energy + HACK_ACTION_ENERGY_COST);
+        if (state.energy >= state.energyMax) state.energyTimerMs = 0;
+      }
+      renderHackDivePanel._lastResult = {
+        state: 'abort',
+        label: 'ABORT',
+        detail: shouldRefund
+          ? langText(`깊이 15% 미만 · 에너지 ${HACK_ACTION_ENERGY_COST} 환불`, `Below 15% depth · refunded ${HACK_ACTION_ENERGY_COST} energy`, `深度15%未満 · エネルギー${HACK_ACTION_ENERGY_COST}返金`)
+          : langText('보상 없음', 'No reward', '報酬なし'),
+        advice: getHackDiveResultAdvice('abort', hackDiveRun.depth, hackDiveRun.trace),
+        depth: Number(hackDiveRun.depth || 0),
+        trace: Number(hackDiveRun.trace || 0),
+        credits: 0,
+        exp: 0,
+        newBestDepth: !!bestResult.newBestDepth,
+        newBestReward: false
+      };
+      hackDiveRun = null;
+      state.hackDiveRun = null;
+      log('[HACK DIVE] ABORT · manual stop', 'hack');
+      showToast(
+        shouldRefund
+          ? langText(`HACK DIVE를 중단하고 에너지 ${HACK_ACTION_ENERGY_COST}을 환불했습니다.`, `HACK DIVE aborted and refunded ${HACK_ACTION_ENERGY_COST} energy.`, `HACK DIVEを中断し、エネルギー${HACK_ACTION_ENERGY_COST}を返金しました。`)
+          : langText('HACK DIVE를 중단했습니다.', 'HACK DIVE aborted.', 'HACK DIVEを中断しました。'),
+        'warn'
+      );
+      saveGame(true, { reason: 'hack-dive-abort' });
+      renderHackDivePanel();
+    }
+
+    function doHack() {
+      ensureMissionResets();
+
+      const code = getActiveCodeInstance();
+      if (!code) {
+        log(t('noOwnedCodes'), 'hack');
+        return;
+      }
+      const def = codeDefs[code.id];
+      const server = getSelectedServer();
+      if (!server) {
+        log(getLang()==='en' ? 'Failed to select a target server.' : '타겟 서버 선택에 실패했습니다.', 'hack');
+        return;
+      }
+      if (state.level < server.minLevel) {
+        log(t('serverLevelNeed', { lv: server.minLevel }), 'hack');
+        return;
+      }
+      state.hackMode = normalizeHackMode(state.hackMode);
+      if (state.hackMode === 'extreme' && state.level < 5) {
+        state.hackMode = 'risk';
+        renderHackModeUI();
+        log(getLang()==='en' ? 'EXTREME unlocks at Lv.5.' : 'EXTREME은 Lv.5 이상에서 해금됩니다.', 'hack');
+        return;
+      }
+      const modeInfo = getHackModeInfo();
+
+      if (!consumeEnergy(HACK_ACTION_ENERGY_COST)) {
+        log(t('noEnergyHack'), 'hack');
+        return;
+      }
+
+      state.missionProgress.daily.actions++;
+      state.missionProgress.weekly.actions = (state.missionProgress.weekly.actions || 0) + 1;
+      state.missionProgress.month.actions = (state.missionProgress.month.actions || 0) + 1;
+      onTutorialAction('hack');
+
+      const resolution = getHackResolutionContext(code, server, modeInfo, { announceHud: true });
+      const { effect, creditMultiplier, expMultiplier, successChance } = resolution;
 
       ensureCodeSupportState(code);
       const success = Math.random() < successChance;
@@ -10701,6 +12269,9 @@ function applyLanguageToUI(){
         state.missionProgress.daily.hackSuccess = 0;
         state.missionProgress.daily.riskHackSuccess = 0;
         state.missionProgress.daily.extremeHackSuccess = 0;
+        state.missionProgress.daily.hackDiveRuns = 0;
+        state.missionProgress.daily.hackDiveSecures = 0;
+        state.missionProgress.daily.hackDiveOverdrives = 0;
         state.missionProgress.daily.shopPurchases = 0;
         state.missionProgress.daily.energySpent = 0;
         state.missionProgress.daily.energy0Reached = false;
@@ -10735,6 +12306,9 @@ function applyLanguageToUI(){
         state.missionProgress.weekly.hackSuccess = 0;
         state.missionProgress.weekly.riskHackSuccess = 0;
         state.missionProgress.weekly.extremeHackSuccess = 0;
+        state.missionProgress.weekly.hackDiveRuns = 0;
+        state.missionProgress.weekly.hackDiveSecures = 0;
+        state.missionProgress.weekly.hackDiveOverdrives = 0;
         state.missionProgress.weekly.shopPurchases = 0;
         state.missionProgress.weekly.energySpent = 0;
         state.missionProgress.weekly.energy0Reached = false;
@@ -10758,6 +12332,9 @@ function applyLanguageToUI(){
         state.missionProgress.month.hackSuccess = 0;
         state.missionProgress.month.riskHackSuccess = 0;
         state.missionProgress.month.extremeHackSuccess = 0;
+        state.missionProgress.month.hackDiveRuns = 0;
+        state.missionProgress.month.hackDiveSecures = 0;
+        state.missionProgress.month.hackDiveOverdrives = 0;
         state.missionProgress.month.shopPurchases = 0;
         state.missionProgress.month.energySpent = 0;
         state.missionProgress.month.energy0Reached = false;
@@ -10801,6 +12378,9 @@ function applyLanguageToUI(){
         if (type === 'towerAttempts') return prog.towerAttempts || 0;
         if (type === 'loginStreak') return prog.loginStreak || 0;
         if (type === 'dailyMissionsCompleted') return prog.dailyMissionsCompleted || 0;
+        if (type === 'hackDiveRuns') return prog.hackDiveRuns || 0;
+        if (type === 'hackDiveSecures') return prog.hackDiveSecures || 0;
+        if (type === 'hackDiveOverdrives') return prog.hackDiveOverdrives || 0;
         return 0;
       }
 
@@ -10822,6 +12402,7 @@ function applyLanguageToUI(){
         if (type === 'stageHighest') return (state.stage && state.stage.highestCleared) || 0;
         if (type === 'stageClearCount') return state.stats.stageClearCount || 0;
         if (type === 'energy0Flag') return state.stats.energySpentTotal > 0 && state.energy === 0 ? 1 : 0;
+        if (type === 'hackDiveSecuresTotal') return state.stats.hackDiveSecureCount || 0;
       }
       return 0;
     }
@@ -10934,15 +12515,17 @@ function applyLanguageToUI(){
         const progVal = getMissionProgressValue(scope, def.type);
         const progObj = state.missionProgress[scope];
         const completed = !!(progObj && progObj.completed && progObj.completed[def.id]);
+        const specialHackDive = isHackDiveMission(def);
 
         const item = document.createElement('div');
-        item.className = 'mission-item';
+        item.className = `mission-item${specialHackDive ? ' mission-item-hackdive' : ''}`;
 
         const main = document.createElement('div');
         main.className = 'mission-main';
         main.innerHTML = `
           <div class="mission-title-row">
             <span class="mission-source-pill ${sourceMeta.className}">${sourceMeta.label}</span>
+            ${specialHackDive ? '<span class="mission-source-pill mission-source-hackdive">HACK DIVE</span>' : ''}
             <strong>${localizeMissionName(def)}</strong>
           </div>
           <div class="mission-progress">${localizeMissionDesc(def)} (${progVal} / ${def.target})</div>
@@ -10999,6 +12582,9 @@ function applyLanguageToUI(){
         chapterRewardCount: Object.keys((state.stage && state.stage.chapterRewardsClaimed) || {}).length,
         energySpentTotal: state.stats.energySpentTotal || 0,
         energyPacksUsed: state.stats.energyPacksUsed || 0,
+        hackDiveRuns: state.stats.hackDiveRunCount || 0,
+        hackDiveSecures: state.stats.hackDiveSecureCount || 0,
+        hackDiveOverdrives: state.stats.hackDiveOverdriveCount || 0,
         legendaryCount,
         epicPlusCount,
         missionsCompleted: state.stats.missionsCompletedTotal || 0
@@ -11220,6 +12806,11 @@ function applyLanguageToUI(){
       // 일반 해킹
       if (id === 'first_hack_success' || id === 'hack_30_success' || id.startsWith('hack_total_') || id.startsWith('v200_hack_'))
         return b + '24_hacking_success.svg';
+      // HACK DIVE
+      if (id.startsWith('hackdive_secure_') || id === 'hackdive_run_1')
+        return b + '24_hacking_success.svg';
+      if (id.startsWith('hackdive_overdrive_'))
+        return b + '26_extreme_hacking_success.svg';
       // RISK 해킹
       if (id === 'risk_10_success' || id.startsWith('risk_total_') || id.startsWith('v200_risk_'))
         return b + '25_risk_hacking_success.svg';
@@ -11657,6 +13248,7 @@ function applyLanguageToUI(){
           const data = JSON.parse(raw);
           data.state = data.state || {};
           data.state.lastSeenAt = ts;
+          data.state.hackDiveRun = serializeHackDiveRun(hackDiveRun);
           if (!data.savedAt) data.savedAt = state.lastSavedAt || ts;
           localStorage.setItem(SAVE_KEY, JSON.stringify(data));
         }
@@ -11725,7 +13317,7 @@ function applyLanguageToUI(){
 
     function refreshUiAfterStateRestore() {
       // v3.0.0: 세이브 로드 시 고아 타이머 정리 (서버 탭 전환 등 방지)
-      try { stopZdDiscTimer(); stopZdHold(); } catch(_) {}
+      try { stopZdDiscTimer(); stopZdHold(); stopHackDiveHold(); } catch(_) {}
       ensureStageDefaults();
       ensureCampaignDefaults();
       ensureZeroDayDefaults();
@@ -11754,6 +13346,12 @@ function applyLanguageToUI(){
       renderCampaignPanel();
       renderWeeklyPanel();
       renderZeroDayPanel();
+      const restoredHackDive = restoreHackDiveRunFromState(true);
+      if (restoredHackDive) {
+        renderServers();
+        renderHackModeUI();
+      }
+      renderHackDivePanel();
       updateStatsUI();
       if (btnToggleLogs) {
         btnToggleLogs.textContent = logsHidden ? t('showLogs') : t('hideLogs');
@@ -11768,6 +13366,7 @@ function applyLanguageToUI(){
       state.lastSeenAt = state.lastSavedAt;
       state.hackMode = normalizeHackMode(state.hackMode);
       state.riskMode = state.hackMode === 'risk';
+      syncHackDiveSaveState();
       ensureModifierDefaults();
       const saveData = {
         version: CURRENT_VERSION,
@@ -11886,6 +13485,11 @@ function applyLanguageToUI(){
         state.stats.missionsCompletedTotal ||= 0;
         state.stats.riskHackSuccessCount ||= 0;
         state.stats.extremeHackSuccessCount ||= 0;
+        state.stats.hackDiveRunCount ||= 0;
+        state.stats.hackDiveSecureCount ||= 0;
+        state.stats.hackDiveOverdriveCount ||= 0;
+        state.stats.hackDiveBestDepth ||= 0;
+        state.stats.hackDiveBestReward ||= 0;
         state.stats.gpuUpgradeCount ||= 0;
 	        state.stats.codeShardsTotal ||= 0;
 	        state.stats.stageAttemptCount ||= 0;
@@ -11901,20 +13505,30 @@ function applyLanguageToUI(){
         state.gpuTier = Math.max(1, Number(state.gpuTier || 1));
         state.hackMode = normalizeHackMode(state.hackMode || (state.riskMode ? 'risk' : 'normal'));
         state.riskMode = state.hackMode === 'risk';
+        state.hackDiveRun = state.hackDiveRun && typeof state.hackDiveRun === 'object' ? state.hackDiveRun : null;
         state.missionProgress.daily = state.missionProgress.daily || {};
         state.missionProgress.weekly = state.missionProgress.weekly || {};
         state.missionProgress.month = state.missionProgress.month || {};
         state.missionProgress.daily.actions ||= 0;
         state.missionProgress.daily.riskHackSuccess ||= 0;
         state.missionProgress.daily.extremeHackSuccess ||= 0;
+        state.missionProgress.daily.hackDiveRuns ||= 0;
+        state.missionProgress.daily.hackDiveSecures ||= 0;
+        state.missionProgress.daily.hackDiveOverdrives ||= 0;
         state.missionProgress.daily.shopPurchases ||= 0;
         state.missionProgress.weekly.actions ||= 0;
         state.missionProgress.weekly.riskHackSuccess ||= 0;
         state.missionProgress.weekly.extremeHackSuccess ||= 0;
+        state.missionProgress.weekly.hackDiveRuns ||= 0;
+        state.missionProgress.weekly.hackDiveSecures ||= 0;
+        state.missionProgress.weekly.hackDiveOverdrives ||= 0;
         state.missionProgress.weekly.shopPurchases ||= 0;
         state.missionProgress.month.actions ||= 0;
         state.missionProgress.month.riskHackSuccess ||= 0;
         state.missionProgress.month.extremeHackSuccess ||= 0;
+        state.missionProgress.month.hackDiveRuns ||= 0;
+        state.missionProgress.month.hackDiveSecures ||= 0;
+        state.missionProgress.month.hackDiveOverdrives ||= 0;
         state.missionProgress.month.shopPurchases ||= 0;
         state.missionProgress.general = state.missionProgress.general || { completed: {} };
         state.missionProgress.general.completed = state.missionProgress.general.completed || {};
@@ -12631,6 +14245,7 @@ function applyLanguageToUI(){
       renderCampaignPanel();
       renderWeeklyPanel();
       renderZeroDayPanel();
+      renderHackDivePanel();
     });
     bind(document, 'click', (event) => {
       const btn = event.target.closest && event.target.closest('[data-weekly-filter]');
@@ -12658,6 +14273,7 @@ function applyLanguageToUI(){
         playSfx('mode');
         log(t('hackModeLog', { mode: getHackModeInfo(mode).label }), 'system');
         renderHackModeUI();
+        renderHackDivePanel();
         scheduleSilentSave();
       });
     });
@@ -12688,6 +14304,7 @@ function applyLanguageToUI(){
       serverSelect.addEventListener('change', () => {
         state.targeting = state.targeting || {};
         state.targeting.serverId = serverSelect.value || 'school_lab';
+        renderHackDivePanel();
         scheduleSilentSave();
       });
     }
@@ -12698,6 +14315,7 @@ function applyLanguageToUI(){
       routeSelectEl.addEventListener('change', () => {
         state.targeting = state.targeting || {};
         state.targeting.route = routeSelectEl.value || 'external';
+        renderHackDivePanel();
         scheduleSilentSave();
       });
     }
@@ -12800,6 +14418,9 @@ function applyLanguageToUI(){
 
     // mouseup 전역 핸들러: 홀드 인젝션 해제 (버튼 바깥 릴리스 대응)
     bind(document, 'mouseup', () => { try { stopZdHold(); } catch(_) {} });
+    bind(document, 'mouseup', () => { try { stopHackDiveHold(); } catch(_) {} });
+    bind(document, 'touchend', () => { try { stopHackDiveHold(); } catch(_) {} });
+    bind(document, 'touchcancel', () => { try { stopHackDiveHold(); } catch(_) {} });
 
     // Restore UI state: route, systemStatus open/close, zdCmdLocale
     window.addEventListener('hcsig:ready', () => {

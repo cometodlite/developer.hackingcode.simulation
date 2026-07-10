@@ -5,13 +5,13 @@
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <title>HCSiG - Hacking Code Simulator Game</title>
 <!-- cache-busting: bump ?v=... on release updates -->
-<link href="style.css?v=3.1.0" rel="stylesheet"/>
+<link href="style.css?v=4.0.0" rel="stylesheet"/>
 </head>
 <body>
 <header>
 <div class="header-left">
 <h1>HCSiG</h1>
-<span class="header-version">3.1.0 (Web)</span>
+<span class="header-version">4.0.0 (Web)</span>
 </div>
 <div class="header-right">
 <span class="subtitle" id="subtitleText">Hacking Code Simulator Game</span>
@@ -176,6 +176,8 @@
       <span id="actionsDesc3">· 서버 해킹: NORMAL/RISK/EXTREME 난이도 선택 가능</span><br/>
       <span id="actionsDesc4">· CPU는 성공률 안정, GPU는 반복/도전 보상 증폭을 담당합니다.</span>
     </div>
+
+    <div id="hackDivePanel" style="margin-top:10px;"></div>
   </div>
 
   <!-- Hidden loadout elements (kept for JS compatibility, UI removed) -->
@@ -712,7 +714,7 @@
         <div class="credits-row"><span id="creditsLabelCopyright">© 2025–2026</span><strong>COMET</strong></div>
         <div class="credits-divider"></div>
         <div class="credits-meta">
-          <span id="creditsVersion">v3.0.0</span>
+          <span id="creditsVersion">v4.0.0</span>
           <span id="creditsSeasonLabel">PRESEASON</span>
         </div>
       </div>
@@ -769,14 +771,13 @@
           <p>· FLOW · Growth: 코드 성장, FLOW · Network: 스캔/해킹, FLOW · Tower: 타워, FLOW · Discovery: ZERO-DAY.</p>
         </details>
         <details class="manual-section">
-          <summary><strong>ZERO-DAY DISCOVERY 플레이 방법</strong></summary>
-          <p>· <strong>준비</strong>: 취약점 1개가 필요합니다. 코드 스캔 1% 확률 또는 취약점 조각 50개로 제작합니다. 조각은 스캔/COIN 상점/시즌 보상으로 획득합니다.</p>
-          <p>· <strong>진입</strong>: LAB 패널 → ZERO-DAY 탭 → 온보딩 완료 → DISCOVERY 버튼. 난이도(PVE 입문/보통/어려움/혼돈)를 선택하고 시작합니다.</p>
-          <p>· <strong>런 진행</strong>: 단계별로 명령어를 입력해 목표 패치율을 높입니다. 각 단계에서 발각율이 누적되며 0%에 도달하면 실패합니다.</p>
-          <p>· <strong>명령어 단계</strong>: ① 정찰: scan/probe/enum → ② 침투: breach/inject/elevate/bypass → ③ 은폐: mask/cloak/wipe/scrub → ④ 교란: spoof/reroute/jam/decoy → ⑤ 탈출: exfil/exit/disconnect.</p>
-          <p>· <strong>TRACE 앰플</strong>: 발각율을 낮춥니다. NULL 시드: 취약점 패치율을 낮춥니다. 둘 다 ITEMS에서 사용합니다.</p>
-          <p>· <strong>보상</strong>: OneDay, 취약점 조각, 크레딧. 입문 난이도는 하루 1회 무료, 이후 취약점 소모.</p>
-          <p>· <strong>현재 버전</strong>: PVE(싱글) 모드만 운영 중. PVP·경쟁 모드는 추후 추가됩니다.</p>
+          <summary><strong>HACK DIVE 플레이 방법</strong></summary>
+          <p>· <strong>진입</strong>: HOME의 HACK DIVE 카드에서 시작합니다. 활성 코드가 필요하며, 런이 열리면 일반 해킹 설정과 서버 선택은 잠깁니다.</p>
+          <p>· <strong>핵심 조작</strong>: <code>DATA INJECT</code>를 누르고 있으면 깊이가 올라갑니다. 동시에 TRACE도 함께 오르며, TRACE 100%에 먼저 닿으면 보상을 잃습니다.</p>
+          <p>· <strong>회수 타이밍</strong>: <strong>15% 미만</strong>에서 중단하면 에너지 2가 환불됩니다. <strong>15~50%</strong>는 SHALLOW, <strong>50~85%</strong>는 STANDARD, <strong>85~100%</strong>는 DEEP 성공 구간입니다.</p>
+          <p>· <strong>OVERDIVE</strong>: 100%를 넘기면 OVERDIVE에 들어가 보상 배율이 더 커지지만 TRACE 상승이 훨씬 가팔라집니다. 욕심낼수록 빠르게 위험해집니다.</p>
+          <p>· <strong>기록/보상</strong>: 85% 이상에서 회수하면 주요 HACK DIVE 미션과 업적이 진행됩니다. OVERDIVE 회수는 전용 미션과 업적 조건으로도 기록됩니다.</p>
+          <p>· <strong>추천 흐름</strong>: NORMAL 해킹과 코드 성장이 편해진 뒤, 짧게 치고 빠지는 고집중 보너스 런으로 쓰는 편이 가장 이해하기 쉽습니다.</p>
         </details>
       </div>
     </div>
@@ -926,14 +927,14 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=3.0.1"></script>
-<script src="auth.js?v=3.0.2d"></script>
-<script src="cloudSave.js?v=3.0.2d"></script>
+<script src="firebase-config.js?v=4.0.0"></script>
+<script src="auth.js?v=4.0.0"></script>
+<script src="cloudSave.js?v=4.0.0"></script>
 <script src="hcsig-api.js?v=1.1.0"></script>
-<script src="app-core.js?v=3.1.2"></script>
-<script src="app-ui.js?v=3.0.2d"></script>
-<script src="liveOps.js?v=3.0.2d"></script>
-<script src="bgm.js?v=3.0.2d"></script>
+<script src="app-core.js?v=4.0.0"></script>
+<script src="app-ui.js?v=4.0.0"></script>
+<script src="liveOps.js?v=4.0.0"></script>
+<script src="bgm.js?v=4.0.0"></script>
 <script>
 // 도메인 이전 안내 — github.io에서 플레이 중인 유저에게만 표시 (세이브는 양쪽 모두 유지됨)
 (function(){
