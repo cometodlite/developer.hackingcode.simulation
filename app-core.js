@@ -7707,8 +7707,25 @@ function applyLanguageToUI(){
             bundle = {
               rom: 15,
               dailyBonusBox: 2
-        };
+            };
+          }
+        }
+        if (bundle) {
+          applyReleaseRewardBundle(bundle);
+          changed = true;
+          notices.push({
+            toast: langText('기존 유저 보상 지급', 'Legacy player grant delivered', '既存プレイヤー補償 지급'),
+            log: langText(
+              `[시즌] 기존 유저 보상 지급: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · 코드 보호권 +1' : ''}${bundle.pickResidualData ? ` · PICK 잔류 데이터 +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`,
+              `[Season] Legacy compensation granted: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · Code Protection +1' : ''}${bundle.pickResidualData ? ` · PICK Residual Data +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`,
+              `[シーズン] 既存プレイヤー補償 지급: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · コード保護券 +1' : ''}${bundle.pickResidualData ? ` · PICK残留データ +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`
+            )
+          });
+        }
+        state.claimFlags.pre3ScaleCompensation = true;
       }
+
+      return { changed, notices };
     }
 
     function getHackDiveProfile(ctx) {
@@ -7802,23 +7819,6 @@ function applyLanguageToUI(){
         ),
         toastType: 'achievement'
       };
-    }
-        if (bundle) {
-          applyReleaseRewardBundle(bundle);
-          changed = true;
-          notices.push({
-            toast: langText('기존 유저 보상 지급', 'Legacy player grant delivered', '既存プレイヤー補償 지급'),
-            log: langText(
-              `[시즌] 기존 유저 보상 지급: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · 코드 보호권 +1' : ''}${bundle.pickResidualData ? ` · PICK 잔류 데이터 +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`,
-              `[Season] Legacy compensation granted: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · Code Protection +1' : ''}${bundle.pickResidualData ? ` · PICK Residual Data +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`,
-              `[シーズン] 既存プレイヤー補償 지급: ROM +${bundle.rom || 0}${bundle.codeProtection ? ' · コード保護券 +1' : ''}${bundle.pickResidualData ? ` · PICK残留データ +${bundle.pickResidualData}` : ''}${bundle.dailyBonusBox ? ` · Daily Bonus Box +${bundle.dailyBonusBox}` : ''}${bundle.tag ? ` · ${bundle.tag}` : ''}`
-            )
-          });
-        }
-        state.claimFlags.pre3ScaleCompensation = true;
-      }
-
-      return { changed, notices };
     }
 
     function flushReleaseNotices(notices) {

@@ -1834,6 +1834,27 @@ body.app-shell-ui #main{
   padding:0;
   background:transparent;
 }
+
+/* Wide desktop shell: keep controls within a readable cockpit width. */
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine){
+  body.app-shell-ui{
+    --desktopShellMax:1360px;
+  }
+  body.app-shell-ui header,
+  body.app-shell-ui .app-main-tabs{
+    padding-left:max(16px, calc((100vw - var(--desktopShellMax)) / 2 + 16px));
+    padding-right:max(16px, calc((100vw - var(--desktopShellMax)) / 2 + 16px));
+  }
+  body.app-shell-ui #main{
+    width:min(100vw, var(--desktopShellMax));
+    margin-inline:auto;
+    border-left:1px solid rgba(94,234,212,.08);
+    border-right:1px solid rgba(94,234,212,.08);
+  }
+  body.app-shell-ui .app-main-view{
+    scrollbar-gutter:stable;
+  }
+}
 .app-main-tabs{
   position:relative;
   z-index:58;
