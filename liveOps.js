@@ -1,5 +1,5 @@
 (function(){
-  const VERSION = '3.0.0';
+  const VERSION = '4.0.0';
   const HEARTBEAT_MS = 60000;
   const ACTIVE_WINDOW_MS = 120000;
   const RANK_WRITE_MS = 60000;
@@ -605,6 +605,9 @@
     const ref = item.refId || '';
     switch (item.type) {
       case 'extreme_success':
+        if (String(ref).startsWith('hack-dive:')) {
+          return { title: `${name} secured OVERDIVE`, meta: value ? `reward ${value.toLocaleString()} credits` : 'deep trace route secured' };
+        }
         return { title: `${name} broke EXTREME`, meta: value ? `reward ${value.toLocaleString()} credits` : 'high-risk route cleared' };
 	      case 'stage_clear':
 	        return { title: `${name} cleared DATA TOWER ${String(value || '').padStart(3, '0')}`, meta: ref || 'data tower route updated' };
@@ -620,6 +623,9 @@
 	        return { title: `${name} completed WEEKLY OPS`, meta: 'weekly badge transmitted' };
       case 'hack_success':
       default:
+        if (String(ref).startsWith('hack-dive:')) {
+          return { title: `${name} secured HACK DIVE`, meta: value ? `reward ${value.toLocaleString()} credits` : 'depth route secured' };
+        }
         return { title: `${name} hacked a node`, meta: value ? `reward ${value.toLocaleString()} credits` : 'server access confirmed' };
     }
   }

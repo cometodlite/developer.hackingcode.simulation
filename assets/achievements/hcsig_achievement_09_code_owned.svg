@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 768 768" role="img" aria-label="코드 보유">
+  <defs>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="4.2" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.0 0 0 0 0 0.9607843137254902 0 0 0 0 1.0 0 0 0 .70 0" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#061014"/>
+      <stop offset="100%" stop-color="#0E2730"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0 L0 0 0 48" fill="none" stroke="#12303A" stroke-width="1" opacity=".24"/>
+    </pattern>
+  </defs>
+  <rect width="768" height="768" rx="156" fill="url(#bg)"/>
+  <rect width="768" height="768" rx="156" fill="url(#grid)" opacity=".55"/>
+  <rect x="72" y="72" width="624" height="624" rx="124" fill="#0B1B22" opacity=".65" stroke="#00F5FF" stroke-width="8"/>
+  <path d="M120 166 H236 M532 602 H648 M122 602 H190 M576 166 H648" stroke="#00F5FF" stroke-width="10" stroke-linecap="round" opacity=".55"/>
+  <circle cx="384" cy="330" r="186" fill="none" stroke="#00F5FF" stroke-width="8" opacity=".22"/>
+  <g filter="url(#glow)" stroke-linecap="round" stroke-linejoin="round">
+<rect x="242" y="188" width="284" height="284" rx="42" fill="none" stroke="#00F5FF" stroke-width="30"/><path d="M332 268 L286 330 L332 392 M436 268 L482 330 L436 392" fill="none" stroke="#EAFBFF" stroke-width="28"/><path d="M404 254 L364 406" stroke="#EAFBFF" stroke-width="22" opacity=".9"/>
+  </g>
+  <text x="384" y="604" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="46" font-weight="900" fill="#EAFBFF" letter-spacing="3">CODE</text>
+  <text x="384" y="650" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800" fill="#00F5FF" opacity=".92">코드 보유</text>
+</svg>

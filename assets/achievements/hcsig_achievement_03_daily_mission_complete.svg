@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768" viewBox="0 0 768 768" role="img" aria-label="일일 미션 완수">
+  <defs>
+    <filter id="glow" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="4.2" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.48627450980392156 0 0 0 0 1.0 0 0 0 0 0.4196078431372549 0 0 0 .70 0" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#061014"/>
+      <stop offset="100%" stop-color="#0E2730"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0 L0 0 0 48" fill="none" stroke="#12303A" stroke-width="1" opacity=".24"/>
+    </pattern>
+  </defs>
+  <rect width="768" height="768" rx="156" fill="url(#bg)"/>
+  <rect width="768" height="768" rx="156" fill="url(#grid)" opacity=".55"/>
+  <rect x="72" y="72" width="624" height="624" rx="124" fill="#0B1B22" opacity=".65" stroke="#7CFF6B" stroke-width="8"/>
+  <path d="M120 166 H236 M532 602 H648 M122 602 H190 M576 166 H648" stroke="#7CFF6B" stroke-width="10" stroke-linecap="round" opacity=".55"/>
+  <circle cx="384" cy="330" r="186" fill="none" stroke="#7CFF6B" stroke-width="8" opacity=".22"/>
+  <g filter="url(#glow)" stroke-linecap="round" stroke-linejoin="round">
+<rect x="256" y="184" width="256" height="310" rx="36" fill="none" stroke="#7CFF6B" stroke-width="30"/><path d="M330 184 C330 154 438 154 438 184" stroke="#7CFF6B" stroke-width="24" fill="none"/><path d="M314 316 L360 362 L456 264" fill="none" stroke="#EAFBFF" stroke-width="30"/><path d="M314 430 H452" stroke="#EAFBFF" stroke-width="22" opacity=".75"/>
+  </g>
+  <text x="384" y="604" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="46" font-weight="900" fill="#EAFBFF" letter-spacing="3">DAILY</text>
+  <text x="384" y="650" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800" fill="#7CFF6B" opacity=".92">일일 미션 완수</text>
+</svg>
